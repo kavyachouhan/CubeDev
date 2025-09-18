@@ -6,7 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 export default function WCACallback() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "loading"
+  );
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -41,19 +43,32 @@ export default function WCACallback() {
         }
 
         const data = await response.json();
-        
+
         if (data.success) {
           setStatus("success");
           setMessage("Successfully signed in with WCA!");
-          
-          // Store user data in localStorage or state management
+
+          // Store user data in localStorage including Convex ID
           if (data.user) {
-            localStorage.setItem("wca_user", JSON.stringify(data.user));
+            const userData = {
+              ...data.user,
+              convexId: data.user.convexId, // Store Convex user ID for future database operations
+              accessToken: data.accessToken,
+              loginTime: Date.now(),
+            };
+            localStorage.setItem("wca_user", JSON.stringify(userData));
+
+            // Dispatch custom event to notify UserProvider of the update
+            window.dispatchEvent(new CustomEvent("userUpdated"));
           }
-          
-          // Redirect to home page after a short delay
+
+          // Show warning if database save failed
+          if (data.warning) {
+            console.warn("Database warning:", data.warning);
+          }
+          // Redirect to Cube Lab page after a short delay
           setTimeout(() => {
-            router.push("/");
+            router.push("/cube-lab");
           }, 2000);
         } else {
           setStatus("error");
@@ -92,8 +107,18 @@ export default function WCACallback() {
               <>
                 <div className="flex justify-center mb-6">
                   <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <svg
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -113,8 +138,18 @@ export default function WCACallback() {
               <>
                 <div className="flex justify-center mb-6">
                   <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </div>
                 </div>

@@ -298,3 +298,67 @@ body {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Sidebar specific styles */
+.sidebar-nav-item {
+  transition: all 0.2s ease;
+}
+
+.sidebar-nav-item:hover {
+  transform: translateX(4px);
+}
+
+.sidebar-nav-item.active {
+  box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+}
+
+/* Mobile sidebar overlay */
+.sidebar-overlay {
+  backdrop-filter: blur(4px);
+  background: rgba(10, 10, 15, 0.75);
+}
+
+/* Sidebar user dropdown specific styles */
+.sidebar-user-card {
+  background: linear-gradient(135deg, var(--surface-elevated) 0%, rgba(59, 130, 246, 0.03) 100%);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.sidebar-user-card:hover {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, var(--surface-elevated) 0%, rgba(59, 130, 246, 0.08) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+}
+
+/* Sidebar footer enhancement */
+.sidebar-footer {
+  background: linear-gradient(to top, var(--surface) 0%, rgba(26, 26, 46, 0.95) 100%);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border);
+}
+
+/* Ensure navigation area is scrollable when content overflows */
+.sidebar-nav-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.sidebar-nav-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-nav-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-nav-container::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.sidebar-nav-container::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}

@@ -4,10 +4,13 @@ import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
 import { getWCAOAuthUrl } from "@/lib/wca-config";
+import { useUser } from "@/components/UserProvider";
+import UserDropdown from "@/components/UserDropdown";
 
 export default function Header() {
   const [activeTab, setActiveTab] = useState("Timer");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, signOut } = useUser();
 
   const handleWCASignIn = () => {
     const wcaAuthUrl = getWCAOAuthUrl();
@@ -15,10 +18,9 @@ export default function Header() {
   };
 
   const navItems = [
-    { name: "Timer", href: "/" },
-    { name: "Train", href: "/train" },
-    { name: "Analyze", href: "/analyze" },
-    { name: "Sync", href: "/sync" },
+    { name: "Home", href: "/" },
+    { name: "Cubers", href: "/cuber" },
+    { name: "About", href: "/about" },
   ];
 
   return (
@@ -56,20 +58,25 @@ export default function Header() {
               </Link>
             ))}
 
-            {/* WCA Sign In Button */}
-            <button
-              onClick={handleWCASignIn}
-              className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-sm hover:scale-105"
-            >
-              <Image
-                src="/wca_logo.png"
-                alt="WCA Logo"
-                width={16}
-                height={16}
-                className="w-4 h-4 object-contain"
-              />
-              Sign in with WCA
-            </button>
+            {/* User Authentication Section */}
+            {user ? (
+              <UserDropdown user={user} onSignOut={signOut} />
+            ) : (
+              /* WCA Sign In Button */
+              <button
+                onClick={handleWCASignIn}
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-sm hover:scale-105"
+              >
+                <Image
+                  src="/wca_logo.png"
+                  alt="WCA Logo"
+                  width={16}
+                  height={16}
+                  className="w-4 h-4 object-contain"
+                />
+                Sign in with WCA
+              </button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -123,23 +130,62 @@ export default function Header() {
                 </Link>
               ))}
 
-              {/* Mobile WCA Sign In Button */}
-              <button
-                onClick={() => {
-                  handleWCASignIn();
-                  setMobileMenuOpen(false);
-                }}
-                className="mx-4 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-base"
-              >
-                <Image
-                  src="/wca_logo.png"
-                  alt="WCA Logo"
-                  width={20}
-                  height={20}
-                  className="w-5 h-5 object-contain"
-                />
-                Sign in with WCA
-              </button>
+              {/* Mobile User Authentication Section */}
+              {user ? (
+                <div className="mx-4 space-y-4">
+                  {/* User Info */}
+                  <div className="flex items-center gap-3 px-4 py-3 bg-[var(--surface-elevated)] rounded-lg">
+                    {user.avatar && (
+                      <Image
+                        src={user.avatar.url || user.avatar}
+                        alt={`${user.name}'s avatar`}
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    )}
+                    <div>
+                      <div className="text-base font-semibold text-[var(--text-primary)] font-button">
+                        {user.name}
+                      </div>
+                      {user.wcaId && (
+                        <div className="text-sm text-[var(--text-secondary)] font-inter">
+                          {user.wcaId}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Mobile Sign Out Button */}
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full px-4 py-3 text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border)] hover:border-[var(--border-hover)] rounded-lg transition-all duration-200 font-button text-base"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                /* Mobile WCA Sign In Button */
+                <button
+                  onClick={() => {
+                    handleWCASignIn();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="mx-4 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-base"
+                >
+                  <Image
+                    src="/wca_logo.png"
+                    alt="WCA Logo"
+                    width={20}
+                    height={20}
+                    className="w-5 h-5 object-contain"
+                  />
+                  Sign in with WCA
+                </button>
+              )}
             </div>
           </div>
         )}
