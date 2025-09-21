@@ -30,10 +30,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Query user data from Convex if we have a convexId
+  // Fetch additional user data from Convex if logged in
   const convexUser = useQuery(
     api.users.getUserById,
-    user?.convexId ? { userId: user.convexId } : "skip"
+    user?.convexId ? { id: user.convexId } : "skip"
   );
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     loadUser();
 
-    // Listen for storage changes (when user signs in from another tab or after redirect)
+    // Listen for storage events (for cross-tab sync)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "wca_user") {
         if (e.newValue) {
@@ -73,7 +73,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    // Listen for custom events (for same-tab updates)
+    // Listen for custom user update events
     const handleUserUpdate = () => {
       loadUser();
     };
@@ -93,7 +93,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   const refreshUser = () => {
-    // Force refetch from localStorage
+    // Reload user data from localStorage
     const storedUser = localStorage.getItem("wca_user");
     if (storedUser) {
       try {

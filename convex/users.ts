@@ -1,13 +1,13 @@
-import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 
-// Create or update user after WCA authentication
+// Upsert (create or update) user profile
 export const upsertUser = mutation({
   args: {
     wcaId: v.string(),
     wcaUserId: v.number(),
     name: v.string(),
-    email: v.optional(v.string()), 
+    email: v.optional(v.string()),
     countryIso2: v.string(),
     avatar: v.optional(v.string()),
     accessToken: v.optional(v.string()),
@@ -18,7 +18,7 @@ export const upsertUser = mutation({
   handler: async (ctx, args) => {
     const now = Date.now();
 
-    // Check if user already exists by WCA ID
+    // Check if user already exists
     const existingUser = await ctx.db
       .query("users")
       .withIndex("by_wca_id", (q) => q.eq("wcaId", args.wcaId))
@@ -44,7 +44,6 @@ export const upsertUser = mutation({
       }
 
       await ctx.db.patch(existingUser._id, updateData);
-
       return existingUser._id;
     } else {
       // Create new user
@@ -58,21 +57,65 @@ export const upsertUser = mutation({
         dateOfBirth: args.dateOfBirth,
         gender: args.gender,
         region: args.region,
-        inspectionEnabled: true, // Default preference
         createdAt: now,
         updatedAt: now,
         lastLoginAt: now,
       };
 
-      // Only add email if provided
+      // Only set email if provided
       if (args.email) {
         newUserData.email = args.email;
       }
 
       const userId = await ctx.db.insert("users", newUserData);
-
       return userId;
     }
+  },
+});
+
+// Get or create user by WCA ID (used during OAuth login)
+export const getOrCreateUser = mutation({
+  args: {
+    wcaId: v.string(),
+    wcaUserId: v.number(),
+    name: v.string(),
+    email: v.string(),
+    countryIso2: v.string(),
+    avatar: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Check if user already exists
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("by_wca_id", (q) => q.eq("wcaId", args.wcaId))
+      .first();
+
+    if (existingUser) {
+      // Update user info if it exists
+      await ctx.db.patch(existingUser._id, {
+        name: args.name,
+        email: args.email,
+        avatar: args.avatar,
+        updatedAt: Date.now(),
+        lastLoginAt: Date.now(),
+      });
+      return existingUser._id;
+    }
+
+    // Create new user
+    const userId = await ctx.db.insert("users", {
+      wcaId: args.wcaId,
+      wcaUserId: args.wcaUserId,
+      name: args.name,
+      email: args.email,
+      countryIso2: args.countryIso2,
+      avatar: args.avatar,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      lastLoginAt: Date.now(),
+    });
+
+    return userId;
   },
 });
 
@@ -87,11 +130,11 @@ export const getUserByWcaId = query({
   },
 });
 
-// Get user by Convex ID
+// Get user by ID
 export const getUserById = query({
-  args: { userId: v.id("users") },
+  args: { id: v.id("users") },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.userId);
+    return await ctx.db.get(args.id);
   },
 });
 
@@ -99,197 +142,298 @@ export const getUserById = query({
 export const getAllUsers = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("users").order("desc").take(100); // Limit to 100 for performance, add pagination later if needed
+    return await ctx.db.query("users").order("desc").take(100); // Limit to 100 for performance
   },
 });
 
-// Update user preferences
-export const updateUserPreferences = mutation({
+// Create a new session
+export const createSession = mutation({
   args: {
     userId: v.id("users"),
-    inspectionEnabled: v.optional(v.boolean()),
-    preferredEvents: v.optional(v.array(v.string())),
-    timezone: v.optional(v.string()),
+    name: v.string(),
+    event: v.string(),
+    description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { userId, ...preferences } = args;
-
-    await ctx.db.patch(userId, {
-      ...preferences,
+    const sessionId = await ctx.db.insert("sessions", {
+      userId: args.userId,
+      name: args.name,
+      event: args.event,
+      description: args.description,
+      createdAt: Date.now(),
       updatedAt: Date.now(),
+      isActive: true,
+      solveCount: 0,
     });
+    return sessionId;
   },
 });
 
-// Save timer solve
+// Get user sessions
+export const getUserSessions = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("sessions")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .collect();
+  },
+});
+
+// Update session
+export const updateSession = mutation({
+  args: {
+    sessionId: v.id("sessions"),
+    name: v.optional(v.string()),
+    event: v.optional(v.string()),
+    isActive: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const { sessionId, ...updates } = args;
+    await ctx.db.patch(sessionId, updates);
+  },
+});
+
+// Add a solve to a session
+export const addSolve = mutation({
+  args: {
+    userId: v.id("users"),
+    sessionId: v.id("sessions"),
+    event: v.string(),
+    time: v.number(),
+    scramble: v.string(),
+    penalty: v.union(v.literal("none"), v.literal("+2"), v.literal("DNF")),
+    inspectionTime: v.optional(v.number()),
+    comment: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Calculate final time based on penalty
+    let finalTime = args.time;
+    if (args.penalty === "+2") {
+      finalTime = args.time + 2000; // Add 2 seconds
+    } else if (args.penalty === "DNF") {
+      finalTime = Infinity;
+    }
+
+    const solveId = await ctx.db.insert("solves", {
+      userId: args.userId,
+      sessionId: args.sessionId,
+      event: args.event,
+      time: args.time,
+      scramble: args.scramble,
+      penalty: args.penalty,
+      finalTime: finalTime,
+      solveDate: Date.now(),
+      comment: args.comment,
+      createdAt: Date.now(),
+    });
+
+    // Update session solve count
+    const session = await ctx.db.get(args.sessionId);
+    if (session) {
+      await ctx.db.patch(args.sessionId, {
+        solveCount: session.solveCount + 1,
+        updatedAt: Date.now(),
+      });
+    }
+
+    return solveId;
+  },
+});
+
+// Save a solve (new or existing)
 export const saveSolve = mutation({
   args: {
     userId: v.id("users"),
+    sessionId: v.id("sessions"),
     event: v.string(),
     scramble: v.string(),
     time: v.number(),
     penalty: v.union(v.literal("none"), v.literal("+2"), v.literal("DNF")),
     finalTime: v.number(),
     inspectionTime: v.optional(v.number()),
-    sessionId: v.optional(v.string()),
     comment: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    reconstruction: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
 
-    const solveId = await ctx.db.insert("timerSessions", {
+    const solveId = await ctx.db.insert("solves", {
       userId: args.userId,
+      sessionId: args.sessionId,
       event: args.event,
       scramble: args.scramble,
       time: args.time,
       penalty: args.penalty,
       finalTime: args.finalTime,
-      inspectionTime: args.inspectionTime,
-      sessionId: args.sessionId,
       comment: args.comment,
+      tags: args.tags,
       solveDate: now,
       createdAt: now,
     });
 
-    // Update user stats
-    await updateUserStatsForEvent(ctx, args.userId, args.event);
+    // Update session solve count
+    const currentSolveCount = await ctx.db
+      .query("solves")
+      .withIndex("by_session", (q) => q.eq("sessionId", args.sessionId))
+      .collect()
+      .then((solves) => solves.length);
+
+    await ctx.db.patch(args.sessionId, {
+      solveCount: currentSolveCount,
+      updatedAt: now,
+    });
 
     return solveId;
   },
 });
 
-// Get user's recent solves
-export const getUserSolves = query({
-  args: {
-    userId: v.id("users"),
-    event: v.optional(v.string()),
-    limit: v.optional(v.number()),
-  },
+// Get solves for a session
+export const getSessionSolves = query({
+  args: { sessionId: v.id("sessions") },
   handler: async (ctx, args) => {
-    let query = ctx.db.query("timerSessions");
+    return await ctx.db
+      .query("solves")
+      .withIndex("by_session", (q) => q.eq("sessionId", args.sessionId))
+      .order("desc")
+      .collect();
+  },
+});
 
-    if (args.event) {
-      query = query.withIndex("by_user_event", (q) =>
-        q.eq("userId", args.userId).eq("event", args.event)
-      );
-    } else {
-      query = query.withIndex("by_user", (q) => q.eq("userId", args.userId));
+// Get all solves for a user
+export const getUserSolves = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("solves")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .collect();
+  },
+});
+
+// Delete a solve
+export const deleteSolve = mutation({
+  args: { solveId: v.id("solves") },
+  handler: async (ctx, args) => {
+    const solve = await ctx.db.get(args.solveId);
+    if (solve) {
+      // Delete the solve
+      await ctx.db.delete(args.solveId);
+
+      // Update session solve count
+      const remainingSolves = await ctx.db
+        .query("solves")
+        .withIndex("by_session", (q) => q.eq("sessionId", solve.sessionId))
+        .collect();
+
+      await ctx.db.patch(solve.sessionId, {
+        solveCount: remainingSolves.length,
+        updatedAt: Date.now(),
+      });
+    }
+  },
+});
+
+// Delete a session and all its solves
+export const deleteSession = mutation({
+  args: { sessionId: v.id("sessions") },
+  handler: async (ctx, args) => {
+    // First delete all solves in this session
+    const solves = await ctx.db
+      .query("solves")
+      .withIndex("by_session", (q) => q.eq("sessionId", args.sessionId))
+      .collect();
+
+    for (const solve of solves) {
+      await ctx.db.delete(solve._id);
     }
 
-    return await query.order("desc").take(args.limit || 50);
+    // Then delete the session
+    await ctx.db.delete(args.sessionId);
+  },
+});
+
+// Update a solve
+export const updateSolve = mutation({
+  args: {
+    solveId: v.id("solves"),
+    time: v.optional(v.number()),
+    penalty: v.optional(
+      v.union(v.literal("none"), v.literal("+2"), v.literal("DNF"))
+    ),
+    comment: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+  },
+  handler: async (ctx, args) => {
+    const { solveId, ...updates } = args;
+
+    // If time or penalty is updated, recalculate finalTime
+    if (updates.time !== undefined || updates.penalty !== undefined) {
+      const solve = await ctx.db.get(solveId);
+      if (solve) {
+        const newTime = updates.time ?? solve.time;
+        const newPenalty = updates.penalty ?? solve.penalty;
+
+        let finalTime = newTime;
+        if (newPenalty === "+2") {
+          finalTime = newTime + 2000;
+        } else if (newPenalty === "DNF") {
+          finalTime = Infinity;
+        }
+
+        await ctx.db.patch(solveId, {
+          ...updates,
+          finalTime: finalTime,
+        });
+      }
+    } else {
+      await ctx.db.patch(solveId, updates);
+    }
   },
 });
 
 // Get user statistics
 export const getUserStats = query({
-  args: {
-    userId: v.id("users"),
-    event: v.optional(v.string()),
-  },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
-    if (args.event) {
-      return await ctx.db
-        .query("userStats")
-        .withIndex("by_user_event", (q) =>
-          q.eq("userId", args.userId).eq("event", args.event)
-        )
-        .first();
-    } else {
-      return await ctx.db
-        .query("userStats")
-        .withIndex("by_user", (q) => q.eq("userId", args.userId))
-        .collect();
-    }
+    // Get all user sessions
+    const sessions = await ctx.db
+      .query("sessions")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    // Get solve count for each session
+    const stats = await Promise.all(
+      sessions.map(async (session) => {
+        const solves = await ctx.db
+          .query("solves")
+          .withIndex("by_session", (q) => q.eq("sessionId", session._id))
+          .collect();
+
+        const validSolves = solves.filter((solve) => solve.penalty !== "DNF");
+        const times = validSolves.map((solve) => solve.finalTime);
+
+        let average = 0;
+        let best = 0;
+        if (times.length > 0) {
+          average = times.reduce((sum, time) => sum + time, 0) / times.length;
+          best = Math.min(...times);
+        }
+
+        return {
+          sessionId: session._id,
+          sessionName: session.name,
+          event: session.event,
+          solveCount: solves.length,
+          average: average,
+          best: best,
+        };
+      })
+    );
+
+    return stats;
   },
 });
-
-// Helper function to update user statistics
-async function updateUserStatsForEvent(ctx: any, userId: any, event: string) {
-  // Get recent solves for this event
-  const recentSolves = await ctx.db
-    .query("timerSessions")
-    .withIndex("by_user_event", (q) =>
-      q.eq("userId", userId).eq("event", event)
-    )
-    .order("desc")
-    .take(100);
-
-  const validTimes = recentSolves
-    .filter((solve: any) => solve.finalTime !== Infinity)
-    .map((solve: any) => solve.finalTime);
-
-  if (validTimes.length === 0) return;
-
-  // Calculate statistics
-  const bestSingle = Math.min(...validTimes);
-  const totalSolves = recentSolves.length;
-
-  // Calculate averages
-  let bestAo5 = null;
-  let bestAo12 = null;
-  let recentAo5 = null;
-  let recentAo12 = null;
-
-  if (validTimes.length >= 5) {
-    recentAo5 = calculateAverage(validTimes.slice(0, 5));
-    bestAo5 = calculateBestAverage(validTimes, 5);
-  }
-
-  if (validTimes.length >= 12) {
-    recentAo12 = calculateAverage(validTimes.slice(0, 12));
-    bestAo12 = calculateBestAverage(validTimes, 12);
-  }
-
-  // Update or create stats
-  const existingStats = await ctx.db
-    .query("userStats")
-    .withIndex("by_user_event", (q) =>
-      q.eq("userId", userId).eq("event", event)
-    )
-    .first();
-
-  const statsData = {
-    bestSingle,
-    bestAo5,
-    bestAo12,
-    recentAo5,
-    recentAo12,
-    totalSolves,
-    lastSolveDate: recentSolves[0]?.solveDate,
-    lastCalculated: Date.now(),
-  };
-
-  if (existingStats) {
-    await ctx.db.patch(existingStats._id, statsData);
-  } else {
-    await ctx.db.insert("userStats", {
-      userId,
-      event,
-      firstSolveDate: recentSolves[recentSolves.length - 1]?.solveDate,
-      ...statsData,
-    });
-  }
-}
-
-// Helper function to calculate average (removes best and worst for Ao5/Ao12)
-function calculateAverage(times: number[]): number {
-  if (times.length < 3) return times.reduce((a, b) => a + b) / times.length;
-
-  const sorted = [...times].sort((a, b) => a - b);
-  const trimmed = sorted.slice(1, -1); // Remove best and worst
-  return trimmed.reduce((a, b) => a + b) / trimmed.length;
-}
-
-// Helper function to find best average in a set of times
-function calculateBestAverage(times: number[], size: number): number | null {
-  if (times.length < size) return null;
-
-  let best = Infinity;
-  for (let i = 0; i <= times.length - size; i++) {
-    const subset = times.slice(i, i + size);
-    const avg = calculateAverage(subset);
-    best = Math.min(best, avg);
-  }
-
-  return best;
-}

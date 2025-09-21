@@ -68,15 +68,18 @@ export default function CallToAction() {
                 : "translate-y-8 opacity-0"
             }`}
           >
-            <button className="group px-10 py-5 bg-white text-[var(--primary)] font-bold rounded-xl hover:bg-gray-50 transition-all duration-300 font-button text-lg flex items-center gap-3 hover:gap-4 shadow-lg hover:shadow-xl hover:scale-105">
+            <a
+              href="/cube-lab/timer"
+              className="group px-10 py-5 bg-white text-[var(--primary)] font-bold rounded-xl hover:bg-gray-50 transition-all duration-300 font-button text-lg flex items-center gap-3 hover:gap-4 shadow-lg hover:shadow-xl hover:scale-105"
+            >
               Start Training Now
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-            </button>
+            </a>
 
             <button className="px-10 py-5 border-2 border-white text-white font-bold rounded-xl hover:bg-white hover:text-[var(--primary)] transition-all duration-300 font-button text-lg shadow-lg hover:shadow-xl hover:scale-105">
               View Demo
             </button>
-          </div>    
+          </div>
         </div>
       </div>
     </section>

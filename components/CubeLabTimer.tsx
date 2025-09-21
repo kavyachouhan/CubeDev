@@ -1,517 +1,347 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import {
-  Settings,
-  Trash2,
-  ChevronDown,
-  ChevronRight,
-  RotateCcw,
-} from "lucide-react";
+import { useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { useUser } from "@/components/UserProvider";
-import { useMutation } from "convex/react";
-import { api } from "../convex/_generated/api";
 
-interface TimerRecord {
-  id: string;
-  time: number;
-  timestamp: Date;
-  scramble: string;
-  penalty: "none" | "+2" | "DNF";
-  finalTime: number;
-  event: string;
+// Import components
+import TimerDisplay from "./timer/TimerDisplay";
+import SessionManager from "./timer/SessionManager";
+import EventSelector from "./timer/EventSelector";
+import ScrambleDisplay from "./timer/ScrambleDisplay";
+import StatsDisplay from "./timer/StatsDisplay";
+import TimerHistory from "./timer/TimerHistory";
+
+// Import custom hooks
+import { useTimerState } from "./timer/hooks/useTimerState";
+import { useSessionState } from "./timer/hooks/useSessionState";
+import { useSolveOperations } from "./timer/hooks/useSolveOperations";
+import { useDatabaseSync } from "./timer/hooks/useDatabaseSync";
+import { useLocalStorageManager } from "./timer/hooks/useLocalStorageManager";
+
+// Dynamically import ScramblePreview to avoid heavy initial load
+const ScramblePreview = dynamic(() => import("./timer/ScramblePreview"), {
+  loading: () => (
+    <div className="timer-card">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+          Scramble Preview
+        </h3>
+      </div>
+      <div className="w-full min-h-[200px] bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-2">🧩</div>
+          <div className="text-sm text-[var(--text-muted)]">
+            Loading component...
+          </div>
+        </div>
+      </div>
+    </div>
+  ),
+  ssr: false,
+});
+
+interface CubeLabTimerProps {
+  onTimerFocusChange?: (isActive: boolean) => void;
 }
 
-type TimerState = "idle" | "inspection" | "ready" | "running" | "stopped";
-
-export default function CubeLabTimer() {
+export default function CubeLabTimer({
+  onTimerFocusChange,
+}: CubeLabTimerProps = {}) {
   const { user } = useUser();
-  const saveSolve = useMutation(api.users.saveSolve);
 
-  const [state, setState] = useState<TimerState>("idle");
-  const [time, setTime] = useState(0);
-  const [inspectionTime, setInspectionTime] = useState(15);
-  const [isSpacePressed, setIsSpacePressed] = useState(false);
-  const [history, setHistory] = useState<TimerRecord[]>([]);
-  const [showSettings, setShowSettings] = useState(false);
-  const [showHistory, setShowHistory] = useState(true);
-  const [inspectionEnabled, setInspectionEnabled] = useState(true);
-  const [selectedEvent, setSelectedEvent] = useState("3x3");
-  const [lastSolveId, setLastSolveId] = useState<string | null>(null);
-  const [currentScramble, setCurrentScramble] = useState("R U R' U' F R F'");
+  // Timer state and operations
+  const {
+    history,
+    selectedEvent,
+    currentScramble,
+    lastSolveId,
+    isTimerFocusMode,
+    handleNewScramble,
+    handleEventChange,
+    addSolve,
+    updateSolve,
+    removeSolve,
+    clearSessionHistory,
+    setCompleteHistory,
+    setTimerFocusMode,
+    getSessionHistory,
+    calculateFinalTime,
+  } = useTimerState();
 
-  const startTimeRef = useRef<number>(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const inspectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const {
+    sessions,
+    currentSession,
+    isSessionsInitialized,
+    isLoading: isSessionLoading,
+    handleSessionChange,
+    handleCreateSession,
+    handleRenameSession,
+    handleDeleteSession,
+    updateSessionSolveCount,
+  } = useSessionState(user?.convexId);
 
-  const events = [
-    "3x3",
-    "2x2",
-    "4x4",
-    "5x5",
-    "6x6",
-    "7x7",
-    "3x3 OH",
-    "3x3 BLD",
-    "4x4 BLD",
-    "5x5 BLD",
-    "3x3 MBLD",
-    "FMC",
-    "Pyraminx",
-    "Megaminx",
-    "Skewb",
-    "Clock",
-    "Square-1",
-  ];
+  const {
+    dbSolves,
+    convertDbSolvesToLocal,
+    isLoading: isDbLoading,
+  } = useDatabaseSync(user?.convexId);
 
-  // Generate scramble function (simplified for demo)
-  const generateScramble = useCallback(() => {
-    const moves = ["R", "L", "U", "D", "F", "B"];
-    const modifiers = ["", "'", "2"];
-    const scrambleLength =
-      selectedEvent === "2x2x2" ? 9 : selectedEvent === "4x4x4" ? 40 : 20;
+  const { loadFromCache, saveToCache } = useLocalStorageManager(user?.convexId);
 
-    let scramble = "";
-    for (let i = 0; i < scrambleLength; i++) {
-      const move = moves[Math.floor(Math.random() * moves.length)];
-      const modifier = modifiers[Math.floor(Math.random() * modifiers.length)];
-      scramble += move + modifier + " ";
-    }
-    return scramble.trim();
-  }, [selectedEvent]);
+  const {
+    saveSolve,
+    applyPenalty,
+    deleteSolve,
+    clearSessionSolves,
+    updateSolve: updateSolveOperation,
+  } = useSolveOperations(user?.convexId, updateSessionSolveCount);
 
-  // Sound effects
-  const playBeep = useCallback(() => {
-    try {
-      const audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.frequency.value = 800;
-      oscillator.type = "sine";
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.01,
-        audioContext.currentTime + 0.1
-      );
-
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.1);
-    } catch (error) {
-      console.log("Audio not available");
-    }
-  }, []);
-
-  // Save time function
-  const saveTime = useCallback(
-    async (timeMs: number) => {
-      const record: TimerRecord = {
-        id: Date.now().toString(),
-        time: timeMs,
-        timestamp: new Date(),
-        scramble: currentScramble,
-        penalty: "none",
-        finalTime: timeMs,
-        event: selectedEvent,
-      };
-
-      setHistory((prev) => {
-        const newHistory = [record, ...prev].slice(0, 100);
-        localStorage.setItem(
-          "cubelab-timer-history",
-          JSON.stringify(newHistory)
-        );
-        return newHistory;
-      });
-
-      setLastSolveId(record.id);
-
-      // Save to Convex if user is logged in
-      if (user?.convexId) {
-        try {
-          await saveSolve({
-            userId: user.convexId,
-            event: selectedEvent,
-            scramble: currentScramble,
-            time: timeMs,
-            penalty: "none",
-            finalTime: timeMs,
-          });
-        } catch (error) {
-          console.error("Failed to save solve to database:", error);
-        }
-      }
-
-      // Generate new scramble for next solve
-      setCurrentScramble(generateScramble());
+  // Handle timer focus mode changes
+  const handleTimerFocusChange = useCallback(
+    (isActive: boolean) => {
+      setTimerFocusMode(isActive);
+      onTimerFocusChange?.(isActive);
     },
-    [currentScramble, selectedEvent, user, saveSolve, generateScramble]
+    [setTimerFocusMode, onTimerFocusChange]
   );
 
-  // Timer logic
-  useEffect(() => {
-    if (state === "inspection") {
-      inspectionIntervalRef.current = setInterval(() => {
-        setInspectionTime((prev) => {
-          const newTime = prev - 0.01;
-          if (newTime <= 0) {
-            setState("running");
-            setTime(0);
-            startTimeRef.current = Date.now();
-            playBeep();
-            return 15;
-          }
-          return newTime;
-        });
-      }, 10);
-    } else if (state === "running") {
-      intervalRef.current = setInterval(() => {
-        setTime(Date.now() - startTimeRef.current);
-      }, 10);
-    }
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      if (inspectionIntervalRef.current)
-        clearInterval(inspectionIntervalRef.current);
-    };
-  }, [state, playBeep]);
-
-  // Keyboard handling
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
-        e.preventDefault();
-        if (!isSpacePressed) {
-          setIsSpacePressed(true);
-          if (state === "idle" || state === "stopped") {
-            if (inspectionEnabled) {
-              setState("inspection");
-              setInspectionTime(15);
-            } else {
-              setState("ready");
-            }
-          } else if (state === "inspection") {
-            setState("ready");
-          }
-        }
-      } else if (state === "running") {
-        e.preventDefault();
-        setState("stopped");
-        const finalTime = Date.now() - startTimeRef.current;
-        setTime(finalTime);
-        playBeep();
-        saveTime(finalTime);
+  // Handle session change and sync event
+  const handleSessionChangeWithEvent = useCallback(
+    (session: any) => {
+      handleSessionChange(session);
+      // If the new session's event differs from the current selected event, update it
+      if (session.event !== selectedEvent) {
+        handleEventChange(session.event);
       }
-    };
+    },
+    [handleSessionChange, handleEventChange, selectedEvent]
+  );
 
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
-        e.preventDefault();
-        setIsSpacePressed(false);
-        if (state === "ready") {
-          setState("running");
-          setTime(0);
-          startTimeRef.current = Date.now();
-          playBeep();
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, [state, isSpacePressed, inspectionEnabled, playBeep, saveTime]);
-
-  // Load history
+  // Initialize complete history from database or cache
   useEffect(() => {
-    const saved = localStorage.getItem("cubelab-timer-history");
-    if (saved) {
-      try {
-        const parsedHistory = JSON.parse(saved).map((record: any) => ({
-          ...record,
-          timestamp: new Date(record.timestamp),
-        }));
-        setHistory(parsedHistory);
-      } catch (e) {
-        console.error("Failed to load timer history:", e);
+    if (!isSessionsInitialized || dbSolves === undefined) return;
+
+    // Prefer database history if available
+    if (dbSolves && dbSolves.length > 0) {
+      const solveHistory = convertDbSolvesToLocal(dbSolves);
+      setCompleteHistory(solveHistory);
+      saveToCache("history", solveHistory);
+    } else {
+      // Fallback to cached history
+      const cachedHistory = loadFromCache("history", []);
+      if (cachedHistory.length > 0) {
+        setCompleteHistory(cachedHistory);
       }
     }
+  }, [
+    isSessionsInitialized,
+    dbSolves,
+    convertDbSolvesToLocal,
+    saveToCache,
+    loadFromCache,
+    setCompleteHistory,
+  ]);
+
+  // Generate initial scramble on mount
+  useEffect(() => {
+    handleNewScramble();
   }, []);
 
-  // Generate initial scramble
-  useEffect(() => {
-    setCurrentScramble(generateScramble());
-  }, [generateScramble]);
+  // Handle solve completion
+  const handleSolveComplete = useCallback(
+    async (time: number, notes?: string, tags?: string[]) => {
+      if (!currentSession) return null;
 
-  // Format time
-  const formatTime = (timeMs: number) => {
-    if (timeMs === Infinity) return "DNF";
-    const seconds = timeMs / 1000;
-    const mins = Math.floor(seconds / 60);
-    const secs = (seconds % 60).toFixed(2);
-    return mins > 0 ? `${mins}:${secs.padStart(5, "0")}` : secs;
-  };
+      const finalTime = calculateFinalTime(time, "none");
+      const solve = {
+        time,
+        timestamp: new Date(),
+        scramble: currentScramble,
+        penalty: "none" as const,
+        finalTime,
+        event: selectedEvent,
+        sessionId: currentSession.id,
+        notes,
+        tags,
+      };
 
-  // Get timer color
-  const getTimerColor = () => {
-    switch (state) {
-      case "inspection":
-        if (inspectionTime <= 3) return "text-red-400";
-        if (inspectionTime <= 8) return "text-yellow-400";
-        return "text-green-400";
-      case "ready":
-        return "text-green-400";
-      case "running":
-        return "text-red-400";
-      case "stopped":
-        return "text-blue-400";
-      default:
-        return "text-gray-400";
-    }
-  };
+      // Save solve to database and local state
+      const solveId = await saveSolve(
+        solve,
+        currentSession,
+        getSessionHistory(currentSession.id),
+        addSolve
+      );
 
-  // Calculate stats
-  const eventHistory = history.filter((r) => r.event === selectedEvent);
-  const validTimes = eventHistory
-    .filter((r) => r.finalTime !== Infinity)
-    .map((r) => r.finalTime);
-  const bestTime = validTimes.length > 0 ? Math.min(...validTimes) : null;
-  const ao5 =
-    validTimes.length >= 5
-      ? validTimes
-          .slice(0, 5)
-          .sort((a, b) => a - b)
-          .slice(1, 4)
-          .reduce((a, b) => a + b, 0) / 3
-      : null;
+      if (solveId) {
+        // Generate a new scramble for the next solve
+        await handleNewScramble();
+      }
+
+      return solveId;
+    },
+    [
+      currentSession,
+      currentScramble,
+      selectedEvent,
+      calculateFinalTime,
+      saveSolve,
+      getSessionHistory,
+      addSolve,
+      handleNewScramble,
+    ]
+  );
+
+  // Handle applying penalty to a solve
+  const handleApplyPenalty = useCallback(
+    async (solveId: string, penalty: "none" | "+2" | "DNF") => {
+      const solve = history.find((s) => s.id === solveId);
+      if (!solve) return;
+
+      await applyPenalty(solveId, penalty, solve.time, updateSolve);
+    },
+    [history, applyPenalty, updateSolve]
+  );
+
+  // Handle deleting a solve
+  const handleDeleteSolve = useCallback(
+    async (solveId: string) => {
+      if (!currentSession) return;
+
+      await deleteSolve(
+        solveId,
+        currentSession,
+        getSessionHistory(currentSession.id),
+        removeSolve
+      );
+    },
+    [currentSession, deleteSolve, getSessionHistory, removeSolve]
+  );
+
+  // Handle clearing session history
+  const handleClearHistory = useCallback(async () => {
+    if (!currentSession) return;
+
+    await clearSessionSolves(
+      getSessionHistory(currentSession.id),
+      currentSession,
+      clearSessionHistory
+    );
+  }, [
+    currentSession,
+    clearSessionSolves,
+    getSessionHistory,
+    clearSessionHistory,
+  ]);
+
+  // Handle updating a solve's notes or tags
+  const handleUpdateSolve = useCallback(
+    async (solveId: string, notes?: string, tags?: string[]) => {
+      await updateSolveOperation(solveId, { notes, tags }, updateSolve);
+    },
+    [updateSolveOperation, updateSolve]
+  );
+
+  // Handle applying penalty to the last solve
+  const handleLastSolvePenalty = useCallback(
+    (penalty: "none" | "+2" | "DNF") => {
+      if (lastSolveId) {
+        handleApplyPenalty(lastSolveId, penalty);
+      }
+    },
+    [lastSolveId, handleApplyPenalty]
+  );
+
+  // Show loading state if session or database is loading
+  if (!currentSession || isDbLoading || isSessionLoading) {
+    return (
+      <div className="container-responsive py-4 md:py-8">
+        <div className="text-center">
+          <div className="text-lg text-[var(--text-muted)]">
+            Loading your session data...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container-responsive py-8">
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Left Column - Timer Controls */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Event Selector */}
-          <div className="timer-card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
-                Event
-              </h3>
-              <button
-                onClick={() => setShowSettings(!showSettings)}
-                className="p-2 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
-            </div>
+    <div className="container-responsive py-4 md:py-8">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 md:gap-6">
+        {/* Left Column - Controls */}
+        <div className="xl:col-span-2 space-y-4 md:space-y-6">
+          {/* Session & Event Row */}
+          <div
+            className={`grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 transition-all duration-500 ease-in-out ${
+              isTimerFocusMode ? "blur-md opacity-50 pointer-events-none" : ""
+            }`}
+          >
+            {/* Session Manager */}
+            <SessionManager
+              currentSession={currentSession}
+              sessions={sessions}
+              onSessionChange={handleSessionChangeWithEvent}
+              onCreateSession={handleCreateSession}
+              onRenameSession={handleRenameSession}
+              onDeleteSession={handleDeleteSession}
+              allSolveHistory={history}
+            />
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              {events.map((event) => (
-                <button
-                  key={event}
-                  onClick={() => setSelectedEvent(event)}
-                  className={`p-3 rounded-lg text-sm font-medium transition-all font-button ${
-                    selectedEvent === event
-                      ? "bg-[var(--primary)] text-white"
-                      : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--primary)]/10 hover:text-[var(--primary)]"
-                  }`}
-                >
-                  {event}
-                </button>
-              ))}
-            </div>
+            {/* Event Selector */}
+            <EventSelector
+              selectedEvent={selectedEvent}
+              onEventChange={handleEventChange}
+              solveHistory={history}
+              currentSessionId={currentSession.id}
+            />
           </div>
 
           {/* Scramble */}
-          <div className="timer-card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
-                Scramble
-              </h3>
-              <button
-                onClick={() => setCurrentScramble(generateScramble())}
-                className="p-2 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
-              <p className="text-lg font-mono text-[var(--text-primary)] text-center leading-relaxed">
-                {currentScramble}
-              </p>
-            </div>
+          <div
+            className={`transition-all duration-500 ease-in-out ${
+              isTimerFocusMode ? "blur-md opacity-50 pointer-events-none" : ""
+            }`}
+          >
+            <ScrambleDisplay
+              scramble={currentScramble}
+              onNewScramble={handleNewScramble}
+            />
           </div>
 
           {/* Timer */}
-          <div className="timer-card">
-            <div className="text-center space-y-6">
-              {state === "inspection" && (
-                <div className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider font-statement">
-                  Inspection: {inspectionTime.toFixed(2)}s
-                </div>
-              )}
-
-              <div
-                className={`font-bold timer-text ${getTimerColor()} transition-all duration-300 font-mono`}
-              >
-                {state === "inspection"
-                  ? `${inspectionTime.toFixed(2)}`
-                  : formatTime(time)}
-              </div>
-
-              <div className="text-sm text-[var(--text-secondary)] font-inter">
-                {state === "idle" &&
-                  (inspectionEnabled
-                    ? "Press SPACE for inspection"
-                    : "Press SPACE to start")}
-                {state === "inspection" && "Get ready..."}
-                {state === "ready" && "Release SPACE to start"}
-                {state === "running" && "Solving... (any key to stop)"}
-                {state === "stopped" && "Great solve! (SPACE for next)"}
-              </div>
-            </div>
-          </div>
-
-          {/* Settings Panel */}
-          {showSettings && (
-            <div className="timer-card">
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4 font-statement">
-                Settings
-              </h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-[var(--text-secondary)] font-inter">
-                    Inspection Time
-                  </span>
-                  <button
-                    onClick={() => setInspectionEnabled(!inspectionEnabled)}
-                    className={`w-12 h-6 rounded-full transition-colors ${
-                      inspectionEnabled
-                        ? "bg-[var(--primary)]"
-                        : "bg-[var(--border)]"
-                    }`}
-                  >
-                    <div
-                      className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                        inspectionEnabled ? "translate-x-7" : "translate-x-1"
-                      }`}
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <TimerDisplay
+            onSolveComplete={handleSolveComplete}
+            onApplyPenalty={handleLastSolvePenalty}
+            lastSolveId={lastSolveId}
+            onTimerStateChange={handleTimerFocusChange}
+          />
         </div>
 
-        {/* Right Column - Stats & History */}
-        <div className="space-y-6">
-          {/* Quick Stats */}
-          <div className="timer-card">
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4 font-statement">
-              {selectedEvent} Statistics
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center">
-                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                  Best
-                </div>
-                <div className="text-lg font-bold text-[var(--primary)] font-mono">
-                  {bestTime ? formatTime(bestTime) : "-"}
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                  Ao5
-                </div>
-                <div className="text-lg font-bold text-[var(--primary)] font-mono">
-                  {ao5 ? formatTime(ao5) : "-"}
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                  Solves
-                </div>
-                <div className="text-lg font-bold text-[var(--primary)] font-mono">
-                  {eventHistory.length}
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                  Session
-                </div>
-                <div className="text-lg font-bold text-[var(--primary)] font-mono">
-                  {
-                    eventHistory.filter(
-                      (r) =>
-                        new Date().getTime() - r.timestamp.getTime() < 3600000
-                    ).length
-                  }
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Right Column - Stats & Visualization */}
+        <div
+          className={`xl:col-span-2 space-y-4 md:space-y-6 order-last xl:order-none transition-all duration-500 ease-in-out ${
+            isTimerFocusMode ? "blur-md opacity-50 pointer-events-none" : ""
+          }`}
+        >
+          {/* Scramble Preview */}
+          <ScramblePreview scramble={currentScramble} event={selectedEvent} />
+
+          {/* Stats */}
+          <StatsDisplay
+            history={getSessionHistory(currentSession.id)}
+            selectedEvent={selectedEvent}
+          />
 
           {/* History */}
-          <div className="timer-card">
-            <div className="flex items-center justify-between mb-4">
-              <button
-                onClick={() => setShowHistory(!showHistory)}
-                className="text-lg font-semibold text-[var(--text-primary)] hover:text-[var(--primary)] transition-colors font-statement flex items-center gap-2"
-              >
-                Recent Times{" "}
-                {showHistory ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : (
-                  <ChevronRight className="w-4 h-4" />
-                )}
-              </button>
-              {eventHistory.length > 0 && (
-                <button
-                  onClick={() => {
-                    setHistory([]);
-                    localStorage.removeItem("cubelab-timer-history");
-                  }}
-                  className="p-1 text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-
-            {showHistory && (
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {eventHistory.slice(0, 20).map((record, index) => (
-                  <div
-                    key={record.id}
-                    className="flex justify-between items-center py-2 px-3 bg-[var(--surface-elevated)] rounded border border-[var(--border)]"
-                  >
-                    <span className="text-sm text-[var(--text-muted)] font-inter">
-                      #{index + 1}
-                    </span>
-                    <span className="font-mono text-[var(--text-primary)]">
-                      {formatTime(record.finalTime)}
-                    </span>
-                    <span className="text-xs text-[var(--text-muted)] font-inter">
-                      {record.timestamp.toLocaleTimeString()}
-                    </span>
-                  </div>
-                ))}
-                {eventHistory.length === 0 && (
-                  <div className="text-center py-4 text-[var(--text-muted)] font-inter">
-                    No solves yet for {selectedEvent}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          <TimerHistory
+            history={getSessionHistory(currentSession.id)}
+            selectedEvent={selectedEvent}
+            onClearHistory={handleClearHistory}
+            onApplyPenalty={handleApplyPenalty}
+            onDeleteSolve={handleDeleteSolve}
+            onUpdateSolve={handleUpdateSolve}
+          />
         </div>
       </div>
     </div>

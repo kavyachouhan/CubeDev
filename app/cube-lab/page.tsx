@@ -1,16 +1,5 @@
-import ProtectedRoute from "@/components/ProtectedRoute";
-import CubeLabDashboard from "@/components/CubeLabDashboard";
+import { redirect } from "next/navigation";
 
 export default function CubeLabPage() {
-  return (
-    <ProtectedRoute>
-      <CubeLabDashboard />
-    </ProtectedRoute>
-  );
+  redirect("/cube-lab/timer");
 }
-
-export const metadata = {
-  title: "Cube Lab | CubeDev",
-  description:
-    "Discover tools and features in Cube Lab to enhance your speedcubing experience.",
-};

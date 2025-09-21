@@ -232,25 +232,36 @@ body {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* Timer card enhancement */
+/* Timer card */
 .timer-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1rem;
-  padding: 2rem;
+  padding: 1rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(16px);
   background: linear-gradient(135deg, var(--surface) 0%, rgba(59, 130, 246, 0.05) 100%);
 }
 
+@media (min-width: 640px) {
+  .timer-card {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .timer-card {
+    padding: 2rem;
+  }
+}
+
 .timer-card:hover {
   border-color: var(--primary);
   box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.2);
-  transform: translateY(-2px);
   transition: all 0.3s ease;
 }
 
-/* Button enhancements */
+/* Button */
 .btn-primary {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
   border: none;
@@ -333,14 +344,13 @@ body {
   box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
 }
 
-/* Sidebar footer enhancement */
+/* Sidebar footer */
 .sidebar-footer {
   background: linear-gradient(to top, var(--surface) 0%, rgba(26, 26, 46, 0.95) 100%);
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--border);
 }
 
-/* Ensure navigation area is scrollable when content overflows */
 .sidebar-nav-container {
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
@@ -361,4 +371,28 @@ body {
 
 .sidebar-nav-container::-webkit-scrollbar-thumb:hover {
   background: var(--border-hover);
+}
+
+/* Statistics Grid Layout */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+@media (min-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1536px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }

@@ -28,14 +28,14 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
     setIsOpen(true);
   };
 
-  // Handle mouse leave - hide dropdown with delay
+  // Handle mouse leave - hide dropdown with slight delay
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false);
-    }, 150); // Small delay to allow mouse to move between elements
+    }, 150); // 150ms delay
   };
 
-  // Close dropdown when clicking outside
+  // Close dropdown if clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -119,7 +119,7 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
           {/* Menu Items */}
           <div className="py-2">
             <Link
-              href="/cube-lab"
+              href="/cube-lab/timer"
               className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
               onClick={() => setIsOpen(false)}
             >

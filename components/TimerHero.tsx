@@ -91,7 +91,7 @@ export default function TimerHero() {
     }
   }, []);
 
-  // Save time function
+  // Save time to history
   const saveTime = useCallback((timeMs: number) => {
     const record: TimerRecord = {
       id: Date.now().toString(),
@@ -108,7 +108,7 @@ export default function TimerHero() {
       return newHistory;
     });
     setLastSolveId(record.id);
-    setShowPenaltyButtons(true); // Show penalty buttons after solve
+    setShowPenaltyButtons(true); // Show penalty buttons after a solve
     setCurrentPenalty("none"); // Reset penalty for new solve
   }, []);
 
@@ -119,7 +119,7 @@ export default function TimerHero() {
         setInspectionTime((prev) => {
           const newTime = prev - 0.01;
 
-          // Alert sounds at 8s and 12s (7s and 3s remaining)
+          // Play alert at 8 and 3 seconds
           if (Math.abs(newTime - 7) < 0.02 || Math.abs(newTime - 3) < 0.02) {
             playAlert();
           }
@@ -167,7 +167,7 @@ export default function TimerHero() {
           }
         }
       } else if (state === "running") {
-        // Any non-space key stops the timer
+        // Any key to stop the timer
         e.preventDefault();
         setState("stopped");
         const finalTime = Date.now() - startTimeRef.current;
@@ -241,8 +241,8 @@ export default function TimerHero() {
             penalty === "+2"
               ? record.time + 2000
               : penalty === "DNF"
-              ? Infinity
-              : record.time,
+                ? Infinity
+                : record.time,
         };
       }
       return record;
@@ -253,7 +253,7 @@ export default function TimerHero() {
     setShowPenaltyButtons(false); // Hide penalty buttons after applying
   };
 
-  // Load history
+  // Load history from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem("cubedev-timer-history");
     if (saved) {
@@ -269,7 +269,7 @@ export default function TimerHero() {
     }
   }, []);
 
-  // Format time
+  // Format time in ms to mm:ss.SS
   const formatTime = (timeMs: number) => {
     if (timeMs === Infinity) return "DNF";
     const seconds = timeMs / 1000;
@@ -345,12 +345,18 @@ export default function TimerHero() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-lg">
+              <a
+                href="/cube-lab/timer"
+                className="px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-lg text-center"
+              >
                 Start Training
-              </button>
-              <button className="px-8 py-4 border border-[var(--border)] hover:border-[var(--border-hover)] text-[var(--text-primary)] font-semibold rounded-lg transition-all duration-200 font-button text-lg">
+              </a>
+              <a
+                href="/cube-lab/statistics"
+                className="px-8 py-4 border border-[var(--border)] hover:border-[var(--border-hover)] text-[var(--text-primary)] font-semibold rounded-lg transition-all duration-200 font-button text-lg text-center"
+              >
                 View Analytics
-              </button>
+              </a>
             </div>
           </div>
 
@@ -525,8 +531,8 @@ export default function TimerHero() {
                               record.penalty === "+2"
                                 ? "text-yellow-400"
                                 : record.penalty === "DNF"
-                                ? "text-red-400"
-                                : ""
+                                  ? "text-red-400"
+                                  : ""
                             }`}
                           >
                             {formatTime(record.finalTime)}
