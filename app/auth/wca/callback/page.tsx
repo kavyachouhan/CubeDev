@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function WCACallback() {
+function WCACallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<"loading" | "success" | "error">(
@@ -140,7 +140,7 @@ export default function WCACallback() {
                   {message}
                 </p>
                 <p className="text-sm text-[var(--text-muted)] mt-2 font-inter">
-                  Redirecting you to the homepage...
+                  Redirecting you to the timer...
                 </p>
               </>
             )}
@@ -182,5 +182,35 @@ export default function WCACallback() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+      <div className="container-responsive">
+        <div className="max-w-md mx-auto text-center">
+          <div className="timer-card">
+            <div className="flex justify-center mb-6">
+              <div className="w-12 h-12 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4 font-statement">
+              Loading...
+            </h1>
+            <p className="text-[var(--text-secondary)] font-inter">
+              Preparing authentication...
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function WCACallback() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <WCACallbackContent />
+    </Suspense>
   );
 }
