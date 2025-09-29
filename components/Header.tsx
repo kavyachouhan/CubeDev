@@ -21,6 +21,7 @@ export default function Header() {
     { name: "Home", href: "/" },
     { name: "Cubers", href: "/cuber" },
     { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
   ];
 
   return (
@@ -33,9 +34,13 @@ export default function Header() {
             className="flex items-center space-x-2 group"
             onClick={() => setActiveTab("Timer")}
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <div className="w-4 h-4 bg-[var(--surface)] rounded-sm"></div>
-            </div>
+           <Image
+              src="/cubedev_logo.png"
+              alt="CubeDev Logo"
+              width={32}
+              height={32}
+              className="w-8 h-8"
+            />
             <span className="text-2xl font-bold text-[var(--text-primary)] group-hover:opacity-80 transition-opacity font-statement">
               Cube<span className="text-blue">Dev</span>
             </span>

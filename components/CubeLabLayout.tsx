@@ -7,12 +7,10 @@ import { usePathname } from "next/navigation";
 import {
   Timer,
   BarChart3,
-  Target,
-  Zap,
-  Settings,
-  Grid3X3,
   Menu,
   X,
+  Trophy,
+  MessagesSquare,
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import SidebarUserDropdown from "@/components/SidebarUserDropdown";
@@ -49,32 +47,18 @@ export default function CubeLabLayout({
       href: "/cube-lab/statistics",
     },
     {
-      id: "sessions",
-      name: "Sessions",
-      icon: Grid3X3,
-      description: "Organized solving sessions",
-      href: "/cube-lab/sessions",
+      id: "challenges",
+      name: "Challenge Rooms",
+      icon: Trophy,
+      description: "Compete in scramble rooms",
+      href: "/cube-lab/challenges",
     },
     {
-      id: "training",
-      name: "Training",
-      icon: Target,
-      description: "Skill improvement modules",
-      href: "/cube-lab/training",
-    },
-    {
-      id: "algorithms",
-      name: "Algorithms",
-      icon: Zap,
-      description: "Algorithm practice & learning",
-      href: "/cube-lab/algorithms",
-    },
-    {
-      id: "settings",
-      name: "Settings",
-      icon: Settings,
-      description: "Customize your experience",
-      href: "/cube-lab/settings",
+      id: "chat",
+      name: "Chat",
+      icon: MessagesSquare,
+      description: "Chat with friends",
+      href: "/cube-lab/chat",
     },
   ];
 
@@ -87,21 +71,35 @@ export default function CubeLabLayout({
         } ${isTimerFocusMode ? "blur-md opacity-50 pointer-events-none" : ""}`}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between h-16 px-6 border-b border-[var(--border)]">
-          <Link href="/cube-lab/timer" className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] rounded-lg flex items-center justify-center">
-              <div className="w-4 h-4 bg-white rounded-sm"></div>
+        <div className="flex flex-col px-6 py-4 border-b border-[var(--border)]">
+          <div className="flex items-center justify-between h-8">
+            <Link href="/cube-lab/timer" className="flex items-center gap-3">
+              <Image
+                src="/cubedev_logo.png"
+                alt="CubeDev Logo"
+                width={32}
+                height={32}
+              />
+              <h1 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+                Cube <span className="text-[var(--primary)]">Lab</span>
+              </h1>
+            </Link>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden p-2 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Beta Badge */}
+          <div className="mt-3">
+            <div className="inline-flex items-center px-2.5 py-1 bg-[var(--warning)]/10 border border-[var(--warning)]/20 rounded-full">
+              <span className="text-xs font-medium text-[var(--warning)] font-inter">
+                Beta Version
+              </span>
             </div>
-            <h1 className="text-xl font-bold text-[var(--text-primary)] font-statement">
-              Cube <span className="text-[var(--primary)]">Lab</span>
-            </h1>
-          </Link>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-2 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          </div>
         </div>
 
         {/* Navigation */}
@@ -152,7 +150,7 @@ export default function CubeLabLayout({
 
           {/* Footer Text */}
           <div className="text-xs text-[var(--text-muted)] text-center font-inter">
-            © {currentYear} CubeDev. Built for the speedcubing community.
+            © {currentYear} CubeDev. Built for the <br /> cubing community.
           </div>
         </div>
       </div>

@@ -5,8 +5,6 @@ export interface ScrambleGenerator {
 }
 
 export class CubingScrambleGenerator implements ScrambleGenerator {
-  private scrambleCache = new Map<string, string>();
-
   async generateScramble(event: string): Promise<string> {
     try {
       // Dynamically import cubing.js to avoid increasing initial bundle size

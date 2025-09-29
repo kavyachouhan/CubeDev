@@ -11,10 +11,10 @@ import {
   Users,
   Globe,
   MapPin,
-  Trophy,
   ExternalLink,
-  ArrowRight,
   User,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 interface CubeDevUser {
@@ -26,11 +26,14 @@ interface CubeDevUser {
   avatar?: string;
 }
 
+const USERS_PER_PAGE = 12;
+
 export default function CuberDirectory() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const { user } = useUser();
 
-  // Get all CubeDev users (you might want to add pagination later)
+  // Get all CubeDev users
   const cubeDevUsers = useQuery(api.users.getAllUsers, {}) as
     | CubeDevUser[]
     | undefined;
@@ -43,7 +46,19 @@ export default function CuberDirectory() {
         user.countryIso2.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
-  // Avatar component for consistent display
+  // Pagination logic
+  const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
+  const startIndex = (currentPage - 1) * USERS_PER_PAGE;
+  const endIndex = startIndex + USERS_PER_PAGE;
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+  // Reset to page 1 when search changes
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  // Avatar component for consistent circular display
   const UserAvatar = ({
     user,
     size = 48,
@@ -62,7 +77,7 @@ export default function CuberDirectory() {
           alt={`${user.name}'s avatar`}
           width={size}
           height={size}
-          className={`rounded-lg object-cover border-2 border-[var(--border)] ${className}`}
+          className={`rounded-full object-cover border-2 border-[var(--border)] ${className}`}
           onError={() => setImageError(true)}
         />
       );
@@ -70,13 +85,16 @@ export default function CuberDirectory() {
 
     return (
       <div
-        className={`rounded-lg flex items-center justify-center text-white ${className}`}
+        className={`rounded-full flex items-center justify-center bg-[var(--primary)]/10 border-2 border-[var(--border)] ${className}`}
         style={{ width: size, height: size }}
       >
         {user.avatar && imageError ? (
-          <User className="w-1/2 h-1/2" />
+          <User className="w-1/2 h-1/2 text-[var(--primary)]" />
         ) : (
-          <span className="font-bold" style={{ fontSize: size * 0.4 }}>
+          <span
+            className="font-bold text-[var(--primary)]"
+            style={{ fontSize: size * 0.4 }}
+          >
             {user.name.charAt(0)}
           </span>
         )}
@@ -108,14 +126,14 @@ export default function CuberDirectory() {
               type="text"
               placeholder="Search by name, WCA ID, or country..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors font-inter"
             />
           </div>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="timer-card text-center">
             <Users className="w-8 h-8 text-[var(--primary)] mx-auto mb-3" />
             <div className="text-2xl font-bold text-[var(--text-primary)] font-mono">
@@ -136,22 +154,24 @@ export default function CuberDirectory() {
               Countries
             </div>
           </div>
-
-          <div className="timer-card text-center">
-            <Trophy className="w-8 h-8 text-[var(--primary)] mx-auto mb-3" />
-            <div className="text-2xl font-bold text-[var(--text-primary)] font-mono">
-              WCA
-            </div>
-            <div className="text-[var(--text-secondary)] font-inter">
-              Verified
-            </div>
-          </div>
         </div>
 
+        {/* Results Summary */}
+        {filteredUsers.length > 0 && (
+          <div className="mb-6">
+            <p className="text-[var(--text-secondary)] font-inter">
+              Showing {startIndex + 1}-
+              {Math.min(endIndex, filteredUsers.length)} of{" "}
+              {filteredUsers.length} cubers
+              {searchTerm && <span> matching "{searchTerm}"</span>}
+            </p>
+          </div>
+        )}
+
         {/* User Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user: CubeDevUser) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {paginatedUsers.length > 0 ? (
+            paginatedUsers.map((user: CubeDevUser) => (
               <Link
                 key={user._id}
                 href={`/cuber/${user.wcaId}`}
@@ -208,6 +228,80 @@ export default function CuberDirectory() {
             </div>
           )}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="timer-card">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-primary)] rounded-lg transition-all duration-200 font-statement font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </button>
+
+              <div className="flex items-center gap-2">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNumber;
+                  if (totalPages <= 5) {
+                    pageNumber = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNumber = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNumber = totalPages - 4 + i;
+                  } else {
+                    pageNumber = currentPage - 2 + i;
+                  }
+
+                  return (
+                    <button
+                      key={pageNumber}
+                      onClick={() => setCurrentPage(pageNumber)}
+                      className={`w-10 h-10 rounded-lg font-statement font-medium transition-all duration-200 ${
+                        currentPage === pageNumber
+                          ? "bg-[var(--primary)] text-white"
+                          : "bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-primary)]"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+
+                {totalPages > 5 && currentPage < totalPages - 2 && (
+                  <>
+                    <span className="text-[var(--text-muted)]">...</span>
+                    <button
+                      onClick={() => setCurrentPage(totalPages)}
+                      className="w-10 h-10 rounded-lg bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-primary)] font-statement font-medium transition-all duration-200"
+                    >
+                      {totalPages}
+                    </button>
+                  </>
+                )}
+              </div>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-primary)] rounded-lg transition-all duration-200 font-statement font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="text-center mt-4">
+              <p className="text-sm text-[var(--text-muted)] font-inter">
+                Page {currentPage} of {totalPages}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Call to Action for Non-Users */}
         {!user && (

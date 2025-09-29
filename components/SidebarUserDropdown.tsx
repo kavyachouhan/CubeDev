@@ -6,7 +6,6 @@ import Link from "next/link";
 import {
   User,
   Settings,
-  BarChart3,
   LogOut,
   ChevronUp,
   Home,
@@ -47,7 +46,7 @@ export default function SidebarUserDropdown({
 
   return (
     <div className="relative w-full" ref={dropdownRef}>
-      {/* User Info Trigger */}
+      {/* User Info */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full sidebar-user-card flex items-center gap-3 p-3"
@@ -110,12 +109,12 @@ export default function SidebarUserDropdown({
             )}
 
             <Link
-              href="/profile"
+              href="/me"
               className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
               onClick={() => setIsOpen(false)}
             >
               <Settings className="w-4 h-4" />
-              Account Settings
+              Settings
             </Link>
           </div>
 

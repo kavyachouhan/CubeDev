@@ -14,6 +14,8 @@ interface TimerRecord {
   sessionId: string;
   notes?: string;
   tags?: string[];
+  splits?: Array<{ phase: string; time: number }>;
+  splitMethod?: string;
 }
 
 interface Session {

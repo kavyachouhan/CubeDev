@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Timer, BarChart3, Target, Zap, TrendingUp, Users } from "lucide-react";
+import { Timer, BarChart3, Users, Trophy, Download, Zap } from "lucide-react";
 
 export default function WhyCubeDev() {
   const [visibleItems, setVisibleItems] = useState<number[]>([]);
@@ -35,39 +35,39 @@ export default function WhyCubeDev() {
   const features = [
     {
       icon: Timer,
-      title: "Professional Timer",
+      title: "Modern Timer",
       description:
-        "Industry-standard timing with inspection periods, penalties, and precision down to centiseconds.",
+        "Professional speedcubing timer with inspection periods, penalty options, and precision timing down to centiseconds.",
     },
     {
       icon: BarChart3,
-      title: "Advanced Analytics",
+      title: "Comprehensive Analytics",
       description:
-        "Track your progress with detailed statistics, averages, and performance trends over time.",
+        "Advanced statistics with solve heatmaps, time progression charts, phase breakdowns, and detailed performance insights.",
     },
     {
-      icon: Target,
-      title: "Training Tools",
+      icon: Users,
+      title: "Cuber Profiles",
       description:
-        "Specialized practice modes, algorithm trainers, and structured learning paths for improvement.",
+        "Complete cuber directory with WCA integration, competition history, and community features to connect with fellow cubers.",
+    },
+    {
+      icon: Trophy,
+      title: "Challenge Rooms",
+      description:
+        "Create and join timed challenge rooms with friends, compete on same scrambles, and track real-time leaderboards.",
+    },
+    {
+      icon: Download,
+      title: "Data Portability",
+      description:
+        "Import from popular timers, export your data for backup, and maintain full control over your solving history.",
     },
     {
       icon: Zap,
       title: "Lightning Fast",
       description:
-        "Optimized for speed with instant response times and seamless performance across all devices.",
-    },
-    {
-      icon: TrendingUp,
-      title: "Progress Tracking",
-      description:
-        "Visualize your improvement journey with comprehensive charts and milestone achievements.",
-    },
-    {
-      icon: Users,
-      title: "Community Features",
-      description:
-        "Connect with fellow cubers, share sessions, and participate in online competitions.",
+        "Optimized for speed with instant response times and seamless performance across all devices and platforms.",
     },
   ];
 
@@ -79,9 +79,9 @@ export default function WhyCubeDev() {
             Why <span className="text-[var(--primary)]">CubeDev</span>?
           </h2>
           <p className="text-xl md:text-2xl text-[var(--text-secondary)] max-w-3xl mx-auto font-inter">
-            Built by speedcubers, for speedcubers. Experience the most advanced
-            timing and training platform designed to accelerate your solving
-            journey.
+            A cutting-edge platform designed by cubers, for cubers. Whether
+            you're a beginner or a seasoned pro, CubeDev has everything you need
+            to take your speedcubing to the next level.
           </p>
         </div>
 
@@ -120,26 +120,7 @@ export default function WhyCubeDev() {
               </div>
             );
           })}
-        </div>
-
-        {/* Stats Section */}
-        {/* <div className="mt-20 grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {[
-            { number: "10K+", label: "Active Cubers" },
-            { number: "1M+", label: "Solves Recorded" },
-            { number: "50+", label: "Training Modes" },
-            { number: "99.9%", label: "Uptime" },
-          ].map((stat, index) => (
-            <div key={index} className="text-center group">
-              <div className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-2 font-statement">
-                {stat.number}
-              </div>
-              <div className="text-[var(--text-secondary)] font-inter">
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </div> */}
+        </div> 
       </div>
     </section>
   );

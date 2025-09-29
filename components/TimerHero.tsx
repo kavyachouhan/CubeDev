@@ -8,6 +8,8 @@ import {
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
+import { useUser } from "@/components/UserProvider";
+import { getWCAOAuthUrl } from "@/lib/wca-config";
 
 interface TimerRecord {
   id: string;
@@ -21,6 +23,7 @@ interface TimerRecord {
 type TimerState = "idle" | "inspection" | "ready" | "running" | "stopped";
 
 export default function TimerHero() {
+  const { user } = useUser();
   const [state, setState] = useState<TimerState>("idle");
   const [time, setTime] = useState(0);
   const [inspectionTime, setInspectionTime] = useState(15);
@@ -39,6 +42,11 @@ export default function TimerHero() {
   const startTimeRef = useRef<number>(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const inspectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleWCASignIn = () => {
+    const wcaAuthUrl = getWCAOAuthUrl();
+    window.location.href = wcaAuthUrl;
+  };
 
   // Sound effects
   const playBeep = useCallback(() => {
@@ -334,29 +342,40 @@ export default function TimerHero() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left side - Headings */}
           <div className="space-y-6 lg:space-y-8">
+            {/* Beta Badge */}
+            <div className="inline-flex items-center px-3 py-1 bg-[var(--warning)]/10 border border-[var(--warning)]/20 rounded-full">
+              <span className="text-sm font-medium text-[var(--warning)] font-inter">
+                Beta Version
+              </span>
+            </div>
+
             <div className="space-y-4">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-[var(--text-primary)] leading-tight font-statement">
-                Solve <span className="text-[var(--primary)]">faster.</span>
+                Master your <span className="text-[var(--primary)]">cube.</span>
               </h1>
               <p className="text-xl md:text-2xl text-[var(--text-secondary)] max-w-lg font-inter">
-                Professional speedcubing timer with inspection, analytics, and
-                training tools.
+                Advanced timer with phase analysis, comprehensive statistics,
+                challenge rooms, and WCA integration.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a
-                href="/cube-lab/timer"
-                className="px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-lg text-center"
-              >
-                Start Training
-              </a>
-              <a
-                href="/cube-lab/statistics"
-                className="px-8 py-4 border border-[var(--border)] hover:border-[var(--border-hover)] text-[var(--text-primary)] font-semibold rounded-lg transition-all duration-200 font-button text-lg text-center"
-              >
-                View Analytics
-              </a>
+            <div className="flex justify-center sm:justify-start">
+              {user ? (
+                <a
+                  href="/cube-lab/timer"
+                  className="px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-lg text-center"
+                >
+                  Go to Timer
+                </a>
+              ) : (
+                <button
+                  onClick={handleWCASignIn}
+                  className="px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-lg flex items-center justify-center gap-2"
+                >
+                  <img src="/wca_logo.png" alt="WCA" className="w-5 h-5" />
+                  Sign in with WCA
+                </button>
+              )}
             </div>
           </div>
 

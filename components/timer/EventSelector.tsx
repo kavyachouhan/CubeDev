@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import { ChevronDown, Eye, EyeOff } from "lucide-react";
+import { ChevronDown, ChevronRight, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 
 interface EventSelectorProps {
@@ -46,7 +46,7 @@ export default function EventSelector({
     true
   );
 
-  // Body visibility state (for accessibility and to prevent interaction when collapsed)
+  // Body visibility state for smooth transitions
   const [isBodyVisible, setIsBodyVisible] = useState<boolean>(isExpanded);
 
   // Refs to measure heights
@@ -71,7 +71,7 @@ export default function EventSelector({
         parseFloat(styles.paddingTop || "0") +
         parseFloat(styles.paddingBottom || "0");
       const headerH = header.offsetHeight;
-      const bodyH = body.scrollHeight; // use scrollHeight to get full height even if not visible
+      const bodyH = body.scrollHeight; // use scrollHeight to get full height
 
       return {
         collapsed: Math.ceil(headerH + padY),
@@ -127,7 +127,7 @@ export default function EventSelector({
       setIsBodyVisible(false);
       setIsExpanded(false);
     } else {
-      // expanding: grow first, then show content after transition
+      // expanding: expand first, then show content
       setIsExpanded(true);
     }
   };
@@ -227,14 +227,25 @@ export default function EventSelector({
           isExpanded ? "mb-4" : "mb-0"
         }`}
       >
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <button
+          onClick={toggleExpanded}
+          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          title={isExpanded ? "Hide event" : "Show event"}
+        >
+        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
           Event
         </h3>
+          {isExpanded ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
+        </button>
         <div className="flex items-center gap-2">
           <button
             onClick={toggleExpanded}
             className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
-            title={isExpanded ? "Hide event details" : "Show event details"}
+            title={isExpanded ? "Hide event" : "Show event"}
           >
             {isExpanded ? (
               <EyeOff className="w-4 h-4" />

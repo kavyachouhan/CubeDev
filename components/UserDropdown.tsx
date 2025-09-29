@@ -19,7 +19,7 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Handle mouse enter - show dropdown
+  // Handle mouse enter - show dropdown immediately
   const handleMouseEnter = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -28,7 +28,7 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
     setIsOpen(true);
   };
 
-  // Handle mouse leave - hide dropdown with slight delay
+  // Handle mouse leave - hide dropdown after a short delay
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false);
@@ -139,12 +139,12 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
             )}
 
             <Link
-              href="/profile"
+              href="/me"
               className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
               onClick={() => setIsOpen(false)}
             >
               <Settings className="w-4 h-4" />
-              Account Settings
+              Settings
             </Link>
           </div>
 

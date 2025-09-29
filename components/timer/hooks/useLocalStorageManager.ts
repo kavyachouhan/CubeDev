@@ -1,29 +1,7 @@
 import { useCallback } from "react";
 
-interface TimerRecord {
-  id: string;
-  time: number;
-  timestamp: Date;
-  scramble: string;
-  penalty: "none" | "+2" | "DNF";
-  finalTime: number;
-  event: string;
-  sessionId: string;
-  notes?: string;
-  tags?: string[];
-}
-
-interface Session {
-  id: string;
-  name: string;
-  event: string;
-  createdAt: Date;
-  solveCount: number;
-  convexId?: string;
-}
-
 export const useLocalStorageManager = (userId?: string) => {
-  // Manage localStorage size to avoid exceeding quota
+  // Manage localStorage size to avoid exceeding browser limits
   const manageLocalStorageSize = useCallback(() => {
     if (!userId) return;
 

@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { Loader2, AlertCircle } from "lucide-react";
+import { useUser } from "@/components/UserProvider";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 // Import modular components
-import ProfileHeader from "./profile/ProfileHeader";
-import ProfileStats from "./profile/ProfileStats";
-import WCARecords from "./profile/WCARecords";
-import CompetitionList from "./profile/CompetitionList";
+import ProfileSidebar from "./profile/ProfileSidebar";
+import CubeDevStats from "./profile/CubeDevStats";
+import WCAStats from "./profile/WCAStats";
 
 interface CuberProfileProps {
   wcaId: string;
@@ -55,6 +56,11 @@ interface WCAPersonalRecord {
   world_ranking: number;
   continental_ranking: number;
   national_ranking: number;
+  // Add average data
+  average?: number;
+  average_world_ranking?: number;
+  average_continental_ranking?: number;
+  average_national_ranking?: number;
 }
 
 interface CompetitionInfo {
@@ -86,13 +92,43 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoadingCompetitions, setIsLoadingCompetitions] = useState(false);
 
+  // URL tab management
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const currentTab = searchParams.get("tab") || "cubedev";
+
+  // Get current user
+  const { user } = useUser();
+
   // Query CubeDev user data
   const cubeDevUsers = useQuery(api.users.getAllUsers);
   const cubeDevUser =
     cubeDevUsers?.find((user) => user.wcaId === wcaId) || null;
 
+  // Check privacy settings
+  const privacySettings = useQuery(api.users.isUserProfilePrivate, { wcaId });
+
+  // Tab change handler
+  const handleTabChange = (tabName: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (tabName === "cubedev") {
+      params.delete("tab");
+    } else {
+      params.set("tab", tabName);
+    }
+    router.push(pathname + (params.toString() ? "?" + params.toString() : ""));
+  };
+
   useEffect(() => {
-    if (cubeDevUsers === undefined) {
+    if (cubeDevUsers === undefined || privacySettings === undefined) {
+      return;
+    }
+
+    // Check if user is deleted first
+    if (privacySettings?.isDeleted) {
+      setIsLoading(false);
+      setError("This user account is no longer available");
       return;
     }
 
@@ -110,7 +146,13 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
 
         // Fetch basic profile data
         const profileResponse = await fetch(
-          `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}`
+          `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}`,
+          {
+            headers: {
+              Accept: "application/json",
+              "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
+            },
+          }
         );
 
         if (!profileResponse.ok) {
@@ -134,82 +176,114 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
               world_ranking: record.single?.world_ranking || 0,
               continental_ranking: record.single?.continental_ranking || 0,
               national_ranking: record.single?.national_ranking || 0,
+              // Add average data
+              average: record.average?.best || 0,
+              average_world_ranking: record.average?.world_ranking || 0,
+              average_continental_ranking:
+                record.average?.continental_ranking || 0,
+              average_national_ranking: record.average?.national_ranking || 0,
             }))
-            .filter((record) => record.best > 0);
+            .filter((record) => record.best > 0 || record.average > 0);
 
           setPersonalRecords(records);
         }
 
-        // Fetch competition results
-        setIsLoadingCompetitions(true);
-        const resultsResponse = await fetch(
-          `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}/results`
-        );
-
-        if (resultsResponse.ok) {
-          const resultsData = await resultsResponse.json();
-          setCompetitionResults(resultsData || []);
-
-          // Fetch competition details for each unique competition
-          const uniqueCompetitionIds = Array.from(
-            new Set(
-              (resultsData || []).map(
-                (r: WCACompetitionResult) => r.competition_id
-              )
-            )
+        // Fetch competition results with better error handling
+        try {
+          setIsLoadingCompetitions(true);
+          const resultsResponse = await fetch(
+            `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}/results`,
+            {
+              headers: {
+                Accept: "application/json",
+                "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
+              },
+            }
           );
 
-          const competitionDetailsMap = new Map<string, CompetitionInfo>();
+          if (resultsResponse.ok) {
+            const resultsData = await resultsResponse.json();
+            setCompetitionResults(resultsData || []);
 
-          // Fetch competition details in batches to avoid rate limiting
-          for (let i = 0; i < uniqueCompetitionIds.length; i += 5) {
-            const batch = uniqueCompetitionIds.slice(i, i + 5) as string[];
-            const promises = batch.map(async (compId: string) => {
-              try {
-                const response = await fetch(
-                  `https://www.worldcubeassociation.org/api/v0/competitions/${compId}`
-                );
-                if (response.ok) {
-                  const data = await response.json();
-                  return { compId, data };
+            // Fetch competition details for each unique competition
+            const uniqueCompetitionIds = Array.from(
+              new Set(
+                (resultsData || []).map(
+                  (r: WCACompetitionResult) => r.competition_id
+                )
+              )
+            );
+
+            const competitionDetailsMap = new Map<string, CompetitionInfo>();
+
+            // Batch requests to avoid hitting rate limits
+            for (let i = 0; i < uniqueCompetitionIds.length; i += 3) {
+              const batch = uniqueCompetitionIds.slice(i, i + 3) as string[];
+              const promises = batch.map(async (compId: string) => {
+                try {
+                  // Add delay to respect rate limits
+                  await new Promise((resolve) => setTimeout(resolve, 100));
+
+                  const response = await fetch(
+                    `https://www.worldcubeassociation.org/api/v0/competitions/${compId}`,
+                    {
+                      headers: {
+                        Accept: "application/json",
+                        "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
+                      },
+                    }
+                  );
+
+                  if (response.ok) {
+                    const data = await response.json();
+                    return { compId, data };
+                  } else {
+                    console.warn(
+                      `Failed to fetch competition ${compId}: ${response.status}`
+                    );
+                  }
+                } catch (error) {
+                  console.warn(
+                    `Failed to fetch details for competition ${compId}:`,
+                    error
+                  );
                 }
-              } catch (error) {
-                console.warn(
-                  `Failed to fetch details for competition ${compId}:`,
-                  error
-                );
-              }
-              return null;
-            });
+                return null;
+              });
 
-            const results = await Promise.all(promises);
-            results.forEach((result) => {
-              if (result && result.data) {
-                competitionDetailsMap.set(result.compId, {
-                  id: result.data.id,
-                  name: result.data.name,
-                  start_date: result.data.start_date,
-                  end_date: result.data.end_date,
-                  city: result.data.city,
-                  venue: result.data.venue,
-                  country_iso2: result.data.country_iso2,
-                  events: result.data.event_ids || [],
-                  bestResult: 999, // Will be updated with actual results
-                  mainEvent: undefined,
-                });
-              }
-            });
+              const results = await Promise.all(promises);
+              results.forEach((result) => {
+                if (result && result.data) {
+                  competitionDetailsMap.set(result.compId, {
+                    id: result.data.id,
+                    name: result.data.name,
+                    start_date: result.data.start_date,
+                    end_date: result.data.end_date,
+                    city: result.data.city,
+                    venue: result.data.venue,
+                    country_iso2: result.data.country_iso2,
+                    events: result.data.event_ids || [],
+                    bestResult: 999, // Will be updated with actual results
+                    mainEvent: undefined,
+                  });
+                }
+              });
 
-            // Add delay between batches to respect rate limits
-            if (i + 5 < uniqueCompetitionIds.length) {
-              await new Promise((resolve) => setTimeout(resolve, 1000));
+              // Add longer delay between batches
+              if (i + 3 < uniqueCompetitionIds.length) {
+                await new Promise((resolve) => setTimeout(resolve, 2000));
+              }
             }
+
+            setCompetitionDetails(competitionDetailsMap);
+          } else {
+            console.warn(`Failed to fetch results: ${resultsResponse.status}`);
           }
-
-          setCompetitionDetails(competitionDetailsMap);
+        } catch (error) {
+          console.warn("Failed to fetch competition results:", error);
+        } finally {
+          setIsLoadingCompetitions(false);
         }
-
-        setIsLoadingCompetitions(false);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
         setIsLoading(false);
@@ -219,14 +293,18 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
       }
     };
 
-    if (wcaId && cubeDevUsers !== undefined) {
-      if (cubeDevUser) {
+    if (wcaId && cubeDevUsers !== undefined && privacySettings !== undefined) {
+      if (cubeDevUser && !privacySettings?.isDeleted) {
         fetchWCAData();
       }
     }
-  }, [wcaId, cubeDevUsers, cubeDevUser]);
+  }, [wcaId, cubeDevUsers, cubeDevUser, privacySettings]);
 
-  if (isLoading) {
+  if (
+    isLoading ||
+    cubeDevUsers === undefined ||
+    privacySettings === undefined
+  ) {
     return (
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
         <div className="text-center">
@@ -282,43 +360,63 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Profile Header with Member Info */}
-        <ProfileHeader
-          person={person}
-          wcaId={wcaId}
-          cubeDevUser={
-            cubeDevUser
-              ? {
-                  createdAt: new Date(cubeDevUser._creationTime).toISOString(),
-                  lastActive: cubeDevUser.lastLoginAt,
-                }
-              : undefined
-          }
-        />
-
-        {/* Statistics Overview */}
-        <ProfileStats
-          personalRecords={personalRecords}
-          competitionResults={competitionResults}
-        />
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-          {/* Left Column */}
-          <div className="space-y-8">
-            {/* WCA Personal Records */}
-            <WCARecords personalRecords={person?.personal_records} />
+      <div className="container-responsive py-6 max-w-7xl">
+        {/* Profile Header */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left Sidebar - Profile Information */}
+          <div className="lg:w-80 lg:flex-shrink-0">
+            <ProfileSidebar
+              person={person}
+              wcaId={wcaId}
+              cubeDevUser={cubeDevUser}
+              personalRecords={personalRecords}
+            />
           </div>
 
-          {/* Right Column */}
-          <div className="space-y-8">
-            {/* Competition History with Main Events */}
-            <CompetitionList
-              competitionResults={competitionResults}
-              competitionDetails={competitionDetails}
-              isLoadingCompetitions={isLoadingCompetitions}
-            />
+          {/* Right Content - Tabbed Stats */}
+          <div className="flex-1 min-w-0">
+            {/* Tab Navigation */}
+            <div className="border-b border-[var(--border)] mb-6">
+              <nav className="flex space-x-8 overflow-x-auto">
+                <button
+                  onClick={() => handleTabChange("cubedev")}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                    currentTab === "cubedev"
+                      ? "border-[var(--primary)] text-[var(--primary)]"
+                      : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                  }`}
+                >
+                  CubeDev Stats
+                </button>
+                <button
+                  onClick={() => handleTabChange("wca")}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                    currentTab === "wca"
+                      ? "border-[var(--primary)] text-[var(--primary)]"
+                      : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                  }`}
+                >
+                  WCA Stats
+                </button>
+              </nav>
+            </div>
+
+            {/* Tab Content */}
+            <div className="tab-content">
+              {currentTab === "cubedev" && (
+                <CubeDevStats wcaId={wcaId} cubeDevUserId={cubeDevUser?._id} />
+              )}
+              {currentTab === "wca" && (
+                <WCAStats
+                  wcaId={wcaId}
+                  person={person}
+                  personalRecords={personalRecords}
+                  competitionResults={competitionResults}
+                  competitionDetails={competitionDetails}
+                  isLoadingCompetitions={isLoadingCompetitions}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -10,6 +10,13 @@ export interface TimerRecord {
   sessionId: string;
   notes?: string;
   tags?: string[];
+  splits?: PhaseSplit[];
+  splitMethod?: string;
+}
+
+export interface PhaseSplit {
+  phase: string;
+  time: number;
 }
 
 // Format time in milliseconds to human-readable string

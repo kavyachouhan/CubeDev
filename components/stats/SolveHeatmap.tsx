@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import { Calendar, TrendingUp, Target, Flame } from "lucide-react";
+import { Calendar, TrendingUp, Target, Flame, Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
 
 interface TimerRecord {
   id: string;
@@ -62,6 +62,25 @@ const FULL_DAYS = [
   "Saturday",
 ];
 
+// Persistent boolean that reads/writes localStorage on first render
+function usePersistentBool(key: string, defaultValue: boolean) {
+  const [state, setState] = useState<boolean>(() => {
+    if (typeof window === "undefined") return defaultValue;
+    try {
+      const raw = localStorage.getItem(key);
+      return raw === null ? defaultValue : JSON.parse(raw);
+    } catch {
+      return defaultValue;
+    }
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch {}
+  }, [key, state]);
+  return [state, setState] as const;
+}
+
 export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
   const [hoveredDay, setHoveredDay] = useState<DayData | null>(null);
   const [clickedDay, setClickedDay] = useState<DayData | null>(null);
@@ -75,6 +94,10 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     x: 0,
     y: 0,
   });
+  const [showHeatmap, setShowHeatmap] = usePersistentBool(
+    "cubelab-solve-heatmap-expanded",
+    true
+  );
 
   // Handle outside clicks to close tooltip
   useEffect(() => {
@@ -104,7 +127,7 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     startDate.setDate(today.getDate() - daysBack + 1); // +1 to include start date
     startDate.setHours(0, 0, 0, 0); // Start of the day
 
-    // Start from the Sunday before the start date for proper week alignment
+    // Align start date to the previous Sunday for full week display
     const firstDay = new Date(startDate);
     const dayOffset = firstDay.getDay();
     firstDay.setDate(firstDay.getDate() - dayOffset);
@@ -115,6 +138,12 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     // Count solves per day
     solves.forEach((solve) => {
       const solveDate = new Date(solve.timestamp);
+      // Ensure solveDate is valid
+      if (isNaN(solveDate.getTime())) {
+        console.warn("Invalid solve timestamp:", solve.timestamp);
+        return;
+      }
+
       // Check if solve is within our date range
       if (solveDate >= startDate && solveDate <= today) {
         const dateKey = solveDate.toISOString().split("T")[0];
@@ -139,7 +168,7 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     const endOfToday = new Date(today);
     endOfToday.setHours(23, 59, 59, 999);
 
-    // Generate daily data - calculate proper number of weeks to show
+    // Calculate total weeks and days to display
     const totalWeeks = Math.ceil(
       (endOfToday.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24 * 7)
     );
@@ -195,7 +224,7 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
 
       // If Saturday or last day, push the week
       if (day.dayOfWeek === 6 || index === heatmapData.length - 1) {
-        // If this week starts a new month, note the month
+        // Determine if this week starts a new month
         const firstDayOfWeek = currentWeek[0];
         const monthStart =
           firstDayOfWeek && firstDayOfWeek.date.getDate() <= 7
@@ -246,27 +275,45 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     let tempStreak = 0;
 
     const todayDate = new Date();
-    const yesterday = new Date(todayDate);
-    yesterday.setDate(todayDate.getDate() - 1);
+    todayDate.setHours(23, 59, 59, 999);
+    const yesterdayDate = new Date(todayDate);
+    yesterdayDate.setDate(todayDate.getDate() - 1);
 
-    // Check current streak
-    const hasSolvedToday = filteredSolves.some(
-      (solve) =>
-        solve.timestamp.toISOString().split("T")[0] ===
-        todayDate.toISOString().split("T")[0]
-    );
+    // Check current streak starting from today
+    const todayKey = todayDate.toISOString().split("T")[0];
+    const yesterdayKey = yesterdayDate.toISOString().split("T")[0];
 
-    let checkDate = hasSolvedToday ? new Date(todayDate) : new Date(yesterday);
+    const hasSolvedToday = filteredSolves.some((solve) => {
+      const solveDate = new Date(solve.timestamp);
+      return solveDate.toISOString().split("T")[0] === todayKey;
+    });
 
-    while (checkDate >= (heatmapData[0]?.date || cutoff)) {
-      const dateKey = checkDate.toISOString().split("T")[0];
-      const dayData = heatmapData.find((day) => day.formattedDate === dateKey);
+    const hasSolvedYesterday = filteredSolves.some((solve) => {
+      const solveDate = new Date(solve.timestamp);
+      return solveDate.toISOString().split("T")[0] === yesterdayKey;
+    });
 
-      if (dayData && dayData.count > 0) {
-        currentStreak++;
-        checkDate.setDate(checkDate.getDate() - 1);
-      } else {
-        break;
+    // Determine starting point for current streak check
+    let checkDate = new Date(todayDate);
+    if (!hasSolvedToday && hasSolvedYesterday) {
+      checkDate = new Date(yesterdayDate);
+    } else if (!hasSolvedToday && !hasSolvedYesterday) {
+      currentStreak = 0;
+    }
+
+    if (hasSolvedToday || hasSolvedYesterday) {
+      while (checkDate >= cutoff) {
+        const dateKey = checkDate.toISOString().split("T")[0];
+        const dayData = heatmapData.find(
+          (day) => day.formattedDate === dateKey
+        );
+
+        if (dayData && dayData.count > 0) {
+          currentStreak++;
+          checkDate.setDate(checkDate.getDate() - 1);
+        } else {
+          break;
+        }
       }
     }
 
@@ -346,307 +393,340 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+          <button
+            onClick={() => setShowHeatmap(!showHeatmap)}
+            className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+            title={showHeatmap ? "Hide solve activity" : "Show solve activity"}
+          >
+          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
             Solve Activity
           </h3>
-        </div>
-
-        <div className="flex items-center gap-1 p-1 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] sm:overflow-x-auto">
-          {(
-            [
-              ["3m", "3 months"],
-              ["6m", "6 months"],
-              ["1y", "1 year"],
-            ] as const
-          ).map(([period, label]) => (
-            <button
-              key={period}
-              onClick={() => setSelectedPeriod(period)}
-              className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap flex-1 sm:flex-none ${
-                selectedPeriod === period
-                  ? "bg-[var(--primary)] text-white shadow-sm"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)]"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
-              <Target className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
-                Total Solves
-              </div>
-              <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
-                {stats.totalSolves.toLocaleString()}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="p-1.5 sm:p-2 bg-emerald-500/10 rounded-lg">
-              <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
-                Active Days
-              </div>
-              <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
-                {stats.activeDays}{" "}
-                <span className="text-xs sm:text-sm text-[var(--text-muted)] font-normal">
-                  / {stats.totalDays}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="p-1.5 sm:p-2 bg-orange-500/10 rounded-lg">
-              <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
-                Current Streak
-              </div>
-              <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
-                {stats.currentStreak}{" "}
-                <span className="text-xs sm:text-sm text-[var(--text-muted)] font-normal">
-                  days
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="p-1.5 sm:p-2 bg-purple-500/10 rounded-lg">
-              <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
-                Daily Average
-              </div>
-              <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
-                {stats.averagePerDay.toFixed(1)}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Heatmap */}
-      <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-6 border border-[var(--border)] relative heatmap-container">
-        <div className="overflow-x-auto">
-          <div className="inline-block min-w-full">
-            {/* Month labels */}
-            <div className="flex mb-3 sm:mb-4">
-              <div className="w-8 sm:w-8 flex-shrink-0"></div>
-              <div className="flex-1 relative">
-                {weeks.map((week) =>
-                  week.monthStart ? (
-                    <div
-                      key={`month-${week.weekNumber}`}
-                      className="absolute text-xs font-medium text-[var(--text-muted)]"
-                      style={{
-                        left: `${week.weekNumber * (typeof window !== "undefined" && window.innerWidth < 640 ? 14 : 16) + 2}px`,
-                        top: "-2px",
-                      }}
-                    >
-                      {week.monthStart}
-                    </div>
-                  ) : null
-                )}
-              </div>
-            </div>
-
-            {/* Heatmap grid */}
-            <div className="flex items-start">
-              {/* Day labels */}
-              <div className="flex flex-col gap-1 mr-3 mt-1">
-                {DAYS.map((day, index) => (
-                  <div
-                    key={`day-${index}`}
-                    className="w-4 h-3 sm:h-3 flex items-center justify-center text-xs font-medium text-[var(--text-muted)]"
-                  >
-                    {index % 2 === 1 ? day.charAt(0) : ""}
-                  </div>
-                ))}
-              </div>
-
-              {/* Heatmap cells */}
-              <div className="flex gap-1">
-                {weeks.map((week) => (
-                  <div key={week.weekNumber} className="flex flex-col gap-1">
-                    {Array.from({ length: 7 }, (_, dayIndex) => {
-                      const dayData = week.days.find(
-                        (day) => day.dayOfWeek === dayIndex
-                      );
-
-                      if (!dayData) {
-                        return (
-                          <div
-                            key={`empty-${week.weekNumber}-${dayIndex}`}
-                            className="w-3 h-3 rounded-sm bg-transparent"
-                          />
-                        );
-                      }
-
-                      const isHovered =
-                        hoveredDay?.formattedDate === dayData.formattedDate;
-                      const isClicked =
-                        clickedDay?.formattedDate === dayData.formattedDate;
-                      const isActive = isHovered || isClicked;
-
-                      return (
-                        <div
-                          key={`${week.weekNumber}-${dayIndex}`}
-                          data-heatmap-cell
-                          className={`w-3 h-3 rounded-sm border transition-all duration-200 cursor-pointer relative ${getIntensityColor(dayData.level, isActive)}`}
-                          onMouseEnter={(e) => {
-                            setHoveredDay(dayData);
-                            const heatmapContainer =
-                              e.currentTarget.closest(".heatmap-container");
-                            const containerRect =
-                              heatmapContainer?.getBoundingClientRect();
-                            const cellRect =
-                              e.currentTarget.getBoundingClientRect();
-
-                            if (containerRect && cellRect) {
-                              setTooltipPosition({
-                                x:
-                                  cellRect.left -
-                                  containerRect.left +
-                                  cellRect.width / 2,
-                                y: cellRect.top - containerRect.top - 8,
-                              });
-                            }
-                          }}
-                          onMouseMove={(e) => {
-                            const heatmapContainer =
-                              e.currentTarget.closest(".heatmap-container");
-                            const containerRect =
-                              heatmapContainer?.getBoundingClientRect();
-                            const cellRect =
-                              e.currentTarget.getBoundingClientRect();
-
-                            if (containerRect && cellRect) {
-                              setTooltipPosition({
-                                x:
-                                  cellRect.left -
-                                  containerRect.left +
-                                  cellRect.width / 2,
-                                y: cellRect.top - containerRect.top - 8,
-                              });
-                            }
-                          }}
-                          onMouseLeave={() => {
-                            setHoveredDay(null);
-                          }}
-                          onClick={(e) => {
-                            if (
-                              clickedDay?.formattedDate ===
-                              dayData.formattedDate
-                            ) {
-                              setClickedDay(null);
-                            } else {
-                              setClickedDay(dayData);
-                              const heatmapContainer =
-                                e.currentTarget.closest(".heatmap-container");
-                              const containerRect =
-                                heatmapContainer?.getBoundingClientRect();
-                              const cellRect =
-                                e.currentTarget.getBoundingClientRect();
-
-                              if (containerRect && cellRect) {
-                                setTooltipPosition({
-                                  x:
-                                    cellRect.left -
-                                    containerRect.left +
-                                    cellRect.width / 2,
-                                  y: cellRect.top - containerRect.top - 8,
-                                });
-                              }
-                            }
-                          }}
-                          style={{
-                            transform: isActive ? "scale(1.1)" : "scale(1)",
-                            zIndex: isActive ? 10 : 1,
-                          }}
-                        >
-                          {dayData.isToday && (
-                            <div className="absolute -inset-0.5 rounded-sm border-2 border-[var(--primary)] animate-pulse" />
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Legend */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-[var(--border)] gap-3 sm:gap-0">
-              <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                <span>Less</span>
-                <div className="flex items-center gap-1">
-                  {[0, 1, 2, 3, 4, 5].map((level) => (
-                    <div
-                      key={level}
-                      className={`w-3 h-3 rounded-sm border ${getIntensityColor(level)}`}
-                    />
-                  ))}
-                </div>
-                <span>More</span>
-              </div>
-
-              <div className="text-xs text-[var(--text-muted)]">
-                Longest streak:{" "}
-                <span className="font-medium text-[var(--text-primary)]">
-                  {stats.longestStreak} days
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tooltip */}
-        {(hoveredDay || clickedDay) && (
-          <div
-            className="absolute bg-[var(--surface)] border border-[var(--border)] rounded-lg p-3 shadow-xl z-50 pointer-events-none max-w-xs text-sm"
-            style={{
-              left: tooltipPosition.x,
-              top: tooltipPosition.y,
-              transform: "translateX(-50%) translateY(-100%)",
-            }}
+          {showHeatmap ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
+          </button>
+          <button
+            onClick={() => setShowHeatmap(!showHeatmap)}
+            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            title={showHeatmap ? "Hide solve activity" : "Show solve activity"}
           >
-            <div className="text-sm font-medium text-[var(--text-primary)]">
-              {formatTooltip(hoveredDay || clickedDay!).date}
-            </div>
-            <div className="text-xs text-[var(--text-secondary)] mt-1">
-              {formatTooltip(hoveredDay || clickedDay!).count} •{" "}
-              {formatTooltip(hoveredDay || clickedDay!).intensity}
-            </div>
-            {clickedDay && (
-              <div className="text-xs text-[var(--text-muted)] mt-1">
-                Tap to close
-              </div>
+            {showHeatmap ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
             )}
+          </button>
+        </div>
+
+        {showHeatmap && (
+          <div className="flex items-center gap-1 p-1 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] sm:overflow-x-auto">
+            {(
+              [
+                ["3m", "3 months"],
+                ["6m", "6 months"],
+                ["1y", "1 year"],
+              ] as const
+            ).map(([period, label]) => (
+              <button
+                key={period}
+                onClick={() => setSelectedPeriod(period)}
+                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap flex-1 sm:flex-none ${
+                  selectedPeriod === period
+                    ? "bg-[var(--primary)] text-white shadow-sm"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)]"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         )}
       </div>
+
+      {showHeatmap && (
+        <>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
+                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                    Total Solves
+                  </div>
+                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                    {stats.totalSolves.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-1.5 sm:p-2 bg-emerald-500/10 rounded-lg">
+                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                    Active Days
+                  </div>
+                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                    {stats.activeDays}{" "}
+                    <span className="text-xs sm:text-sm text-[var(--text-muted)] font-normal">
+                      / {stats.totalDays}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-1.5 sm:p-2 bg-orange-500/10 rounded-lg">
+                  <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                    Current Streak
+                  </div>
+                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                    {stats.currentStreak}{" "}
+                    <span className="text-xs sm:text-sm text-[var(--text-muted)] font-normal">
+                      days
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-1.5 sm:p-2 bg-purple-500/10 rounded-lg">
+                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                    Daily Average
+                  </div>
+                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                    {stats.averagePerDay.toFixed(1)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Heatmap */}
+          <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-6 border border-[var(--border)] relative heatmap-container">
+            <div className="overflow-x-auto">
+              <div className="inline-block min-w-full">
+                {/* Month labels */}
+                <div className="flex mb-3 sm:mb-4">
+                  <div className="w-8 sm:w-8 flex-shrink-0"></div>
+                  <div className="flex-1 relative">
+                    {weeks.map((week) =>
+                      week.monthStart ? (
+                        <div
+                          key={`month-${week.weekNumber}`}
+                          className="absolute text-xs font-medium text-[var(--text-muted)]"
+                          style={{
+                            left: `${week.weekNumber * (typeof window !== "undefined" && window.innerWidth < 640 ? 14 : 16) + 2}px`,
+                            top: "-2px",
+                          }}
+                        >
+                          {week.monthStart}
+                        </div>
+                      ) : null
+                    )}
+                  </div>
+                </div>
+
+                {/* Heatmap grid */}
+                <div className="flex items-start">
+                  {/* Day labels */}
+                  <div className="flex flex-col gap-1 mr-3 mt-1">
+                    {DAYS.map((day, index) => (
+                      <div
+                        key={`day-${index}`}
+                        className="w-4 h-3 sm:h-3 flex items-center justify-center text-xs font-medium text-[var(--text-muted)]"
+                      >
+                        {index % 2 === 1 ? day.charAt(0) : ""}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Heatmap cells */}
+                  <div className="flex gap-1">
+                    {weeks.map((week) => (
+                      <div
+                        key={week.weekNumber}
+                        className="flex flex-col gap-1"
+                      >
+                        {Array.from({ length: 7 }, (_, dayIndex) => {
+                          const dayData = week.days.find(
+                            (day) => day.dayOfWeek === dayIndex
+                          );
+
+                          if (!dayData) {
+                            return (
+                              <div
+                                key={`empty-${week.weekNumber}-${dayIndex}`}
+                                className="w-3 h-3 rounded-sm bg-transparent"
+                              />
+                            );
+                          }
+
+                          const isHovered =
+                            hoveredDay?.formattedDate === dayData.formattedDate;
+                          const isClicked =
+                            clickedDay?.formattedDate === dayData.formattedDate;
+                          const isActive = isHovered || isClicked;
+
+                          return (
+                            <div
+                              key={`${week.weekNumber}-${dayIndex}`}
+                              data-heatmap-cell
+                              className={`w-3 h-3 rounded-sm border transition-all duration-200 cursor-pointer relative ${getIntensityColor(dayData.level, isActive)}`}
+                              onMouseEnter={(e) => {
+                                setHoveredDay(dayData);
+                                const heatmapContainer =
+                                  e.currentTarget.closest(".heatmap-container");
+                                const containerRect =
+                                  heatmapContainer?.getBoundingClientRect();
+                                const cellRect =
+                                  e.currentTarget.getBoundingClientRect();
+
+                                if (containerRect && cellRect) {
+                                  setTooltipPosition({
+                                    x:
+                                      cellRect.left -
+                                      containerRect.left +
+                                      cellRect.width / 2,
+                                    y: cellRect.top - containerRect.top - 8,
+                                  });
+                                }
+                              }}
+                              onMouseMove={(e) => {
+                                const heatmapContainer =
+                                  e.currentTarget.closest(".heatmap-container");
+                                const containerRect =
+                                  heatmapContainer?.getBoundingClientRect();
+                                const cellRect =
+                                  e.currentTarget.getBoundingClientRect();
+
+                                if (containerRect && cellRect) {
+                                  setTooltipPosition({
+                                    x:
+                                      cellRect.left -
+                                      containerRect.left +
+                                      cellRect.width / 2,
+                                    y: cellRect.top - containerRect.top - 8,
+                                  });
+                                }
+                              }}
+                              onMouseLeave={() => {
+                                setHoveredDay(null);
+                              }}
+                              onClick={(e) => {
+                                if (
+                                  clickedDay?.formattedDate ===
+                                  dayData.formattedDate
+                                ) {
+                                  setClickedDay(null);
+                                } else {
+                                  setClickedDay(dayData);
+                                  const heatmapContainer =
+                                    e.currentTarget.closest(
+                                      ".heatmap-container"
+                                    );
+                                  const containerRect =
+                                    heatmapContainer?.getBoundingClientRect();
+                                  const cellRect =
+                                    e.currentTarget.getBoundingClientRect();
+
+                                  if (containerRect && cellRect) {
+                                    setTooltipPosition({
+                                      x:
+                                        cellRect.left -
+                                        containerRect.left +
+                                        cellRect.width / 2,
+                                      y: cellRect.top - containerRect.top - 8,
+                                    });
+                                  }
+                                }
+                              }}
+                              style={{
+                                transform: isActive ? "scale(1.1)" : "scale(1)",
+                                zIndex: isActive ? 10 : 1,
+                              }}
+                            >
+                              {dayData.isToday && (
+                                <div className="absolute -inset-0.5 rounded-sm border-2 border-[var(--primary)] animate-pulse" />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Legend */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-[var(--border)] gap-3 sm:gap-0">
+                  <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                    <span>Less</span>
+                    <div className="flex items-center gap-1">
+                      {[0, 1, 2, 3, 4, 5].map((level) => (
+                        <div
+                          key={level}
+                          className={`w-3 h-3 rounded-sm border ${getIntensityColor(level)}`}
+                        />
+                      ))}
+                    </div>
+                    <span>More</span>
+                  </div>
+
+                  <div className="text-xs text-[var(--text-muted)]">
+                    Longest streak:{" "}
+                    <span className="font-medium text-[var(--text-primary)]">
+                      {stats.longestStreak} days
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tooltip */}
+            {(hoveredDay || clickedDay) && (
+              <div
+                className="absolute bg-[var(--surface)] border border-[var(--border)] rounded-lg p-3 shadow-xl z-50 pointer-events-none max-w-xs text-sm"
+                style={{
+                  left: tooltipPosition.x,
+                  top: tooltipPosition.y,
+                  transform: "translateX(-50%) translateY(-100%)",
+                }}
+              >
+                <div className="text-sm font-medium text-[var(--text-primary)]">
+                  {formatTooltip(hoveredDay || clickedDay!).date}
+                </div>
+                <div className="text-xs text-[var(--text-secondary)] mt-1">
+                  {formatTooltip(hoveredDay || clickedDay!).count} •{" "}
+                  {formatTooltip(hoveredDay || clickedDay!).intensity}
+                </div>
+                {clickedDay && (
+                  <div className="text-xs text-[var(--text-muted)] mt-1">
+                    Tap to close
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

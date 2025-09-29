@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   ChevronDown,
   ChevronRight,
@@ -469,6 +469,39 @@ export default function TimerHistory({
   const [selectedSolve, setSelectedSolve] = useState<TimerRecord | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Infinite scroll state
+  const [displayCount, setDisplayCount] = useState(20);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Reset display count when event or history changes
+  useEffect(() => {
+    setDisplayCount(20);
+  }, [selectedEvent, history.length]);
+
+  // Infinite scroll handler
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current || isLoading) return;
+
+    const { scrollTop, scrollHeight, clientHeight } =
+      scrollContainerRef.current;
+
+    // If scrolled near bottom, load more
+    if (scrollTop + clientHeight >= scrollHeight - 100) {
+      const eventHistory = history.filter((r) => r.event === selectedEvent);
+
+      // Only load more if there are more records to show
+      if (displayCount < eventHistory.length) {
+        setIsLoading(true);
+        // Simulate loading delay for better UX
+        setTimeout(() => {
+          setDisplayCount((prev) => Math.min(prev + 20, eventHistory.length));
+          setIsLoading(false);
+        }, 200);
+      }
+    }
+  }, [history, selectedEvent, displayCount, isLoading]);
+
   // Format time function
   const formatTime = (
     timeMs: number,
@@ -538,9 +571,24 @@ export default function TimerHistory({
     <>
       <div className="timer-card">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4 font-statement">
-            Recent Times
-          </h3>
+          <div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowHistory(!showHistory)}
+                className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+                title={showHistory ? "Hide recent times" : "Show recent times"}
+              >
+                <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+                  Recent Times
+                </h3>
+                {showHistory ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          </div>
           <div className="flex items-center gap-2">
             {eventHistory.length > 0 && (
               <button
@@ -554,7 +602,7 @@ export default function TimerHistory({
             <button
               onClick={() => setShowHistory(!showHistory)}
               className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
-              title={showHistory ? "Hide history" : "Show history"}
+              title={showHistory ? "Hide recent times" : "Show recent times"}
             >
               {showHistory ? (
                 <EyeOff className="w-4 h-4" />
@@ -566,88 +614,114 @@ export default function TimerHistory({
         </div>
 
         {showHistory && (
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {eventHistory.slice(0, 20).map((record, index) => (
-              <div
-                key={record.id}
-                className="bg-[var(--surface-elevated)] rounded border border-[var(--border)] p-3 hover:bg-[var(--surface-elevated)]/80 transition-colors"
-              >
-                <div className="flex justify-between items-center">
-                  {/* Solve number and time */}
-                  <div
-                    className="flex items-center gap-3 cursor-pointer flex-1"
-                    onClick={() => handleSolveClick(record)}
-                  >
-                    <span className="text-sm text-[var(--text-muted)] font-inter">
-                      #{index + 1}
-                    </span>
-                    <span
-                      className={`font-mono text-lg font-semibold ${
-                        record.penalty === "+2"
-                          ? "text-yellow-400"
-                          : record.penalty === "DNF"
-                            ? "text-red-400"
-                            : "text-[var(--text-primary)]"
-                      }`}
-                    >
-                      {formatTime(record.finalTime, record.penalty)}
-                      {record.penalty === "+2" && "+"}
-                    </span>
-                    <span className="text-xs text-[var(--text-muted)] font-inter">
-                      {record.timestamp.toLocaleTimeString()}
-                    </span>
-                  </div>
+          <div
+            ref={scrollContainerRef}
+            className="space-y-2 max-h-64 overflow-y-auto"
+            onScroll={handleScroll}
+          >
+            {eventHistory.slice(0, displayCount).map((record, index) => {
+              // Calculate solve number in descending order
+              const solveNumber = eventHistory.length - index;
 
-                  {/* Inline action buttons */}
-                  <div className="flex items-center gap-1 ml-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePenaltyChange(
-                          record.id,
-                          record.penalty === "+2" ? "none" : "+2"
-                        );
-                      }}
-                      className={`px-2 py-1 text-xs rounded font-medium transition-colors ${
-                        record.penalty === "+2"
-                          ? "bg-[var(--warning)] text-white"
-                          : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
-                      }`}
-                      title="Toggle +2 penalty"
+              return (
+                <div
+                  key={record.id}
+                  className="bg-[var(--surface-elevated)] rounded border border-[var(--border)] p-3 hover:bg-[var(--surface-elevated)]/80 transition-colors"
+                >
+                  <div className="flex justify-between items-center">
+                    {/* Solve number and time */}
+                    <div
+                      className="flex items-center gap-3 cursor-pointer flex-1"
+                      onClick={() => handleSolveClick(record)}
                     >
-                      +2
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePenaltyChange(
-                          record.id,
-                          record.penalty === "DNF" ? "none" : "DNF"
-                        );
-                      }}
-                      className={`px-2 py-1 text-xs rounded font-medium transition-colors ${
-                        record.penalty === "DNF"
-                          ? "bg-[var(--error)] text-white"
-                          : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
-                      }`}
-                      title="Toggle DNF penalty"
-                    >
-                      DNF
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteSolve(record.id);
-                      }}
-                      className="p-1 text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
-                      title="Delete solve"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
+                      <span className="text-sm text-[var(--text-muted)] font-inter">
+                        #{solveNumber}
+                      </span>
+                      <span
+                        className={`font-mono text-lg font-semibold ${
+                          record.penalty === "+2"
+                            ? "text-yellow-400"
+                            : record.penalty === "DNF"
+                              ? "text-red-400"
+                              : "text-[var(--text-primary)]"
+                        }`}
+                      >
+                        {formatTime(record.finalTime, record.penalty)}
+                        {record.penalty === "+2" && "+"}
+                      </span>
+                    </div>
+
+                    {/* Inline action buttons */}
+                    <div className="flex items-center gap-1 ml-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePenaltyChange(
+                            record.id,
+                            record.penalty === "+2" ? "none" : "+2"
+                          );
+                        }}
+                        className={`px-2 py-1 text-xs rounded font-medium transition-colors ${
+                          record.penalty === "+2"
+                            ? "bg-[var(--warning)] text-white"
+                            : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
+                        }`}
+                        title="Toggle +2 penalty"
+                      >
+                        +2
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePenaltyChange(
+                            record.id,
+                            record.penalty === "DNF" ? "none" : "DNF"
+                          );
+                        }}
+                        className={`px-2 py-1 text-xs rounded font-medium transition-colors ${
+                          record.penalty === "DNF"
+                            ? "bg-[var(--error)] text-white"
+                            : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
+                        }`}
+                        title="Toggle DNF penalty"
+                      >
+                        DNF
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteSolve(record.id);
+                        }}
+                        className="p-1 text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
+                        title="Delete solve"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
                 </div>
+              );
+            })}
+
+            {/* Loading indicator */}
+            {isLoading && (
+              <div className="text-center py-2">
+                <div className="text-sm text-[var(--text-muted)] font-inter">
+                  Loading more solves...
+                </div>
               </div>
-            ))}
+            )}
+
+            {/* Show count info if there are more solves */}
+            {displayCount < eventHistory.length && !isLoading && (
+              <div className="text-center py-2 border-t border-[var(--border)]">
+                <div className="text-xs text-[var(--text-muted)] font-inter">
+                  Showing {displayCount} of {eventHistory.length} solves •
+                  Scroll down for more
+                </div>
+              </div>
+            )}
+
             {eventHistory.length === 0 && (
               <div className="text-center py-4 text-[var(--text-muted)] font-inter">
                 No solves yet for {getEventName(selectedEvent)}

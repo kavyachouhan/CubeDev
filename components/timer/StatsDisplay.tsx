@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
+import { TimerRecord } from "../../lib/stats-utils";
 
 // Persistent boolean that reads/writes localStorage on first render
 function usePersistentBool(key: string, defaultValue: boolean) {
@@ -22,16 +23,6 @@ function usePersistentBool(key: string, defaultValue: boolean) {
     }
   }, [key, state]);
   return [state, setState] as const;
-}
-
-interface TimerRecord {
-  id: string;
-  time: number;
-  timestamp: Date;
-  scramble: string;
-  penalty: "none" | "+2" | "DNF";
-  finalTime: number; // time with penalty applied
-  event: string;
 }
 
 interface StatsDisplayProps {
@@ -159,9 +150,20 @@ export default function StatsDisplay({
   return (
     <div className="timer-card">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <button
+          onClick={() => setShowStats(!showStats)}
+          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          title={showStats ? "Hide statistics" : "Show statistics"}
+        >
+        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
           Statistics
         </h3>
+        {showStats ? (
+          <ChevronDown className="w-4 h-4" />
+        ) : (
+          <ChevronRight className="w-4 h-4" />
+        )}
+        </button>
         <button
           onClick={() => setShowStats(!showStats)}
           className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"

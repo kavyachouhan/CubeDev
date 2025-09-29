@@ -138,11 +138,68 @@ export const getUserById = query({
   },
 });
 
-// Get all users (for directory/discovery)
+// Get all users (for directory/discovery) - excludes deleted users
 export const getAllUsers = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("users").order("desc").take(100); // Limit to 100 for performance
+    return await ctx.db
+      .query("users")
+      .filter((q) => q.neq(q.field("isDeleted"), true))
+      .order("desc")
+      .take(100); // Limit to 100 for performance
+  },
+});
+
+// Update user privacy settings
+export const updatePrivacySettings = mutation({
+  args: {
+    userId: v.id("users"),
+    hideProfile: v.optional(v.boolean()),
+    hideChallengeStats: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const { userId, ...updates } = args;
+    await ctx.db.patch(userId, {
+      ...updates,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// Soft delete user account
+export const deleteUserAccount = mutation({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    await ctx.db.patch(args.userId, {
+      isDeleted: true,
+      deletedAt: now,
+      updatedAt: now,
+    });
+  },
+});
+
+// Check if user profile is private
+export const isUserProfilePrivate = query({
+  args: { wcaId: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_wca_id", (q) => q.eq("wcaId", args.wcaId))
+      .first();
+
+    if (!user || user.isDeleted) {
+      return { isPrivate: true, isDeleted: !!user?.isDeleted };
+    }
+
+    return {
+      isPrivate: !!user.hideProfile,
+      isDeleted: false,
+      hideChallengeStats: !!user.hideChallengeStats,
+      hideProfile: !!user.hideProfile,
+    };
   },
 });
 
@@ -256,6 +313,16 @@ export const saveSolve = mutation({
     comment: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
     reconstruction: v.optional(v.string()),
+    splits: v.optional(
+      v.array(
+        v.object({
+          phase: v.string(),
+          time: v.number(),
+        })
+      )
+    ),
+    splitMethod: v.optional(v.string()),
+    microPausesMs: v.optional(v.array(v.number())),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -270,6 +337,9 @@ export const saveSolve = mutation({
       finalTime: args.finalTime,
       comment: args.comment,
       tags: args.tags,
+      splits: args.splits,
+      splitMethod: args.splitMethod,
+      microPausesMs: args.microPausesMs,
       solveDate: now,
       createdAt: now,
     });
@@ -287,6 +357,83 @@ export const saveSolve = mutation({
     });
 
     return solveId;
+  },
+});
+
+// Batch import solves for better performance
+export const batchImportSolves = mutation({
+  args: {
+    userId: v.id("users"),
+    sessionId: v.id("sessions"),
+    solves: v.array(
+      v.object({
+        event: v.string(),
+        scramble: v.string(),
+        time: v.number(),
+        penalty: v.union(v.literal("none"), v.literal("+2"), v.literal("DNF")),
+        finalTime: v.number(),
+        timestamp: v.number(),
+        comment: v.optional(v.string()),
+        tags: v.optional(v.array(v.string())),
+        splits: v.optional(
+          v.array(
+            v.object({
+              phase: v.string(),
+              time: v.number(),
+            })
+          )
+        ),
+        splitMethod: v.optional(v.string()),
+        microPausesMs: v.optional(v.array(v.number())),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const savedSolveIds = [];
+
+    // Insert all solves in batch
+    for (const solve of args.solves) {
+      try {
+        const solveId = await ctx.db.insert("solves", {
+          userId: args.userId,
+          sessionId: args.sessionId,
+          event: solve.event,
+          scramble: solve.scramble,
+          time: solve.time,
+          penalty: solve.penalty,
+          finalTime: solve.finalTime,
+          comment: solve.comment,
+          tags: solve.tags,
+          splits: solve.splits,
+          splitMethod: solve.splitMethod,
+          microPausesMs: solve.microPausesMs,
+          solveDate: solve.timestamp,
+          createdAt: now,
+        });
+        savedSolveIds.push(solveId);
+      } catch (error) {
+        console.error("Failed to import solve:", solve, error);
+      }
+    }
+
+    // Update session solve count once at the end
+    const currentSolveCount = await ctx.db
+      .query("solves")
+      .withIndex("by_session", (q) => q.eq("sessionId", args.sessionId))
+      .collect()
+      .then((solves) => solves.length);
+
+    await ctx.db.patch(args.sessionId, {
+      solveCount: currentSolveCount,
+      updatedAt: now,
+    });
+
+    return {
+      importedCount: savedSolveIds.length,
+      totalAttempted: args.solves.length,
+      solveIds: savedSolveIds,
+    };
   },
 });
 
@@ -366,6 +513,7 @@ export const updateSolve = mutation({
     ),
     comment: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
+    finalTime: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const { solveId, ...updates } = args;

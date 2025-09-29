@@ -2,6 +2,7 @@
 
 import {
   ChevronDown,
+  ChevronRight,
   Filter,
   Calendar,
   FolderOpen,
@@ -127,7 +128,7 @@ export default function StatsFilters({
   const [isSessionDropdownOpen, setIsSessionDropdownOpen] = useState(false);
   const [isEventDropdownOpen, setIsEventDropdownOpen] = useState(false);
 
-  // Body visibility state (for unmounting)
+  // Body visibility state for smoother transitions
   const [isBodyVisible, setIsBodyVisible] = useState<boolean>(isExpanded);
 
   // Refs for measuring heights and detecting outside clicks
@@ -154,7 +155,7 @@ export default function StatsFilters({
         parseFloat(styles.paddingTop || "0") +
         parseFloat(styles.paddingBottom || "0");
       const headerH = header.offsetHeight;
-      const bodyH = body.scrollHeight; // use scrollHeight to get full height even if not visible
+      const bodyH = body.scrollHeight; // Use scrollHeight to get full height even if not visible
 
       return {
         collapsed: Math.ceil(headerH + padY),
@@ -220,7 +221,7 @@ export default function StatsFilters({
       setIsSessionDropdownOpen(false);
       setIsEventDropdownOpen(false);
     } else {
-      // expanding: expand first, then show body after transition
+      // expanding: expand first, then show body
       setIsExpanded(true);
     }
   };
@@ -331,9 +332,20 @@ export default function StatsFilters({
           isExpanded ? "mb-4" : "mb-0"
         }`}
       >
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <button
+          onClick={toggleExpanded}
+          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          title={isExpanded ? "Hide filters" : "Show filters"}
+        >
+        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
           Filters
         </h3>
+        {isExpanded ? (
+          <ChevronDown className="w-4 h-4" />
+        ) : (
+          <ChevronRight className="w-4 h-4" />
+        )}
+        </button>
         <div className="flex items-center gap-2">
           <button
             onClick={toggleExpanded}
@@ -548,7 +560,6 @@ export default function StatsFilters({
                           {session.name}
                         </div>
                         <div className="text-xs text-[var(--text-muted)] font-inter truncate">
-                          {EVENT_NAMES[session.event] || session.event} •{" "}
                           {getSessionSolveCount(session.id)} solves
                         </div>
                         {/* Show available events in this session */}

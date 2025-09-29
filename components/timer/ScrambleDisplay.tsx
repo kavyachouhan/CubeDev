@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import { RotateCcw, Eye, EyeOff } from "lucide-react";
+import { RotateCcw, Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
 
 interface ScrambleDisplayProps {
   scramble: string;
@@ -36,7 +36,7 @@ export default function ScrambleDisplay({
     true
   );
 
-  // Body visibility state (for accessibility and to prevent interaction during collapse)
+  // State to track if body is visible (for accessibility and to avoid layout shift)
   const [isBodyVisible, setIsBodyVisible] = useState<boolean>(isExpanded);
 
   // Refs to measure heights
@@ -140,9 +140,20 @@ export default function ScrambleDisplay({
           isExpanded ? "mb-4" : "mb-0"
         }`}
       >
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <button
+          onClick={toggleExpanded}
+          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          title={isExpanded ? "Hide scramble" : "Show scramble"}
+        >
+        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
           Scramble
         </h3>
+        {isExpanded ? (
+          <ChevronDown className="w-4 h-4" />
+        ) : (
+          <ChevronRight className="w-4 h-4" />
+        )}
+        </button>
         <div className="flex items-center gap-2">
           <button
             onClick={onNewScramble}
@@ -155,7 +166,7 @@ export default function ScrambleDisplay({
             onClick={toggleExpanded}
             className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
             title={
-              isExpanded ? "Hide scramble details" : "Show scramble details"
+              isExpanded ? "Hide scramble" : "Show scramble"
             }
           >
             {isExpanded ? (

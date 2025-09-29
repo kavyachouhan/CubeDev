@@ -1,20 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { scrambleGenerator } from "../ScrambleGenerator";
+import { TimerRecord } from "../../../lib/stats-utils";
 
-interface TimerRecord {
-  id: string;
-  time: number;
-  timestamp: Date;
-  scramble: string;
-  penalty: "none" | "+2" | "DNF";
-  finalTime: number;
-  event: string;
-  sessionId: string;
-  notes?: string;
-  tags?: string[];
-}
-
-// Custom hook to persist a string state in localStorage
+// Persistent string that reads/writes localStorage on first render
 function usePersistentString(key: string, defaultValue: string) {
   const [state, setState] = useState<string>(() => {
     if (typeof window === "undefined") return defaultValue;
@@ -114,7 +102,7 @@ export const useTimerState = () => {
     setLastSolveId(null);
   }, []);
 
-  // Set complete history (e.g., on initialization)
+  // Replace entire history (e.g., on import)
   const setCompleteHistory = useCallback((newHistory: TimerRecord[]) => {
     setHistory(newHistory);
   }, []); // no dependencies

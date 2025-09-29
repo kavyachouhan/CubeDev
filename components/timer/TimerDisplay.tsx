@@ -1,7 +1,19 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Settings, Eye, EyeOff } from "lucide-react";
+import { Settings, Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  getSplitMethod,
+  ConsistencyCoachSettings,
+  DEFAULT_CONSISTENCY_SETTINGS,
+  BPM_TO_MS,
+  type PhaseSplit,
+} from "@/lib/phase-splits";
+import PhaseResults from "./PhaseResults";
+import TimerSettings from "./TimerSettings";
+import PhaseIndicator from "./PhaseIndicator";
+import PenaltyButtons from "./PenaltyButtons";
+import TimerCore from "./TimerCore";
 
 // Persistent boolean that reads/writes localStorage on first render
 function usePersistentBool(key: string, defaultValue: boolean) {
@@ -23,7 +35,13 @@ function usePersistentBool(key: string, defaultValue: boolean) {
 }
 
 interface TimerDisplayProps {
-  onSolveComplete: (time: number, notes?: string, tags?: string[]) => void;
+  onSolveComplete: (
+    time: number,
+    notes?: string,
+    tags?: string[],
+    splits?: PhaseSplit[],
+    splitMethod?: string
+  ) => void;
   onApplyPenalty?: (penalty: "none" | "+2" | "DNF") => void;
   lastSolveId?: string | null;
   onTimerStateChange?: (isActive: boolean) => void;
@@ -65,9 +83,41 @@ export default function TimerDisplay({
     false
   );
 
+  // Phase Split Settings
+  const [phaseSplitsEnabled, setPhaseSplitsEnabled] = usePersistentBool(
+    "cubelab-phase-splits-enabled",
+    false
+  );
+  const [selectedSplitMethod, setSelectedSplitMethod] = useState<string>(() => {
+    if (typeof window === "undefined") return "cfop";
+    try {
+      const saved = localStorage.getItem("cubelab-split-method");
+      return saved || "cfop";
+    } catch {
+      return "cfop";
+    }
+  });
+  const [currentSplits, setCurrentSplits] = useState<PhaseSplit[]>([]);
+  const [currentPhaseIndex, setCurrentPhaseIndex] = useState<number>(0); // Track which phase we're on
+
+  // Consistency Coach Settings
+  const [consistencyCoach, setConsistencyCoach] =
+    useState<ConsistencyCoachSettings>(() => {
+      if (typeof window === "undefined") return DEFAULT_CONSISTENCY_SETTINGS;
+      try {
+        const saved = localStorage.getItem("cubelab-consistency-coach");
+        return saved ? JSON.parse(saved) : DEFAULT_CONSISTENCY_SETTINGS;
+      } catch {
+        return DEFAULT_CONSISTENCY_SETTINGS;
+      }
+    });
+  const [metronomeIntervalRef, setMetronomeIntervalRef] =
+    useState<NodeJS.Timeout | null>(null);
+
   const startTimeRef = useRef<number>(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const inspectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
   const timerContentRef = useRef<HTMLDivElement>(null);
   const touchStartTimeRef = useRef<number>(0);
   const isTouchActiveRef = useRef<boolean>(false);
@@ -83,56 +133,160 @@ export default function TimerDisplay({
     onTimerStateChangeRef.current = onTimerStateChange;
   }, [onTimerStateChange]);
 
+  // Persist split method
+  useEffect(() => {
+    try {
+      localStorage.setItem("cubelab-split-method", selectedSplitMethod);
+    } catch {}
+  }, [selectedSplitMethod]);
+
+  // Persist consistency coach settings
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "cubelab-consistency-coach",
+        JSON.stringify(consistencyCoach)
+      );
+    } catch {}
+  }, [consistencyCoach]);
+
+  // Consistency Coach Metronome Functions
+  const initializeAudioContext = useCallback(() => {
+    if (!audioContextRef.current) {
+      try {
+        audioContextRef.current = new (window.AudioContext ||
+          (window as any).webkitAudioContext)();
+      } catch (error) {
+        console.log("Audio context not available:", error);
+      }
+    }
+  }, []);
+
   // Play beep sound
   const playBeep = useCallback(() => {
     try {
-      const audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      if (!audioContextRef.current) {
+        initializeAudioContext();
+      }
+
+      if (!audioContextRef.current) return;
+
+      const oscillator = audioContextRef.current.createOscillator();
+      const gainNode = audioContextRef.current.createGain();
 
       oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+      gainNode.connect(audioContextRef.current.destination);
 
       oscillator.frequency.value = 800;
       oscillator.type = "sine";
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.3, audioContextRef.current.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(
         0.01,
-        audioContext.currentTime + 0.1
+        audioContextRef.current.currentTime + 0.1
       );
 
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.1);
+      oscillator.start(audioContextRef.current.currentTime);
+      oscillator.stop(audioContextRef.current.currentTime + 0.1);
     } catch (error) {
-      console.log("Audio not available");
+      console.log("Audio not available:", error);
     }
-  }, []);
+  }, [initializeAudioContext]);
 
   const playAlert = useCallback(() => {
     try {
-      const audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
+      if (!audioContextRef.current) {
+        initializeAudioContext();
+      }
+
+      if (!audioContextRef.current) return;
+
+      const oscillator = audioContextRef.current.createOscillator();
+      const gainNode = audioContextRef.current.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContextRef.current.destination);
+
+      oscillator.frequency.value = 1200;
+      oscillator.type = "sine";
+      gainNode.gain.setValueAtTime(0.4, audioContextRef.current.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContextRef.current.currentTime + 0.2
+      );
+
+      oscillator.start(audioContextRef.current.currentTime);
+      oscillator.stop(audioContextRef.current.currentTime + 0.2);
+    } catch (error) {
+      console.log("Audio not available:", error);
+    }
+  }, [initializeAudioContext]);
+
+  const playMetronomeTick = useCallback(() => {
+    try {
+      if (!audioContextRef.current) {
+        initializeAudioContext();
+      }
+
+      const audioContext = audioContextRef.current;
+      if (!audioContext) return;
+
+      // Resume context if suspended (required by some browsers)
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
 
-      oscillator.frequency.value = 1200;
-      oscillator.type = "sine";
-      gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+      const frequency =
+        consistencyCoach.sound === "tick"
+          ? 2000
+          : consistencyCoach.sound === "wood"
+            ? 800
+            : 1000;
+      oscillator.frequency.value = frequency;
+      oscillator.type = consistencyCoach.sound === "wood" ? "square" : "sine";
+
+      const volume = (consistencyCoach.volume / 100) * 0.2; // Scale volume
+      gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(
         0.01,
-        audioContext.currentTime + 0.2
+        audioContext.currentTime + 0.05
       );
 
       oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.2);
+      oscillator.stop(audioContext.currentTime + 0.05);
     } catch (error) {
-      console.log("Audio not available");
+      console.log("Metronome audio not available:", error);
     }
-  }, []);
+  }, [consistencyCoach.sound, consistencyCoach.volume, initializeAudioContext]);
+
+  const startMetronome = useCallback(() => {
+    if (metronomeIntervalRef) {
+      clearInterval(metronomeIntervalRef);
+    }
+
+    const interval = BPM_TO_MS(consistencyCoach.bpm);
+    const newInterval = setInterval(playMetronomeTick, interval);
+    setMetronomeIntervalRef(newInterval);
+  }, [consistencyCoach.bpm, playMetronomeTick, metronomeIntervalRef]);
+
+  const stopMetronome = useCallback(() => {
+    if (metronomeIntervalRef) {
+      clearInterval(metronomeIntervalRef);
+      setMetronomeIntervalRef(null);
+    }
+  }, [metronomeIntervalRef]);
+
+  // Stop metronome when timer stops
+  useEffect(() => {
+    if (state !== "running") {
+      stopMetronome();
+    }
+  }, [state, stopMetronome]);
 
   // Timer logic
   useEffect(() => {
@@ -174,14 +328,16 @@ export default function TimerDisplay({
   useEffect(() => {
     if (onTimerStateChangeRef.current) {
       const isActive = state === "inspection" || state === "running";
-      // Only trigger focus mode if it's enabled and timer is active
+      // Only notify if focus mode is enabled
       onTimerStateChangeRef.current(isActive && focusModeEnabled);
     }
-  }, [state, focusModeEnabled]); // Removed onTimerStateChange to prevent infinite loop
+  }, [state, focusModeEnabled]); // Only run when state or focus mode changes
 
   // Keyboard handling
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      initializeAudioContext(); // Initialize audio context on first user interaction
+
       if (e.code === "Space") {
         e.preventDefault();
         if (!isSpacePressed) {
@@ -191,22 +347,75 @@ export default function TimerDisplay({
           } else if (state === "inspection") {
             setState("ready");
           } else if (state === "running") {
-            // Allow spacebar to stop timer
+            // Handle phase splits on space during solve
+            if (phaseSplitsEnabled) {
+              const splitMethod = getSplitMethod(selectedSplitMethod);
+              if (
+                splitMethod &&
+                currentPhaseIndex < splitMethod.phases.length
+              ) {
+                const currentTime = Date.now() - startTimeRef.current;
+                const currentPhase = splitMethod.phases[currentPhaseIndex];
+
+                const newSplit: PhaseSplit = {
+                  phase: currentPhase.id,
+                  time: currentTime,
+                };
+
+                setCurrentSplits((prev) => [...prev, newSplit]);
+                setCurrentPhaseIndex((prev) => prev + 1);
+
+                // Play alert on phase split
+                playAlert();
+
+                // If this was the final phase, end the timer
+                if (currentPhaseIndex === splitMethod.phases.length - 1) {
+                  setState("stopped");
+                  const finalTime = Date.now() - startTimeRef.current;
+                  setTime(finalTime);
+                  playAlert();
+                  onSolveCompleteRef.current(
+                    finalTime,
+                    undefined,
+                    undefined,
+                    [...currentSplits, newSplit],
+                    selectedSplitMethod
+                  );
+                  setShowPenaltyButtons(true);
+                }
+                return;
+              }
+            }
+
+            // Allow space to stop timer (if phase splits not enabled or completed)
             setState("stopped");
             const finalTime = Date.now() - startTimeRef.current;
             setTime(finalTime);
             playBeep();
-            onSolveCompleteRef.current(finalTime);
+            onSolveCompleteRef.current(
+              finalTime,
+              undefined,
+              undefined,
+              currentSplits,
+              selectedSplitMethod
+            );
             setShowPenaltyButtons(true);
           }
         }
       } else if (state === "running") {
+        // Allow 'S' key to stop timer
         e.preventDefault();
         setState("stopped");
         const finalTime = Date.now() - startTimeRef.current;
         setTime(finalTime);
         playBeep();
-        onSolveCompleteRef.current(finalTime);
+        onSolveCompleteRef.current(
+          finalTime,
+          undefined,
+          undefined,
+          currentSplits,
+          selectedSplitMethod
+        );
         setShowPenaltyButtons(true);
       }
     };
@@ -225,14 +434,30 @@ export default function TimerDisplay({
             setState("running");
             setTime(0);
             setCurrentPenalty("none");
+            setCurrentSplits([]); // Reset splits for new solve
+            setCurrentPhaseIndex(0); // Reset phase index for new solve
             startTimeRef.current = Date.now();
+
+            // Start consistency coach metronome
+            if (consistencyCoach.enabled) {
+              startMetronome();
+            }
+
             playBeep();
           }
         } else if (state === "ready") {
           setState("running");
           setTime(0);
           setCurrentPenalty("none");
+          setCurrentSplits([]); // Reset splits for new solve
+          setCurrentPhaseIndex(0); // Reset phase index for new solve
           startTimeRef.current = Date.now();
+
+          // Start consistency coach metronome
+          if (consistencyCoach.enabled) {
+            startMetronome();
+          }
+
           playBeep();
         }
       }
@@ -245,12 +470,25 @@ export default function TimerDisplay({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [state, isSpacePressed, inspectionEnabled, playBeep]); 
+  }, [
+    state,
+    isSpacePressed,
+    inspectionEnabled,
+    phaseSplitsEnabled,
+    selectedSplitMethod,
+    consistencyCoach,
+    playBeep,
+    startMetronome,
+    currentPhaseIndex,
+    initializeAudioContext,
+  ]);
 
   // Touch and mouse handling
   const handleTouchStart = useCallback(
     (e: React.TouchEvent | React.MouseEvent) => {
       e.preventDefault();
+      initializeAudioContext(); // Initialize audio context on first user interaction
+
       if (!isTouchActiveRef.current) {
         isTouchActiveRef.current = true;
         touchStartTimeRef.current = Date.now();
@@ -260,17 +498,65 @@ export default function TimerDisplay({
         } else if (state === "inspection") {
           setState("ready");
         } else if (state === "running") {
-          // Allow touch/mouse to stop timer
+          // Handle phase splits on touch/mouse during solve
+          if (phaseSplitsEnabled) {
+            const splitMethod = getSplitMethod(selectedSplitMethod);
+            if (splitMethod && currentPhaseIndex < splitMethod.phases.length) {
+              const currentTime = Date.now() - startTimeRef.current;
+              const currentPhase = splitMethod.phases[currentPhaseIndex];
+
+              const newSplit: PhaseSplit = {
+                phase: currentPhase.id,
+                time: currentTime,
+              };
+
+              setCurrentSplits((prev) => [...prev, newSplit]);
+              setCurrentPhaseIndex((prev) => prev + 1);
+
+              // Play alert on phase split
+              if (currentPhaseIndex === splitMethod.phases.length - 1) {
+                setState("stopped");
+                const finalTime = Date.now() - startTimeRef.current;
+                setTime(finalTime);
+                playBeep();
+                onSolveCompleteRef.current(
+                  finalTime,
+                  undefined,
+                  undefined,
+                  [...currentSplits, newSplit],
+                  selectedSplitMethod
+                );
+                setShowPenaltyButtons(true);
+              }
+              return;
+            }
+          }
+
+          // Allow touch/mouse to stop timer (if phase splits not enabled or completed)
           setState("stopped");
           const finalTime = Date.now() - startTimeRef.current;
           setTime(finalTime);
           playBeep();
-          onSolveCompleteRef.current(finalTime);
+          onSolveCompleteRef.current(
+            finalTime,
+            undefined,
+            undefined,
+            currentSplits,
+            selectedSplitMethod
+          );
           setShowPenaltyButtons(true);
         }
       }
     },
-    [state, playBeep]
+    [
+      state,
+      playBeep,
+      phaseSplitsEnabled,
+      selectedSplitMethod,
+      currentPhaseIndex,
+      currentSplits,
+      initializeAudioContext,
+    ]
   );
 
   const handleTouchEnd = useCallback(
@@ -313,79 +599,23 @@ export default function TimerDisplay({
     setShowPenaltyButtons(false);
   };
 
-  // Start new solve
-  const startNewSolve = () => {
-    setShowPenaltyButtons(false);
-    setCurrentPenalty("none");
-    setState("idle");
-  };
-
-  // Format time
-  const formatTime = (timeMs: number) => {
-    if (timeMs === Infinity) return "DNF";
-    const seconds = timeMs / 1000;
-    const mins = Math.floor(seconds / 60);
-    const secs = (seconds % 60).toFixed(2);
-    return mins > 0 ? `${mins}:${secs.padStart(5, "0")}` : secs;
-  };
-
-  // Get displayed time with penalty applied
-  const getDisplayTime = () => {
-    if (currentPenalty === "DNF") {
-      return "DNF";
-    } else if (currentPenalty === "+2") {
-      return formatTime(time + 2000); // Add 2 seconds
-    } else {
-      return formatTime(time);
-    }
-  };
-
-  // Get timer color based on state
-  const getTimerColor = () => {
-    switch (state) {
-      case "holding":
-        return "text-orange-400";
-      case "inspection":
-        if (inspectionTime <= 3) return "text-red-400";
-        if (inspectionTime <= 8) return "text-yellow-400";
-        return "text-green-400";
-      case "ready":
-        return "text-green-400";
-      case "running":
-        return "text-red-400";
-      case "stopped":
-        return "text-blue-400";
-      default:
-        return "text-gray-400";
-    }
-  };
-
-  // Get status text based on state
-  const getStatusText = () => {
-    switch (state) {
-      case "idle":
-        return "Hold SPACE or touch and hold timer, then release to start";
-      case "holding":
-        return inspectionEnabled
-          ? "Release to start inspection"
-          : "Release to start timer";
-      case "inspection":
-        return "Get ready... (Hold SPACE/touch for timer)";
-      case "ready":
-        return "Release to start";
-      case "running":
-        return "Solving... (any key or touch to stop)";
-      case "stopped":
-        return "Great solve! (SPACE or touch for next)";
-    }
-  };
-
   return (
     <div className="timer-card">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <button
+          onClick={() => setShowTimer(!showTimer)}
+          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          title={showTimer ? "Hide timer" : "Show timer"}
+        >
+        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
           Timer
         </h3>
+        {showTimer ? (
+          <ChevronDown className="w-4 h-4" />
+        ) : (
+          <ChevronRight className="w-4 h-4" />
+        )}
+        </button>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowSettings(!showSettings)}
@@ -417,146 +647,59 @@ export default function TimerDisplay({
         }}
       >
         {/* Settings Panel */}
-        {showSettings && (
-          <div className="mb-4 p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-            <div className="space-y-3">
-              {/* Inspection Time Toggle */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
-                    <span className="text-xs font-bold">15</span>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                      Inspection Time
-                    </span>
-                    <p className="text-xs text-[var(--text-muted)] font-inter">
-                      15-second inspection before solving
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setInspectionEnabled(!inspectionEnabled)}
-                  className={`w-11 h-6 rounded-full transition-colors flex items-center ${
-                    inspectionEnabled
-                      ? "bg-[var(--primary)] justify-end"
-                      : "bg-[var(--border)] justify-start"
-                  }`}
-                >
-                  <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
-                </button>
-              </div>
+        <TimerSettings
+          showSettings={showSettings}
+          inspectionEnabled={inspectionEnabled}
+          setInspectionEnabled={setInspectionEnabled}
+          focusModeEnabled={focusModeEnabled}
+          setFocusModeEnabled={setFocusModeEnabled}
+          phaseSplitsEnabled={phaseSplitsEnabled}
+          setPhaseSplitsEnabled={setPhaseSplitsEnabled}
+          selectedSplitMethod={selectedSplitMethod}
+          setSelectedSplitMethod={setSelectedSplitMethod}
+          consistencyCoach={consistencyCoach}
+          setConsistencyCoach={setConsistencyCoach}
+        />
 
-              {/* Focus Mode Toggle */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
-                    <Eye className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                      Focus Mode
-                    </span>
-                    <p className="text-xs text-[var(--text-muted)] font-inter">
-                      Blur other areas during solve
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setFocusModeEnabled(!focusModeEnabled)}
-                  className={`w-11 h-6 rounded-full transition-colors flex items-center ${
-                    focusModeEnabled
-                      ? "bg-[var(--primary)] justify-end"
-                      : "bg-[var(--border)] justify-start"
-                  }`}
-                >
-                  <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div
-          className="text-center space-y-6"
+        <TimerCore
+          state={state}
+          time={time}
+          inspectionTime={inspectionTime}
+          currentPenalty={currentPenalty}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           onMouseDown={handleTouchStart}
           onMouseUp={handleTouchEnd}
-          onContextMenu={(e) => e.preventDefault()} // Disable context menu on long press
-          style={{
-            userSelect: "none",
-            WebkitUserSelect: "none",
-            touchAction: "none", // Disable double-tap to zoom
-          }}
         >
-          <div
-            className={`font-bold timer-text ${getTimerColor()} transition-all duration-300 font-mono cursor-pointer select-none`}
-          >
-            {state === "inspection"
-              ? `${inspectionTime.toFixed(2)}`
-              : getDisplayTime()}
-          </div>
-
-          {/* Penalty Indicator */}
-          {currentPenalty !== "none" && state === "stopped" && (
-            <div
-              className={`text-xs font-semibold px-2 py-1 rounded-full transition-all duration-300 ${
-                currentPenalty === "+2"
-                  ? "bg-yellow-100 text-yellow-800 border border-yellow-300"
-                  : "bg-red-100 text-red-800 border border-red-300"
-              }`}
-            >
-              {currentPenalty === "+2" ? "+2 Penalty Applied" : "DNF Applied"}
-            </div>
-          )}
-
-          <div className="text-sm text-[var(--text-secondary)] font-inter select-none">
-            {getStatusText()}
-          </div>
+          {/* Phase Split Indicator - Show during solving */}
+          <PhaseIndicator
+            phaseSplitsEnabled={phaseSplitsEnabled}
+            isRunning={state === "running"}
+            selectedSplitMethod={selectedSplitMethod}
+            currentPhaseIndex={currentPhaseIndex}
+          />
 
           {/* Penalty Buttons */}
-          {state === "stopped" && showPenaltyButtons && (
-            <div className="flex justify-center gap-3">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  handlePenalty(currentPenalty === "+2" ? "none" : "+2");
-                }}
-                onTouchStart={(e) => e.stopPropagation()}
-                onTouchEnd={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
-                onMouseUp={(e) => e.stopPropagation()}
-                className={`px-6 py-2 text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105 ${
-                  currentPenalty === "+2"
-                    ? "bg-yellow-600 ring-2 ring-yellow-300"
-                    : "bg-[var(--warning)] hover:bg-yellow-500"
-                }`}
-              >
-                +2 {currentPenalty === "+2" ? "✓" : ""}
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  handlePenalty(currentPenalty === "DNF" ? "none" : "DNF");
-                }}
-                onTouchStart={(e) => e.stopPropagation()}
-                onTouchEnd={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
-                onMouseUp={(e) => e.stopPropagation()}
-                className={`px-6 py-2 text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105 ${
-                  currentPenalty === "DNF"
-                    ? "bg-red-700 ring-2 ring-red-300"
-                    : "bg-[var(--error)] hover:bg-red-500"
-                }`}
-              >
-                DNF {currentPenalty === "DNF" ? "✓" : ""}
-              </button>
-            </div>
+          {state === "stopped" && (
+            <PenaltyButtons
+              showPenaltyButtons={showPenaltyButtons}
+              currentPenalty={currentPenalty}
+              onPenaltyChange={handlePenalty}
+            />
           )}
-        </div>
+        </TimerCore>
+
+        {/* Phase Results - Show after solve completion */}
+        {state === "stopped" &&
+          phaseSplitsEnabled &&
+          currentSplits.length > 0 && (
+            <PhaseResults
+              splits={currentSplits}
+              totalTime={time}
+              splitMethod={selectedSplitMethod}
+              className="mt-4"
+            />
+          )}
       </div>
     </div>
   );

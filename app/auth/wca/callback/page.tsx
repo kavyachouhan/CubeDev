@@ -17,6 +17,10 @@ export default function WCACallback() {
         const code = searchParams.get("code");
         const error = searchParams.get("error");
 
+        // Clean up the URL immediately to remove sensitive parameters
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+
         if (error) {
           setStatus("error");
           setMessage(`Authentication failed: ${error}`);
@@ -52,7 +56,7 @@ export default function WCACallback() {
           if (data.user) {
             const userData = {
               ...data.user,
-              convexId: data.user.convexId, // Store Convex user ID for future database operations
+              convexId: data.user.convexId, // Ensure convexId is included
               accessToken: data.accessToken,
               loginTime: Date.now(),
             };
@@ -66,9 +70,15 @@ export default function WCACallback() {
           if (data.warning) {
             console.warn("Database warning:", data.warning);
           }
-          // Redirect to Cube Lab timer page after a short delay
+          // Redirect to stored URL or default to Cube Lab timer page after a short delay
           setTimeout(() => {
-            router.push("/cube-lab/timer");
+            const redirectUrl = localStorage.getItem("wca_redirect_url");
+            if (redirectUrl) {
+              localStorage.removeItem("wca_redirect_url");
+              window.location.href = redirectUrl;
+            } else {
+              router.push("/cube-lab/timer");
+            }
           }, 2000);
         } else {
           setStatus("error");
@@ -95,7 +105,8 @@ export default function WCACallback() {
                   <div className="w-12 h-12 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div>
                 </div>
                 <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4 font-statement">
-                  Authenticating with <span className="text-[var(--primary)]">WCA</span>
+                  Authenticating with{" "}
+                  <span className="text-[var(--primary)]">WCA</span>
                 </h1>
                 <p className="text-[var(--text-secondary)] font-inter">
                   Please wait while we complete your sign-in...

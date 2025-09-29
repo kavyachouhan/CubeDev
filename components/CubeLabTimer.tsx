@@ -3,6 +3,8 @@
 import { useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useUser } from "@/components/UserProvider";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 // Import components
 import TimerDisplay from "./timer/TimerDisplay";
@@ -11,6 +13,7 @@ import EventSelector from "./timer/EventSelector";
 import ScrambleDisplay from "./timer/ScrambleDisplay";
 import StatsDisplay from "./timer/StatsDisplay";
 import TimerHistory from "./timer/TimerHistory";
+import ImportExportButtons from "./timer/ImportExportButtons";
 
 // Import custom hooks
 import { useTimerState } from "./timer/hooks/useTimerState";
@@ -89,6 +92,17 @@ export default function CubeLabTimer({
 
   const { loadFromCache, saveToCache } = useLocalStorageManager(user?.convexId);
 
+  // Fetch session solves from database
+  const dbSessionSolves = useQuery(
+    api.users.getSessionSolves,
+    currentSession?.convexId
+      ? { sessionId: currentSession.convexId as any }
+      : "skip"
+  );
+
+  // Batch import mutation
+  const batchImportSolves = useMutation(api.users.batchImportSolves);
+
   const {
     saveSolve,
     applyPenalty,
@@ -96,6 +110,46 @@ export default function CubeLabTimer({
     clearSessionSolves,
     updateSolve: updateSolveOperation,
   } = useSolveOperations(user?.convexId, updateSessionSolveCount);
+
+  // Convert database solves to local format and merge with local history
+  const getAllSessionSolves = useCallback(
+    (sessionId: string) => {
+      // Get local solves for this session
+      const localSolves = getSessionHistory(sessionId);
+
+      // Convert and merge database solves if available
+      if (dbSessionSolves && currentSession?.convexId) {
+        const dbSolvesLocal = convertDbSolvesToLocal(dbSessionSolves);
+
+        // Create a map to avoid duplicates (prioritize database over local storage)
+        const solvesMap = new Map();
+
+        // Add local solves first
+        localSolves.forEach((solve) => {
+          solvesMap.set(solve.id, solve);
+        });
+
+        // Add/overwrite with database solves
+        dbSolvesLocal.forEach((solve) => {
+          solvesMap.set(solve.id, solve);
+        });
+
+        // Return sorted array (newest first)
+        return Array.from(solvesMap.values()).sort(
+          (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
+        );
+      }
+
+      // Fallback to local solves only
+      return localSolves;
+    },
+    [
+      getSessionHistory,
+      dbSessionSolves,
+      currentSession?.convexId,
+      convertDbSolvesToLocal,
+    ]
+  );
 
   // Handle timer focus mode changes
   const handleTimerFocusChange = useCallback(
@@ -150,7 +204,13 @@ export default function CubeLabTimer({
 
   // Handle solve completion
   const handleSolveComplete = useCallback(
-    async (time: number, notes?: string, tags?: string[]) => {
+    async (
+      time: number,
+      notes?: string,
+      tags?: string[],
+      splits?: Array<{ phase: string; time: number }>,
+      splitMethod?: string
+    ) => {
       if (!currentSession) return null;
 
       const finalTime = calculateFinalTime(time, "none");
@@ -164,6 +224,8 @@ export default function CubeLabTimer({
         sessionId: currentSession.id,
         notes,
         tags,
+        splits,
+        splitMethod,
       };
 
       // Save solve to database and local state
@@ -235,6 +297,87 @@ export default function CubeLabTimer({
     clearSessionHistory,
   ]);
 
+  // Handle importing solves
+  const handleImportSolves = useCallback(
+    async (importedSolves: any[]) => {
+      if (!currentSession || !currentSession.convexId || !user?.convexId) {
+        console.error("No current session or user not synced to database");
+        return;
+      }
+
+      console.log(
+        `Starting batch import of ${importedSolves.length} solves...`
+      );
+
+      try {
+        // Prepare solve data for batch import
+        const solvesToImport = importedSolves.map((importedSolve) => ({
+          event: importedSolve.event || selectedEvent,
+          scramble: importedSolve.scramble || "",
+          time: importedSolve.time,
+          penalty: (importedSolve.penalty || "none") as "none" | "+2" | "DNF",
+          finalTime: importedSolve.finalTime || importedSolve.time,
+          timestamp: new Date(importedSolve.timestamp).getTime(),
+          comment: importedSolve.notes,
+          tags: importedSolve.tags,
+        }));
+
+        // Use batch import mutation for much better performance
+        const result = await batchImportSolves({
+          userId: user.convexId as any,
+          sessionId: currentSession.convexId as any,
+          solves: solvesToImport,
+        });
+
+        console.log(
+          `Batch import completed: ${result.importedCount}/${result.totalAttempted} solves imported`
+        );
+
+        // Update local cache with imported solves
+        const localSolves = importedSolves.map((importedSolve, index) => ({
+          id: `imported-${Date.now()}-${index}`,
+          time: importedSolve.time,
+          timestamp: new Date(importedSolve.timestamp),
+          scramble: importedSolve.scramble || "",
+          penalty: (importedSolve.penalty || "none") as "none" | "+2" | "DNF",
+          finalTime: importedSolve.finalTime || importedSolve.time,
+          event: importedSolve.event || selectedEvent,
+          sessionId: currentSession.id,
+          notes: importedSolve.notes,
+          tags: importedSolve.tags,
+        }));
+
+        // Add solves to local state
+        localSolves.forEach((solve) => addSolve(solve));
+
+        // Update session solve count
+        const newSolveCount =
+          getAllSessionSolves(currentSession.id).length + result.importedCount;
+        await updateSessionSolveCount(currentSession.id, newSolveCount);
+
+        console.log(`Successfully imported ${result.importedCount} solves!`);
+
+        if (result.importedCount < result.totalAttempted) {
+          console.warn(
+            `${result.totalAttempted - result.importedCount} solves failed to import`
+          );
+        }
+      } catch (error) {
+        console.error("Batch import failed:", error);
+        throw error;
+      }
+    },
+    [
+      currentSession,
+      selectedEvent,
+      user?.convexId,
+      batchImportSolves,
+      addSolve,
+      getAllSessionSolves,
+      updateSessionSolveCount,
+    ]
+  );
+
   // Handle updating a solve's notes or tags
   const handleUpdateSolve = useCallback(
     async (solveId: string, notes?: string, tags?: string[]) => {
@@ -271,9 +414,15 @@ export default function CubeLabTimer({
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 md:gap-6">
         {/* Left Column - Controls */}
         <div className="xl:col-span-2 space-y-4 md:space-y-6">
+          {/* Import/Export */}
+          <ImportExportButtons
+            history={getAllSessionSolves(currentSession.id)}
+            sessions={sessions}
+            onImport={handleImportSolves}
+          />
           {/* Session & Event Row */}
           <div
-            className={`grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 transition-all duration-500 ease-in-out ${
+            className={`grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 items-start transition-all duration-500 ease-in-out ${
               isTimerFocusMode ? "blur-md opacity-50 pointer-events-none" : ""
             }`}
           >
@@ -335,7 +484,7 @@ export default function CubeLabTimer({
 
           {/* History */}
           <TimerHistory
-            history={getSessionHistory(currentSession.id)}
+            history={getAllSessionSolves(currentSession.id)}
             selectedEvent={selectedEvent}
             onClearHistory={handleClearHistory}
             onApplyPenalty={handleApplyPenalty}

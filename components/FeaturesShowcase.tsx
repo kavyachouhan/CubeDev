@@ -2,14 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  Target,
-  Box,
-  Calendar,
+  Timer,
   BarChart3,
-  Link2,
-  Play,
+  Users,
+  Trophy,
+  BookOpen,
+  Download,
+  Clock,
   TrendingUp,
   ArrowRight,
+  User,
 } from "lucide-react";
 
 interface Feature {
@@ -28,104 +30,73 @@ export default function FeaturesShowcase() {
 
   const features: Feature[] = [
     {
-      id: "personalisation",
-      title: "Personalisation",
+      id: "modern-timer",
+      title: "Modern Timer",
       description:
-        "Training that adapts to your solves. Hit your next milestone with smart drills and plans.",
-      icon: <Target className="w-6 h-6" />,
+        "Professional speedcubing timer with inspection periods, penalty options, phase detection, and precision timing down to centiseconds.",
+      icon: <Timer className="w-6 h-6" />,
       preview: (
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
           <div className="space-y-6">
             <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-4">
                 <h4 className="font-semibold text-[var(--text-primary)] font-button">
-                  Your Training Plan
+                  Timer
                 </h4>
-                <span className="text-xs text-[var(--primary)] font-button">
-                  Week 3
-                </span>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between p-2 bg-[var(--background)] rounded">
-                  <span className="text-sm text-[var(--text-secondary)] font-inter">
-                    F2L Efficiency
+                <div className="flex gap-2">
+                  <Clock className="w-4 h-4 text-[var(--primary)]" />
+                  <span className="text-xs text-[var(--primary)] font-button">
+                    Inspection
                   </span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-[var(--border)] rounded-full overflow-hidden">
-                      <div className="w-3/4 h-full bg-[var(--primary)] animate-pulse"></div>
-                    </div>
-                    <span className="text-xs text-[var(--text-muted)] font-mono">
-                      75%
-                    </span>
+                </div>
+              </div>
+
+              <div className="text-center space-y-4">
+                <div className="text-6xl font-bold text-[var(--primary)] font-mono animate-pulse">
+                  12.43
+                </div>
+                <div className="text-sm text-[var(--text-secondary)] font-inter">
+                  Hold SPACE to prepare
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                <div className="text-center p-2 bg-[var(--background)] rounded">
+                  <div className="text-sm font-bold text-[var(--success)] font-mono">
+                    10.21
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] font-inter">
+                    Best
                   </div>
                 </div>
-                <div className="flex items-center justify-between p-2 bg-[var(--background)] rounded">
-                  <span className="text-sm text-[var(--text-secondary)] font-inter">
-                    OLL Recognition
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-[var(--border)] rounded-full overflow-hidden">
-                      <div className="w-1/2 h-full bg-[var(--warning)]"></div>
-                    </div>
-                    <span className="text-xs text-[var(--text-muted)] font-mono">
-                      50%
-                    </span>
+                <div className="text-center p-2 bg-[var(--background)] rounded">
+                  <div className="text-sm font-bold text-[var(--primary)] font-mono">
+                    12.85
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] font-inter">
+                    Ao5
+                  </div>
+                </div>
+                <div className="text-center p-2 bg-[var(--background)] rounded">
+                  <div className="text-sm font-bold text-[var(--accent)] font-mono">
+                    47
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] font-inter">
+                    Solves
                   </div>
                 </div>
               </div>
             </div>
-            <button className="w-full px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
-              Start Today's Session
-            </button>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "virtual-cube",
-      title: "Virtual Cube Lab",
-      description:
-        "See every move, learn every grip. Compare alg variants with step-through animations and finger-trick overlays.",
-      icon: <Box className="w-6 h-6" />,
-      preview: (
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
-          <div className="space-y-6">
-            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-semibold text-[var(--text-primary)] font-button">
-                  T-Perm Variants
-                </h4>
-                <div className="flex gap-1">
-                  <button className="p-1 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors">
-                    <Play className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-2 mb-3">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-                  <div
-                    key={i}
-                    className={`aspect-square rounded border-2 transition-all duration-300 ${
-                      i === 1 || i === 3 || i === 7 || i === 9
-                        ? "bg-[var(--primary)] border-[var(--primary)]"
-                        : i === 5
-                        ? "bg-[var(--warning)] border-[var(--warning)]"
-                        : "bg-[var(--surface)] border-[var(--border)]"
-                    }`}
-                    style={{ animationDelay: `${i * 50}ms` }}
-                  />
-                ))}
-              </div>
-              <div className="text-xs text-[var(--text-muted)] font-mono">
-                R U R' F' R U R' U' R' F R2 U' R'
-              </div>
-            </div>
+
             <div className="flex gap-2">
-              <button className="flex-1 px-4 py-3 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-secondary)] hover:text-[var(--primary)] text-base rounded-lg font-button transition-all">
-                Compare
-              </button>
               <button className="flex-1 px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
-                Practice
+                Start Session
+              </button>
+              <button className="px-4 py-3 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-secondary)] hover:text-[var(--primary)] rounded-lg transition-all">
+                +2
+              </button>
+              <button className="px-4 py-3 border border-[var(--border)] hover:border-[var(--error)] text-[var(--text-secondary)] hover:text-[var(--error)] rounded-lg transition-all">
+                DNF
               </button>
             </div>
           </div>
@@ -133,81 +104,30 @@ export default function FeaturesShowcase() {
       ),
     },
     {
-      id: "case-of-day",
-      title: "Case of the Day",
+      id: "comprehensive-stats",
+      title: "Comprehensive Statistics",
       description:
-        "One case, ten perfect reps. Master high-impact cases with handedness-aware algs and TPS tips.",
-      icon: <Calendar className="w-6 h-6" />,
-      preview: (
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
-          <div className="space-y-6">
-            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-semibold text-[var(--text-primary)] font-button">
-                  Today's Focus
-                </h4>
-                <span className="text-xs text-[var(--accent)] font-button">
-                  OLL #21
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-1 mb-3">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-                  <div
-                    key={i}
-                    className={`aspect-square rounded border transition-all duration-500 ${
-                      i === 2 || i === 4 || i === 6 || i === 8
-                        ? "bg-[var(--warning)] border-[var(--warning)]"
-                        : "bg-[var(--surface)] border-[var(--border)]"
-                    }`}
-                    style={{ animationDelay: `${i * 100}ms` }}
-                  />
-                ))}
-              </div>
-              <div className="space-y-2">
-                <div className="text-xs text-[var(--text-muted)] font-mono">
-                  R U R' U R U' R' U R U2 R'
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-[var(--text-secondary)] font-inter">
-                    Progress
-                  </span>
-                  <span className="text-xs text-[var(--primary)] font-mono">
-                    7/10 reps
-                  </span>
-                </div>
-                <div className="w-full h-2 bg-[var(--border)] rounded-full overflow-hidden">
-                  <div className="w-3/4 h-full bg-[var(--primary)] animate-pulse"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "analytics",
-      title: "Analytics",
-      description:
-        "Clarity in every split. Phase breakdowns, consistency score, and honest trends that actually help you improve.",
+        "Advanced analytics with solve heatmaps, time progression charts, phase breakdowns, personal bests tracking, and detailed performance insights.",
       icon: <BarChart3 className="w-6 h-6" />,
       preview: (
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
           <div className="space-y-6">
             <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
-              <h4 className="font-semibold text-[var(--text-primary)] font-button mb-3">
-                Session Analysis
+              <h4 className="font-semibold text-[var(--text-primary)] font-button mb-4">
+                Performance Analytics
               </h4>
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="text-center">
+
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="text-center p-3 bg-[var(--background)] rounded">
                   <div className="text-2xl font-bold text-[var(--primary)] font-mono">
                     12.43
                   </div>
                   <div className="text-xs text-[var(--text-muted)] font-inter">
-                    Average
+                    Session Average
                   </div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-[var(--accent)] font-mono">
+                <div className="text-center p-3 bg-[var(--background)] rounded">
+                  <div className="text-2xl font-bold text-[var(--success)] font-mono">
                     94%
                   </div>
                   <div className="text-xs text-[var(--text-muted)] font-inter">
@@ -215,84 +135,397 @@ export default function FeaturesShowcase() {
                   </div>
                 </div>
               </div>
-              <div className="space-y-2">
+
+              <div className="space-y-3">
+                <div className="text-sm font-semibold text-[var(--text-primary)] font-button">
+                  Phase Breakdown
+                </div>
                 {[
-                  { phase: "Cross", time: "2.1s", color: "success" },
-                  { phase: "F2L", time: "7.8s", color: "primary" },
-                  { phase: "OLL", time: "1.9s", color: "warning" },
-                  { phase: "PLL", time: "1.1s", color: "accent" },
+                  {
+                    phase: "Cross",
+                    time: "2.1s",
+                    width: "w-1/5",
+                    color: "bg-[var(--success)]",
+                  },
+                  {
+                    phase: "F2L",
+                    time: "7.8s",
+                    width: "w-3/4",
+                    color: "bg-[var(--primary)]",
+                  },
+                  {
+                    phase: "OLL",
+                    time: "1.9s",
+                    width: "w-1/6",
+                    color: "bg-[var(--warning)]",
+                  },
+                  {
+                    phase: "PLL",
+                    time: "1.1s",
+                    width: "w-1/8",
+                    color: "bg-[var(--accent)]",
+                  },
                 ].map((item, i) => (
                   <div
                     key={item.phase}
-                    className="flex justify-between text-xs"
-                    style={{ animationDelay: `${i * 100}ms` }}
+                    className="flex items-center justify-between"
                   >
-                    <span className="text-[var(--text-secondary)] font-inter">
+                    <span className="text-xs text-[var(--text-secondary)] font-inter w-12">
                       {item.phase}
                     </span>
-                    <span className="text-[var(--text-primary)] font-mono">
+                    <div className="flex-1 mx-2 h-2 bg-[var(--border)] rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${item.color} ${item.width} animate-pulse`}
+                        style={{ animationDelay: `${i * 100}ms` }}
+                      ></div>
+                    </div>
+                    <span className="text-xs text-[var(--text-primary)] font-mono w-10 text-right">
                       {item.time}
                     </span>
                   </div>
                 ))}
               </div>
             </div>
+
             <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)] font-inter">
               <TrendingUp className="w-4 h-4 text-[var(--success)]" />
-              <span>Improved by 0.3s this week</span>
+              <span>Improved by 0.8s this week</span>
             </div>
           </div>
         </div>
       ),
     },
     {
-      id: "integrations",
-      title: "Integrations",
+      id: "cuber-profiles",
+      title: "Cuber Profiles",
       description:
-        "Bring your data. Take it anywhere. Import from popular timers, export your sessions, or build on our API.",
-      icon: <Link2 className="w-6 h-6" />,
+        "Cuber Profiles with WCA integration, competition history, personal records, CubeDev statistics, and community features.",
+      icon: <Users className="w-6 h-6" />,
       preview: (
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
           <div className="space-y-6">
             <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
-              <h4 className="font-semibold text-[var(--text-primary)] font-button mb-3">
-                Connected Services
-              </h4>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-[var(--primary)]/20 rounded-full flex items-center justify-center">
+                  <User className="w-8 h-8 text-[var(--primary)]" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-[var(--text-primary)] font-button">
+                    Aman Sharma
+                  </h4>
+                  <div className="text-sm text-[var(--text-secondary)] font-inter">
+                    2025SHAR01 • IN
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="text-center p-2 bg-[var(--background)] rounded">
+                  <div className="text-lg font-bold text-[var(--primary)] font-mono">
+                    8.92
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] font-inter">
+                    3x3 Single
+                  </div>
+                </div>
+                <div className="text-center p-2 bg-[var(--background)] rounded">
+                  <div className="text-lg font-bold text-[var(--accent)] font-mono">
+                    11.24
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] font-inter">
+                    3x3 Average
+                  </div>
+                </div>
+                <div className="text-center p-2 bg-[var(--background)] rounded">
+                  <div className="text-lg font-bold text-[var(--warning)] font-mono">
+                    47
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] font-inter">
+                    Competitions
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-2">
+                <div className="text-sm font-semibold text-[var(--text-primary)] font-button">
+                  Recent Activity
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-[var(--text-secondary)] font-inter">
+                    • Completed 250 solves this week
+                  </div>
+                  <div className="text-xs text-[var(--text-secondary)] font-inter">
+                    • New 3x3 PB: 8.92s
+                  </div>
+                  <div className="text-xs text-[var(--text-secondary)] font-inter">
+                    • Participated in 3 challenge rooms
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button className="w-full px-6 py-3 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-secondary)] hover:text-[var(--primary)] text-base rounded-lg font-button transition-all">
+              View Full Profile
+            </button>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "challenge-rooms",
+      title: "Challenge Rooms",
+      description:
+        "Create and join timed challenge rooms with friends, compete on same scrambles, track leaderboards, and enjoy real-time competition.",
+      icon: <Trophy className="w-6 h-6" />,
+      preview: (
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
+          <div className="space-y-6">
+            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold text-[var(--text-primary)] font-button">
+                  Friday Night Challenge
+                </h4>
+                <span className="text-xs text-[var(--success)] font-button px-2 py-1 bg-[var(--success)]/10 rounded">
+                  Live
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-[var(--primary)]/20 rounded-full flex items-center justify-center">
+                  <Trophy className="w-4 h-4 text-[var(--primary)]" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                    Ao5 Format • 3x3
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] font-inter">
+                    8 participants • Expires in 2h 15m
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="text-sm font-semibold text-[var(--text-primary)] font-button">
+                  Leaderboard
+                </div>
                 {[
-                  { name: "csTimer", status: "connected", color: "success" },
-                  { name: "Twisty Timer", status: "syncing", color: "primary" },
-                  { name: "CubeDesk", status: "available", color: "muted" },
-                ].map((service, i) => (
+                  {
+                    rank: 1,
+                    name: "speedcuber_pro",
+                    time: "9.87",
+                    color: "text-[var(--success)]",
+                  },
+                  {
+                    rank: 2,
+                    name: "cube_master",
+                    time: "10.24",
+                    color: "text-[var(--primary)]",
+                  },
+                  {
+                    rank: 3,
+                    name: "fast_fingers",
+                    time: "11.56",
+                    color: "text-[var(--warning)]",
+                  },
+                ].map((entry) => (
                   <div
-                    key={service.name}
-                    className="flex items-center justify-between p-2 bg-[var(--background)] rounded transition-all duration-300"
-                    style={{ animationDelay: `${i * 150}ms` }}
+                    key={entry.rank}
+                    className="flex items-center justify-between p-2 bg-[var(--background)] rounded"
                   >
-                    <span className="text-sm text-[var(--text-secondary)] font-inter">
-                      {service.name}
-                    </span>
                     <div className="flex items-center gap-2">
-                      <div
-                        className={`w-2 h-2 rounded-full ${
-                          service.color === "success"
-                            ? "bg-[var(--success)]"
-                            : service.color === "primary"
-                            ? "bg-[var(--primary)] animate-pulse"
-                            : "bg-[var(--border)]"
-                        }`}
-                      ></div>
-                      <span className="text-xs text-[var(--text-muted)] font-inter capitalize">
-                        {service.status}
+                      <span
+                        className={`text-sm font-bold ${entry.color} font-mono w-4`}
+                      >
+                        #{entry.rank}
+                      </span>
+                      <span className="text-sm text-[var(--text-primary)] font-inter">
+                        {entry.name}
                       </span>
                     </div>
+                    <span className="text-sm font-bold text-[var(--text-primary)] font-mono">
+                      {entry.time}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
-            <button className="w-full px-6 py-3 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-secondary)] hover:text-[var(--primary)] text-base rounded-lg font-button transition-all">
-              Add Integration
+
+            <div className="flex gap-2">
+              <button className="flex-1 px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
+                Join Room
+              </button>
+              <button className="px-4 py-3 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-secondary)] hover:text-[var(--primary)] rounded-lg transition-all">
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "practice-mode",
+      title: "Practice Mode",
+      description:
+        "Structured training sessions with phase-specific drills and BPM (Blocks Per Minute) mode to improve your solving efficiency.",
+      icon: <BookOpen className="w-6 h-6" />,
+      preview: (
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
+          <div className="space-y-6">
+            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold text-[var(--text-primary)] font-button">
+                  F2L Phase Drill
+                </h4>
+                <span className="text-xs text-[var(--accent)] font-button">
+                  BPM Mode
+                </span>
+              </div>
+
+              <div className="space-y-3 mb-4">
+                <div className="flex items-center justify-between p-3 bg-[var(--background)] rounded">
+                  <div>
+                    <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                      Cross Phase
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)] font-inter">
+                      Focus on efficiency
+                    </div>
+                  </div>
+                  <div className="text-sm font-bold text-[var(--success)] font-mono">
+                    2.1s avg
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-[var(--background)] rounded border-2 border-[var(--primary)]">
+                  <div>
+                    <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                      F2L Pairs
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)] font-inter">
+                      Current drill
+                    </div>
+                  </div>
+                  <div className="text-sm font-bold text-[var(--primary)] font-mono">
+                    4.2 BPM
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-[var(--background)] rounded opacity-50">
+                  <div>
+                    <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                      Last Layer
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)] font-inter">
+                      Coming next
+                    </div>
+                  </div>
+                  <div className="text-sm font-bold text-[var(--text-muted)] font-mono">
+                    --
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[var(--text-secondary)] font-inter">
+                    Session Progress
+                  </span>
+                  <span className="text-sm text-[var(--primary)] font-mono">
+                    12/25 pairs
+                  </span>
+                </div>
+
+                <div className="w-full h-2 bg-[var(--border)] rounded-full overflow-hidden">
+                  <div className="w-1/2 h-full bg-[var(--primary)] animate-pulse"></div>
+                </div>
+
+                <div className="text-xs text-[var(--text-muted)] font-inter text-center">
+                  Target: 5.0 BPM • Current: 4.2 BPM
+                </div>
+              </div>
+            </div>
+
+            <button className="w-full px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
+              Continue Drill
             </button>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "import-export",
+      title: "Import & Export Data",
+      description:
+        "Seamless data portability with support for major timer formats, backup functionality, and easy migration from other timers.",
+      icon: <Download className="w-6 h-6" />,
+      preview: (
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
+          <div className="space-y-6">
+            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
+              <h4 className="font-semibold text-[var(--text-primary)] font-button mb-4">
+                Data Management
+              </h4>
+
+              <div className="space-y-3 mb-4">
+                {[
+                  {
+                    name: "csTimer",
+                    status: "Ready to import",
+                    color: "text-[var(--success)]",
+                  },
+                  {
+                    name: "Twisty Timer",
+                    status: "Supported format",
+                    color: "text-[var(--primary)]",
+                  },
+                  {
+                    name: "CubeDesk",
+                    status: "Compatible",
+                    color: "text-[var(--accent)]",
+                  },
+                ].map((service, i) => (
+                  <div
+                    key={service.name}
+                    className="flex items-center justify-between p-3 bg-[var(--background)] rounded transition-all duration-300"
+                    style={{ animationDelay: `${i * 150}ms` }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                          {service.name}
+                        </div>
+                        <div className="text-xs text-[var(--text-muted)] font-inter">
+                          {service.status}
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`text-xs ${service.color} font-inter`}>
+                      ✓
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-[var(--background)] p-3 rounded border border-[var(--border)]">
+                <div className="text-sm font-medium text-[var(--text-primary)] font-inter mb-2">
+                  Export includes:
+                </div>
+                <div className="text-xs text-[var(--text-secondary)] font-inter space-y-1">
+                  <div>• All solve times and scrambles</div>
+                  <div>• Session information</div>
+                  <div>• Notes and tags</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button className="flex-1 px-4 py-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] text-[var(--text-primary)] text-base rounded-lg font-button transition-all">
+                Import Data
+              </button>
+              <button className="flex-1 px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
+                Export Data
+              </button>
+            </div>
           </div>
         </div>
       ),
@@ -327,11 +560,12 @@ export default function FeaturesShowcase() {
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold text-[var(--text-primary)] mb-4 font-statement">
-            Everything You <span className="text-[var(--primary)]">Need</span>
+            Everything You <span className="text-[var(--primary)]">Need</span>{" "}
+            To Improve
           </h2>
-          <p className="text-lg md:text-2xl text-[var(--text-secondary)] max-w-2xl mx-auto font-inter">
-            Professional tools designed for serious cubers who want to improve
-            faster
+          <p className="text-lg md:text-2xl text-[var(--text-secondary)] max-w-3xl mx-auto font-inter">
+            From precision timing to competitive challenges, everything you need
+            to improve your cubing skills
           </p>
         </div>
 
@@ -349,7 +583,7 @@ export default function FeaturesShowcase() {
                   : "opacity-0 transform translate-y-12"
               }`}
             >
-              {/* Alternate layout: even indices have content first, odd indices have preview first */}
+              {/* Alternate layout */}
               {index % 2 === 0 ? (
                 <>
                   {/* Content */}
@@ -362,10 +596,6 @@ export default function FeaturesShowcase() {
                     <p className="text-xl text-[var(--text-secondary)] font-inter leading-relaxed">
                       {feature.description}
                     </p>
-                    <button className="inline-flex items-center gap-2 px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button group text-lg">
-                      Learn More
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
                   </div>
                   {/* Preview */}
                   <div className="flex justify-center lg:justify-end">
@@ -404,10 +634,6 @@ export default function FeaturesShowcase() {
                     <p className="text-xl text-[var(--text-secondary)] font-inter leading-relaxed">
                       {feature.description}
                     </p>
-                    <button className="inline-flex items-center gap-2 px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button group text-lg">
-                      Learn More
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
                   </div>
                 </>
               )}

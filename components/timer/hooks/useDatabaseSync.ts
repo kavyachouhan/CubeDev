@@ -2,19 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useCallback } from "react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
-
-interface TimerRecord {
-  id: string;
-  time: number;
-  timestamp: Date;
-  scramble: string;
-  penalty: "none" | "+2" | "DNF";
-  finalTime: number;
-  event: string;
-  sessionId: string;
-  notes?: string;
-  tags?: string[];
-}
+import { TimerRecord } from "../../../lib/stats-utils";
 
 interface Session {
   id: string;
@@ -74,6 +62,8 @@ export const useDatabaseSync = (userId?: string) => {
         sessionId: dbSolve.sessionId,
         notes: dbSolve.comment, // Map comment to notes
         tags: dbSolve.tags,
+        splits: dbSolve.splits, // Map phase split data
+        splitMethod: dbSolve.splitMethod, // Map split method
       }));
     },
     []
@@ -97,6 +87,8 @@ export const useDatabaseSync = (userId?: string) => {
         event: solve.event,
         comment: solve.notes,
         tags: solve.tags,
+        splits: solve.splits,
+        splitMethod: solve.splitMethod,
       });
       return solveId;
     } catch (error) {

@@ -2,6 +2,7 @@
 
 import {
   ChevronDown,
+  ChevronRight,
   Plus,
   Edit2,
   Trash2,
@@ -77,38 +78,13 @@ export default function SessionManager({
     true
   );
 
-  // Helper function to get display name for events
-  const getEventName = (eventId: string): string => {
-    const eventMap: { [key: string]: string } = {
-      "333": "3x3",
-      "222": "2x2",
-      "444": "4x4",
-      "555": "5x5",
-      "666": "6x6",
-      "777": "7x7",
-      "333oh": "3x3 OH",
-      "333bld": "3x3 BLD",
-      "444bld": "4x4 BLD",
-      "555bld": "5x5 BLD",
-      "333mbld": "3x3 MBLD",
-      "333fm": "3x3 FM",
-      pyram: "Pyraminx",
-      minx: "Megaminx",
-      skewb: "Skewb",
-      clock: "Clock",
-      sq1: "Square-1",
-    };
-
-    return eventMap[eventId] || eventId;
-  };
-
   // Helper to count solves in a session
   const getLiveSolveCount = (sessionId: string) => {
     return allSolveHistory.filter((solve) => solve.sessionId === sessionId)
       .length;
   };
 
-  // Body visibility state (for accessibility and to prevent interaction during collapse)
+  // State to control body visibility during expand/collapse
   const [isBodyVisible, setIsBodyVisible] = useState<boolean>(isExpanded);
 
   // Refs to measure heights
@@ -150,7 +126,7 @@ export default function SessionManager({
     setIsBodyVisible(isExpanded);
   }, []);
 
-  // Adjust max height on expand/collapse, scramble change, or resize
+  // Adjust max height on expand/collapse or content change
   useEffect(() => {
     const apply = () => {
       const { collapsed, expanded } = measureHeights();
@@ -185,7 +161,7 @@ export default function SessionManager({
   // Toggle expand/collapse
   const toggleExpanded = () => {
     if (isExpanded) {
-      // collapsing: hide body first, then shrink
+      // collapsing: hide body first, then collapse
       setIsBodyVisible(false);
       setIsExpanded(false);
     } else {
@@ -194,7 +170,7 @@ export default function SessionManager({
     }
   };
 
-  // Close dropdown on outside click
+  // Close dropdown when clicking outside
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
       if (
@@ -256,14 +232,25 @@ export default function SessionManager({
           isExpanded ? "mb-4" : "mb-0"
         }`}
       >
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <button
+          onClick={toggleExpanded}
+          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          title={isExpanded ? "Hide session" : "Show session"}
+        >
+        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
           Session
         </h3>
+          {isExpanded ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
+        </button>
         <div className="flex items-center gap-2">
           <button
             onClick={toggleExpanded}
             className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
-            title={isExpanded ? "Hide session details" : "Show session details"}
+            title={isExpanded ? "Hide session" : "Show session"}
           >
             {isExpanded ? (
               <EyeOff className="w-4 h-4" />
@@ -297,7 +284,6 @@ export default function SessionManager({
                   {currentSession.name}
                 </div>
                 <div className="text-xs text-[var(--text-muted)] font-inter truncate">
-                  {getEventName(currentSession.event)} •{" "}
                   {getLiveSolveCount(currentSession.id)} solves
                 </div>
               </div>
@@ -446,7 +432,6 @@ export default function SessionManager({
                             {session.name}
                           </div>
                           <div className="text-xs text-[var(--text-muted)] font-inter truncate">
-                            {getEventName(session.event)} •{" "}
                             {getLiveSolveCount(session.id)} solves
                           </div>
                         </div>

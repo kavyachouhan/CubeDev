@@ -7,12 +7,9 @@ import { useDatabaseSync } from "./timer/hooks/useDatabaseSync";
 import { useLocalStorageManager } from "./timer/hooks/useLocalStorageManager";
 import SolveHeatmap from "./stats/SolveHeatmap";
 import StatsFilters from "./stats/StatsFilters";
-import OverviewCards from "./stats/OverviewCards";
 import TimeProgressChart from "./stats/TimeProgressChart";
 import TimeDistributionChart from "./stats/TimeDistributionChart";
-import SessionStatsChart from "./stats/SessionStatsChart";
 import PersonalBestsCard from "./stats/PersonalBestsCard";
-import AverageProgressCard from "./stats/AverageProgressCard";
 
 interface TimerRecord {
   id: string;
@@ -25,15 +22,8 @@ interface TimerRecord {
   sessionId: string;
   notes?: string;
   tags?: string[];
-}
-
-interface Session {
-  id: string;
-  name: string;
-  event: string;
-  createdAt: Date;
-  solveCount: number;
-  convexId?: string;
+  splits?: Array<{ phase: string; time: number }>;
+  splitMethod?: string;
 }
 
 export type TimeFilter = "7d" | "30d" | "3m" | "6m" | "1y" | "all" | "custom";
@@ -274,16 +264,13 @@ export default function CubeLabStats() {
         allSolveHistory={solves}
       />
 
-      {/* Overview Cards */}
-      <OverviewCards solves={filteredSolves} />
+      {/* Time Progress Chart */}
+      <div className="timer-card lg:col-span-2">
+        <TimeProgressChart solves={filteredSolves} />
+      </div>
 
       {/* Charts Grid */}
-      <div className="stats-grid gap-6">
-        {/* Time Progress Chart */}
-        <div className="timer-card lg:col-span-2">
-          <TimeProgressChart solves={filteredSolves} />
-        </div>
-
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Personal Bests */}
         <div className="timer-card">
           <PersonalBestsCard solves={filteredSolves} />
@@ -293,21 +280,8 @@ export default function CubeLabStats() {
         <div className="timer-card">
           <TimeDistributionChart solves={filteredSolves} />
         </div>
-
-        {/* Session Statistics */}
-        <div className="timer-card">
-          <SessionStatsChart
-            solves={filteredSolves}
-            sessions={availableSessions}
-          />
-        </div>
-
-        {/* Average Progress */}
-        <div className="timer-card">
-          <AverageProgressCard solves={filteredSolves} />
-        </div>
       </div>
-      
+
       {/* Solve Heatmap */}
       <div className="timer-card">
         <SolveHeatmap solves={filteredSolves} />
