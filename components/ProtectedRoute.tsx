@@ -46,10 +46,6 @@ export default function ProtectedRoute({
     return (
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
         <div className="max-w-md mx-auto text-center space-y-6 p-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] rounded-xl flex items-center justify-center mx-auto">
-            <div className="w-8 h-8 bg-white rounded-sm"></div>
-          </div>
-
           <div className="space-y-3">
             <h1 className="text-2xl font-bold text-[var(--text-primary)] font-statement">
               Authentication Required

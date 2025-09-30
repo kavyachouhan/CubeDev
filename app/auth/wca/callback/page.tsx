@@ -19,11 +19,16 @@ function WCACallbackContent() {
         return;
       }
 
+      const code = searchParams.get("code");
+      const error = searchParams.get("error");
+
+      // Don't process if no params are present
+      if (!code && !error) {
+        return;
+      }
+
       try {
         setIsProcessing(true);
-
-        const code = searchParams.get("code");
-        const error = searchParams.get("error");
 
         // Clean up the URL immediately to remove sensitive parameters
         const cleanUrl = window.location.origin + window.location.pathname;
@@ -61,6 +66,11 @@ function WCACallbackContent() {
           return;
         }
 
+        console.log(
+          "Starting token exchange for code:",
+          code.slice(0, 8) + "..."
+        );
+
         // Exchange code for access token
         const response = await fetch("/api/auth/wca/token", {
           method: "POST",
@@ -70,8 +80,11 @@ function WCACallbackContent() {
           body: JSON.stringify({ code }),
         });
 
+        console.log("Token exchange response status:", response.status);
+
         if (!response.ok) {
           const errorData = await response.json();
+          console.error("Token exchange failed:", errorData);
           const authResult = {
             success: false,
             error: errorData.error || "Failed to exchange code for token",
@@ -81,6 +94,10 @@ function WCACallbackContent() {
         }
 
         const data = await response.json();
+        console.log("Token exchange successful:", {
+          success: data.success,
+          hasUser: !!data.user,
+        });
 
         if (data.success) {
           // Store successful auth result
@@ -140,10 +157,10 @@ function WCACallbackContent() {
     };
 
     // Only run if we have search params and haven't started processing
-    if (searchParams && !isProcessing) {
+    if (searchParams) {
       handleCallback();
     }
-  }, [searchParams, router, isProcessing]);
+  }, [searchParams, router]);
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">

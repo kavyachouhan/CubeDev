@@ -577,7 +577,7 @@ export default function FeaturesShowcase() {
               ref={(el) => {
                 featureRefs.current[index] = el;
               }}
-              className={`grid lg:grid-cols-2 gap-8 lg:gap-12 items-center transition-all duration-700 ${
+              className={`grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center transition-all duration-700 ${
                 visibleFeatures.has(index)
                   ? "opacity-100 transform translate-y-0"
                   : "opacity-0 transform translate-y-12"
