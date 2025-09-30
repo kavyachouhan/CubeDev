@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CubeDev
 
-## Getting Started
+**A comprehensive speedcubing platform for cubers of all levels**
 
-First, run the development server:
+Visit CubeDev at **[cubedev.xyz](https://cubedev.xyz)**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Advanced Timer
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Precision Timing**: Centisecond accuracy with inspection periods
+- **Smart Penalties**: +2 and DNF support with undo functionality
+- **Phase Detection**: Automatic cross, F2L, OLL, and PLL phase timing
+- **Session Management**: Organize solves by events and sessions
+- **Keyboard Shortcuts**: Spacebar controls
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Comprehensive Statistics
 
-## Learn More
+- **Performance Analytics**: Detailed solve analysis and trends
+- **Visual Charts**: Time progression, distribution, and heatmaps
+- **Personal Bests**: Track singles and averages (Ao5, Ao12)
+- **Consistency Metrics**: Standard deviation and solve reliability
 
-To learn more about Next.js, take a look at the following resources:
+### Cuber Profiles
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **WCA Integration**: Seamless World Cube Association authentication
+- **Profile Management**: Competition history and personal records
+- **CubeDev Stats**: Platform-specific achievements and statistics
+- **Community Features**: Connect with other speedcubers
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Challenge Rooms
 
-## Deploy on Vercel
+- **Real-time Competition**: Compete with friends on same scrambles
+- **Multiple Formats**: Ao5, Ao12, single solve challenges
+- **Live Leaderboards**: Track rankings and progress in real-time
+- **Room Management**: Create private/public rooms with custom settings
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Practice Mode
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Structured Training**: Phase-specific drill sessions
+- **BPM Mode**: Blocks Per Minute efficiency training
+
+### Data Management
+
+- **Import/Export**: Support for csTimer, Twisty Timer, CubeDesk formats
+- **Backup & Sync**: Secure cloud storage for all solve data
+- **Cross-platform**: Access your data from any device
+- **Migration Tools**: Easy transition from other timer applications
+
+## Technology Stack
+
+- **Frontend**: Next.js 14 with App Router, TypeScript, Tailwind CSS
+- **Backend**: Convex real-time database with mutations and queries
+- **Authentication**: WCA OAuth integration for secure sign-in
+- **Deployment**: Vercel with edge functions and global CDN
+- **UI/UX**: Custom dark theme with responsive design
+
+## Contributing
+
+**Note: CubeDev is currently not open for public contributions** as it's in active development. However, if you:
+
+- **Found a bug**: Please report it by creating an issue
+-  **Have feature suggestions**: Share your ideas through issues
+- **Interested in collaboration**: Reach out to discuss opportunities
+
+Contact: https://www.cubedev.xyz/contact
+
+## License
+
+This project is currently proprietary. All rights reserved.

@@ -1,0 +1,45 @@
+# CubeDev - Speedcubing Platform
+# https://cubedev.xyz
+
+User-agent: *
+Allow: /
+
+# Allow all main pages
+Allow: /about
+Allow: /cube-lab
+Allow: /cuber
+Allow: /contact
+Allow: /credits
+Allow: /privacy
+Allow: /terms
+
+# Allow public cuber profiles
+Allow: /cuber/*
+
+# Disallow authentication and API routes
+Disallow: /api/
+Disallow: /auth/
+Disallow: /_next/
+Disallow: /_vercel/
+
+# Disallow private user areas
+Disallow: /me
+Disallow: /cube-lab/room/*
+Disallow: /cube-lab/chat/*
+
+# Allow crawling of challenge rooms list but not specific rooms
+Allow: /cube-lab/challenges
+Disallow: /cube-lab/challenges/room/*
+
+# Allow statistics and timer pages for discovery
+Allow: /cube-lab/timer
+Allow: /cube-lab/statistics
+
+# Sitemap location
+Sitemap: https://cubedev.xyz/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Cache directive
+Cache-delay: 86400

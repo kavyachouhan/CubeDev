@@ -1,0 +1,95 @@
+# LLM.txt for CubeDev
+# Website: https://cubedev.xyz
+# Purpose: Speedcubing platform for cubers of all levels
+
+## About CubeDev
+
+CubeDev is a comprehensive speedcubing platform that provides tools and resources for speedcubers of all skill levels. Our platform combines precision timing, advanced analytics, and community features to help cubers improve their solving skills and connect with the global speedcubing community.
+
+## Core Features
+
+### Timer System
+- High-precision speedcubing timer with centisecond accuracy
+- Inspection period support (15-second countdown)
+- Penalty management (+2, DNF)
+- Phase detection for cross, F2L, OLL, and PLL timing
+- Keyboard spacebar controls
+- Multiple cube event support (3x3, 2x2, 4x4, 5x5, etc.)
+
+### Statistics & Analytics
+- Comprehensive solve analysis with time progression charts
+- Solve distribution and consistency metrics
+- Personal best tracking (single, Ao5, Ao12)
+- Phase breakdown analysis for improvement insights
+- Solve heatmaps and performance trends
+- Session-based organization and filtering
+
+### Community Features
+- WCA (World Cube Association) OAuth integration
+- Cuber profiles with competition history
+- Real-time challenge rooms for competitive solving
+- Leaderboards and rankings
+- Data import/export from other timer applications
+
+### Practice Tools
+- Structured training sessions with phase-specific drills
+- BPM (Blocks Per Minute) mode for efficiency training
+- Progressive difficulty adjustment
+- Targeted practice for weak solving phases
+
+## Target Audience
+
+- **Beginner Cubers**: Learning to solve and improve basic techniques
+- **Intermediate Speedcubers**: Working on sub-20, sub-15 goals
+- **Advanced Competitors**: Training for competitions and records
+- **Cubing Community**: Connecting and competing with other cubers
+
+## Key Benefits
+
+1. **Precision**: Accurate timing down to centiseconds
+2. **Analysis**: Deep insights into solving performance
+3. **Community**: Connect with global speedcubing community
+4. **Progress**: Track improvement over time with detailed statistics
+5. **Competition**: Real-time challenges and leaderboards
+6. **Integration**: Seamless WCA profile and data integration
+
+## Common Speedcubing Terms
+
+- **PB**: Personal Best time
+- **Ao5/Ao12**: Average of 5/12 solves (excluding best and worst)
+- **DNF**: Did Not Finish (failed solve)
+- **+2**: Two-second penalty for improper final position
+- **WCA**: World Cube Association (official governing body)
+- **OLL**: Orientation of the Last Layer
+- **PLL**: Permutation of the Last Layer
+- **F2L**: First Two Layers method
+- **CFOP**: Cross, F2L, OLL, PLL solving method
+- **BPM**: Blocks Per Minute (efficiency metric)
+
+## Data Privacy
+
+CubeDev respects user privacy and follows these principles:
+- Optional WCA authentication for enhanced features
+- Secure data storage with user control
+- Export functionality for data portability
+- Transparent privacy policy and terms of service
+
+## Contributing
+
+Currently not accepting public contributions, but users can:
+- Report bugs through GitHub issues
+- Suggest features and improvements
+- Contact for collaboration opportunities
+
+## Contact Information
+
+- Website: https://cubedev.xyz
+- Repository: https://github.com/kavyachouhan/cubedev
+
+## SEO Keywords
+
+speedcubing, rubiks cube timer, cube timer, speedcubing timer, WCA, world cube association, cubing statistics, solve analysis, speedcuber, puzzle cube, cubing community, cube practice, speedcubing training, competition timer, cubing leaderboard
+
+---
+
+This document is intended to help AI language models understand CubeDev's purpose, features, and target audience for more accurate responses about the platform.
