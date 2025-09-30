@@ -10,10 +10,18 @@ function WCACallbackContent() {
     "loading"
   );
   const [message, setMessage] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const handleCallback = async () => {
+      // Prevent multiple executions
+      if (isProcessing) {
+        return;
+      }
+
       try {
+        setIsProcessing(true);
+
         const code = searchParams.get("code");
         const error = searchParams.get("error");
 
@@ -33,6 +41,26 @@ function WCACallbackContent() {
           return;
         }
 
+        // Check if we've already processed this authentication
+        const authSessionKey = `wca_auth_${code.slice(0, 8)}`;
+        const existingAuth = sessionStorage.getItem(authSessionKey);
+
+        if (existingAuth) {
+          // Already processed this code, check the result
+          const authResult = JSON.parse(existingAuth);
+          if (authResult.success) {
+            setStatus("success");
+            setMessage("Authentication successful!");
+            setTimeout(() => {
+              router.push("/cube-lab/timer");
+            }, 1500);
+          } else {
+            setStatus("error");
+            setMessage(authResult.error || "Authentication failed");
+          }
+          return;
+        }
+
         // Exchange code for access token
         const response = await fetch("/api/auth/wca/token", {
           method: "POST",
@@ -43,12 +71,24 @@ function WCACallbackContent() {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to exchange code for token");
+          const errorData = await response.json();
+          const authResult = {
+            success: false,
+            error: errorData.error || "Failed to exchange code for token",
+          };
+          sessionStorage.setItem(authSessionKey, JSON.stringify(authResult));
+          throw new Error(authResult.error);
         }
 
         const data = await response.json();
 
         if (data.success) {
+          // Store successful auth result
+          sessionStorage.setItem(
+            authSessionKey,
+            JSON.stringify({ success: true })
+          );
+
           setStatus("success");
           setMessage("Successfully signed in with WCA!");
 
@@ -70,6 +110,7 @@ function WCACallbackContent() {
           if (data.warning) {
             console.warn("Database warning:", data.warning);
           }
+
           // Redirect to stored URL or default to Cube Lab timer page after a short delay
           setTimeout(() => {
             const redirectUrl = localStorage.getItem("wca_redirect_url");
@@ -81,6 +122,11 @@ function WCACallbackContent() {
             }
           }, 2000);
         } else {
+          const authResult = {
+            success: false,
+            error: data.error || "Authentication failed",
+          };
+          sessionStorage.setItem(authSessionKey, JSON.stringify(authResult));
           setStatus("error");
           setMessage(data.error || "Authentication failed");
         }
@@ -88,11 +134,16 @@ function WCACallbackContent() {
         console.error("WCA OAuth callback error:", error);
         setStatus("error");
         setMessage("An unexpected error occurred during authentication");
+      } finally {
+        setIsProcessing(false);
       }
     };
 
-    handleCallback();
-  }, [searchParams, router]);
+    // Only run if we have search params and haven't started processing
+    if (searchParams && !isProcessing) {
+      handleCallback();
+    }
+  }, [searchParams, router, isProcessing]);
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
