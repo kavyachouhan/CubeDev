@@ -210,7 +210,7 @@ export default function WCAStats({
     return data;
   }, [competitionResults, competitionDetails, selectedPeriod]);
 
-  // Calculate WCA achievements
+  // Calculate WCA achievements - memoized to prevent recalculation
   const achievements = useMemo(() => {
     if (!personalRecords) return null;
 
@@ -219,6 +219,8 @@ export default function WCAStats({
       competitionResults?.filter((r) => r.pos <= 3).length || 0;
     const firstPlaces =
       competitionResults?.filter((r) => r.pos === 1).length || 0;
+
+    // Only recalculate totalCompetitions when competitionDetails actually changes
     const totalCompetitions = competitionDetails.size;
 
     const bestWorldRanking = personalRecords
@@ -258,7 +260,7 @@ export default function WCAStats({
       continentalRecords,
       totalRecords,
     };
-  }, [personalRecords, competitionResults, competitionDetails]);
+  }, [personalRecords, competitionResults, competitionDetails.size]);
 
   const getIntensityColor = (level: number) => {
     const colors = {

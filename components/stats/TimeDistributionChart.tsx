@@ -97,12 +97,16 @@ export default function TimeDistributionChart({
         bucketCount - 1,
         Math.floor((time - minTime) / bucketSize)
       );
-      buckets[bucketIndex].count++;
+      if (buckets[bucketIndex]) {
+        buckets[bucketIndex].count++;
+      }
     });
 
     // Calculate percentages
     buckets.forEach((bucket) => {
-      bucket.percentage = (bucket.count / times.length) * 100;
+      if (bucket && times.length > 0) {
+        bucket.percentage = (bucket.count / times.length) * 100;
+      }
     });
 
     // Calculate statistics
@@ -116,10 +120,11 @@ export default function TimeDistributionChart({
       times.length;
     const stdDev = Math.sqrt(variance);
 
-    // Find most frequent bucket
-    const mostFrequentBucket = buckets.reduce((max, bucket) =>
-      bucket.count > max.count ? bucket : max
-    );
+    // Find most frequent bucket - with safety check
+    const mostFrequentBucket = buckets.reduce((max, bucket) => {
+      if (!bucket || !max) return max || bucket;
+      return bucket.count > max.count ? bucket : max;
+    }, buckets[0]);
 
     // Calculate quartiles
     const q1 = sortedTimes[Math.floor(sortedTimes.length * 0.25)];
@@ -227,8 +232,11 @@ export default function TimeDistributionChart({
 
                 <div className="space-y-4">
                   {distributionData.buckets.map((bucket, index) => {
+                    if (!bucket) return null;
                     const maxCount = Math.max(
-                      ...distributionData.buckets.map((b) => b.count)
+                      ...distributionData.buckets
+                        .filter((b) => b)
+                        .map((b) => b.count)
                     );
                     const widthPercentage =
                       maxCount > 0 ? (bucket.count / maxCount) * 100 : 0;

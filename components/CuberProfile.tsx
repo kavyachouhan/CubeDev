@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { Loader2, AlertCircle } from "lucide-react";
@@ -96,6 +96,9 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoadingCompetitions, setIsLoadingCompetitions] = useState(false);
   const [shouldLoadCompetitions, setShouldLoadCompetitions] = useState(false);
+
+  // Use ref to track if competitions have been loaded to prevent re-fetching
+  const competitionsLoadedRef = useRef(false);
 
   // URL tab management
   const searchParams = useSearchParams();
@@ -284,11 +287,24 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
 
   // Separate effect for loading competition details lazily when WCA tab is viewed
   useEffect(() => {
+    // Prevent re-running if already loaded
+    if (competitionsLoadedRef.current) {
+      return;
+    }
+
     if (
       !shouldLoadCompetitions ||
       !competitionResults ||
-      isLoadingCompetitions
+      isLoadingCompetitions ||
+      competitionResults.length === 0
     ) {
+      return;
+    }
+
+    // Prevent re-running if we already have competition details loaded
+    if (competitionDetails.size > 0) {
+      competitionsLoadedRef.current = true;
+      setIsLoadingCompetitions(false);
       return;
     }
 
@@ -323,6 +339,13 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
         // If we have some cached data, update state immediately
         if (competitionDetailsMap.size > 0) {
           setCompetitionDetails(new Map(competitionDetailsMap));
+        }
+
+        // If all competitions are cached, we're done
+        if (uncachedCompIds.length === 0) {
+          competitionsLoadedRef.current = true;
+          setIsLoadingCompetitions(false);
+          return;
         }
 
         // Batch requests to avoid hitting rate limits (only for uncached items)
@@ -391,7 +414,11 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
           }
         }
 
+        // Final update with all competitions
         setCompetitionDetails(competitionDetailsMap);
+
+        // Mark as loaded to prevent re-fetching
+        competitionsLoadedRef.current = true;
       } catch (error) {
         console.warn("Failed to fetch competition details:", error);
       } finally {
