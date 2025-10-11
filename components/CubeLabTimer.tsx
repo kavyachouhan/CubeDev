@@ -458,13 +458,15 @@ export default function CubeLabTimer({
             />
           </div>
 
-          {/* Timer */}
-          <TimerDisplay
-            onSolveComplete={handleSolveComplete}
-            onApplyPenalty={handleLastSolvePenalty}
-            lastSolveId={lastSolveId}
-            onTimerStateChange={handleTimerFocusChange}
-          />
+          {/* Timer - with enhanced mobile sizing */}
+          <div className="xl:mb-0">
+            <TimerDisplay
+              onSolveComplete={handleSolveComplete}
+              onApplyPenalty={handleLastSolvePenalty}
+              lastSolveId={lastSolveId}
+              onTimerStateChange={handleTimerFocusChange}
+            />
+          </div>
         </div>
 
         {/* Right Column - Stats & Visualization */}

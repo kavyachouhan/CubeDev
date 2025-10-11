@@ -10,6 +10,8 @@ import StatsFilters from "./stats/StatsFilters";
 import TimeProgressChart from "./stats/TimeProgressChart";
 import TimeDistributionChart from "./stats/TimeDistributionChart";
 import PersonalBestsCard from "./stats/PersonalBestsCard";
+import { StatsPageSkeleton } from "./stats/StatsSkeletons";
+import { getCachedStats, cacheStats } from "@/lib/stats-cache";
 
 interface TimerRecord {
   id: string;
@@ -64,15 +66,30 @@ export default function CubeLabStats() {
 
   const [solves, setSolves] = useState<TimerRecord[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
-  // Initialize solves from database or cache
+  // Handle client-side mounting
   useEffect(() => {
-    if (!user?.convexId || isInitialized) return;
+    setIsMounted(true);
+  }, []);
+
+  // Initialize solves from cache first, then database
+  useEffect(() => {
+    if (!user?.convexId || !isMounted) return;
+
+    const userId = user.convexId; // Extract to ensure TypeScript recognizes it's defined
 
     const initializeSolves = () => {
       let allSolves: TimerRecord[] = [];
 
-      // Prefer database solves if available
+      // Try cache first for instant display
+      const cachedSolves = getCachedStats(userId);
+      if (cachedSolves && cachedSolves.length > 0) {
+        setSolves(cachedSolves);
+        setIsInitialized(true);
+      }
+
+      // Then check database or local storage
       if (dbSolves && dbSolves.length > 0) {
         allSolves = dbSolves.map((solve) => ({
           id: solve._id,
@@ -86,21 +103,32 @@ export default function CubeLabStats() {
           notes: solve.comment,
           tags: solve.tags,
         }));
-      } else {
-        // Fallback to cached solves
-        const cachedSolves = loadFromCache("solves", []) as TimerRecord[];
-        allSolves = cachedSolves.map((solve) => ({
-          ...solve,
-          timestamp: new Date(solve.timestamp),
-        }));
-      }
 
-      setSolves(allSolves);
-      setIsInitialized(true);
+        // Update state and cache
+        setSolves(allSolves);
+        cacheStats(userId, allSolves);
+        setIsInitialized(true);
+      } else if (!cachedSolves) {
+        // Fallback to localStorage if no cache and no DB
+        const localSolves = loadFromCache("solves", []) as TimerRecord[];
+        allSolves = localSolves.map((solve) => ({
+          ...solve,
+          timestamp:
+            solve.timestamp instanceof Date
+              ? solve.timestamp
+              : new Date(solve.timestamp),
+        }));
+
+        if (allSolves.length > 0) {
+          setSolves(allSolves);
+          cacheStats(userId, allSolves);
+        }
+        setIsInitialized(true);
+      }
     };
 
     // Only initialize when sessions are ready
-    if (isSessionsInitialized) {
+    if (isSessionsInitialized || !isLoading) {
       initializeSolves();
     }
   }, [
@@ -108,7 +136,8 @@ export default function CubeLabStats() {
     dbSolves,
     isSessionsInitialized,
     loadFromCache,
-    isInitialized,
+    isMounted,
+    isLoading,
   ]);
 
   // Apply filters to solves
@@ -194,32 +223,46 @@ export default function CubeLabStats() {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
+  // Don't render until mounted (prevents hydration errors)
+  if (!isMounted) {
+    return <StatsPageSkeleton />;
+  }
+
   if (!user) {
     return (
       <div className="p-8 text-center">
-        <div className="text-[var(--text-secondary)]">
-          Please log in to view statistics
+        <div className="timer-card max-w-md mx-auto">
+          <div className="w-16 h-16 mx-auto mb-4 bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
+            <svg
+              className="w-8 h-8 text-[var(--text-muted)]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
+            Login Required
+          </h3>
+          <p className="text-[var(--text-secondary)]">
+            Please log in to view your statistics
+          </p>
         </div>
       </div>
     );
   }
 
   if (isLoading || !isInitialized) {
-    return (
-      <div className="p-8">
-        <div className="stats-grid gap-6">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="timer-card h-48 animate-pulse bg-[var(--surface-elevated)]"
-            />
-          ))}
-        </div>
-      </div>
-    );
+    return <StatsPageSkeleton />;
   }
 
-  if (!solves.length) {
+  if (solves.length === 0) {
     return (
       <div className="p-8 text-center">
         <div className="timer-card max-w-md mx-auto">

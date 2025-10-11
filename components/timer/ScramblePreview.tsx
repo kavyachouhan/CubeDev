@@ -53,11 +53,11 @@ export default function ScramblePreview({
                               ? "square1"
                               : event === "clock"
                                 ? "clock"
-                                  : event === "444bld"
-                                    ? "4x4x4"
-                                    : event === "555bld"
-                                      ? "5x5x5"
-                              : "3x3x3",
+                                : event === "444bld"
+                                  ? "4x4x4"
+                                  : event === "555bld"
+                                    ? "5x5x5"
+                                    : "3x3x3",
         alg: scramble,
         hintFacelets: "none",
         backView: "none",
@@ -65,9 +65,9 @@ export default function ScramblePreview({
         background: "none",
       });
 
-      // Set player size to fill container
+      // Set player size to fill container - responsive heights
       player.style.width = "100%";
-      player.style.height = "200px";
+      player.style.height = window.innerWidth < 640 ? "180px" : "200px";
 
       containerRef.current?.appendChild(player);
       setIsLoaded(true);
@@ -76,7 +76,7 @@ export default function ScramblePreview({
       // Show error message
       if (containerRef.current) {
         containerRef.current.innerHTML = `
-          <div class="w-full h-48 bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
+          <div class="w-full h-[180px] sm:h-48 bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
             <div class="text-center">
               <div class="text-4xl mb-2">🧩</div>
               <div class="text-sm text-[var(--text-muted)]">Preview not available</div>
@@ -123,7 +123,7 @@ export default function ScramblePreview({
       </div>
 
       {!showPreview ? (
-        <div className="w-full min-h-[200px] bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
+        <div className="w-full min-h-[180px] sm:min-h-[200px] bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
           <button
             onClick={() => setShowPreview(true)}
             className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-md hover:bg-[var(--primary-hover)] transition-colors"
@@ -146,7 +146,7 @@ export default function ScramblePreview({
           )}
           <div
             ref={containerRef}
-            className="w-full min-h-[200px] bg-[var(--surface-elevated)] rounded-lg"
+            className="w-full min-h-[180px] sm:min-h-[200px] bg-[var(--surface-elevated)] rounded-lg"
           ></div>
         </div>
       )}

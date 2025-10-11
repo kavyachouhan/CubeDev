@@ -11,6 +11,10 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import ProfileSidebar from "./profile/ProfileSidebar";
 import CubeDevStats from "./profile/CubeDevStats";
 import WCAStats from "./profile/WCAStats";
+import { ProfileSidebarSkeleton } from "./SkeletonLoaders";
+
+// Import cache utilities
+import { getFromCache, saveToCache, WCA_CACHE_KEYS } from "@/lib/wca-cache";
 
 interface CuberProfileProps {
   wcaId: string;
@@ -91,6 +95,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoadingCompetitions, setIsLoadingCompetitions] = useState(false);
+  const [shouldLoadCompetitions, setShouldLoadCompetitions] = useState(false);
 
   // URL tab management
   const searchParams = useSearchParams();
@@ -118,6 +123,11 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
       params.set("tab", tabName);
     }
     router.push(pathname + (params.toString() ? "?" + params.toString() : ""));
+
+    // Trigger competition details loading when WCA tab is opened
+    if (tabName === "wca" && !shouldLoadCompetitions) {
+      setShouldLoadCompetitions(true);
+    }
   };
 
   useEffect(() => {
@@ -144,6 +154,48 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
         setIsLoading(true);
         setError(null);
 
+        // Try to get profile from cache first
+        const cachedProfile = getFromCache<WCAProfileData>(
+          WCA_CACHE_KEYS.profile(wcaId)
+        );
+        const cachedResults = getFromCache<WCACompetitionResult[]>(
+          WCA_CACHE_KEYS.results(wcaId)
+        );
+
+        if (cachedProfile) {
+          setProfileData(cachedProfile);
+          // Extract personal records from cached profile
+          if (cachedProfile.person.personal_records) {
+            const records: WCAPersonalRecord[] = Object.entries(
+              cachedProfile.person.personal_records
+            )
+              .map(([eventId, record]: [string, any]) => ({
+                event_id: eventId,
+                best: record.single?.best || 0,
+                world_ranking: record.single?.world_ranking || 0,
+                continental_ranking: record.single?.continental_ranking || 0,
+                national_ranking: record.single?.national_ranking || 0,
+                average: record.average?.best || 0,
+                average_world_ranking: record.average?.world_ranking || 0,
+                average_continental_ranking:
+                  record.average?.continental_ranking || 0,
+                average_national_ranking: record.average?.national_ranking || 0,
+              }))
+              .filter((record) => record.best > 0 || record.average > 0);
+
+            setPersonalRecords(records);
+          }
+        }
+
+        if (cachedResults) {
+          setCompetitionResults(cachedResults);
+        }
+
+        // If we have cached data, show it immediately but still fetch fresh data in background
+        if (cachedProfile && cachedResults) {
+          setIsLoading(false);
+        }
+
         // Fetch basic profile data
         const profileResponse = await fetch(
           `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}`,
@@ -164,6 +216,9 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
 
         const profileData = await profileResponse.json();
         setProfileData(profileData);
+
+        // Cache the profile data
+        saveToCache(WCA_CACHE_KEYS.profile(wcaId), profileData);
 
         // Extract personal records
         if (profileData.person.personal_records) {
@@ -190,7 +245,6 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
 
         // Fetch competition results with better error handling
         try {
-          setIsLoadingCompetitions(true);
           const resultsResponse = await fetch(
             `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}/results`,
             {
@@ -205,89 +259,17 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
             const resultsData = await resultsResponse.json();
             setCompetitionResults(resultsData || []);
 
-            // Fetch competition details for each unique competition
-            const uniqueCompetitionIds = Array.from(
-              new Set(
-                (resultsData || []).map(
-                  (r: WCACompetitionResult) => r.competition_id
-                )
-              )
-            );
-
-            const competitionDetailsMap = new Map<string, CompetitionInfo>();
-
-            // Batch requests to avoid hitting rate limits
-            for (let i = 0; i < uniqueCompetitionIds.length; i += 3) {
-              const batch = uniqueCompetitionIds.slice(i, i + 3) as string[];
-              const promises = batch.map(async (compId: string) => {
-                try {
-                  // Add delay to respect rate limits
-                  await new Promise((resolve) => setTimeout(resolve, 100));
-
-                  const response = await fetch(
-                    `https://www.worldcubeassociation.org/api/v0/competitions/${compId}`,
-                    {
-                      headers: {
-                        Accept: "application/json",
-                        "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
-                      },
-                    }
-                  );
-
-                  if (response.ok) {
-                    const data = await response.json();
-                    return { compId, data };
-                  } else {
-                    console.warn(
-                      `Failed to fetch competition ${compId}: ${response.status}`
-                    );
-                  }
-                } catch (error) {
-                  console.warn(
-                    `Failed to fetch details for competition ${compId}:`,
-                    error
-                  );
-                }
-                return null;
-              });
-
-              const results = await Promise.all(promises);
-              results.forEach((result) => {
-                if (result && result.data) {
-                  competitionDetailsMap.set(result.compId, {
-                    id: result.data.id,
-                    name: result.data.name,
-                    start_date: result.data.start_date,
-                    end_date: result.data.end_date,
-                    city: result.data.city,
-                    venue: result.data.venue,
-                    country_iso2: result.data.country_iso2,
-                    events: result.data.event_ids || [],
-                    bestResult: 999, // Will be updated with actual results
-                    mainEvent: undefined,
-                  });
-                }
-              });
-
-              // Add longer delay between batches
-              if (i + 3 < uniqueCompetitionIds.length) {
-                await new Promise((resolve) => setTimeout(resolve, 2000));
-              }
-            }
-
-            setCompetitionDetails(competitionDetailsMap);
+            // Cache the results data
+            saveToCache(WCA_CACHE_KEYS.results(wcaId), resultsData || []);
           } else {
             console.warn(`Failed to fetch results: ${resultsResponse.status}`);
           }
         } catch (error) {
           console.warn("Failed to fetch competition results:", error);
-        } finally {
-          setIsLoadingCompetitions(false);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
         setIsLoading(false);
-        setIsLoadingCompetitions(false);
       } finally {
         setIsLoading(false);
       }
@@ -299,6 +281,133 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
       }
     }
   }, [wcaId, cubeDevUsers, cubeDevUser, privacySettings]);
+
+  // Separate effect for loading competition details lazily when WCA tab is viewed
+  useEffect(() => {
+    if (
+      !shouldLoadCompetitions ||
+      !competitionResults ||
+      isLoadingCompetitions
+    ) {
+      return;
+    }
+
+    const fetchCompetitionDetails = async () => {
+      try {
+        setIsLoadingCompetitions(true);
+
+        // Fetch competition details for each unique competition
+        const uniqueCompetitionIds = Array.from(
+          new Set(
+            (competitionResults || []).map(
+              (r: WCACompetitionResult) => r.competition_id
+            )
+          )
+        );
+
+        const competitionDetailsMap = new Map<string, CompetitionInfo>();
+
+        // Check cache for each competition first
+        const uncachedCompIds: string[] = [];
+        uniqueCompetitionIds.forEach((compId) => {
+          const cached = getFromCache<CompetitionInfo>(
+            WCA_CACHE_KEYS.competition(compId)
+          );
+          if (cached) {
+            competitionDetailsMap.set(compId, cached);
+          } else {
+            uncachedCompIds.push(compId);
+          }
+        });
+
+        // If we have some cached data, update state immediately
+        if (competitionDetailsMap.size > 0) {
+          setCompetitionDetails(new Map(competitionDetailsMap));
+        }
+
+        // Batch requests to avoid hitting rate limits (only for uncached items)
+        for (let i = 0; i < uncachedCompIds.length; i += 3) {
+          const batch = uncachedCompIds.slice(i, i + 3) as string[];
+          const promises = batch.map(async (compId: string) => {
+            try {
+              // Add delay to respect rate limits
+              await new Promise((resolve) => setTimeout(resolve, 100));
+
+              const response = await fetch(
+                `https://www.worldcubeassociation.org/api/v0/competitions/${compId}`,
+                {
+                  headers: {
+                    Accept: "application/json",
+                    "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
+                  },
+                }
+              );
+
+              if (response.ok) {
+                const data = await response.json();
+                return { compId, data };
+              } else {
+                console.warn(
+                  `Failed to fetch competition ${compId}: ${response.status}`
+                );
+              }
+            } catch (error) {
+              console.warn(
+                `Failed to fetch details for competition ${compId}:`,
+                error
+              );
+            }
+            return null;
+          });
+
+          const results = await Promise.all(promises);
+          results.forEach((result) => {
+            if (result && result.data) {
+              const compInfo: CompetitionInfo = {
+                id: result.data.id,
+                name: result.data.name,
+                start_date: result.data.start_date,
+                end_date: result.data.end_date,
+                city: result.data.city,
+                venue: result.data.venue,
+                country_iso2: result.data.country_iso2,
+                events: result.data.event_ids || [],
+                bestResult: 999,
+                mainEvent: undefined,
+              };
+              competitionDetailsMap.set(result.compId, compInfo);
+
+              // Cache each competition
+              saveToCache(WCA_CACHE_KEYS.competition(result.compId), compInfo);
+            }
+          });
+
+          // Update state after each batch
+          setCompetitionDetails(new Map(competitionDetailsMap));
+
+          // Add longer delay between batches
+          if (i + 3 < uncachedCompIds.length) {
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+          }
+        }
+
+        setCompetitionDetails(competitionDetailsMap);
+      } catch (error) {
+        console.warn("Failed to fetch competition details:", error);
+      } finally {
+        setIsLoadingCompetitions(false);
+      }
+    };
+
+    fetchCompetitionDetails();
+  }, [shouldLoadCompetitions, competitionResults]);
+
+  // Check if WCA tab is already active on mount
+  useEffect(() => {
+    if (currentTab === "wca" && !shouldLoadCompetitions) {
+      setShouldLoadCompetitions(true);
+    }
+  }, [currentTab]);
 
   if (
     isLoading ||
@@ -345,6 +454,28 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
   }
 
   if (!profileData || !profileData.person) {
+    // Show skeleton loader while loading
+    if (isLoading) {
+      return (
+        <div className="min-h-screen bg-[var(--background)]">
+          <div className="container-responsive py-6 max-w-7xl">
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="lg:w-80 lg:flex-shrink-0">
+                <ProfileSidebarSkeleton />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="h-12 bg-[var(--surface-elevated)] rounded-lg w-full mb-6" />
+                <div className="space-y-8">
+                  <div className="h-64 bg-[var(--surface-elevated)] rounded-lg" />
+                  <div className="h-48 bg-[var(--surface-elevated)] rounded-lg" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
         <div className="text-center">

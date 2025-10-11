@@ -241,6 +241,7 @@ body {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(16px);
   background: linear-gradient(135deg, var(--surface) 0%, rgba(59, 130, 246, 0.05) 100%);
+  min-height: fit-content;
 }
 
 @media (min-width: 640px) {

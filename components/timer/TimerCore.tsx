@@ -93,7 +93,7 @@ export default function TimerCore({
 
   return (
     <div
-      className="text-center space-y-6"
+      className="text-center space-y-6 min-h-[280px] sm:min-h-[320px] md:min-h-[360px] flex flex-col justify-center"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
       onMouseDown={onMouseDown}
@@ -107,7 +107,7 @@ export default function TimerCore({
     >
       {/* Main Timer Display */}
       <div
-        className={`font-bold timer-text ${getTimerColor()} transition-all duration-300 font-mono cursor-pointer select-none`}
+        className={`font-bold timer-text ${getTimerColor()} transition-all duration-300 font-mono cursor-pointer select-none py-4`}
       >
         {state === "inspection"
           ? `${inspectionTime.toFixed(2)}`

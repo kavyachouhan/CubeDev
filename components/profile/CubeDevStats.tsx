@@ -17,6 +17,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import SolveHeatmap from "../stats/SolveHeatmap";
+import { EventStatsSkeleton, PlatformStatsSkeleton } from "../SkeletonLoaders";
 
 interface CubeDevStatsProps {
   wcaId: string;
@@ -305,6 +306,9 @@ export default function CubeDevStats({
   // Calculate activity stats from all solves
   const activityStats = calculateActivityStats(timerSolves);
 
+  // Show skeleton loaders while data is loading
+  const isLoadingData = !solves || !challengeStats || !roomParticipations;
+
   return (
     <div className="space-y-8">
       {/* Event Selector */}
@@ -320,10 +324,12 @@ export default function CubeDevStats({
               Event Statistics Hidden
             </h3>
             <p className="text-[var(--text-secondary)]">
-              User has chosen to hide this section.
+              User has chosen to hide their profile from public view.
             </p>
           </div>
         </div>
+      ) : isLoadingData ? (
+        <EventStatsSkeleton />
       ) : (
         attemptedEvents.length > 0 && (
           <div className="timer-card">
@@ -464,10 +470,12 @@ export default function CubeDevStats({
               Platform Statistics Hidden
             </h3>
             <p className="text-[var(--text-secondary)]">
-              User has chosen to hide this section.
+              User has chosen to hide their profile from public view.
             </p>
           </div>
         </div>
+      ) : isLoadingData ? (
+        <PlatformStatsSkeleton />
       ) : (
         <div className="timer-card">
           <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement mb-4 flex items-center gap-2">
@@ -706,7 +714,7 @@ export default function CubeDevStats({
               Solve Activity Hidden
             </h3>
             <p className="text-[var(--text-secondary)]">
-              User has chosen to hide this section.
+              User has chosen to hide their profile from public view.
             </p>
           </div>
         </div>
