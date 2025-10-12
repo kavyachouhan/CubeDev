@@ -1,8 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  ChevronDown,
+  ChevronRight,
+  BarChart3,
+} from "lucide-react";
 import { TimerRecord } from "../../lib/stats-utils";
+import SessionStatsModal from "./SessionStatsModal";
 
 // Persistent boolean that reads/writes localStorage on first render
 function usePersistentBool(key: string, defaultValue: boolean) {
@@ -51,6 +58,7 @@ export default function StatsDisplay({
     "cubelab-stats-display-expanded",
     true
   );
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Filter history to selected event
   const eventHistory = history.filter((r) => r.event === selectedEvent);
@@ -148,133 +156,151 @@ export default function StatsDisplay({
   const currentSessionSolves = ordered.length;
 
   return (
-    <div className="timer-card">
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={() => setShowStats(!showStats)}
-          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
-          title={showStats ? "Hide statistics" : "Show statistics"}
-        >
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
-          Statistics
-        </h3>
-        {showStats ? (
-          <ChevronDown className="w-4 h-4" />
-        ) : (
-          <ChevronRight className="w-4 h-4" />
+    <>
+      <div className="timer-card">
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={() => setShowStats(!showStats)}
+            className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+            title={showStats ? "Hide statistics" : "Show statistics"}
+          >
+            <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+              Statistics
+            </h3>
+            {showStats ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+              title="View session statistics"
+            >
+              <BarChart3 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setShowStats(!showStats)}
+              className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+              title={showStats ? "Hide statistics" : "Show statistics"}
+            >
+              {showStats ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {showStats && (
+          <>
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="text-center">
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                  Best Single
+                </div>
+                <div className="text-lg font-bold text-[var(--primary)] font-mono">
+                  {bestTime != null ? formatMs(bestTime) : "-"}
+                </div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                  Current Mo3
+                </div>
+                <div
+                  className={`text-lg font-bold font-mono ${mo3 === Infinity ? "text-[var(--error)]" : "text-[var(--primary)]"}`}
+                >
+                  {mo3 == null ? "-" : isFinite(mo3) ? formatMs(mo3) : "DNF"}
+                </div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                  Current Ao5
+                </div>
+                <div
+                  className={`text-lg font-bold font-mono ${ao5 === Infinity ? "text-[var(--error)]" : "text-[var(--primary)]"}`}
+                >
+                  {ao5 == null ? "-" : isFinite(ao5) ? formatMs(ao5) : "DNF"}
+                </div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                  Worst Single
+                </div>
+                <div className="text-lg font-bold text-[var(--error)] font-mono">
+                  {worstTime != null ? formatMs(worstTime) : "-"}
+                </div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                  Current Ao12
+                </div>
+                <div
+                  className={`text-lg font-bold font-mono ${ao12 === Infinity ? "text-[var(--error)]" : "text-[var(--primary)]"}`}
+                >
+                  {ao12 == null ? "-" : isFinite(ao12) ? formatMs(ao12) : "DNF"}
+                </div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                  Session Mean
+                </div>
+                <div className="text-lg font-bold text-[var(--accent)] font-mono">
+                  {mean != null ? formatMs(mean) : "-"}
+                </div>
+              </div>
+            </div>
+
+            {/* Total solves */}
+            <div className="grid grid-cols-1 gap-4 mb-6">
+              <div className="text-center">
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                  Total Solves
+                </div>
+                <div className="text-lg font-bold text-[var(--text-primary)] font-mono">
+                  {currentSessionSolves}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-6 pt-4 border-t border-[var(--border)]">
+              <div className="text-center">
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                  Standard Deviation
+                </div>
+                <div className="text-m font-medium text-[var(--text-secondary)] font-mono">
+                  {standardDeviation != null
+                    ? `± ${formatMs(roundToCentisMs(standardDeviation))}`
+                    : "-"}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                  DNFs
+                </div>
+                <div className="text-m font-medium text-[var(--error)] font-mono">
+                  {dnfCount}
+                </div>
+              </div>
+            </div>
+          </>
         )}
-        </button>
-        <button
-          onClick={() => setShowStats(!showStats)}
-          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
-          title={showStats ? "Hide statistics" : "Show statistics"}
-        >
-          {showStats ? (
-            <EyeOff className="w-4 h-4" />
-          ) : (
-            <Eye className="w-4 h-4" />
-          )}
-        </button>
       </div>
 
-      {showStats && (
-        <>
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="text-center">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                Best Single
-              </div>
-              <div className="text-lg font-bold text-[var(--primary)] font-mono">
-                {bestTime != null ? formatMs(bestTime) : "-"}
-              </div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                Current Mo3
-              </div>
-              <div
-                className={`text-lg font-bold font-mono ${mo3 === Infinity ? "text-[var(--error)]" : "text-[var(--primary)]"}`}
-              >
-                {mo3 == null ? "-" : isFinite(mo3) ? formatMs(mo3) : "DNF"}
-              </div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                Current Ao5
-              </div>
-              <div
-                className={`text-lg font-bold font-mono ${ao5 === Infinity ? "text-[var(--error)]" : "text-[var(--primary)]"}`}
-              >
-                {ao5 == null ? "-" : isFinite(ao5) ? formatMs(ao5) : "DNF"}
-              </div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                Worst Single
-              </div>
-              <div className="text-lg font-bold text-[var(--error)] font-mono">
-                {worstTime != null ? formatMs(worstTime) : "-"}
-              </div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                Current Ao12
-              </div>
-              <div
-                className={`text-lg font-bold font-mono ${ao12 === Infinity ? "text-[var(--error)]" : "text-[var(--primary)]"}`}
-              >
-                {ao12 == null ? "-" : isFinite(ao12) ? formatMs(ao12) : "DNF"}
-              </div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                Session Mean
-              </div>
-              <div className="text-lg font-bold text-[var(--accent)] font-mono">
-                {mean != null ? formatMs(mean) : "-"}
-              </div>
-            </div>
-          </div>
-
-          {/* Total solves in its own row */}
-          <div className="grid grid-cols-1 gap-4 mb-6">
-            <div className="text-center">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                Total Solves
-              </div>
-              <div className="text-lg font-bold text-[var(--text-primary)] font-mono">
-                {currentSessionSolves}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-6 pt-4 border-t border-[var(--border)]">
-            <div className="text-center">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                Standard Deviation
-              </div>
-              <div className="text-m font-medium text-[var(--text-secondary)] font-mono">
-                {standardDeviation != null
-                  ? `± ${formatMs(roundToCentisMs(standardDeviation))}`
-                  : "-"}
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
-                DNFs
-              </div>
-              <div className="text-m font-medium text-[var(--error)] font-mono">
-                {dnfCount}
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+      <SessionStatsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        history={history}
+        selectedEvent={selectedEvent}
+      />
+    </>
   );
 }

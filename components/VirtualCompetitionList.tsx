@@ -24,8 +24,8 @@ interface VirtualCompetitionListProps {
 
 export default function VirtualCompetitionList({
   competitions,
-  itemHeight = 100, // Approximate height of each competition item
-  containerHeight = 400, // Height of the scrollable container
+  itemHeight = 100, // Height of each item
+  containerHeight = 400, // Height of the scroll container
 }: VirtualCompetitionListProps) {
   const [scrollTop, setScrollTop] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);

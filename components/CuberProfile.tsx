@@ -194,7 +194,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
           setCompetitionResults(cachedResults);
         }
 
-        // If we have cached data, show it immediately but still fetch fresh data in background
+        // If we have both cached profile and results, we can skip fetching
         if (cachedProfile && cachedResults) {
           setIsLoading(false);
         }
@@ -246,7 +246,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
           setPersonalRecords(records);
         }
 
-        // Fetch competition results with better error handling
+        // Fetch competition results
         try {
           const resultsResponse = await fetch(
             `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}/results`,
@@ -285,7 +285,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
     }
   }, [wcaId, cubeDevUsers, cubeDevUser, privacySettings]);
 
-  // Separate effect for loading competition details lazily when WCA tab is viewed
+  // Lazy load competition details when WCA tab is viewed
   useEffect(() => {
     // Prevent re-running if already loaded
     if (competitionsLoadedRef.current) {
@@ -323,7 +323,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
 
         const competitionDetailsMap = new Map<string, CompetitionInfo>();
 
-        // Check cache for each competition first
+        // Check cache first
         const uncachedCompIds: string[] = [];
         uniqueCompetitionIds.forEach((compId) => {
           const cached = getFromCache<CompetitionInfo>(
@@ -336,19 +336,19 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
           }
         });
 
-        // If we have some cached data, update state immediately
+        // If we found any cached competitions, set them immediately
         if (competitionDetailsMap.size > 0) {
           setCompetitionDetails(new Map(competitionDetailsMap));
         }
 
-        // If all competitions are cached, we're done
+        // If all competitions were cached, we're done
         if (uncachedCompIds.length === 0) {
           competitionsLoadedRef.current = true;
           setIsLoadingCompetitions(false);
           return;
         }
 
-        // Batch requests to avoid hitting rate limits (only for uncached items)
+        // Fetch details for uncached competitions in batches to respect rate limits
         for (let i = 0; i < uncachedCompIds.length; i += 3) {
           const batch = uncachedCompIds.slice(i, i + 3) as string[];
           const promises = batch.map(async (compId: string) => {
@@ -408,13 +408,13 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
           // Update state after each batch
           setCompetitionDetails(new Map(competitionDetailsMap));
 
-          // Add longer delay between batches
+          // Add delay between batches
           if (i + 3 < uncachedCompIds.length) {
             await new Promise((resolve) => setTimeout(resolve, 2000));
           }
         }
 
-        // Final update with all competitions
+        // Final update to state
         setCompetitionDetails(competitionDetailsMap);
 
         // Mark as loaded to prevent re-fetching
@@ -429,7 +429,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
     fetchCompetitionDetails();
   }, [shouldLoadCompetitions, competitionResults]);
 
-  // Check if WCA tab is already active on mount
+  // When tab changes to WCA, trigger loading competitions if not already set
   useEffect(() => {
     if (currentTab === "wca" && !shouldLoadCompetitions) {
       setShouldLoadCompetitions(true);

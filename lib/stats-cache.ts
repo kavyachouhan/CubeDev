@@ -1,8 +1,3 @@
-/**
- * Stats Cache Utility
- * Implements caching for stats page data
- */
-
 interface StatsData {
   solves: any[];
   timestamp: number;
@@ -10,11 +5,9 @@ interface StatsData {
 }
 
 const STATS_CACHE_KEY = "cubelab_stats_cache";
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache for stats
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-/**
- * Get cached stats data
- */
+// Retrieve cached stats data for a user
 export function getCachedStats(userId: string): any[] | null {
   if (typeof window === "undefined") return null;
 
@@ -41,9 +34,7 @@ export function getCachedStats(userId: string): any[] | null {
   }
 }
 
-/**
- * Save stats data to cache
- */
+// Cache stats data for a user
 export function cacheStats(userId: string, solves: any[]): void {
   if (typeof window === "undefined") return;
 
@@ -66,9 +57,7 @@ export function cacheStats(userId: string, solves: any[]): void {
   }
 }
 
-/**
- * Clear stats cache for a user
- */
+// Clear cached stats data for a user
 export function clearStatsCache(userId: string): void {
   if (typeof window === "undefined") return;
 
@@ -79,9 +68,7 @@ export function clearStatsCache(userId: string): void {
   }
 }
 
-/**
- * Clear all stats caches
- */
+// Clear all stats cache entries
 export function clearAllStatsCache(): void {
   if (typeof window === "undefined") return;
 

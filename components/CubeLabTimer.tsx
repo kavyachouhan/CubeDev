@@ -14,6 +14,10 @@ import ScrambleDisplay from "./timer/ScrambleDisplay";
 import StatsDisplay from "./timer/StatsDisplay";
 import TimerHistory from "./timer/TimerHistory";
 import ImportExportButtons from "./timer/ImportExportButtons";
+import {
+  TimerPageSkeleton,
+  ScramblePreviewSkeleton,
+} from "./timer/TimerSkeletons";
 
 // Import custom hooks
 import { useTimerState } from "./timer/hooks/useTimerState";
@@ -24,23 +28,7 @@ import { useLocalStorageManager } from "./timer/hooks/useLocalStorageManager";
 
 // Dynamically import ScramblePreview to avoid heavy initial load
 const ScramblePreview = dynamic(() => import("./timer/ScramblePreview"), {
-  loading: () => (
-    <div className="timer-card">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
-          Scramble Preview
-        </h3>
-      </div>
-      <div className="w-full min-h-[200px] bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-4xl mb-2">🧩</div>
-          <div className="text-sm text-[var(--text-muted)]">
-            Loading component...
-          </div>
-        </div>
-      </div>
-    </div>
-  ),
+  loading: () => <ScramblePreviewSkeleton />,
   ssr: false,
 });
 
@@ -398,15 +386,7 @@ export default function CubeLabTimer({
 
   // Show loading state if session or database is loading
   if (!currentSession || isDbLoading || isSessionLoading) {
-    return (
-      <div className="container-responsive py-4 md:py-8">
-        <div className="text-center">
-          <div className="text-lg text-[var(--text-muted)]">
-            Loading your session data...
-          </div>
-        </div>
-      </div>
-    );
+    return <TimerPageSkeleton />;
   }
 
   return (

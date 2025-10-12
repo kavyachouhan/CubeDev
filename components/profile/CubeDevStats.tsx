@@ -280,7 +280,7 @@ export default function CubeDevStats({
     solves?.map((solve) => ({
       id: solve._id,
       time: solve.time,
-      timestamp: new Date(solve.solveDate), // solveDate is a timestamp number in the schema
+      timestamp: new Date(solve.solveDate),
       scramble: solve.scramble,
       penalty: solve.penalty,
       finalTime: solve.finalTime,

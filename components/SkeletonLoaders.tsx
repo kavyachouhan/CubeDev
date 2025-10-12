@@ -1,8 +1,3 @@
-/**
- * Skeleton Loader Components
- * Reusable skeleton loaders for better perceived performance
- */
-
 export function ProfileSidebarSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">

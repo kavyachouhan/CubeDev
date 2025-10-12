@@ -1,8 +1,3 @@
-/**
- * WCA Data Cache Utility
- * Implements localStorage-based caching for WCA API data
- */
-
 interface CacheEntry<T> {
   data: T;
   timestamp: number;
@@ -12,9 +7,7 @@ interface CacheEntry<T> {
 const CACHE_PREFIX = "wca_cache_";
 const DEFAULT_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-/**
- * Get data from cache
- */
+// Retrieve data from cache if not expired
 export function getFromCache<T>(key: string): T | null {
   if (typeof window === "undefined") return null;
 
@@ -39,9 +32,7 @@ export function getFromCache<T>(key: string): T | null {
   }
 }
 
-/**
- * Save data to cache
- */
+// Save data to cache with optional TTL
 export function saveToCache<T>(
   key: string,
   data: T,
@@ -78,9 +69,7 @@ export function saveToCache<T>(
   }
 }
 
-/**
- * Remove data from cache
- */
+// Remove specific entry from cache
 export function removeFromCache(key: string): void {
   if (typeof window === "undefined") return;
 
@@ -92,9 +81,7 @@ export function removeFromCache(key: string): void {
   }
 }
 
-/**
- * Clear all expired cache entries
- */
+// Clear expired cache entries
 export function clearExpiredCache(): void {
   if (typeof window === "undefined") return;
 
@@ -113,7 +100,7 @@ export function clearExpiredCache(): void {
             }
           }
         } catch {
-          // If we can't parse it, remove it
+          // If parsing fails, remove the corrupted entry
           localStorage.removeItem(key);
         }
       }
@@ -123,9 +110,7 @@ export function clearExpiredCache(): void {
   }
 }
 
-/**
- * Clear all WCA cache
- */
+// Clear all WCA cache entries
 export function clearWCACache(): void {
   if (typeof window === "undefined") return;
 
@@ -141,9 +126,7 @@ export function clearWCACache(): void {
   }
 }
 
-/**
- * Get cache keys for WCA data
- */
+// Common cache keys
 export const WCA_CACHE_KEYS = {
   profile: (wcaId: string) => `profile_${wcaId}`,
   results: (wcaId: string) => `results_${wcaId}`,

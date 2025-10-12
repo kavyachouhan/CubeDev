@@ -12,3 +12,4 @@ export { default as EventSelector } from "./EventSelector";
 export { default as ImportExportButtons } from "./ImportExportButtons";
 export { default as ImportModal } from "./ImportModal";
 export { default as ScramblePreview } from "./ScramblePreview";
+export { default as SessionStatsModal } from "./SessionStatsModal";

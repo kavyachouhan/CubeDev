@@ -1,7 +1,3 @@
-/**
- * Skeleton Loaders for Stats Page
- */
-
 export function StatsFiltersSkeleton() {
   return (
     <div className="timer-card animate-pulse">
