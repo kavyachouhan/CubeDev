@@ -197,7 +197,8 @@ export default function CubeLabTimer({
       notes?: string,
       tags?: string[],
       splits?: Array<{ phase: string; time: number }>,
-      splitMethod?: string
+      splitMethod?: string,
+      timerMode?: "normal" | "manual" | "stackmat"
     ) => {
       if (!currentSession) return null;
 
@@ -214,6 +215,59 @@ export default function CubeLabTimer({
         tags,
         splits,
         splitMethod,
+        timerMode,
+      };
+
+      // Save solve to database and local state
+      const solveId = await saveSolve(
+        solve,
+        currentSession,
+        getSessionHistory(currentSession.id),
+        addSolve
+      );
+
+      if (solveId) {
+        // Generate a new scramble for the next solve
+        await handleNewScramble();
+      }
+
+      return solveId;
+    },
+    [
+      currentSession,
+      currentScramble,
+      selectedEvent,
+      calculateFinalTime,
+      saveSolve,
+      getSessionHistory,
+      addSolve,
+      handleNewScramble,
+    ]
+  );
+
+  // Handle solve completion with penalty (for manual and stackmat timers)
+  const handleSolveCompleteWithPenalty = useCallback(
+    async (
+      time: number,
+      penalty: "none" | "+2" | "DNF",
+      notes?: string,
+      tags?: string[],
+      timerMode?: "normal" | "manual" | "stackmat"
+    ) => {
+      if (!currentSession) return null;
+
+      const finalTime = calculateFinalTime(time, penalty);
+      const solve = {
+        time,
+        timestamp: new Date(),
+        scramble: currentScramble,
+        penalty,
+        finalTime,
+        event: selectedEvent,
+        sessionId: currentSession.id,
+        notes,
+        tags,
+        timerMode,
       };
 
       // Save solve to database and local state
@@ -374,6 +428,30 @@ export default function CubeLabTimer({
     [updateSolveOperation, updateSolve]
   );
 
+  // Handle editing a solve's time
+  const handleEditTime = useCallback(
+    async (solveId: string, time: number, penalty: "none" | "+2" | "DNF") => {
+      const solve = history.find((s) => s.id === solveId);
+      if (!solve) return;
+
+      // Calculate new final time
+      let finalTime = time;
+      if (penalty === "+2") {
+        finalTime = time + 2000;
+      } else if (penalty === "DNF") {
+        finalTime = Infinity;
+      }
+
+      // Update solve in database and local state
+      await updateSolveOperation(
+        solveId,
+        { time, penalty, finalTime },
+        updateSolve
+      );
+    },
+    [history, updateSolveOperation, updateSolve]
+  );
+
   // Handle applying penalty to the last solve
   const handleLastSolvePenalty = useCallback(
     (penalty: "none" | "+2" | "DNF") => {
@@ -438,10 +516,11 @@ export default function CubeLabTimer({
             />
           </div>
 
-          {/* Timer - with enhanced mobile sizing */}
+          {/* Timer */}
           <div className="xl:mb-0">
             <TimerDisplay
               onSolveComplete={handleSolveComplete}
+              onSolveCompleteWithPenalty={handleSolveCompleteWithPenalty}
               onApplyPenalty={handleLastSolvePenalty}
               lastSolveId={lastSolveId}
               onTimerStateChange={handleTimerFocusChange}
@@ -472,6 +551,7 @@ export default function CubeLabTimer({
             onApplyPenalty={handleApplyPenalty}
             onDeleteSolve={handleDeleteSolve}
             onUpdateSolve={handleUpdateSolve}
+            onEditTime={handleEditTime}
           />
         </div>
       </div>

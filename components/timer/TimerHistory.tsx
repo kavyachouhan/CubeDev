@@ -9,7 +9,8 @@ import {
   Eye,
   EyeOff,
   Clipboard,
-  ClipboardCheck
+  ClipboardCheck,
+  Pencil,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 
@@ -23,6 +24,11 @@ const ScramblePreview = dynamic(() => import("./ScramblePreview"), {
   ssr: false,
 });
 
+// Dynamically import SolveEditModal
+const SolveEditModal = dynamic(() => import("./SolveEditModal"), {
+  ssr: false,
+});
+
 interface TimerRecord {
   id: string;
   time: number;
@@ -33,6 +39,7 @@ interface TimerRecord {
   event: string;
   notes?: string;
   tags?: string[];
+  timerMode?: "normal" | "manual" | "stackmat";
 }
 
 interface TimerHistoryProps {
@@ -42,6 +49,11 @@ interface TimerHistoryProps {
   onApplyPenalty: (solveId: string, penalty: "none" | "+2" | "DNF") => void;
   onDeleteSolve: (solveId: string) => void;
   onUpdateSolve?: (solveId: string, notes?: string, tags?: string[]) => void;
+  onEditTime?: (
+    solveId: string,
+    time: number,
+    penalty: "none" | "+2" | "DNF"
+  ) => void;
 }
 
 // Map of event IDs to display names
@@ -93,6 +105,7 @@ function SolveDetailsModal({
   onApplyPenalty,
   onDeleteSolve,
   onUpdateSolve,
+  onEditTime,
 }: {
   solve: TimerRecord | null;
   isOpen: boolean;
@@ -100,12 +113,18 @@ function SolveDetailsModal({
   onApplyPenalty: (solveId: string, penalty: "none" | "+2" | "DNF") => void;
   onDeleteSolve: (solveId: string) => void;
   onUpdateSolve?: (solveId: string, notes?: string, tags?: string[]) => void;
+  onEditTime?: (
+    solveId: string,
+    time: number,
+    penalty: "none" | "+2" | "DNF"
+  ) => void;
 }) {
   const [editingNotes, setEditingNotes] = useState(false);
   const [editingTags, setEditingTags] = useState(false);
   const [notesValue, setNotesValue] = useState("");
   const [tagsValue, setTagsValue] = useState("");
   const [copySuccess, setCopySuccess] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Sync local state when solve changes
   useEffect(() => {
@@ -162,6 +181,14 @@ function SolveDetailsModal({
     }
   };
 
+  // Handle time edit
+  const handleEditTime = (time: number, penalty: "none" | "+2" | "DNF") => {
+    if (onEditTime && solve) {
+      onEditTime(solve.id, time, penalty);
+      setShowEditModal(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
@@ -203,6 +230,13 @@ function SolveDetailsModal({
                 {solve.penalty === "+2" && "+"}
               </div>
               <button
+                onClick={() => setShowEditModal(true)}
+                className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+                title="Edit solve time"
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+              <button
                 onClick={handleCopySolve}
                 className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
                 title="Copy solve details to clipboard"
@@ -216,6 +250,20 @@ function SolveDetailsModal({
             </div>
             <div className="text-sm text-[var(--text-muted)] font-inter mt-2">
               {getEventName(solve.event)} • {solve.timestamp.toLocaleString()}
+              {solve.timerMode && solve.timerMode !== "normal" && (
+                <>
+                  {" • "}
+                  <span
+                    className={`text-xs px-2 py-0.5 rounded font-medium ${
+                      solve.timerMode === "manual"
+                        ? "bg-blue-500/10 text-blue-500 border border-blue-500/30"
+                        : "bg-purple-500/10 text-purple-500 border border-purple-500/30"
+                    }`}
+                  >
+                    {solve.timerMode === "manual" ? "Manual" : "Stackmat"}
+                  </span>
+                </>
+              )}
             </div>
           </div>
 
@@ -496,6 +544,17 @@ function SolveDetailsModal({
           </div>
         </div>
       </div>
+
+      {/* Edit Time Modal */}
+      {solve && (
+        <SolveEditModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          currentTime={solve.time}
+          currentPenalty={solve.penalty}
+          onSave={handleEditTime}
+        />
+      )}
     </div>
   );
 }
@@ -507,6 +566,7 @@ export default function TimerHistory({
   onApplyPenalty,
   onDeleteSolve,
   onUpdateSolve,
+  onEditTime,
 }: TimerHistoryProps) {
   const [showHistory, setShowHistory] = usePersistentBool(
     "cubelab-timer-history-expanded",
@@ -514,6 +574,7 @@ export default function TimerHistory({
   );
   const [selectedSolve, setSelectedSolve] = useState<TimerRecord | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingSolveId, setEditingSolveId] = useState<string | null>(null);
 
   // Infinite scroll state
   const [displayCount, setDisplayCount] = useState(20);
@@ -611,6 +672,33 @@ export default function TimerHistory({
     }
   };
 
+  // Handle time edit
+  const handleEditTime = (
+    solveId: string,
+    time: number,
+    penalty: "none" | "+2" | "DNF"
+  ) => {
+    if (onEditTime) {
+      onEditTime(solveId, time, penalty);
+      // Update selected solve if it's the one being modified
+      if (selectedSolve && selectedSolve.id === solveId) {
+        let finalTime = time;
+        if (penalty === "+2") {
+          finalTime = time + 2000;
+        } else if (penalty === "DNF") {
+          finalTime = Infinity;
+        }
+        setSelectedSolve({
+          ...selectedSolve,
+          time,
+          penalty,
+          finalTime,
+        });
+      }
+    }
+    setEditingSolveId(null);
+  };
+
   const eventHistory = history.filter((r) => r.event === selectedEvent);
 
   return (
@@ -695,10 +783,34 @@ export default function TimerHistory({
                         {formatTime(record.finalTime, record.penalty)}
                         {record.penalty === "+2" && "+"}
                       </span>
+                      {/* Timer Mode Badge */}
+                      {record.timerMode && record.timerMode !== "normal" && (
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded font-medium ${
+                            record.timerMode === "manual"
+                              ? "bg-blue-500/10 text-blue-500 border border-blue-500/30"
+                              : "bg-purple-500/10 text-purple-500 border border-purple-500/30"
+                          }`}
+                        >
+                          {record.timerMode === "manual"
+                            ? "Manual"
+                            : "Stackmat"}
+                        </span>
+                      )}
                     </div>
 
                     {/* Inline action buttons */}
                     <div className="flex items-center gap-1 ml-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingSolveId(record.id);
+                        }}
+                        className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+                        title="Edit solve time"
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </button>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -777,6 +889,21 @@ export default function TimerHistory({
         )}
       </div>
 
+      {/* Inline Edit Modal for history items */}
+      {editingSolveId && (
+        <SolveEditModal
+          isOpen={true}
+          onClose={() => setEditingSolveId(null)}
+          currentTime={history.find((r) => r.id === editingSolveId)?.time || 0}
+          currentPenalty={
+            history.find((r) => r.id === editingSolveId)?.penalty || "none"
+          }
+          onSave={(time, penalty) =>
+            handleEditTime(editingSolveId, time, penalty)
+          }
+        />
+      )}
+
       {/* Solve Details Modal */}
       <SolveDetailsModal
         solve={selectedSolve}
@@ -788,6 +915,7 @@ export default function TimerHistory({
         onApplyPenalty={handlePenaltyChange}
         onDeleteSolve={onDeleteSolve}
         onUpdateSolve={handleUpdateSolve}
+        onEditTime={handleEditTime}
       />
     </>
   );

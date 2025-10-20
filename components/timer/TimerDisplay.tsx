@@ -10,10 +10,12 @@ import {
   type PhaseSplit,
 } from "@/lib/phase-splits";
 import PhaseResults from "./PhaseResults";
-import TimerSettings from "./TimerSettings";
+import TimerSettings, { TimerMode } from "./TimerSettings";
 import PhaseIndicator from "./PhaseIndicator";
 import PenaltyButtons from "./PenaltyButtons";
 import TimerCore from "./TimerCore";
+import ManualTimerCore from "./ManualTimerCore";
+import StackmatTimerCore from "./StackmatTimerCore";
 
 // Persistent boolean that reads/writes localStorage on first render
 function usePersistentBool(key: string, defaultValue: boolean) {
@@ -40,7 +42,15 @@ interface TimerDisplayProps {
     notes?: string,
     tags?: string[],
     splits?: PhaseSplit[],
-    splitMethod?: string
+    splitMethod?: string,
+    timerMode?: "normal" | "manual" | "stackmat"
+  ) => void;
+  onSolveCompleteWithPenalty?: (
+    time: number,
+    penalty: "none" | "+2" | "DNF",
+    notes?: string,
+    tags?: string[],
+    timerMode?: "normal" | "manual" | "stackmat"
   ) => void;
   onApplyPenalty?: (penalty: "none" | "+2" | "DNF") => void;
   lastSolveId?: string | null;
@@ -57,6 +67,7 @@ type TimerState =
 
 export default function TimerDisplay({
   onSolveComplete,
+  onSolveCompleteWithPenalty,
   onApplyPenalty,
   lastSolveId,
   onTimerStateChange,
@@ -74,6 +85,15 @@ export default function TimerDisplay({
     "cubelab-timer-expanded",
     true
   );
+  const [timerMode, setTimerMode] = useState<TimerMode>(() => {
+    if (typeof window === "undefined") return "normal";
+    try {
+      const saved = localStorage.getItem("cubelab-timer-mode");
+      return (saved as TimerMode) || "normal";
+    } catch {
+      return "normal";
+    }
+  });
   const [inspectionEnabled, setInspectionEnabled] = usePersistentBool(
     "cubelab-inspection-enabled",
     true
@@ -123,6 +143,7 @@ export default function TimerDisplay({
   const isTouchActiveRef = useRef<boolean>(false);
   const onSolveCompleteRef = useRef(onSolveComplete);
   const onTimerStateChangeRef = useRef(onTimerStateChange);
+  const prevTimerModeRef = useRef<TimerMode>(timerMode);
 
   // Keep refs updated to avoid stale closures
   useEffect(() => {
@@ -139,6 +160,79 @@ export default function TimerDisplay({
       localStorage.setItem("cubelab-split-method", selectedSplitMethod);
     } catch {}
   }, [selectedSplitMethod]);
+
+  // Persist timer mode
+  useEffect(() => {
+    try {
+      localStorage.setItem("cubelab-timer-mode", timerMode);
+    } catch {}
+  }, [timerMode]);
+
+  // Disable incompatible settings when timer mode changes
+  useEffect(() => {
+    // Disable phase splits when switching away from normal mode
+    if (timerMode !== "normal" && phaseSplitsEnabled) {
+      setPhaseSplitsEnabled(false);
+      console.log(
+        "Phase splits disabled - only available in Normal timer mode"
+      );
+    }
+
+    // Disable consistency coach when switching to manual mode
+    if (timerMode === "manual" && consistencyCoach.enabled) {
+      setConsistencyCoach((prev) => ({
+        ...prev,
+        enabled: false,
+      }));
+      console.log(
+        "Consistency coach disabled - not available in Manual timer mode"
+      );
+    }
+  }, [
+    timerMode,
+    phaseSplitsEnabled,
+    consistencyCoach.enabled,
+    setPhaseSplitsEnabled,
+  ]);
+
+  // Stop active timer when switching modes (uses ref to detect actual mode change)
+  useEffect(() => {
+    // Only run cleanup if mode actually changed
+    if (prevTimerModeRef.current !== timerMode) {
+
+      if (
+        state === "running" ||
+        state === "holding" ||
+        state === "inspection"
+      ) {
+        setState("idle");
+        setTime(0);
+        setInspectionTime(15);
+
+        // Clear intervals
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+        if (inspectionIntervalRef.current) {
+          clearInterval(inspectionIntervalRef.current);
+          inspectionIntervalRef.current = null;
+        }
+        if (metronomeIntervalRef) {
+          clearInterval(metronomeIntervalRef);
+          setMetronomeIntervalRef(null);
+        }
+
+        // Reset phase data
+        setCurrentSplits([]);
+        setCurrentPhaseIndex(0);
+        setCurrentPenalty("none");
+        setShowPenaltyButtons(false);
+      }
+
+      prevTimerModeRef.current = timerMode;
+    }
+  }, [timerMode, state, metronomeIntervalRef]);
 
   // Persist consistency coach settings
   useEffect(() => {
@@ -333,8 +427,11 @@ export default function TimerDisplay({
     }
   }, [state, focusModeEnabled]); // Only run when state or focus mode changes
 
-  // Keyboard handling
+  // Keyboard handling (only for normal timer mode)
   useEffect(() => {
+    // Initialize audio context on first user interaction
+    if (timerMode !== "normal") return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       initializeAudioContext(); // Initialize audio context on first user interaction
 
@@ -347,8 +444,8 @@ export default function TimerDisplay({
           } else if (state === "inspection") {
             setState("ready");
           } else if (state === "running") {
-            // Handle phase splits on space during solve
-            if (phaseSplitsEnabled) {
+            // Handle phase splits on space during solve (only in normal mode)
+            if (phaseSplitsEnabled && timerMode === "normal") {
               const splitMethod = getSplitMethod(selectedSplitMethod);
               if (
                 splitMethod &&
@@ -374,12 +471,14 @@ export default function TimerDisplay({
                   const finalTime = Date.now() - startTimeRef.current;
                   setTime(finalTime);
                   playAlert();
+                  // Only send splits in normal mode
                   onSolveCompleteRef.current(
                     finalTime,
                     undefined,
                     undefined,
-                    [...currentSplits, newSplit],
-                    selectedSplitMethod
+                    timerMode === "normal" ? [...currentSplits, newSplit] : [],
+                    timerMode === "normal" ? selectedSplitMethod : undefined,
+                    timerMode
                   );
                   setShowPenaltyButtons(true);
                 }
@@ -392,12 +491,14 @@ export default function TimerDisplay({
             const finalTime = Date.now() - startTimeRef.current;
             setTime(finalTime);
             playBeep();
+            // Only send splits in normal mode
             onSolveCompleteRef.current(
               finalTime,
               undefined,
               undefined,
-              currentSplits,
-              selectedSplitMethod
+              timerMode === "normal" ? currentSplits : [],
+              timerMode === "normal" ? selectedSplitMethod : undefined,
+              timerMode
             );
             setShowPenaltyButtons(true);
           }
@@ -409,12 +510,14 @@ export default function TimerDisplay({
         const finalTime = Date.now() - startTimeRef.current;
         setTime(finalTime);
         playBeep();
+        // Only send splits in normal mode
         onSolveCompleteRef.current(
           finalTime,
           undefined,
           undefined,
-          currentSplits,
-          selectedSplitMethod
+          timerMode === "normal" ? currentSplits : [],
+          timerMode === "normal" ? selectedSplitMethod : undefined,
+          timerMode
         );
         setShowPenaltyButtons(true);
       }
@@ -471,6 +574,7 @@ export default function TimerDisplay({
       window.removeEventListener("keyup", handleKeyUp);
     };
   }, [
+    timerMode,
     state,
     isSpacePressed,
     inspectionEnabled,
@@ -519,12 +623,14 @@ export default function TimerDisplay({
                 const finalTime = Date.now() - startTimeRef.current;
                 setTime(finalTime);
                 playBeep();
+                // Only send splits in normal mode
                 onSolveCompleteRef.current(
                   finalTime,
                   undefined,
                   undefined,
-                  [...currentSplits, newSplit],
-                  selectedSplitMethod
+                  timerMode === "normal" ? [...currentSplits, newSplit] : [],
+                  timerMode === "normal" ? selectedSplitMethod : undefined,
+                  timerMode
                 );
                 setShowPenaltyButtons(true);
               }
@@ -537,12 +643,14 @@ export default function TimerDisplay({
           const finalTime = Date.now() - startTimeRef.current;
           setTime(finalTime);
           playBeep();
+          // Only send splits in normal mode
           onSolveCompleteRef.current(
             finalTime,
             undefined,
             undefined,
-            currentSplits,
-            selectedSplitMethod
+            timerMode === "normal" ? currentSplits : [],
+            timerMode === "normal" ? selectedSplitMethod : undefined,
+            timerMode
           );
           setShowPenaltyButtons(true);
         }
@@ -556,6 +664,7 @@ export default function TimerDisplay({
       currentPhaseIndex,
       currentSplits,
       initializeAudioContext,
+      timerMode,
     ]
   );
 
@@ -599,6 +708,47 @@ export default function TimerDisplay({
     setShowPenaltyButtons(false);
   };
 
+  // Handle solve completion for manual and stackmat timers
+  const handleManualOrStackmatSolveComplete = useCallback(
+    async (time: number, penalty: "none" | "+2" | "DNF") => {
+      try {
+        // For manual and stackmat timers, use the specialized handler if available
+        if (onSolveCompleteWithPenalty) {
+          await onSolveCompleteWithPenalty(
+            time,
+            penalty,
+            undefined,
+            undefined,
+            timerMode
+          );
+        } else {
+          // Fallback to regular handler and apply penalty after
+          await onSolveCompleteRef.current(
+            time,
+            undefined,
+            undefined,
+            [],
+            undefined,
+            timerMode
+          );
+
+          // Apply penalty if not "none"
+          if (penalty !== "none" && onApplyPenalty) {
+            // Delay slightly to ensure solve is recorded first
+            setTimeout(() => {
+              if (onApplyPenalty) {
+                onApplyPenalty(penalty);
+              }
+            }, 100);
+          }
+        }
+      } catch (error) {
+        console.error("Error completing solve:", error);
+      }
+    },
+    [onSolveCompleteWithPenalty, onApplyPenalty, timerMode]
+  );
+
   return (
     <div className="timer-card">
       <div className="flex items-center justify-between mb-4">
@@ -607,14 +757,14 @@ export default function TimerDisplay({
           className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
           title={showTimer ? "Hide timer" : "Show timer"}
         >
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
-          Timer
-        </h3>
-        {showTimer ? (
-          <ChevronDown className="w-4 h-4" />
-        ) : (
-          <ChevronRight className="w-4 h-4" />
-        )}
+          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+            Timer
+          </h3>
+          {showTimer ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
         </button>
         <div className="flex items-center gap-2">
           <button
@@ -649,6 +799,8 @@ export default function TimerDisplay({
         {/* Settings Panel */}
         <TimerSettings
           showSettings={showSettings}
+          timerMode={timerMode}
+          setTimerMode={setTimerMode}
           inspectionEnabled={inspectionEnabled}
           setInspectionEnabled={setInspectionEnabled}
           focusModeEnabled={focusModeEnabled}
@@ -661,45 +813,68 @@ export default function TimerDisplay({
           setConsistencyCoach={setConsistencyCoach}
         />
 
-        <TimerCore
-          state={state}
-          time={time}
-          inspectionTime={inspectionTime}
-          currentPenalty={currentPenalty}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleTouchStart}
-          onMouseUp={handleTouchEnd}
-        >
-          {/* Phase Split Indicator - Show during solving */}
-          <PhaseIndicator
-            phaseSplitsEnabled={phaseSplitsEnabled}
-            isRunning={state === "running"}
-            selectedSplitMethod={selectedSplitMethod}
-            currentPhaseIndex={currentPhaseIndex}
-          />
-
-          {/* Penalty Buttons */}
-          {state === "stopped" && (
-            <PenaltyButtons
-              showPenaltyButtons={showPenaltyButtons}
+        {/* Render timer based on selected mode */}
+        {timerMode === "normal" && (
+          <>
+            <TimerCore
+              state={state}
+              time={time}
+              inspectionTime={inspectionTime}
               currentPenalty={currentPenalty}
-              onPenaltyChange={handlePenalty}
-            />
-          )}
-        </TimerCore>
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              onMouseDown={handleTouchStart}
+              onMouseUp={handleTouchEnd}
+            >
+              {/* Phase Split Indicator - Show during solving */}
+              <PhaseIndicator
+                phaseSplitsEnabled={phaseSplitsEnabled}
+                isRunning={state === "running"}
+                selectedSplitMethod={selectedSplitMethod}
+                currentPhaseIndex={currentPhaseIndex}
+              />
 
-        {/* Phase Results - Show after solve completion */}
-        {state === "stopped" &&
-          phaseSplitsEnabled &&
-          currentSplits.length > 0 && (
-            <PhaseResults
-              splits={currentSplits}
-              totalTime={time}
-              splitMethod={selectedSplitMethod}
-              className="mt-4"
-            />
-          )}
+              {/* Penalty Buttons */}
+              {state === "stopped" && (
+                <PenaltyButtons
+                  showPenaltyButtons={showPenaltyButtons}
+                  currentPenalty={currentPenalty}
+                  onPenaltyChange={handlePenalty}
+                />
+              )}
+            </TimerCore>
+
+            {/* Phase Results - Show after solve completion */}
+            {state === "stopped" &&
+              phaseSplitsEnabled &&
+              currentSplits.length > 0 && (
+                <PhaseResults
+                  splits={currentSplits}
+                  totalTime={time}
+                  splitMethod={selectedSplitMethod}
+                  className="mt-4"
+                />
+              )}
+          </>
+        )}
+
+        {timerMode === "manual" && (
+          <ManualTimerCore
+            onSolveComplete={handleManualOrStackmatSolveComplete}
+            inspectionEnabled={inspectionEnabled}
+            playBeep={playBeep}
+            playAlert={playAlert}
+          />
+        )}
+
+        {timerMode === "stackmat" && (
+          <StackmatTimerCore
+            onSolveComplete={handleManualOrStackmatSolveComplete}
+            inspectionEnabled={inspectionEnabled}
+            playBeep={playBeep}
+            playAlert={playAlert}
+          />
+        )}
       </div>
     </div>
   );

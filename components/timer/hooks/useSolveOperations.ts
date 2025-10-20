@@ -16,6 +16,7 @@ interface TimerRecord {
   tags?: string[];
   splits?: Array<{ phase: string; time: number }>;
   splitMethod?: string;
+  timerMode?: "normal" | "manual" | "stackmat";
 }
 
 interface Session {
@@ -178,11 +179,17 @@ export const useSolveOperations = (
     [deleteDbSolve, updateSessionSolveCount, saveToCache]
   );
 
-  // Update solve (notes, tags)
+  // Update solve details
   const updateSolve = useCallback(
     async (
       solveId: string,
-      updates: { notes?: string; tags?: string[] },
+      updates: {
+        notes?: string;
+        tags?: string[];
+        time?: number;
+        penalty?: "none" | "+2" | "DNF";
+        finalTime?: number;
+      },
       updateSolveInHistory: (
         solveId: string,
         updates: Partial<TimerRecord>

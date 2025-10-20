@@ -323,6 +323,9 @@ export const saveSolve = mutation({
     ),
     splitMethod: v.optional(v.string()),
     microPausesMs: v.optional(v.array(v.number())),
+    timerMode: v.optional(
+      v.union(v.literal("normal"), v.literal("manual"), v.literal("stackmat"))
+    ),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -340,6 +343,7 @@ export const saveSolve = mutation({
       splits: args.splits,
       splitMethod: args.splitMethod,
       microPausesMs: args.microPausesMs,
+      timerMode: args.timerMode,
       solveDate: now,
       createdAt: now,
     });
@@ -385,6 +389,13 @@ export const batchImportSolves = mutation({
         ),
         splitMethod: v.optional(v.string()),
         microPausesMs: v.optional(v.array(v.number())),
+        timerMode: v.optional(
+          v.union(
+            v.literal("normal"),
+            v.literal("manual"),
+            v.literal("stackmat")
+          )
+        ),
       })
     ),
   },
@@ -408,6 +419,7 @@ export const batchImportSolves = mutation({
           splits: solve.splits,
           splitMethod: solve.splitMethod,
           microPausesMs: solve.microPausesMs,
+          timerMode: solve.timerMode,
           solveDate: solve.timestamp,
           createdAt: now,
         });

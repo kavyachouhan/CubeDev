@@ -1,15 +1,29 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Eye, Zap, Volume2, ChevronDown, Check } from "lucide-react";
+import {
+  Eye,
+  Zap,
+  Volume2,
+  ChevronDown,
+  Check,
+  Timer,
+  Edit3,
+  Mic,
+} from "lucide-react";
 import {
   SPLIT_METHODS,
   getSplitMethod,
   ConsistencyCoachSettings,
 } from "@/lib/phase-splits";
+import { Tooltip } from "./Tooltip";
+
+export type TimerMode = "normal" | "manual" | "stackmat";
 
 interface TimerSettingsProps {
   showSettings: boolean;
+  timerMode: TimerMode;
+  setTimerMode: (mode: TimerMode) => void;
   inspectionEnabled: boolean;
   setInspectionEnabled: (enabled: boolean) => void;
   focusModeEnabled: boolean;
@@ -28,6 +42,8 @@ interface TimerSettingsProps {
 
 export default function TimerSettings({
   showSettings,
+  timerMode,
+  setTimerMode,
   inspectionEnabled,
   setInspectionEnabled,
   focusModeEnabled,
@@ -41,9 +57,11 @@ export default function TimerSettings({
 }: TimerSettingsProps) {
   const [showSplitMethodDropdown, setShowSplitMethodDropdown] = useState(false);
   const [showSoundDropdown, setShowSoundDropdown] = useState(false);
+  const [showTimerModeDropdown, setShowTimerModeDropdown] = useState(false);
 
   const splitMethodDropdownRef = useRef<HTMLDivElement>(null);
   const soundDropdownRef = useRef<HTMLDivElement>(null);
+  const timerModeDropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -60,14 +78,20 @@ export default function TimerSettings({
       ) {
         setShowSoundDropdown(false);
       }
+      if (
+        timerModeDropdownRef.current &&
+        !timerModeDropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowTimerModeDropdown(false);
+      }
     };
 
-    if (showSplitMethodDropdown || showSoundDropdown) {
+    if (showSplitMethodDropdown || showSoundDropdown || showTimerModeDropdown) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showSplitMethodDropdown, showSoundDropdown]);
+  }, [showSplitMethodDropdown, showSoundDropdown, showTimerModeDropdown]);
 
   const soundOptions = [
     { value: "beep", label: "Beep", description: "Classic electronic beep" },
@@ -75,11 +99,135 @@ export default function TimerSettings({
     { value: "wood", label: "Wood", description: "Warm wooden click" },
   ];
 
+  const timerModeOptions = [
+    {
+      value: "normal" as TimerMode,
+      label: "Normal Timer",
+      description: "Traditional spacebar timer",
+      icon: Timer,
+    },
+    {
+      value: "manual" as TimerMode,
+      label: "Manual Entry",
+      description: "Enter times manually",
+      icon: Edit3,
+    },
+    {
+      value: "stackmat" as TimerMode,
+      label: "Stackmat Timer",
+      description: "Connect via microphone",
+      icon: Mic,
+    },
+  ];
+
   if (!showSettings) return null;
 
   return (
     <div className="mb-4 p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
       <div className="space-y-3">
+        {/* Timer Mode Selection */}
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
+              <Timer className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                Timer Mode
+              </span>
+              <p className="text-xs text-[var(--text-muted)] font-inter">
+                Choose how you want to time your solves
+              </p>
+            </div>
+          </div>
+
+          <div className="relative ml-11" ref={timerModeDropdownRef}>
+            <button
+              onClick={() => setShowTimerModeDropdown(!showTimerModeDropdown)}
+              className="w-full flex items-center justify-between p-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)] transition-colors"
+            >
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                {(() => {
+                  const Icon =
+                    timerModeOptions.find((opt) => opt.value === timerMode)
+                      ?.icon || Timer;
+                  return (
+                    <Icon className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+                  );
+                })()}
+                <div className="text-left min-w-0 flex-1">
+                  <div className="font-medium text-[var(--text-primary)] font-statement truncate text-sm">
+                    {timerModeOptions.find((opt) => opt.value === timerMode)
+                      ?.label || "Normal Timer"}
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] font-inter truncate">
+                    {timerModeOptions.find((opt) => opt.value === timerMode)
+                      ?.description || "Traditional spacebar timer"}
+                  </div>
+                </div>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-[var(--text-secondary)] transition-transform flex-shrink-0 ${
+                  showTimerModeDropdown ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {showTimerModeDropdown && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-[9999] max-h-60 overflow-hidden">
+                <div className="max-h-56 overflow-y-auto">
+                  {timerModeOptions.map((option) => {
+                    const Icon = option.icon;
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => {
+                          setTimerMode(option.value);
+                          setShowTimerModeDropdown(false);
+                        }}
+                        className={`w-full text-left p-3 hover:bg-[var(--surface-elevated)] transition-colors border-b border-[var(--border)]/50 last:border-b-0 ${
+                          timerMode === option.value
+                            ? "bg-[var(--primary)]/20"
+                            : ""
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <Icon
+                              className={`w-4 h-4 flex-shrink-0 ${
+                                timerMode === option.value
+                                  ? "text-[var(--primary)]"
+                                  : "text-[var(--text-secondary)]"
+                              }`}
+                            />
+                            <div className="min-w-0 flex-1">
+                              <div
+                                className={`font-medium text-sm ${
+                                  timerMode === option.value
+                                    ? "text-[var(--primary)]"
+                                    : "text-[var(--text-primary)]"
+                                }`}
+                              >
+                                {option.label}
+                              </div>
+                              <div className="text-xs text-[var(--text-muted)] mt-1">
+                                {option.description}
+                              </div>
+                            </div>
+                          </div>
+                          {timerMode === option.value && (
+                            <Check className="w-4 h-4 text-[var(--primary)] flex-shrink-0 ml-2" />
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Inspection Time Toggle */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -135,34 +283,47 @@ export default function TimerSettings({
         </div>
 
         {/* Phase Split Timer Toggle */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
-              <Zap className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                Phase Split Timer
-              </span>
-              <p className="text-xs text-[var(--text-muted)] font-inter">
-                Track solve phases with spacebar presses
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => setPhaseSplitsEnabled(!phaseSplitsEnabled)}
-            className={`w-11 h-6 rounded-full transition-colors flex items-center ${
-              phaseSplitsEnabled
-                ? "bg-[var(--primary)] justify-end"
-                : "bg-[var(--border)] justify-start"
+        <Tooltip
+          content="Phase splits only available in Normal timer mode"
+          disabled={timerMode === "normal"}
+        >
+          <div
+            className={`flex items-center justify-between ${
+              timerMode !== "normal" ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
-          </button>
-        </div>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
+                <Zap className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                  Phase Split Timer
+                </span>
+                <p className="text-xs text-[var(--text-muted)] font-inter">
+                  Track solve phases with spacebar presses
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() =>
+                timerMode === "normal" &&
+                setPhaseSplitsEnabled(!phaseSplitsEnabled)
+              }
+              disabled={timerMode !== "normal"}
+              className={`w-11 h-6 rounded-full transition-colors flex items-center ${
+                phaseSplitsEnabled
+                  ? "bg-[var(--primary)] justify-end"
+                  : "bg-[var(--border)] justify-start"
+              } ${timerMode !== "normal" ? "cursor-not-allowed" : ""}`}
+            >
+              <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
+            </button>
+          </div>
+        </Tooltip>
 
         {/* Split Method Selection */}
-        {phaseSplitsEnabled && (
+        {phaseSplitsEnabled && timerMode === "normal" && (
           <div className="ml-11 pl-3 border-l border-[var(--border)]">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-[var(--text-primary)] font-inter">
@@ -244,39 +405,50 @@ export default function TimerSettings({
         )}
 
         {/* Consistency Coach Toggle */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
-              <Volume2 className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                Consistency Coach
-              </span>
-              <p className="text-xs text-[var(--text-muted)] font-inter">
-                Soft metronome for pacing practice
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() =>
-              setConsistencyCoach((prev) => ({
-                ...prev,
-                enabled: !prev.enabled,
-              }))
-            }
-            className={`w-11 h-6 rounded-full transition-colors flex items-center ${
-              consistencyCoach.enabled
-                ? "bg-[var(--primary)] justify-end"
-                : "bg-[var(--border)] justify-start"
+        <Tooltip
+          content="Consistency coach only available in Normal and Stackmat timer modes"
+          disabled={timerMode !== "manual"}
+        >
+          <div
+            className={`flex items-center justify-between ${
+              timerMode === "manual" ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
-          </button>
-        </div>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
+                <Volume2 className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                  Consistency Coach
+                </span>
+                <p className="text-xs text-[var(--text-muted)] font-inter">
+                  Soft metronome for pacing practice
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() =>
+                timerMode !== "manual" &&
+                setConsistencyCoach((prev) => ({
+                  ...prev,
+                  enabled: !prev.enabled,
+                }))
+              }
+              disabled={timerMode === "manual"}
+              className={`w-11 h-6 rounded-full transition-colors flex items-center ${
+                consistencyCoach.enabled
+                  ? "bg-[var(--primary)] justify-end"
+                  : "bg-[var(--border)] justify-start"
+              } ${timerMode === "manual" ? "cursor-not-allowed" : ""}`}
+            >
+              <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
+            </button>
+          </div>
+        </Tooltip>
 
         {/* Consistency Coach Settings */}
-        {consistencyCoach.enabled && (
+        {consistencyCoach.enabled && timerMode !== "manual" && (
           <div className="ml-11 pl-3 border-l border-[var(--border)] space-y-2">
             {/* BPM Setting */}
             <div className="flex items-center justify-between">

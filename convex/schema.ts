@@ -67,6 +67,11 @@ export default defineSchema({
     penalty: v.union(v.literal("none"), v.literal("+2"), v.literal("DNF")), // Penalty applied
     finalTime: v.number(), // Final time after penalty
 
+    // Timer Mode
+    timerMode: v.optional(
+      v.union(v.literal("normal"), v.literal("manual"), v.literal("stackmat"))
+    ), // Timer mode used
+
     // Solve Details
     solveDate: v.number(), // Timestamp when solve was completed
 

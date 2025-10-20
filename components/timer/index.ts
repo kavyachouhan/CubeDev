@@ -3,6 +3,8 @@ export { default as TimerSettings } from "./TimerSettings";
 export { default as PhaseIndicator } from "./PhaseIndicator";
 export { default as PenaltyButtons } from "./PenaltyButtons";
 export { default as TimerCore } from "./TimerCore";
+export { default as ManualTimerCore } from "./ManualTimerCore";
+export { default as StackmatTimerCore } from "./StackmatTimerCore";
 export { default as PhaseResults } from "./PhaseResults";
 export { default as ScrambleDisplay } from "./ScrambleDisplay";
 export { default as SessionManager } from "./SessionManager";
@@ -13,3 +15,8 @@ export { default as ImportExportButtons } from "./ImportExportButtons";
 export { default as ImportModal } from "./ImportModal";
 export { default as ScramblePreview } from "./ScramblePreview";
 export { default as SessionStatsModal } from "./SessionStatsModal";
+export { default as SolveEditModal } from "./SolveEditModal";
+export { Tooltip } from "./Tooltip";
+
+export type { TimerMode } from "./TimerSettings";
+export { useStackmatAudio } from "./hooks/useStackmatAudio";

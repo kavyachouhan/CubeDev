@@ -12,6 +12,7 @@ export interface TimerRecord {
   tags?: string[];
   splits?: PhaseSplit[];
   splitMethod?: string;
+  timerMode?: "normal" | "manual" | "stackmat";
 }
 
 export interface PhaseSplit {

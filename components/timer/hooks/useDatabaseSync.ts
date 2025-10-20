@@ -64,6 +64,7 @@ export const useDatabaseSync = (userId?: string) => {
         tags: dbSolve.tags,
         splits: dbSolve.splits, // Map phase split data
         splitMethod: dbSolve.splitMethod, // Map split method
+        timerMode: dbSolve.timerMode, // Map timer mode
       }));
     },
     []
@@ -89,6 +90,7 @@ export const useDatabaseSync = (userId?: string) => {
         tags: solve.tags,
         splits: solve.splits,
         splitMethod: solve.splitMethod,
+        timerMode: solve.timerMode,
       });
       return solveId;
     } catch (error) {
@@ -173,6 +175,7 @@ export const useDatabaseSync = (userId?: string) => {
   const updateDbSolve = async (
     solveId: string,
     updates: Partial<{
+      time: number;
       penalty: "none" | "+2" | "DNF";
       finalTime: number;
       notes: string;
