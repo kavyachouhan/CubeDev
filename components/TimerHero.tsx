@@ -290,17 +290,17 @@ export default function TimerHero() {
   const getTimerColor = () => {
     switch (state) {
       case "inspection":
-        if (inspectionTime <= 3) return "text-red-400";
-        if (inspectionTime <= 8) return "text-yellow-400";
-        return "text-green-400";
+        if (inspectionTime <= 3) return "text-[var(--timer-running)]";
+        if (inspectionTime <= 8) return "text-[var(--timer-inspection)]";
+        return "text-[var(--timer-ready)]";
       case "ready":
-        return "text-green-400";
+        return "text-[var(--timer-ready)]";
       case "running":
-        return "text-red-400";
+        return "text-[var(--timer-running)]";
       case "stopped":
-        return "text-blue-400";
+        return "text-[var(--primary)]";
       default:
-        return "text-gray-400";
+        return "text-[var(--text-muted)]";
     }
   };
 
@@ -465,13 +465,13 @@ export default function TimerHero() {
                   <div className="mt-6 flex justify-center gap-3">
                     <button
                       onClick={() => applyPenalty("+2")}
-                      className="px-6 py-2 bg-[var(--warning)] hover:bg-yellow-500 text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105"
+                      className="px-6 py-2 bg-[var(--penalty-plus2)] hover:bg-[var(--penalty-plus2-hover)] text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105"
                     >
                       +2
                     </button>
                     <button
                       onClick={() => applyPenalty("DNF")}
-                      className="px-6 py-2 bg-[var(--error)] hover:bg-red-500 text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105"
+                      className="px-6 py-2 bg-[var(--penalty-dnf)] hover:bg-[var(--penalty-dnf-hover)] text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105"
                     >
                       DNF
                     </button>

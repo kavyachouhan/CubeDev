@@ -1,6 +1,9 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import ThemeModeSelector from "./ThemeModeSelector";
+import ColorSchemeSelector from "./ColorSchemeSelector";
+import TimerCustomization from "./TimerCustomization";
+import AccessibilitySettings from "./AccessibilitySettings";
 
 export default function ThemeSection() {
   return (
@@ -16,21 +19,14 @@ export default function ThemeSection() {
         </div>
       </div>
 
-      <div className="text-center py-12">
-        <div className="flex justify-center mb-4">
-          <div className="p-4 bg-[var(--primary)]/10 rounded-full">
-            <Sparkles className="w-8 h-8 text-[var(--primary)]" />
-          </div>
-        </div>
-
-        <h4 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
-          Coming Soon!
-        </h4>
-
-        <p className="text-[var(--text-secondary)] mb-6 max-w-md mx-auto">
-          We're working on exciting theme customization options including
-          dark/light modes, color schemes, and timer appearance settings.
-        </p>
+      <div className="space-y-6">
+        <ThemeModeSelector />
+        <div className="border-t border-[var(--border)]" />
+        <ColorSchemeSelector />
+        <div className="border-t border-[var(--border)]" />
+        <TimerCustomization />
+        <div className="border-t border-[var(--border)]" />
+        <AccessibilitySettings />
       </div>
     </div>
   );

@@ -57,19 +57,19 @@ export default function TimerCore({
   const getTimerColor = () => {
     switch (state) {
       case "holding":
-        return "text-orange-400";
+        return "text-[var(--warning)]";
       case "inspection":
-        if (inspectionTime <= 3) return "text-red-400";
-        if (inspectionTime <= 8) return "text-yellow-400";
-        return "text-green-400";
+        if (inspectionTime <= 3) return "text-[var(--timer-running)]";
+        if (inspectionTime <= 8) return "text-[var(--warning)]";
+        return "text-[var(--timer-ready)]";
       case "ready":
-        return "text-green-400";
+        return "text-[var(--timer-ready)]";
       case "running":
-        return "text-red-400";
+        return "text-[var(--timer-running)]";
       case "stopped":
-        return "text-blue-400";
+        return "text-[var(--primary)]";
       default:
-        return "text-gray-400";
+        return "text-[var(--text-muted)]";
     }
   };
 
@@ -121,8 +121,8 @@ export default function TimerCore({
         <div
           className={`text-xs font-semibold px-2 py-1 rounded-full transition-all duration-300 ${
             currentPenalty === "+2"
-              ? "bg-yellow-100 text-yellow-800 border border-yellow-300"
-              : "bg-red-100 text-red-800 border border-red-300"
+              ? "bg-[var(--warning)]/10 text-[var(--warning)] border border-[var(--warning)]/30"
+              : "bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30"
           }`}
         >
           {currentPenalty === "+2" ? "+2 Penalty Applied" : "DNF Applied"}

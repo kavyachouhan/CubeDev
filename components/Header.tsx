@@ -6,11 +6,13 @@ import Image from "next/image";
 import { getWCAOAuthUrl } from "@/lib/wca-config";
 import { useUser } from "@/components/UserProvider";
 import UserDropdown from "@/components/UserDropdown";
+import { useLogo } from "@/lib/use-logo";
 
 export default function Header() {
   const [activeTab, setActiveTab] = useState("Timer");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, signOut } = useUser();
+  const logoSrc = useLogo();
 
   const handleWCASignIn = () => {
     const wcaAuthUrl = getWCAOAuthUrl();
@@ -35,14 +37,14 @@ export default function Header() {
             onClick={() => setActiveTab("Timer")}
           >
             <Image
-              src="/cubedev_logo.png"
+              src={logoSrc}
               alt="CubeDev Logo"
               width={32}
               height={32}
               className="w-8 h-8"
             />
             <span className="text-2xl font-bold text-[var(--text-primary)] group-hover:opacity-80 transition-opacity font-statement">
-              Cube<span className="text-blue">Dev</span>
+              Cube<span className="text-[var(--primary)]">Dev</span>
             </span>
           </Link>
 
@@ -241,7 +243,7 @@ export default function Header() {
                       signOut();
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full flex items-center justify-center gap-3 px-4 py-3 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg transition-all duration-200 font-button text-base"
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 text-[var(--error)] hover:text-[var(--error)] hover:bg-[var(--error)]/10 border border-[var(--error)]/30 rounded-lg transition-all duration-200 font-button text-base"
                   >
                     <svg
                       className="w-4 h-4"

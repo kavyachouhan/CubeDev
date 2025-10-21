@@ -155,7 +155,7 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
                 onSignOut();
                 setIsOpen(false);
               }}
-              className="flex items-center gap-3 px-4 py-2 w-full text-left text-[var(--text-secondary)] hover:text-red-500 hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+              className="flex items-center gap-3 px-4 py-2 w-full text-left text-[var(--text-secondary)] hover:text-[var(--error)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
             >
               <LogOut className="w-4 h-4" />
               Sign Out

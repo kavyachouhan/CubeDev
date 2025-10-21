@@ -185,7 +185,7 @@ function WCACallbackContent() {
             {status === "success" && (
               <>
                 <div className="flex justify-center mb-6">
-                  <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-[var(--success)] rounded-full flex items-center justify-center">
                     <svg
                       className="w-6 h-6 text-white"
                       fill="none"
@@ -201,7 +201,7 @@ function WCACallbackContent() {
                     </svg>
                   </div>
                 </div>
-                <h1 className="text-2xl font-bold text-green-600 mb-4 font-statement">
+                <h1 className="text-2xl font-bold text-[var(--success)] mb-4 font-statement">
                   Success!
                 </h1>
                 <p className="text-[var(--text-secondary)] font-inter">
@@ -216,7 +216,7 @@ function WCACallbackContent() {
             {status === "error" && (
               <>
                 <div className="flex justify-center mb-6">
-                  <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-[var(--error)] rounded-full flex items-center justify-center">
                     <svg
                       className="w-6 h-6 text-white"
                       fill="none"
@@ -232,7 +232,7 @@ function WCACallbackContent() {
                     </svg>
                   </div>
                 </div>
-                <h1 className="text-2xl font-bold text-red-600 mb-4 font-statement">
+                <h1 className="text-2xl font-bold text-[var(--error)] mb-4 font-statement">
                   Authentication Failed
                 </h1>
                 <p className="text-[var(--text-secondary)] mb-6 font-inter">

@@ -103,7 +103,7 @@ export default function AccountDeletionSection() {
 
   return (
     <>
-      <div className="timer-card border-red-200 dark:border-red-800">
+      <div className="timer-card">
         <div className="flex items-center gap-3 mb-6">
           <div>
             <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
@@ -115,13 +115,13 @@ export default function AccountDeletionSection() {
           </div>
         </div>
 
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+        <div className="bg-[var(--error)]/10 border border-[var(--error)]/30 rounded-lg p-4 mb-6">
           <div className="flex items-start gap-3">
             <div>
-              <h4 className="font-semibold text-red-800 dark:text-red-400 mb-2">
+              <h4 className="font-semibold text-[var(--error)] mb-2">
                 What happens when you delete your account:
               </h4>
-              <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
+              <ul className="text-sm text-[var(--error)]/80 space-y-1">
                 <li>• All your timer data and solve history will be removed</li>
                 <li>• Your challenge room participation will be anonymized</li>
                 <li>• Your profile will be hidden from public view</li>
@@ -134,7 +134,7 @@ export default function AccountDeletionSection() {
 
         <button
           onClick={() => setIsDeleteModalOpen(true)}
-          className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors text-sm md:text-base w-full sm:w-auto"
+          className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-[var(--error)] hover:opacity-90 text-white rounded-lg font-medium transition-all text-sm md:text-base w-full sm:w-auto"
         >
           <Trash2 className="w-4 h-4" />
           Delete My Account
@@ -168,15 +168,16 @@ export default function AccountDeletionSection() {
                 </p>
 
                 <label className="block text-xs md:text-sm font-medium text-[var(--text-secondary)] mb-2">
-                  Type <span className="font-bold text-red-500">DELETE</span> to
-                  confirm:
+                  Type{" "}
+                  <span className="font-bold text-[var(--error)]">DELETE</span>{" "}
+                  to confirm:
                 </label>
                 <input
                   type="text"
                   value={deleteConfirmation}
                   onChange={(e) => setDeleteConfirmation(e.target.value)}
                   placeholder="DELETE"
-                  className="w-full px-3 py-2 border border-[var(--border)] rounded-md bg-[var(--surface-elevated)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-red-500 text-sm md:text-base"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-md bg-[var(--surface-elevated)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--error)] text-sm md:text-base"
                 />
               </div>
 
@@ -193,7 +194,7 @@ export default function AccountDeletionSection() {
                 <button
                   onClick={handleDeleteAccount}
                   disabled={deleteConfirmation !== "DELETE" || isDeleting}
-                  className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm md:text-base"
+                  className="flex-1 px-4 py-2 bg-[var(--error)] hover:opacity-90 text-white rounded-md font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm md:text-base"
                 >
                   {isDeleting ? (
                     <>

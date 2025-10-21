@@ -123,7 +123,7 @@ export default function ScramblePreview({
       </div>
 
       {!showPreview ? (
-        <div className="w-full min-h-[180px] sm:min-h-[200px] bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
+        <div className="w-full min-h-[180px] sm:min-h-[200px] bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center border border-[var(--border)]">
           <button
             onClick={() => setShowPreview(true)}
             className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-md hover:bg-[var(--primary-hover)] transition-colors"

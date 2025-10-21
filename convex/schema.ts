@@ -28,6 +28,15 @@ export default defineSchema({
     hideProfile: v.optional(v.boolean()), // Hide CubeDev profile from public view
     hideChallengeStats: v.optional(v.boolean()), // Hide challenge room stats from public view
 
+    // Theme & Appearance Settings
+    themeMode: v.optional(v.string()), // "light" | "dark" | "auto"
+    colorScheme: v.optional(v.string()), // "blue" | "purple" | "green" | "orange" | "cyan"
+    timerFontSize: v.optional(v.string()), // "sm" | "md" | "lg" | "xl"
+    timerFontFamily: v.optional(v.string()), // "mono" | "sans" | "statement"
+    reduceMotion: v.optional(v.boolean()), // Reduce animations
+    disableGlow: v.optional(v.boolean()), // Disable glow effects
+    highContrast: v.optional(v.boolean()), // High contrast mode
+
     // Account Status
     isDeleted: v.optional(v.boolean()), // Soft delete flag
     deletedAt: v.optional(v.number()), // Deletion timestamp

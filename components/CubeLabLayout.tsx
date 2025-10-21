@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import SidebarUserDropdown from "@/components/SidebarUserDropdown";
+import { useLogo } from "@/lib/use-logo";
 
 interface CubeLabLayoutProps {
   children: React.ReactNode;
@@ -30,6 +31,7 @@ export default function CubeLabLayout({
   const { user, signOut } = useUser();
   const pathname = usePathname();
   const currentYear = new Date().getFullYear();
+  const logoSrc = useLogo();
 
   const sections = [
     {
@@ -74,12 +76,7 @@ export default function CubeLabLayout({
         <div className="flex flex-col px-6 py-4 border-b border-[var(--border)]">
           <div className="flex items-center justify-between h-8">
             <Link href="/cube-lab/timer" className="flex items-center gap-3">
-              <Image
-                src="/cubedev_logo.png"
-                alt="CubeDev Logo"
-                width={32}
-                height={32}
-              />
+              <Image src={logoSrc} alt="CubeDev Logo" width={32} height={32} />
               <h1 className="text-xl font-bold text-[var(--text-primary)] font-statement">
                 Cube <span className="text-[var(--primary)]">Lab</span>
               </h1>

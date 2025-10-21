@@ -55,7 +55,7 @@ export default function CreditsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-        <Header />
+      <Header />
       <div className="container-responsive py-8 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">
@@ -125,22 +125,21 @@ export default function CreditsPage() {
               </div>
             ))}
           </div>
-        </div>  
+        </div>
 
         {/* Special Thanks */}
         <div className="timer-card text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Heart className="w-6 h-6 text-red-500" />
+            <Heart className="w-6 h-6 text-[var(--error)]" />
             <h2 className="text-2xl font-bold text-[var(--text-primary)] font-statement">
               Special Thanks
             </h2>
           </div>
 
           <p className="text-[var(--text-secondary)] font-inter mb-6 max-w-2xl mx-auto">
-            To the entire community, WCA delegates, competition
-            organizers, and every cuber who has contributed to making this sport
-            amazing. CubeDev exists to serve and celebrate this incredible
-            sports.
+            To the entire community, WCA delegates, competition organizers, and
+            every cuber who has contributed to making this sport amazing.
+            CubeDev exists to serve and celebrate this incredible sports.
           </p>
         </div>
 
@@ -153,7 +152,7 @@ export default function CreditsPage() {
           </div>
         </div>
       </div>
-        <Footer />
+      <Footer />
     </div>
   );
 }

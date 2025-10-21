@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import { UserProvider } from "@/components/UserProvider";
+import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
 import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
@@ -54,14 +55,49 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Prevent theme flash by applying theme before React hydration */}
+        <script 
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const stored = localStorage.getItem('cubedev-theme-preferences');
+                  let themeMode = 'dark';
+                  let colorScheme = 'blue';
+                  
+                  if (stored) {
+                    const prefs = JSON.parse(stored);
+                    themeMode = prefs.themeMode || 'dark';
+                    colorScheme = prefs.colorScheme || 'blue';
+                  }
+                  
+                  let effectiveTheme = themeMode;
+                  if (themeMode === 'auto') {
+                    effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  }
+                  
+                  document.documentElement.setAttribute('data-theme', effectiveTheme);
+                  document.documentElement.setAttribute('data-color-scheme', colorScheme);
+                } catch (e) {
+                  document.documentElement.setAttribute('data-theme', 'dark');
+                  document.documentElement.setAttribute('data-color-scheme', 'blue');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col overflow-x-hidden`}
       >
         <ConvexClientProvider>
           <UserProvider>
-            {children}
-            <Analytics />
+            <ThemeProviderWrapper>
+              {children}
+              <Analytics />
+            </ThemeProviderWrapper>
           </UserProvider>
         </ConvexClientProvider>
       </body>

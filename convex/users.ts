@@ -166,6 +166,27 @@ export const updatePrivacySettings = mutation({
   },
 });
 
+// Update user theme settings
+export const updateThemeSettings = mutation({
+  args: {
+    userId: v.id("users"),
+    themeMode: v.optional(v.string()),
+    colorScheme: v.optional(v.string()),
+    timerFontSize: v.optional(v.string()),
+    timerFontFamily: v.optional(v.string()),
+    reduceMotion: v.optional(v.boolean()),
+    disableGlow: v.optional(v.boolean()),
+    highContrast: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const { userId, ...updates } = args;
+    await ctx.db.patch(userId, {
+      ...updates,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
 // Soft delete user account
 export const deleteUserAccount = mutation({
   args: {

@@ -32,8 +32,8 @@ export default function PenaltyButtons({
         onMouseUp={(e) => e.stopPropagation()}
         className={`px-6 py-2 text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105 ${
           currentPenalty === "+2"
-            ? "bg-yellow-600 ring-2 ring-yellow-300"
-            : "bg-[var(--warning)] hover:bg-yellow-500"
+            ? "bg-[var(--penalty-plus2-hover)] ring-2 ring-[var(--penalty-plus2)]/50"
+            : "bg-[var(--penalty-plus2)] hover:bg-[var(--penalty-plus2-hover)]"
         }`}
       >
         +2 {currentPenalty === "+2" ? "✓" : ""}
@@ -50,8 +50,8 @@ export default function PenaltyButtons({
         onMouseUp={(e) => e.stopPropagation()}
         className={`px-6 py-2 text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105 ${
           currentPenalty === "DNF"
-            ? "bg-red-700 ring-2 ring-red-300"
-            : "bg-[var(--error)] hover:bg-red-500"
+            ? "bg-[var(--penalty-dnf-hover)] ring-2 ring-[var(--penalty-dnf)]/50"
+            : "bg-[var(--penalty-dnf)] hover:bg-[var(--penalty-dnf-hover)]"
         }`}
       >
         DNF {currentPenalty === "DNF" ? "✓" : ""}

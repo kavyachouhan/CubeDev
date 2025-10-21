@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import { RotateCcw, Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  RotateCcw,
+  Eye,
+  EyeOff,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 
 interface ScrambleDisplayProps {
   scramble: string;
@@ -77,7 +83,7 @@ export default function ScrambleDisplay({
     setIsBodyVisible(isExpanded);
   }, []);
 
-  // Adjust max height on expand/collapse, scramble change, or resize
+  // Adjust max height on expand/collapse or content change
   useEffect(() => {
     const apply = () => {
       const { collapsed, expanded } = measureHeights();
@@ -145,14 +151,14 @@ export default function ScrambleDisplay({
           className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
           title={isExpanded ? "Hide scramble" : "Show scramble"}
         >
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
-          Scramble
-        </h3>
-        {isExpanded ? (
-          <ChevronDown className="w-4 h-4" />
-        ) : (
-          <ChevronRight className="w-4 h-4" />
-        )}
+          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+            Scramble
+          </h3>
+          {isExpanded ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
         </button>
         <div className="flex items-center gap-2">
           <button
@@ -165,9 +171,7 @@ export default function ScrambleDisplay({
           <button
             onClick={toggleExpanded}
             className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
-            title={
-              isExpanded ? "Hide scramble" : "Show scramble"
-            }
+            title={isExpanded ? "Hide scramble" : "Show scramble"}
           >
             {isExpanded ? (
               <EyeOff className="w-4 h-4" />
@@ -188,7 +192,7 @@ export default function ScrambleDisplay({
         }
         aria-hidden={!isBodyVisible}
       >
-        <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+        <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
           <p className="text-lg font-mono text-[var(--text-primary)] text-center leading-relaxed">
             {scramble}
           </p>

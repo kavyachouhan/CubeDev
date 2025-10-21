@@ -11,7 +11,6 @@ export default function PrivacySection() {
   const [hideProfile, setHideProfile] = useState(false);
   const [hideChallengeStats, setHideChallengeStats] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState("");
 
   // Get current privacy settings
   const currentUser = useQuery(
@@ -34,7 +33,6 @@ export default function PrivacySection() {
     if (!user?.convexId) return;
 
     setIsSaving(true);
-    setSaveMessage("");
 
     try {
       await updatePrivacy({
@@ -43,11 +41,8 @@ export default function PrivacySection() {
         hideChallengeStats,
       });
 
-      setSaveMessage("Privacy settings updated successfully!");
-      setTimeout(() => setSaveMessage(""), 3000);
     } catch (error) {
-      setSaveMessage("Failed to update privacy settings.");
-      setTimeout(() => setSaveMessage(""), 3000);
+      console.error("Failed to update privacy settings:", error);
     } finally {
       setIsSaving(false);
     }
@@ -78,8 +73,8 @@ export default function PrivacySection() {
         <div className="bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] p-3 md:p-4">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-lg flex-shrink-0">
-                <UserPen className="w-4 h-4 text-blue-500" />
+              <div className="p-2 bg-[var(--primary)]/10 rounded-lg flex-shrink-0">
+                <UserPen className="w-4 h-4 text-[var(--primary)]" />
               </div>
               <div className="min-w-0 flex-1">
                 <h4 className="font-semibold text-[var(--text-primary)] text-sm md:text-base">
@@ -107,8 +102,8 @@ export default function PrivacySection() {
         <div className="bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] p-3 md:p-4">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="p-2 bg-purple-500/10 rounded-lg flex-shrink-0">
-                <Trophy className="w-4 h-4 text-purple-500" />
+              <div className="p-2 bg-[var(--secondary)]/10 rounded-lg flex-shrink-0">
+                <Trophy className="w-4 h-4 text-[var(--secondary)]" />
               </div>
               <div className="min-w-0 flex-1">
                 <h4 className="font-semibold text-[var(--text-primary)] text-sm md:text-base">
@@ -147,14 +142,6 @@ export default function PrivacySection() {
               )}
               {isSaving ? "Saving..." : "Save Privacy Settings"}
             </button>
-
-            {saveMessage && (
-              <div
-                className={`text-xs md:text-sm ${saveMessage.includes("success") ? "text-green-500" : "text-red-500"}`}
-              >
-                {saveMessage}
-              </div>
-            )}
           </div>
         )}
       </div>

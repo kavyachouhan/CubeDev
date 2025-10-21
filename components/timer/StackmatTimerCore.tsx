@@ -316,14 +316,14 @@ export default function StackmatTimerCore({
   // Get timer color based on state
   const getTimerColor = () => {
     if (isInspecting) {
-      if (inspectionTime <= 3) return "text-red-400";
-      if (inspectionTime <= 8) return "text-yellow-400";
-      return "text-green-400";
+      if (inspectionTime <= 3) return "text-[var(--timer-running)]";
+      if (inspectionTime <= 8) return "text-[var(--warning)]";
+      return "text-[var(--timer-ready)]";
     }
-    if (stackmatData.state === "ready") return "text-green-400";
-    if (stackmatData.state === "running") return "text-red-400";
-    if (stackmatData.state === "stopped") return "text-blue-400";
-    return "text-gray-400";
+    if (stackmatData.state === "ready") return "text-[var(--timer-ready)]";
+    if (stackmatData.state === "running") return "text-[var(--timer-running)]";
+    if (stackmatData.state === "stopped") return "text-[var(--primary)]";
+    return "text-[var(--text-muted)]";
   };
 
   return (
@@ -334,8 +334,8 @@ export default function StackmatTimerCore({
           <div
             className={`w-10 h-10 rounded-lg flex items-center justify-center ${
               isConnected
-                ? "bg-green-500/20 text-green-500"
-                : "bg-gray-500/20 text-gray-500"
+                ? "bg-[var(--success)]/20 text-[var(--success)]"
+                : "bg-[var(--text-muted)]/20 text-[var(--text-muted)]"
             }`}
           >
             {isConnected ? (
@@ -375,9 +375,9 @@ export default function StackmatTimerCore({
 
       {/* Error Display */}
       {error && (
-        <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-2">
-          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-red-500">{error}</div>
+        <div className="p-3 bg-[var(--error)]/10 border border-[var(--error)]/30 rounded-lg flex items-start gap-2">
+          <AlertCircle className="w-5 h-5 text-[var(--error)] flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-[var(--error)]">{error}</div>
         </div>
       )}
 
@@ -470,8 +470,8 @@ export default function StackmatTimerCore({
             <div
               className={`text-xs font-semibold px-2 py-1 rounded-full transition-all duration-300 ${
                 currentPenalty === "+2"
-                  ? "bg-yellow-100 text-yellow-800 border border-yellow-300"
-                  : "bg-red-100 text-red-800 border border-red-300"
+                  ? "bg-[var(--warning)]/10 text-[var(--warning)] border border-[var(--warning)]/30"
+                  : "bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30"
               }`}
             >
               {currentPenalty === "+2" ? "+2 Penalty Applied" : "DNF Applied"}

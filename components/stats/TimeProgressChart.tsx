@@ -15,9 +15,15 @@ import {
   TooltipItem,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { Eye, EyeOff, TrendingUp, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  TrendingUp,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 
-// Register Chart.js components
+// Register ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -44,6 +50,31 @@ interface TimerRecord {
 
 interface TimeProgressChartProps {
   solves: TimerRecord[];
+}
+
+// Hook to detect current theme
+function useEffectiveTheme() {
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
+
+  useEffect(() => {
+    const checkTheme = () => {
+      const dataTheme = document.documentElement.getAttribute("data-theme");
+      setTheme((dataTheme as "light" | "dark") || "dark");
+    };
+
+    checkTheme();
+
+    // Observe changes to data-theme attribute
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return theme;
 }
 
 // Persistent boolean that reads/writes localStorage on first render
@@ -140,6 +171,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
   const windowSize = useWindowSize();
   const isMobile = windowSize.width < 640;
   const isTablet = windowSize.width < 1024;
+  const effectiveTheme = useEffectiveTheme();
   const [showChart, setShowChart] = usePersistentBool(
     "cubelab-time-progress-chart-expanded",
     true
@@ -219,16 +251,37 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
       }
     }
 
+    // Theme-aware colors
+    const isLight = effectiveTheme === "light";
+    const textColor = isLight
+      ? "rgba(17, 24, 39, 0.7)"
+      : "rgba(255, 255, 255, 0.7)";
+    const textSecondaryColor = isLight
+      ? "rgba(75, 85, 99, 0.6)"
+      : "rgba(255, 255, 255, 0.6)";
+    const gridColor = isLight
+      ? "rgba(0, 0, 0, 0.1)"
+      : "rgba(255, 255, 255, 0.1)";
+    const singlesColor = isLight
+      ? "rgba(75, 85, 99, 0.7)"
+      : "rgba(255, 255, 255, 0.7)";
+    const singlesColorBg = isLight
+      ? "rgba(75, 85, 99, 0.1)"
+      : "rgba(255, 255, 255, 0.1)";
+    const pointBorderColor = isLight
+      ? "rgba(17, 24, 39, 1)"
+      : "rgba(255, 255, 255, 1)";
+
     return {
       labels,
       datasets: [
         {
           label: "Singles",
           data: singleData,
-          borderColor: "rgba(255, 255, 255, 0.7)",
-          backgroundColor: "rgba(255, 255, 255, 0.1)",
-          pointBackgroundColor: "rgba(255, 255, 255, 0.8)",
-          pointBorderColor: "rgba(255, 255, 255, 1)",
+          borderColor: singlesColor,
+          backgroundColor: singlesColorBg,
+          pointBackgroundColor: singlesColor,
+          pointBorderColor: pointBorderColor,
           pointRadius: 2,
           pointHoverRadius: 4,
           borderWidth: 1.5,
@@ -241,7 +294,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
           borderColor: "rgba(59, 130, 246, 1)",
           backgroundColor: "rgba(59, 130, 246, 0.1)",
           pointBackgroundColor: "rgba(59, 130, 246, 1)",
-          pointBorderColor: "rgba(255, 255, 255, 1)",
+          pointBorderColor: pointBorderColor,
           pointBorderWidth: 1,
           pointRadius: 3,
           pointHoverRadius: 5,
@@ -255,7 +308,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
           borderColor: "rgba(168, 85, 247, 1)",
           backgroundColor: "rgba(168, 85, 247, 0.1)",
           pointBackgroundColor: "rgba(168, 85, 247, 1)",
-          pointBorderColor: "rgba(255, 255, 255, 1)",
+          pointBorderColor: pointBorderColor,
           pointBorderWidth: 1,
           pointRadius: 3,
           pointHoverRadius: 5,
@@ -278,8 +331,11 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
       ],
       validAo12Points,
       trendData,
+      textColor,
+      textSecondaryColor,
+      gridColor,
     };
-  }, [solves, dataRange, showDataLines]);
+  }, [solves, dataRange, showDataLines, effectiveTheme]);
 
   const progressStats = useMemo(() => {
     if (!chartData) return null;
@@ -349,8 +405,8 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
         mode: "index" as const,
         intersect: false,
         backgroundColor: "var(--surface-elevated)",
-        titleColor: "white",
-        bodyColor: "rgba(255, 255, 255, 0.9)",
+        titleColor: chartData?.textColor || "rgba(255, 255, 255, 0.9)",
+        bodyColor: chartData?.textSecondaryColor || "rgba(255, 255, 255, 0.9)",
         borderColor: "var(--border)",
         borderWidth: 1,
         cornerRadius: 8,
@@ -380,21 +436,21 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
         title: {
           display: !isMobile,
           text: "Solve Number",
-          color: "rgba(255, 255, 255, 0.7)",
+          color: chartData?.textColor || "rgba(255, 255, 255, 0.7)",
           font: {
             size: isMobile ? 10 : 12,
             weight: "bold",
           },
         },
         ticks: {
-          color: "rgba(255, 255, 255, 0.6)",
+          color: chartData?.textSecondaryColor || "rgba(255, 255, 255, 0.6)",
           maxTicksLimit: isMobile ? 4 : isTablet ? 6 : 8,
           font: {
             size: isMobile ? 9 : 11,
           },
         },
         grid: {
-          color: "rgba(255, 255, 255, 0.1)",
+          color: chartData?.gridColor || "rgba(255, 255, 255, 0.1)",
         },
       },
       y: {
@@ -402,14 +458,14 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
         title: {
           display: !isMobile,
           text: "Time (seconds)",
-          color: "rgba(255, 255, 255, 0.7)",
+          color: chartData?.textColor || "rgba(255, 255, 255, 0.7)",
           font: {
             size: isMobile ? 10 : 12,
             weight: "bold",
           },
         },
         ticks: {
-          color: "rgba(255, 255, 255, 0.6)",
+          color: chartData?.textSecondaryColor || "rgba(255, 255, 255, 0.6)",
           font: {
             size: isMobile ? 9 : 11,
             family: "'JetBrains Mono', monospace",
@@ -428,7 +484,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
           },
         },
         grid: {
-          color: "rgba(255, 255, 255, 0.1)",
+          color: chartData?.gridColor || "rgba(255, 255, 255, 0.1)",
         },
       },
     },
@@ -441,7 +497,8 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
         radius: isMobile ? 1.5 : 2,
         hoverRadius: isMobile ? 3 : 4,
         hoverBorderWidth: isMobile ? 1 : 2,
-        hoverBorderColor: "white",
+        hoverBorderColor:
+          effectiveTheme === "light" ? "rgba(17, 24, 39, 1)" : "white",
       },
       line: {
         borderWidth: isMobile ? 1.5 : 2,
@@ -462,9 +519,9 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
             className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
             title={showChart ? "Hide chart" : "Show chart"}
           >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
-            Time Progress
-          </h3>
+            <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+              Time Progress
+            </h3>
             {showChart ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
@@ -511,9 +568,9 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
             className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
             title={showChart ? "Hide chart" : "Show chart"}
           >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
-            Time Progress
-          </h3>
+            <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+              Time Progress
+            </h3>
             {showChart ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
@@ -576,8 +633,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
                             ? "bg-[var(--text-muted)]/10"
                             : "bg-red-500/10"
                       }`}
-                    >
-                    </div>
+                    ></div>
                     <div className="min-w-0 flex-1">
                       <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
                         Progress Trend
@@ -657,7 +713,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
               onClick={() => toggleDataLine("singles")}
               className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg transition-all ${
                 showDataLines.singles
-                  ? "bg-[var(--surface-elevated)] text-white border border-[var(--border)]"
+                  ? "bg-[var(--surface-elevated)] text-[var(--text-primary)] border border-[var(--border)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
               }`}
             >
@@ -665,7 +721,9 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
                 className="w-2 h-2 rounded-full flex-shrink-0"
                 style={{
                   backgroundColor: showDataLines.singles
-                    ? "rgba(255, 255, 255, 0.8)"
+                    ? effectiveTheme === "light"
+                      ? "rgba(75, 85, 99, 0.7)"
+                      : "rgba(255, 255, 255, 0.8)"
                     : "rgba(156, 163, 175, 0.3)",
                 }}
               />
@@ -732,7 +790,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
           </div>
 
           {/* Chart */}
-          <div className="bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-4 border border-[var(--border)] overflow-hidden">
+          <div className="bg-[var(--surface)] rounded-lg p-2 sm:p-4 border border-[var(--border)] overflow-hidden">
             <div className="h-32 xs:h-40 sm:h-48 lg:h-64 w-full min-w-0">
               <Line data={chartData} options={chartOptions} />
             </div>

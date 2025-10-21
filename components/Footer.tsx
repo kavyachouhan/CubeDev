@@ -1,14 +1,22 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useLogo } from "@/lib/use-logo";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const logoSrc = useLogo();
 
   const links = [
     { name: "Credits", href: "/credits" },
     { name: "Privacy", href: "/privacy" },
     { name: "Terms", href: "/terms" },
-    { name: "GitHub", href: "https://github.com/kavyachouhan/cubedev", external: true },
+    {
+      name: "GitHub",
+      href: "https://github.com/kavyachouhan/cubedev",
+      external: true,
+    },
   ];
 
   return (
@@ -19,14 +27,14 @@ export default function Footer() {
           <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
             <Link href="/" className="flex items-center space-x-2 group">
               <Image
-                src="/cubedev_logo.png"
+                src={logoSrc}
                 alt="CubeDev Logo"
                 width={32}
                 height={32}
                 className="w-8 h-8"
               />
               <span className="font-semibold text-xl text-[var(--text-primary)] group-hover:opacity-80 transition-opacity font-statement">
-                Cube<span className="text-blue">Dev</span>
+                Cube<span className="text-[var(--primary)]">Dev</span>
               </span>
             </Link>
             <span className="text-[var(--text-muted)] text-base text-center sm:text-left font-inter">
