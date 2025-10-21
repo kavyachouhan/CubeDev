@@ -524,6 +524,7 @@ export default function CubeLabTimer({
               onApplyPenalty={handleLastSolvePenalty}
               lastSolveId={lastSolveId}
               onTimerStateChange={handleTimerFocusChange}
+              history={getSessionHistory(currentSession.id)}
             />
           </div>
         </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, ReactNode } from "react";
 import { Plus } from "lucide-react";
+import ConfettiCelebration from "./ConfettiCelebration";
 
 interface ManualTimerCoreProps {
   onSolveComplete: (time: number, penalty: "none" | "+2" | "DNF") => void;
@@ -9,6 +10,10 @@ interface ManualTimerCoreProps {
   playBeep: () => void;
   playAlert: () => void;
   children?: ReactNode;
+  showCelebration?: boolean;
+  celebrationType?: "single" | "ao5" | "ao12" | "ao100";
+  celebrationTime?: string;
+  onCelebrationComplete?: () => void;
 }
 
 export default function ManualTimerCore({
@@ -17,6 +22,10 @@ export default function ManualTimerCore({
   playBeep,
   playAlert,
   children,
+  showCelebration = false,
+  celebrationType = "single",
+  celebrationTime = "",
+  onCelebrationComplete,
 }: ManualTimerCoreProps) {
   const [timeInput, setTimeInput] = useState("");
   const [penalty, setPenalty] = useState<"none" | "+2" | "DNF">("none");
@@ -411,7 +420,15 @@ export default function ManualTimerCore({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="relative space-y-4">
+      {/* Confetti Celebration */}
+      <ConfettiCelebration
+        show={showCelebration}
+        achievementType={celebrationType}
+        timeValue={celebrationTime}
+        onComplete={onCelebrationComplete}
+      />
+
       {/* Inspection Display */}
       {isInspecting && (
         <div className="text-center p-6 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">

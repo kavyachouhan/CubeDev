@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, ReactNode } from "react";
 import { Mic, MicOff, AlertCircle, Info, Wifi } from "lucide-react";
 import { useStackmatAudio } from "./hooks/useStackmatAudio";
+import ConfettiCelebration from "./ConfettiCelebration";
 
 interface StackmatTimerCoreProps {
   onSolveComplete: (time: number, penalty: "none" | "+2" | "DNF") => void;
@@ -10,6 +11,10 @@ interface StackmatTimerCoreProps {
   playBeep: () => void;
   playAlert: () => void;
   children?: ReactNode;
+  showCelebration?: boolean;
+  celebrationType?: "single" | "ao5" | "ao12" | "ao100";
+  celebrationTime?: string;
+  onCelebrationComplete?: () => void;
 }
 
 export default function StackmatTimerCore({
@@ -18,6 +23,10 @@ export default function StackmatTimerCore({
   playBeep,
   playAlert,
   children,
+  showCelebration = false,
+  celebrationType = "single",
+  celebrationTime = "",
+  onCelebrationComplete,
 }: StackmatTimerCoreProps) {
   const {
     isConnected,
@@ -327,7 +336,15 @@ export default function StackmatTimerCore({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="relative space-y-4">
+      {/* Confetti Celebration */}
+      <ConfettiCelebration
+        show={showCelebration}
+        achievementType={celebrationType}
+        timeValue={celebrationTime}
+        onComplete={onCelebrationComplete}
+      />
+
       {/* Connection Status */}
       <div className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
         <div className="flex items-center gap-3">

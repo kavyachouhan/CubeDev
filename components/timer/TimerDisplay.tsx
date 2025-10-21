@@ -16,6 +16,8 @@ import PenaltyButtons from "./PenaltyButtons";
 import TimerCore from "./TimerCore";
 import ManualTimerCore from "./ManualTimerCore";
 import StackmatTimerCore from "./StackmatTimerCore";
+import ConfettiCelebration from "./ConfettiCelebration";
+import { formatTime } from "@/lib/stats-utils";
 
 // Persistent boolean that reads/writes localStorage on first render
 function usePersistentBool(key: string, defaultValue: boolean) {
@@ -55,6 +57,7 @@ interface TimerDisplayProps {
   onApplyPenalty?: (penalty: "none" | "+2" | "DNF") => void;
   lastSolveId?: string | null;
   onTimerStateChange?: (isActive: boolean) => void;
+  history?: import("@/lib/stats-utils").TimerRecord[];
 }
 
 type TimerState =
@@ -71,12 +74,14 @@ export default function TimerDisplay({
   onApplyPenalty,
   lastSolveId,
   onTimerStateChange,
+  history = [],
 }: TimerDisplayProps) {
   const [state, setState] = useState<TimerState>("idle");
   const [time, setTime] = useState(0);
   const [inspectionTime, setInspectionTime] = useState(15);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [showPenaltyButtons, setShowPenaltyButtons] = useState(false);
+  const [isSavingSolve, setIsSavingSolve] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [currentPenalty, setCurrentPenalty] = useState<"none" | "+2" | "DNF">(
     "none"
@@ -102,6 +107,13 @@ export default function TimerDisplay({
     "cubelab-focus-mode-enabled",
     false
   );
+
+  // Achievement/Celebration state
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationType, setCelebrationType] = useState<
+    "single" | "ao5" | "ao12" | "ao100"
+  >("single");
+  const [celebrationTime, setCelebrationTime] = useState<string>("");
 
   // Phase Split Settings
   const [phaseSplitsEnabled, setPhaseSplitsEnabled] = usePersistentBool(
@@ -199,7 +211,6 @@ export default function TimerDisplay({
   useEffect(() => {
     // Only run cleanup if mode actually changed
     if (prevTimerModeRef.current !== timerMode) {
-
       if (
         state === "running" ||
         state === "holding" ||
@@ -228,6 +239,7 @@ export default function TimerDisplay({
         setCurrentPhaseIndex(0);
         setCurrentPenalty("none");
         setShowPenaltyButtons(false);
+        setIsSavingSolve(false);
       }
 
       prevTimerModeRef.current = timerMode;
@@ -243,6 +255,195 @@ export default function TimerDisplay({
       );
     } catch {}
   }, [consistencyCoach]);
+
+  // Detect personal best achievements
+  useEffect(() => {
+    if (!lastSolveId || !history || history.length === 0) return;
+
+    // Delay detection slightly to ensure solve is saved
+    const timer = setTimeout(() => {
+      // Import detector inline to avoid issues
+      const {
+        usePersonalBestDetector,
+      } = require("./hooks/usePersonalBestDetector");
+      // Initialize detector inline
+
+      // Helper to truncate to centisecond (10ms)
+      const truncToCentisMs = (ms: number) => Math.floor(ms / 10) * 10;
+      const roundToCentisMs = (ms: number) => Math.round(ms / 10) * 10;
+
+      // Calculate WCA average of N
+      const wcaAverageN = (n: number): number | null => {
+        const ordered = [...history].sort(
+          (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+        );
+        if (ordered.length < n) return null;
+
+        const lastN = ordered.slice(-n);
+        const values = lastN.map((r) =>
+          isFinite(r.finalTime) ? truncToCentisMs(r.finalTime) : Infinity
+        );
+
+        const dnfs = values.filter((v) => !isFinite(v)).length;
+        if (dnfs >= 2) return Infinity;
+
+        const sorted = [...values].sort((a, b) => a - b);
+        sorted.shift();
+        sorted.pop();
+
+        const sum = sorted.reduce((acc, v) => acc + (isFinite(v) ? v : 0), 0);
+        const avg = sum / (n - 2);
+        return roundToCentisMs(avg);
+      };
+
+      // Get current bests
+      const ordered = [...history].sort(
+        (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+      );
+      const truncatedSingles = ordered
+        .filter((r) => isFinite(r.finalTime))
+        .map((r) => truncToCentisMs(r.finalTime));
+
+      const currentSingle = truncatedSingles.length
+        ? Math.min(...truncatedSingles)
+        : null;
+      const currentAo5 = wcaAverageN(5);
+      const currentAo12 = wcaAverageN(12);
+      const currentAo100 = wcaAverageN(100);
+
+      // Check if last solve achieved a new PB
+      const lastSolve = ordered[ordered.length - 1];
+      if (lastSolve && lastSolve.id === lastSolveId) {
+        const lastSolveTruncated = isFinite(lastSolve.finalTime)
+          ? truncToCentisMs(lastSolve.finalTime)
+          : null;
+
+        // Check single PB (most recent solve is the best)
+        if (
+          lastSolveTruncated !== null &&
+          currentSingle !== null &&
+          lastSolveTruncated === currentSingle
+        ) {
+          // This is a new single PB
+          setCelebrationType("single");
+          setCelebrationTime(formatTime(currentSingle));
+          setShowCelebration(true);
+          return;
+        }
+
+        // Check ao5 PB
+        if (
+          currentAo5 !== null &&
+          isFinite(currentAo5) &&
+          ordered.length >= 5
+        ) {
+          // Check if this is the best ao5
+          let isBestAo5 = true;
+          for (let i = 5; i < ordered.length; i++) {
+            const prevAo5Window = ordered.slice(i - 5, i);
+            const prevValues = prevAo5Window.map((r) =>
+              isFinite(r.finalTime) ? truncToCentisMs(r.finalTime) : Infinity
+            );
+            const prevDnfs = prevValues.filter((v) => !isFinite(v)).length;
+            if (prevDnfs < 2) {
+              const prevSorted = [...prevValues].sort((a, b) => a - b);
+              prevSorted.shift();
+              prevSorted.pop();
+              const prevSum = prevSorted.reduce(
+                (acc, v) => acc + (isFinite(v) ? v : 0),
+                0
+              );
+              const prevAvg = roundToCentisMs(prevSum / 3);
+              if (prevAvg <= currentAo5) {
+                isBestAo5 = false;
+                break;
+              }
+            }
+          }
+          if (isBestAo5) {
+            setCelebrationType("ao5");
+            setCelebrationTime(formatTime(currentAo5));
+            setShowCelebration(true);
+            return;
+          }
+        }
+
+        // Check ao12 PB
+        if (
+          currentAo12 !== null &&
+          isFinite(currentAo12) &&
+          ordered.length >= 12
+        ) {
+          let isBestAo12 = true;
+          for (let i = 12; i < ordered.length; i++) {
+            const prevAo12Window = ordered.slice(i - 12, i);
+            const prevValues = prevAo12Window.map((r) =>
+              isFinite(r.finalTime) ? truncToCentisMs(r.finalTime) : Infinity
+            );
+            const prevDnfs = prevValues.filter((v) => !isFinite(v)).length;
+            if (prevDnfs < 2) {
+              const prevSorted = [...prevValues].sort((a, b) => a - b);
+              prevSorted.shift();
+              prevSorted.pop();
+              const prevSum = prevSorted.reduce(
+                (acc, v) => acc + (isFinite(v) ? v : 0),
+                0
+              );
+              const prevAvg = roundToCentisMs(prevSum / 10);
+              if (prevAvg <= currentAo12) {
+                isBestAo12 = false;
+                break;
+              }
+            }
+          }
+          if (isBestAo12) {
+            setCelebrationType("ao12");
+            setCelebrationTime(formatTime(currentAo12));
+            setShowCelebration(true);
+            return;
+          }
+        }
+
+        // Check ao100 PB
+        if (
+          currentAo100 !== null &&
+          isFinite(currentAo100) &&
+          ordered.length >= 100
+        ) {
+          let isBestAo100 = true;
+          for (let i = 100; i < ordered.length; i++) {
+            const prevAo100Window = ordered.slice(i - 100, i);
+            const prevValues = prevAo100Window.map((r) =>
+              isFinite(r.finalTime) ? truncToCentisMs(r.finalTime) : Infinity
+            );
+            const prevDnfs = prevValues.filter((v) => !isFinite(v)).length;
+            if (prevDnfs < 2) {
+              const prevSorted = [...prevValues].sort((a, b) => a - b);
+              prevSorted.shift();
+              prevSorted.pop();
+              const prevSum = prevSorted.reduce(
+                (acc, v) => acc + (isFinite(v) ? v : 0),
+                0
+              );
+              const prevAvg = roundToCentisMs(prevSum / 98);
+              if (prevAvg <= currentAo100) {
+                isBestAo100 = false;
+                break;
+              }
+            }
+          }
+          if (isBestAo100) {
+            setCelebrationType("ao100");
+            setCelebrationTime(formatTime(currentAo100));
+            setShowCelebration(true);
+            return;
+          }
+        }
+      }
+    }, 500); // 500ms delay to ensure solve is saved
+
+    return () => clearTimeout(timer);
+  }, [lastSolveId, history]);
 
   // Consistency Coach Metronome Functions
   const initializeAudioContext = useCallback(() => {
@@ -471,16 +672,23 @@ export default function TimerDisplay({
                   const finalTime = Date.now() - startTimeRef.current;
                   setTime(finalTime);
                   playAlert();
-                  // Only send splits in normal mode
-                  onSolveCompleteRef.current(
-                    finalTime,
-                    undefined,
-                    undefined,
-                    timerMode === "normal" ? [...currentSplits, newSplit] : [],
-                    timerMode === "normal" ? selectedSplitMethod : undefined,
-                    timerMode
-                  );
-                  setShowPenaltyButtons(true);
+                  // Save solve and wait for completion before showing penalty buttons
+                  setIsSavingSolve(true);
+                  Promise.resolve(
+                    onSolveCompleteRef.current(
+                      finalTime,
+                      undefined,
+                      undefined,
+                      timerMode === "normal"
+                        ? [...currentSplits, newSplit]
+                        : [],
+                      timerMode === "normal" ? selectedSplitMethod : undefined,
+                      timerMode
+                    )
+                  ).finally(() => {
+                    setIsSavingSolve(false);
+                    setShowPenaltyButtons(true);
+                  });
                 }
                 return;
               }
@@ -491,16 +699,21 @@ export default function TimerDisplay({
             const finalTime = Date.now() - startTimeRef.current;
             setTime(finalTime);
             playBeep();
-            // Only send splits in normal mode
-            onSolveCompleteRef.current(
-              finalTime,
-              undefined,
-              undefined,
-              timerMode === "normal" ? currentSplits : [],
-              timerMode === "normal" ? selectedSplitMethod : undefined,
-              timerMode
-            );
-            setShowPenaltyButtons(true);
+            // Save solve and wait for completion before showing penalty buttons
+            setIsSavingSolve(true);
+            Promise.resolve(
+              onSolveCompleteRef.current(
+                finalTime,
+                undefined,
+                undefined,
+                timerMode === "normal" ? currentSplits : [],
+                timerMode === "normal" ? selectedSplitMethod : undefined,
+                timerMode
+              )
+            ).finally(() => {
+              setIsSavingSolve(false);
+              setShowPenaltyButtons(true);
+            });
           }
         }
       } else if (state === "running") {
@@ -510,16 +723,21 @@ export default function TimerDisplay({
         const finalTime = Date.now() - startTimeRef.current;
         setTime(finalTime);
         playBeep();
-        // Only send splits in normal mode
-        onSolveCompleteRef.current(
-          finalTime,
-          undefined,
-          undefined,
-          timerMode === "normal" ? currentSplits : [],
-          timerMode === "normal" ? selectedSplitMethod : undefined,
-          timerMode
-        );
-        setShowPenaltyButtons(true);
+        // Save solve and wait for completion before showing penalty buttons
+        setIsSavingSolve(true);
+        Promise.resolve(
+          onSolveCompleteRef.current(
+            finalTime,
+            undefined,
+            undefined,
+            timerMode === "normal" ? currentSplits : [],
+            timerMode === "normal" ? selectedSplitMethod : undefined,
+            timerMode
+          )
+        ).finally(() => {
+          setIsSavingSolve(false);
+          setShowPenaltyButtons(true);
+        });
       }
     };
 
@@ -528,6 +746,10 @@ export default function TimerDisplay({
         e.preventDefault();
         setIsSpacePressed(false);
         if (state === "holding") {
+          // Reset states when starting a new solve
+          setShowPenaltyButtons(false);
+          setIsSavingSolve(false);
+
           // Determine what to do based on inspection setting
           if (inspectionEnabled) {
             setState("inspection");
@@ -554,6 +776,8 @@ export default function TimerDisplay({
           setCurrentPenalty("none");
           setCurrentSplits([]); // Reset splits for new solve
           setCurrentPhaseIndex(0); // Reset phase index for new solve
+          setShowPenaltyButtons(false); // Reset penalty buttons
+          setIsSavingSolve(false); // Reset saving state
           startTimeRef.current = Date.now();
 
           // Start consistency coach metronome
@@ -623,16 +847,21 @@ export default function TimerDisplay({
                 const finalTime = Date.now() - startTimeRef.current;
                 setTime(finalTime);
                 playBeep();
-                // Only send splits in normal mode
-                onSolveCompleteRef.current(
-                  finalTime,
-                  undefined,
-                  undefined,
-                  timerMode === "normal" ? [...currentSplits, newSplit] : [],
-                  timerMode === "normal" ? selectedSplitMethod : undefined,
-                  timerMode
-                );
-                setShowPenaltyButtons(true);
+                // Save solve and wait for completion before showing penalty buttons
+                setIsSavingSolve(true);
+                Promise.resolve(
+                  onSolveCompleteRef.current(
+                    finalTime,
+                    undefined,
+                    undefined,
+                    timerMode === "normal" ? [...currentSplits, newSplit] : [],
+                    timerMode === "normal" ? selectedSplitMethod : undefined,
+                    timerMode
+                  )
+                ).finally(() => {
+                  setIsSavingSolve(false);
+                  setShowPenaltyButtons(true);
+                });
               }
               return;
             }
@@ -643,16 +872,21 @@ export default function TimerDisplay({
           const finalTime = Date.now() - startTimeRef.current;
           setTime(finalTime);
           playBeep();
-          // Only send splits in normal mode
-          onSolveCompleteRef.current(
-            finalTime,
-            undefined,
-            undefined,
-            timerMode === "normal" ? currentSplits : [],
-            timerMode === "normal" ? selectedSplitMethod : undefined,
-            timerMode
-          );
-          setShowPenaltyButtons(true);
+          // Save solve and wait for completion before showing penalty buttons
+          setIsSavingSolve(true);
+          Promise.resolve(
+            onSolveCompleteRef.current(
+              finalTime,
+              undefined,
+              undefined,
+              timerMode === "normal" ? currentSplits : [],
+              timerMode === "normal" ? selectedSplitMethod : undefined,
+              timerMode
+            )
+          ).finally(() => {
+            setIsSavingSolve(false);
+            setShowPenaltyButtons(true);
+          });
         }
       }
     },
@@ -675,6 +909,10 @@ export default function TimerDisplay({
         isTouchActiveRef.current = false;
 
         if (state === "holding") {
+          // Reset states when starting a new solve
+          setShowPenaltyButtons(false);
+          setIsSavingSolve(false);
+
           // Determine what to do based on inspection setting
           if (inspectionEnabled) {
             setState("inspection");
@@ -691,6 +929,8 @@ export default function TimerDisplay({
           setState("running");
           setTime(0);
           setCurrentPenalty("none");
+          setShowPenaltyButtons(false); // Reset penalty buttons
+          setIsSavingSolve(false); // Reset saving state
           startTimeRef.current = Date.now();
           playBeep();
         }
@@ -706,6 +946,7 @@ export default function TimerDisplay({
       onApplyPenalty(penalty);
     }
     setShowPenaltyButtons(false);
+    setIsSavingSolve(false); // Reset saving state
   };
 
   // Handle solve completion for manual and stackmat timers
@@ -816,33 +1057,53 @@ export default function TimerDisplay({
         {/* Render timer based on selected mode */}
         {timerMode === "normal" && (
           <>
-            <TimerCore
-              state={state}
-              time={time}
-              inspectionTime={inspectionTime}
-              currentPenalty={currentPenalty}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-              onMouseDown={handleTouchStart}
-              onMouseUp={handleTouchEnd}
-            >
-              {/* Phase Split Indicator - Show during solving */}
-              <PhaseIndicator
-                phaseSplitsEnabled={phaseSplitsEnabled}
-                isRunning={state === "running"}
-                selectedSplitMethod={selectedSplitMethod}
-                currentPhaseIndex={currentPhaseIndex}
-              />
-
-              {/* Penalty Buttons */}
-              {state === "stopped" && (
-                <PenaltyButtons
-                  showPenaltyButtons={showPenaltyButtons}
-                  currentPenalty={currentPenalty}
-                  onPenaltyChange={handlePenalty}
+            <div className="relative">
+              <TimerCore
+                state={state}
+                time={time}
+                inspectionTime={inspectionTime}
+                currentPenalty={currentPenalty}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+                onMouseDown={handleTouchStart}
+                onMouseUp={handleTouchEnd}
+              >
+                {/* Phase Split Indicator - Show during solving */}
+                <PhaseIndicator
+                  phaseSplitsEnabled={phaseSplitsEnabled}
+                  isRunning={state === "running"}
+                  selectedSplitMethod={selectedSplitMethod}
+                  currentPhaseIndex={currentPhaseIndex}
                 />
-              )}
-            </TimerCore>
+
+                {/* Saving Indicator */}
+                {state === "stopped" && isSavingSolve && (
+                  <div className="flex items-center justify-center gap-2 py-2">
+                    <div className="w-4 h-4 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-sm text-[var(--text-secondary)] font-inter">
+                      Saving time...
+                    </span>
+                  </div>
+                )}
+
+                {/* Penalty Buttons */}
+                {state === "stopped" && !isSavingSolve && (
+                  <PenaltyButtons
+                    showPenaltyButtons={showPenaltyButtons}
+                    currentPenalty={currentPenalty}
+                    onPenaltyChange={handlePenalty}
+                  />
+                )}
+              </TimerCore>
+
+              {/* Confetti Celebration */}
+              <ConfettiCelebration
+                show={showCelebration}
+                achievementType={celebrationType}
+                timeValue={celebrationTime}
+                onComplete={() => setShowCelebration(false)}
+              />
+            </div>
 
             {/* Phase Results - Show after solve completion */}
             {state === "stopped" &&
@@ -864,6 +1125,10 @@ export default function TimerDisplay({
             inspectionEnabled={inspectionEnabled}
             playBeep={playBeep}
             playAlert={playAlert}
+            showCelebration={showCelebration}
+            celebrationType={celebrationType}
+            celebrationTime={celebrationTime}
+            onCelebrationComplete={() => setShowCelebration(false)}
           />
         )}
 
@@ -873,6 +1138,10 @@ export default function TimerDisplay({
             inspectionEnabled={inspectionEnabled}
             playBeep={playBeep}
             playAlert={playAlert}
+            showCelebration={showCelebration}
+            celebrationType={celebrationType}
+            celebrationTime={celebrationTime}
+            onCelebrationComplete={() => setShowCelebration(false)}
           />
         )}
       </div>
