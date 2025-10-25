@@ -90,10 +90,23 @@ export async function POST(request: NextRequest) {
     // Debug log to see what data we're getting from WCA
     console.log("WCA User Data:", JSON.stringify(userData, null, 2));
 
+    // Check if user has a real WCA ID
+    if (!userData.me.wca_id) {
+      console.log("User does not have a WCA ID:", userData.me.name);
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "You must compete in at least one WCA competition to use CubeDev. Please register for and attend a competition to get your WCA ID.",
+        },
+        { status: 403 }
+      );
+    }
+
     // Save user data to Convex database
     try {
       const userDataForConvex: any = {
-        wcaId: userData.me.wca_id || `temp_${userData.me.id}`, // Handle users without WCA ID
+        wcaId: userData.me.wca_id,
         wcaUserId: userData.me.id,
         name: userData.me.name,
         countryIso2: userData.me.country_iso2,
