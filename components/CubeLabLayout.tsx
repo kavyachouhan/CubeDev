@@ -11,6 +11,7 @@ import {
   X,
   Trophy,
   MessagesSquare,
+  Bot,
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import SidebarUserDropdown from "@/components/SidebarUserDropdown";
@@ -47,6 +48,13 @@ export default function CubeLabLayout({
       icon: BarChart3,
       description: "Performance analysis & trends",
       href: "/cube-lab/statistics",
+    },
+    {
+      id: "cubie",
+      name: "Cubie AI",
+      icon: Bot,
+      description: "AI cubing assistant",
+      href: "/cube-lab/cubie",
     },
     {
       id: "challenges",

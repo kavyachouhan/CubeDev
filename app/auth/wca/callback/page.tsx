@@ -128,11 +128,11 @@ function WCACallbackContent() {
             console.warn("Database warning:", data.warning);
           }
 
-          // Redirect to stored URL or default to Cube Lab timer page after a short delay
+          // Redirect to original destination or default page after a short delay
           setTimeout(() => {
-            const redirectUrl = localStorage.getItem("wca_redirect_url");
+            const redirectUrl = sessionStorage.getItem("redirectAfterAuth");
             if (redirectUrl) {
-              localStorage.removeItem("wca_redirect_url");
+              sessionStorage.removeItem("redirectAfterAuth");
               window.location.href = redirectUrl;
             } else {
               router.push("/cube-lab/timer");
@@ -208,7 +208,7 @@ function WCACallbackContent() {
                   {message}
                 </p>
                 <p className="text-sm text-[var(--text-muted)] mt-2 font-inter">
-                  Redirecting you to the timer...
+                  Redirecting you...
                 </p>
               </>
             )}

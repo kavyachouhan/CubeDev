@@ -4,7 +4,7 @@ import CubeLabLayout from "@/components/CubeLabLayout";
 export default function Chat() {
   return (
     <ProtectedRoute>
-      <CubeLabLayout activeSection="algorithms">
+      <CubeLabLayout activeSection="chat">
         <div className="p-8 text-center text-[var(--text-secondary)]">
           Chat coming soon...
         </div>

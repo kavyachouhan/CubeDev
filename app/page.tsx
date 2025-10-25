@@ -4,6 +4,7 @@ import TimerHero from "../components/TimerHero";
 import FeaturesShowcase from "@/components/FeaturesShowcase";
 import CallToAction from "@/components/CallToAction";
 import WhyCubeDev from "@/components/WhyCubeDev";
+import CubieComingSoon from "@/components/CubieComingSoon";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <main className="flex-1">
         <TimerHero />
         <FeaturesShowcase />
+        <CubieComingSoon />
         <WhyCubeDev />
         <CallToAction />
       </main>

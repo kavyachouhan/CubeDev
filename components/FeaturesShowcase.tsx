@@ -10,8 +10,8 @@ import {
   Download,
   Clock,
   TrendingUp,
-  ArrowRight,
   User,
+  Palette,
 } from "lucide-react";
 
 interface Feature {
@@ -33,7 +33,7 @@ export default function FeaturesShowcase() {
       id: "modern-timer",
       title: "Modern Timer",
       description:
-        "Professional speedcubing timer with inspection periods, penalty options, phase detection, and precision timing down to centiseconds.",
+        "Professional speedcubing timer with multiple input modes including manual entry, Stackmat integration, and keyboard timing. Features inspection periods, penalty options, and precision timing.",
       icon: <Timer className="w-6 h-6" />,
       preview: (
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
@@ -60,7 +60,19 @@ export default function FeaturesShowcase() {
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-3 gap-3">
+              <div className="mt-4 mb-4 flex gap-2 justify-center">
+                <button className="px-3 py-1.5 bg-[var(--primary)] text-white text-xs rounded font-button">
+                  Normal
+                </button>
+                <button className="px-3 py-1.5 border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded font-button hover:border-[var(--primary)] transition-all">
+                  Manual
+                </button>
+                <button className="px-3 py-1.5 border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded font-button hover:border-[var(--primary)] transition-all">
+                  Stackmat
+                </button>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
                 <div className="text-center p-2 bg-[var(--background)] rounded">
                   <div className="text-sm font-bold text-[var(--success)] font-mono">
                     10.21
@@ -530,9 +542,106 @@ export default function FeaturesShowcase() {
         </div>
       ),
     },
+    {
+      id: "theme-customization",
+      title: "Theme Customization",
+      description:
+        "Personalize your experience with multiple color schemes, dark and light modes, and customizable timer appearance to match your style and preferences.",
+      icon: <Palette className="w-6 h-6" />,
+      preview: (
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
+          <div className="space-y-6">
+            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
+              <h4 className="font-semibold text-[var(--text-primary)] font-button mb-4">
+                Appearance Settings
+              </h4>
+
+              <div className="space-y-4 mb-4">
+                <div>
+                  <div className="text-sm font-medium text-[var(--text-primary)] font-inter mb-2">
+                    Theme Mode
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button className="p-2 bg-[var(--primary)] text-white text-xs rounded font-button">
+                      Dark
+                    </button>
+                    <button className="p-2 border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded font-button hover:border-[var(--primary)] transition-all">
+                      Light
+                    </button>
+                    <button className="p-2 border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded font-button hover:border-[var(--primary)] transition-all">
+                      Auto
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-sm font-medium text-[var(--text-primary)] font-inter mb-2">
+                    Color Scheme
+                  </div>
+                  <div className="grid grid-cols-5 gap-2">
+                    {[
+                      { name: "Blue", color: "#3B82F6" },
+                      { name: "Purple", color: "#A855F7" },
+                      { name: "Green", color: "#10B981" },
+                      { name: "Orange", color: "#F97316" },
+                      { name: "Cyan", color: "#06B6D4" },
+                    ].map((scheme) => (
+                      <button
+                        key={scheme.name}
+                        className="aspect-square rounded-lg border-2 border-[var(--border)] hover:border-[var(--primary)] transition-all flex items-center justify-center"
+                        style={{ backgroundColor: scheme.color + "20" }}
+                      >
+                        <div
+                          className="w-6 h-6 rounded-full"
+                          style={{ backgroundColor: scheme.color }}
+                        ></div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-[var(--background)] rounded">
+                  <div>
+                    <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                      Timer Font Size
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)] font-inter">
+                      Large
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-[var(--primary)] font-mono">
+                    Aa
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-[var(--background)] rounded">
+                  <div>
+                    <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                      High Contrast
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)] font-inter">
+                      Better visibility
+                    </div>
+                  </div>
+                  <div className="w-10 h-6 bg-[var(--primary)] rounded-full relative">
+                    <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button className="w-full px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
+              Customize Theme
+            </button>
+          </div>
+        </div>
+      ),
+    },
   ];
 
-  // Intersection Observer for scroll animations
+  // Intersection Observer to trigger animations
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
 
