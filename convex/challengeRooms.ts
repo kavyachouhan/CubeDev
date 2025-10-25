@@ -119,6 +119,7 @@ export const joinRoom = mutation({
       totalSolves,
       isCompleted: false,
       dnfCount: 0,
+      wasDeletedWhenJoined: user.isDeleted || false, // Track deletion status at join time
     });
 
     // Update room participant count

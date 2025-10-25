@@ -5,11 +5,11 @@ import Link from "next/link";
 
 export default function CubieComingSoon() {
   return (
-    <section className="py-16 lg:py-24 bg-[var(--surface)]">
+    <section className="py-16 lg:py-24 bg-[var(--surface)] overflow-hidden">
       <div className="container-responsive">
         <div className="max-w-5xl mx-auto">
           {/* Main Announcement Card */}
-          <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-2xl p-8 md:p-12 shadow-xl">
+          <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-2xl p-6 sm:p-8 md:p-12 shadow-xl">
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)]/10 border border-[var(--primary)]/20 rounded-full mb-6">
                 <Sparkles className="w-4 h-4 text-[var(--primary)]" />

@@ -36,9 +36,9 @@ export default function FeaturesShowcase() {
         "Professional speedcubing timer with multiple input modes including manual entry, Stackmat integration, and keyboard timing. Features inspection periods, penalty options, and precision timing.",
       icon: <Timer className="w-6 h-6" />,
       preview: (
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
+            <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-semibold text-[var(--text-primary)] font-button">
                   Timer
@@ -122,9 +122,9 @@ export default function FeaturesShowcase() {
         "Advanced analytics with solve heatmaps, time progression charts, phase breakdowns, personal bests tracking, and detailed performance insights.",
       icon: <BarChart3 className="w-6 h-6" />,
       preview: (
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
+            <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
               <h4 className="font-semibold text-[var(--text-primary)] font-button mb-4">
                 Performance Analytics
               </h4>
@@ -214,9 +214,9 @@ export default function FeaturesShowcase() {
         "Cuber Profiles with WCA integration, competition history, personal records, CubeDev statistics, and community features.",
       icon: <Users className="w-6 h-6" />,
       preview: (
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
+            <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-16 h-16 bg-[var(--primary)]/20 rounded-full flex items-center justify-center">
                   <User className="w-8 h-8 text-[var(--primary)]" />
@@ -290,9 +290,9 @@ export default function FeaturesShowcase() {
         "Create and join timed challenge rooms with friends, compete on same scrambles, track leaderboards, and enjoy real-time competition.",
       icon: <Trophy className="w-6 h-6" />,
       preview: (
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
+            <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-semibold text-[var(--text-primary)] font-button">
                   Friday Night Challenge
@@ -381,9 +381,9 @@ export default function FeaturesShowcase() {
         "Structured training sessions with phase-specific drills and BPM (Blocks Per Minute) mode to improve your solving efficiency.",
       icon: <BookOpen className="w-6 h-6" />,
       preview: (
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
+            <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-semibold text-[var(--text-primary)] font-button">
                   F2L Phase Drill
@@ -471,9 +471,9 @@ export default function FeaturesShowcase() {
         "Seamless data portability with support for major timer formats, backup functionality, and easy migration from other timers.",
       icon: <Download className="w-6 h-6" />,
       preview: (
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
+            <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
               <h4 className="font-semibold text-[var(--text-primary)] font-button mb-4">
                 Data Management
               </h4>
@@ -549,9 +549,9 @@ export default function FeaturesShowcase() {
         "Personalize your experience with multiple color schemes, dark and light modes, and customizable timer appearance to match your style and preferences.",
       icon: <Palette className="w-6 h-6" />,
       preview: (
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl max-w-lg w-full">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-[var(--surface-elevated)] p-6 rounded-lg border border-[var(--border)]">
+            <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
               <h4 className="font-semibold text-[var(--text-primary)] font-button mb-4">
                 Appearance Settings
               </h4>
@@ -679,14 +679,14 @@ export default function FeaturesShowcase() {
         </div>
 
         {/* Features */}
-        <div className="space-y-16">
+        <div className="space-y-16 overflow-hidden">
           {features.map((feature, index) => (
             <div
               key={feature.id}
               ref={(el) => {
                 featureRefs.current[index] = el;
               }}
-              className={`grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center transition-all duration-700 ${
+              className={`grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center transition-all duration-700 overflow-hidden ${
                 visibleFeatures.has(index)
                   ? "opacity-100 transform translate-y-0"
                   : "opacity-0 transform translate-y-12"

@@ -456,20 +456,27 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
   if (error) {
     const isPrivacyError =
       error.includes("private") || error.includes("not registered");
+    const isDeletedUser = error.includes("no longer available");
 
     return (
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-4">
           <AlertCircle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4 font-statement">
-            {isPrivacyError ? "Profile Private" : "Profile Not Found"}
+            {isDeletedUser
+              ? "Account Deleted"
+              : isPrivacyError
+                ? "Profile Private"
+                : "Profile Not Found"}
           </h1>
           <p className="text-[var(--text-secondary)] mb-6 font-inter">
-            {isPrivacyError
-              ? "This cuber's profile is private. Only registered CubeDev members can view their competition data."
-              : error}
+            {isDeletedUser
+              ? "This user account has been deleted and is no longer available."
+              : isPrivacyError
+                ? "This cuber's profile is private. Only registered CubeDev members can view their competition data."
+                : error}
           </p>
-          {isPrivacyError && (
+          {isPrivacyError && !isDeletedUser && (
             <p className="text-[var(--text-muted)] text-sm font-inter">
               Want to join CubeDev? Sign up to connect with the cubing community
               and share your progress!

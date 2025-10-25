@@ -72,7 +72,10 @@ export default function WhyCubeDev() {
   ];
 
   return (
-    <section ref={sectionRef} className="py-24 bg-[var(--surface)]">
+    <section
+      ref={sectionRef}
+      className="py-24 bg-[var(--surface)] overflow-hidden"
+    >
       <div className="container-responsive">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-primary)] mb-6 font-statement">
@@ -120,7 +123,7 @@ export default function WhyCubeDev() {
               </div>
             );
           })}
-        </div> 
+        </div>
       </div>
     </section>
   );

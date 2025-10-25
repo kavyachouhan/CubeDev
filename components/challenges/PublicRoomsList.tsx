@@ -197,7 +197,9 @@ export default function PublicRoomsList() {
                         by
                       </p>
                       <p className="font-medium text-[var(--text-secondary)] font-inter">
-                        {room.creator.name}
+                        {room.creator.isDeleted
+                          ? "Deleted User"
+                          : room.creator.name}
                       </p>
                     </div>
                   )}

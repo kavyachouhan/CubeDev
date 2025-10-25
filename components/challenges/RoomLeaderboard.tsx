@@ -107,7 +107,8 @@ export default function RoomLeaderboard({
                   {/* User Avatar */}
                   <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-[var(--primary)] text-white font-bold text-sm">
                     {participant.user?.avatar &&
-                    !participant.user?.isDeleted ? (
+                    !participant.user?.isDeleted &&
+                    !participant.wasDeletedWhenJoined ? (
                       <img
                         src={participant.user.avatar}
                         alt={participant.user.name || "User"}
@@ -122,24 +123,29 @@ export default function RoomLeaderboard({
                     ) : null}
                     <span
                       className={
-                        participant.user?.avatar && !participant.user?.isDeleted
+                        participant.user?.avatar &&
+                        !participant.user?.isDeleted &&
+                        !participant.wasDeletedWhenJoined
                           ? "hidden"
                           : ""
                       }
                     >
-                      {participant.user?.isDeleted
+                      {participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
                         ? "?"
                         : participant.user?.name?.[0] || "?"}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0 text-left">
                     <div className="font-semibold text-[var(--text-primary)] font-inter text-base">
-                      {participant.user?.isDeleted
+                      {participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
                         ? "Deleted User"
                         : participant.user?.name || "Anonymous"}
                     </div>
                     {participant.user?.wcaId &&
-                      !participant.user?.isDeleted && (
+                      !participant.user?.isDeleted &&
+                      !participant.wasDeletedWhenJoined && (
                         <div className="text-xs text-[var(--text-muted)] font-inter bg-[var(--surface-elevated)]/50 px-2 py-0.5 rounded-full inline-block mt-1">
                           {participant.user.wcaId}
                         </div>
@@ -185,7 +191,8 @@ export default function RoomLeaderboard({
                   {/* User Avatar */}
                   <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-[var(--primary)] text-white font-bold text-sm">
                     {participant.user?.avatar &&
-                    !participant.user?.isDeleted ? (
+                    !participant.user?.isDeleted &&
+                    !participant.wasDeletedWhenJoined ? (
                       <img
                         src={participant.user.avatar}
                         alt={participant.user.name || "User"}
@@ -200,24 +207,29 @@ export default function RoomLeaderboard({
                     ) : null}
                     <span
                       className={
-                        participant.user?.avatar && !participant.user?.isDeleted
+                        participant.user?.avatar &&
+                        !participant.user?.isDeleted &&
+                        !participant.wasDeletedWhenJoined
                           ? "hidden"
                           : ""
                       }
                     >
-                      {participant.user?.isDeleted
+                      {participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
                         ? "?"
                         : participant.user?.name?.[0] || "?"}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0 text-left">
                     <div className="font-semibold text-[var(--text-primary)] font-inter text-base">
-                      {participant.user?.isDeleted
+                      {participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
                         ? "Deleted User"
                         : participant.user?.name || "Anonymous"}
                     </div>
                     {participant.user?.wcaId &&
-                      !participant.user?.isDeleted && (
+                      !participant.user?.isDeleted &&
+                      !participant.wasDeletedWhenJoined && (
                         <div className="text-xs text-[var(--text-muted)] font-inter bg-[var(--surface-elevated)]/50 px-2 py-0.5 rounded-full inline-block mt-1">
                           {participant.user.wcaId}
                         </div>

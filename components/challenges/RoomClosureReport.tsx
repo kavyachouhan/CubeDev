@@ -221,7 +221,10 @@ export default function RoomClosureReport({
                   <div className="space-y-1">
                     <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-[var(--primary)] text-white font-bold text-lg mx-auto">
                       {participant.user?.avatar &&
-                      !participant.user?.isDeleted ? (
+                      !(
+                        participant.user?.isDeleted ||
+                        participant.wasDeletedWhenJoined
+                      ) ? (
                         <img
                           src={participant.user.avatar}
                           alt={participant.user.name || "User"}
@@ -240,30 +243,41 @@ export default function RoomClosureReport({
                       <span
                         className={
                           participant.user?.avatar &&
-                          !participant.user?.isDeleted
+                          !(
+                            participant.user?.isDeleted ||
+                            participant.wasDeletedWhenJoined
+                          )
                             ? "hidden"
                             : ""
                         }
                         style={{
                           display:
                             participant.user?.avatar &&
-                            !participant.user?.isDeleted
+                            !(
+                              participant.user?.isDeleted ||
+                              participant.wasDeletedWhenJoined
+                            )
                               ? "none"
                               : "block",
                         }}
                       >
-                        {participant.user?.isDeleted
+                        {participant.user?.isDeleted ||
+                        participant.wasDeletedWhenJoined
                           ? "?"
                           : participant.user?.name?.[0] || "?"}
                       </span>
                     </div>
                     <h4 className="font-semibold text-[var(--text-primary)] font-statement">
-                      {participant.user?.isDeleted
+                      {participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
                         ? "Deleted User"
                         : participant.user?.name || "Anonymous"}
                     </h4>
                     {participant.user?.wcaId &&
-                      !participant.user?.isDeleted && (
+                      !(
+                        participant.user?.isDeleted ||
+                        participant.wasDeletedWhenJoined
+                      ) && (
                         <p className="text-xs text-[var(--text-muted)] font-mono bg-[var(--surface-elevated)] px-2 py-1 rounded-full inline-block">
                           {participant.user.wcaId}
                         </p>
@@ -324,7 +338,10 @@ export default function RoomClosureReport({
                   {/* User Avatar */}
                   <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-[var(--primary)] text-white font-bold text-sm">
                     {participant.user?.avatar &&
-                    !participant.user?.isDeleted ? (
+                    !(
+                      participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
+                    ) ? (
                       <img
                         src={participant.user.avatar}
                         alt={participant.user.name || "User"}
@@ -342,19 +359,27 @@ export default function RoomClosureReport({
                     ) : null}
                     <span
                       className={
-                        participant.user?.avatar && !participant.user?.isDeleted
+                        participant.user?.avatar &&
+                        !(
+                          participant.user?.isDeleted ||
+                          participant.wasDeletedWhenJoined
+                        )
                           ? "hidden"
                           : ""
                       }
                       style={{
                         display:
                           participant.user?.avatar &&
-                          !participant.user?.isDeleted
+                          !(
+                            participant.user?.isDeleted ||
+                            participant.wasDeletedWhenJoined
+                          )
                             ? "none"
                             : "block",
                       }}
                     >
-                      {participant.user?.isDeleted
+                      {participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
                         ? "?"
                         : participant.user?.name?.[0] || "?"}
                     </span>
@@ -363,12 +388,16 @@ export default function RoomClosureReport({
                   {/* User Info */}
                   <div className="flex-1 text-left">
                     <div className="font-semibold text-[var(--text-primary)] font-inter">
-                      {participant.user?.isDeleted
+                      {participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
                         ? "Deleted User"
                         : participant.user?.name || "Anonymous"}
                     </div>
                     {participant.user?.wcaId &&
-                      !participant.user?.isDeleted && (
+                      !(
+                        participant.user?.isDeleted ||
+                        participant.wasDeletedWhenJoined
+                      ) && (
                         <div className="text-xs text-[var(--text-muted)] font-mono">
                           {participant.user.wcaId}
                         </div>
@@ -413,7 +442,10 @@ export default function RoomClosureReport({
                   {/* User Avatar */}
                   <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-gray-400 text-white font-bold text-sm">
                     {participant.user?.avatar &&
-                    !participant.user?.isDeleted ? (
+                    !(
+                      participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
+                    ) ? (
                       <img
                         src={participant.user.avatar}
                         alt={participant.user.name || "User"}
@@ -431,19 +463,27 @@ export default function RoomClosureReport({
                     ) : null}
                     <span
                       className={
-                        participant.user?.avatar && !participant.user?.isDeleted
+                        participant.user?.avatar &&
+                        !(
+                          participant.user?.isDeleted ||
+                          participant.wasDeletedWhenJoined
+                        )
                           ? "hidden"
                           : ""
                       }
                       style={{
                         display:
                           participant.user?.avatar &&
-                          !participant.user?.isDeleted
+                          !(
+                            participant.user?.isDeleted ||
+                            participant.wasDeletedWhenJoined
+                          )
                             ? "none"
                             : "block",
                       }}
                     >
-                      {participant.user?.isDeleted
+                      {participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
                         ? "?"
                         : participant.user?.name?.[0] || "?"}
                     </span>
@@ -457,12 +497,16 @@ export default function RoomClosureReport({
                   {/* User Info */}
                   <div className="flex-1 text-left">
                     <div className="font-semibold text-[var(--text-secondary)] font-inter">
-                      {participant.user?.isDeleted
+                      {participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
                         ? "Deleted User"
                         : participant.user?.name || "Anonymous"}
                     </div>
                     {participant.user?.wcaId &&
-                      !participant.user?.isDeleted && (
+                      !(
+                        participant.user?.isDeleted ||
+                        participant.wasDeletedWhenJoined
+                      ) && (
                         <div className="text-xs text-[var(--text-muted)] font-mono">
                           {participant.user.wcaId}
                         </div>

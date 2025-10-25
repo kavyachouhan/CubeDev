@@ -146,7 +146,11 @@ export default function RoomHeader({
             <div className="flex items-center gap-2 justify-start sm:justify-end">
               <div className="text-xs text-[var(--text-muted)] font-inter">
                 Created by{" "}
-                {room.creator?.wcaId ? (
+                {room.creator?.isDeleted ? (
+                  <span className="font-medium text-[var(--text-secondary)]">
+                    Deleted User
+                  </span>
+                ) : room.creator?.wcaId ? (
                   <Link
                     href={`/cuber/${room.creator.wcaId}`}
                     className="font-medium text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"

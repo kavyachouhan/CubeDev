@@ -11,7 +11,6 @@ export const upsertUser = mutation({
     countryIso2: v.string(),
     avatar: v.optional(v.string()),
     accessToken: v.optional(v.string()),
-    dateOfBirth: v.optional(v.string()),
     gender: v.optional(v.string()),
     region: v.optional(v.string()),
   },
@@ -25,15 +24,63 @@ export const upsertUser = mutation({
       .first();
 
     if (existingUser) {
+      // If the user was previously deleted, restore their account
+      if (existingUser.isDeleted) {
+        // Find any orphaned sessions for this user (that weren't deleted)
+        const orphanedSessions = await ctx.db
+          .query("sessions")
+          .withIndex("by_user", (q) => q.eq("userId", existingUser._id))
+          .collect();
+
+        // Delete orphaned sessions and their associated solves
+        for (const session of orphanedSessions) {
+          const solves = await ctx.db
+            .query("solves")
+            .withIndex("by_session", (q) => q.eq("sessionId", session._id))
+            .collect();
+
+          for (const solve of solves) {
+            await ctx.db.delete(solve._id);
+          }
+
+          await ctx.db.delete(session._id);
+        }
+
+        // Restore user account
+        const updateData: any = {
+          name: args.name,
+          email: args.email,
+          countryIso2: args.countryIso2,
+          avatar: args.avatar,
+          accessToken: args.accessToken,
+          gender: args.gender,
+          updatedAt: now,
+          lastLoginAt: now,
+          isDeleted: false, // Clear deletion flag
+          deletedAt: undefined, // Clear deletion timestamp
+          // Reset privacy and theme settings to defaults
+          hideProfile: undefined,
+          hideChallengeStats: undefined,
+          themeMode: undefined,
+          colorScheme: undefined,
+          timerFontSize: undefined,
+          timerFontFamily: undefined,
+          reduceMotion: undefined,
+          disableGlow: undefined,
+          highContrast: undefined,
+        };
+
+        await ctx.db.patch(existingUser._id, updateData);
+        return existingUser._id;
+      }
+
       // Update existing user
       const updateData: any = {
         name: args.name,
         countryIso2: args.countryIso2,
         avatar: args.avatar,
         accessToken: args.accessToken,
-        dateOfBirth: args.dateOfBirth,
         gender: args.gender,
-        region: args.region,
         updatedAt: now,
         lastLoginAt: now,
       };
@@ -54,9 +101,7 @@ export const upsertUser = mutation({
         countryIso2: args.countryIso2,
         avatar: args.avatar,
         accessToken: args.accessToken,
-        dateOfBirth: args.dateOfBirth,
         gender: args.gender,
-        region: args.region,
         createdAt: now,
         updatedAt: now,
         lastLoginAt: now,
@@ -187,18 +232,85 @@ export const updateThemeSettings = mutation({
   },
 });
 
-// Soft delete user account
+// Delete user account (anonymize data and remove personal info)
 export const deleteUserAccount = mutation({
   args: {
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
+    const user = await ctx.db.get(args.userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Check if user is already deleted
+    if (user.isDeleted) {
+      throw new Error("User account is already deleted");
+    }
+
+    // Anonymize user data
     await ctx.db.patch(args.userId, {
+      // Replace personal info with generic placeholders
+      name: `Deleted User`,
+      email: undefined, // Remove email
+      avatar: undefined, // Remove avatar
+      accessToken: undefined, // Remove access token
+      refreshToken: undefined, // Remove refresh token
+
+      // Mark account as deleted
       isDeleted: true,
       deletedAt: now,
       updatedAt: now,
+
+      // Reset all preferences
+      hideProfile: undefined,
+      hideChallengeStats: undefined,
+      themeMode: undefined,
+      colorScheme: undefined,
+      timerFontSize: undefined,
+      timerFontFamily: undefined,
+      reduceMotion: undefined,
+      disableGlow: undefined,
+      highContrast: undefined,
     });
+
+    // Find any orphaned sessions for this user (that weren't deleted)
+    const sessions = await ctx.db
+      .query("sessions")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    let deletedSessions = 0;
+    let deletedSolves = 0;
+
+    for (const session of sessions) {
+      // Delete all solves in each session
+      const solves = await ctx.db
+        .query("solves")
+        .withIndex("by_session", (q) => q.eq("sessionId", session._id))
+        .collect();
+
+      for (const solve of solves) {
+        await ctx.db.delete(solve._id);
+        deletedSolves++;
+      }
+
+      // Delete the session
+      await ctx.db.delete(session._id);
+      deletedSessions++;
+    }
+
+    return {
+      success: true,
+      message:
+        "Account deleted successfully. Your personal data has been removed, but challenge room data is preserved for leaderboard integrity.",
+      details: {
+        deletedSessions,
+        deletedSolves,
+      },
+    };
   },
 });
 
@@ -616,5 +728,50 @@ export const getUserStats = query({
     );
 
     return stats;
+  },
+});
+
+// Get user account status by WCA ID
+export const getUserAccountStatus = query({
+  args: { wcaId: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_wca_id", (q) => q.eq("wcaId", args.wcaId))
+      .first();
+
+    if (!user) {
+      return { exists: false };
+    }
+
+    // Count sessions and solves
+    const sessions = await ctx.db
+      .query("sessions")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    const solves = await ctx.db
+      .query("solves")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    // Count challenge room participations
+    const roomParticipations = await ctx.db
+      .query("roomParticipants")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    return {
+      exists: true,
+      isDeleted: !!user.isDeleted,
+      deletedAt: user.deletedAt,
+      name: user.name,
+      email: user.email,
+      hasAvatar: !!user.avatar,
+      sessionCount: sessions.length,
+      solveCount: solves.length,
+      challengeRoomCount: roomParticipations.length,
+      lastLoginAt: user.lastLoginAt,
+    };
   },
 });

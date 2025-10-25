@@ -7,7 +7,7 @@ export default defineSchema({
     wcaId: v.string(), // WCA ID (e.g., "2019DOEJ01")
     wcaUserId: v.number(), // Internal WCA user ID
     name: v.string(), // Full name
-    email: v.string(), // Email address
+    email: v.optional(v.string()), // Email address (optional for deleted users)
     countryIso2: v.string(), // Country code (e.g., "US", "CA")
     avatar: v.optional(v.string()), // Avatar URL from WCA
 
@@ -158,6 +158,7 @@ export default defineSchema({
     // Participation Info
     joinedAt: v.number(), // When user joined room
     completedAt: v.optional(v.number()), // When user completed all solves
+    wasDeletedWhenJoined: v.optional(v.boolean()), // Whether user was deleted when they joined
 
     // Progress Tracking
     solvesCompleted: v.number(), // Number of solves completed

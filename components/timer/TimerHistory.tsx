@@ -760,19 +760,19 @@ export default function TimerHistory({
               return (
                 <div
                   key={record.id}
-                  className="bg-[var(--surface-elevated)] rounded border border-[var(--border)] p-3 hover:bg-[var(--surface-elevated)]/80 transition-colors"
+                  className="bg-[var(--surface-elevated)] rounded border border-[var(--border)] p-2 sm:p-3 hover:bg-[var(--surface-elevated)]/80 transition-colors"
                 >
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center gap-2 overflow-x-auto">
                     {/* Solve number and time */}
                     <div
-                      className="flex items-center gap-3 cursor-pointer flex-1"
+                      className="flex items-center gap-2 sm:gap-3 cursor-pointer flex-shrink-0"
                       onClick={() => handleSolveClick(record)}
                     >
-                      <span className="text-sm text-[var(--text-muted)] font-inter">
+                      <span className="text-xs sm:text-sm text-[var(--text-muted)] font-inter flex-shrink-0">
                         #{solveNumber}
                       </span>
                       <span
-                        className={`font-mono text-lg font-semibold ${
+                        className={`font-mono text-base sm:text-lg font-semibold whitespace-nowrap ${
                           record.penalty === "+2"
                             ? "text-yellow-400"
                             : record.penalty === "DNF"
@@ -786,7 +786,7 @@ export default function TimerHistory({
                       {/* Timer Mode Badge */}
                       {record.timerMode && record.timerMode !== "normal" && (
                         <span
-                          className={`text-xs px-2 py-0.5 rounded font-medium ${
+                          className={`text-xs px-2 py-0.5 rounded font-medium whitespace-nowrap flex-shrink-0 ${
                             record.timerMode === "manual"
                               ? "bg-blue-500/10 text-blue-500 border border-blue-500/30"
                               : "bg-purple-500/10 text-purple-500 border border-purple-500/30"
@@ -800,7 +800,7 @@ export default function TimerHistory({
                     </div>
 
                     {/* Inline action buttons */}
-                    <div className="flex items-center gap-1 ml-2">
+                    <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -819,7 +819,7 @@ export default function TimerHistory({
                             record.penalty === "+2" ? "none" : "+2"
                           );
                         }}
-                        className={`px-2 py-1 text-xs rounded font-medium transition-colors ${
+                        className={`px-1.5 sm:px-2 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${
                           record.penalty === "+2"
                             ? "bg-[var(--warning)] text-white"
                             : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
@@ -836,7 +836,7 @@ export default function TimerHistory({
                             record.penalty === "DNF" ? "none" : "DNF"
                           );
                         }}
-                        className={`px-2 py-1 text-xs rounded font-medium transition-colors ${
+                        className={`px-1.5 sm:px-2 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${
                           record.penalty === "DNF"
                             ? "bg-[var(--error)] text-white"
                             : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]"

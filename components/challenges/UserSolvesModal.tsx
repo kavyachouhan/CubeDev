@@ -32,7 +32,6 @@ function formatTime(ms: number): string {
   }
 }
 
-
 // Map of event IDs to display names
 const eventNames: Record<string, string> = {
   "333": "3x3",
@@ -65,6 +64,7 @@ interface UserSolvesModalProps {
       avatar?: string;
       isDeleted?: boolean;
     };
+    wasDeletedWhenJoined?: boolean;
     finalRank?: number;
     isCompleted: boolean;
     average?: number;
@@ -167,7 +167,11 @@ export default function UserSolvesModal({
               {/* User Info */}
               <div className="flex items-center gap-4 flex-1">
                 <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center bg-[var(--primary)] text-white font-bold text-lg">
-                  {participant.user?.avatar && !participant.user?.isDeleted ? (
+                  {participant.user?.avatar &&
+                  !(
+                    participant.user?.isDeleted ||
+                    participant.wasDeletedWhenJoined
+                  ) ? (
                     <img
                       src={participant.user.avatar}
                       alt={participant.user.name || "User"}
@@ -175,7 +179,8 @@ export default function UserSolvesModal({
                     />
                   ) : (
                     <span>
-                      {participant.user?.isDeleted
+                      {participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
                         ? "?"
                         : participant.user?.name?.[0] || "?"}
                     </span>
@@ -185,12 +190,16 @@ export default function UserSolvesModal({
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-1">
                     <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
-                      {participant.user?.isDeleted
+                      {participant.user?.isDeleted ||
+                      participant.wasDeletedWhenJoined
                         ? "Deleted User"
                         : participant.user?.name || "Anonymous"}
                     </h3>
                     {participant.user?.wcaId &&
-                      !participant.user?.isDeleted && (
+                      !(
+                        participant.user?.isDeleted ||
+                        participant.wasDeletedWhenJoined
+                      ) && (
                         <Link
                           href={`/cuber/${participant.user.wcaId}`}
                           className="inline-flex items-center gap-1 text-sm text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors"

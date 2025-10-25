@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { getWCAOAuthUrl } from "@/lib/wca-config";
 import { useUser } from "@/components/UserProvider";
@@ -11,8 +11,39 @@ import { useLogo } from "@/lib/use-logo";
 export default function Header() {
   const [activeTab, setActiveTab] = useState("Timer");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const { user, signOut } = useUser();
   const logoSrc = useLogo();
+
+  // Hide/show header on scroll
+  useEffect(() => {
+    const controlHeader = () => {
+      const currentScrollY = window.scrollY;
+      const scrollDifference = Math.abs(currentScrollY - lastScrollY);
+
+      // Only trigger if scrolled more than 5px to avoid jitter
+      if (scrollDifference < 5) return;
+
+      // Show header when scrolling up or at the top
+      if (currentScrollY < lastScrollY || currentScrollY < 10) {
+        setIsVisible(true);
+      }
+      // Hide header when scrolling down (but not if at the very top or mobile menu is open)
+      else if (
+        currentScrollY > lastScrollY &&
+        currentScrollY > 80 &&
+        !mobileMenuOpen
+      ) {
+        setIsVisible(false);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", controlHeader);
+    return () => window.removeEventListener("scroll", controlHeader);
+  }, [lastScrollY, mobileMenuOpen]);
 
   const handleWCASignIn = () => {
     const wcaAuthUrl = getWCAOAuthUrl();
@@ -27,7 +58,13 @@ export default function Header() {
   ];
 
   return (
-    <header className="relative z-50 bg-[var(--surface)] border-b border-[var(--border)] backdrop-blur-sm">
+    <header
+      className={`sticky top-0 z-50 bg-[var(--surface)] border-b border-[var(--border)] backdrop-blur-sm transition-all duration-500 ease-in-out ${
+        isVisible || mobileMenuOpen
+          ? "translate-y-0 opacity-100"
+          : "-translate-y-full opacity-0"
+      }`}
+    >
       <nav className="container-responsive">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
