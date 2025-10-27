@@ -315,11 +315,6 @@ export default function ScrambleDisplay({
               );
             })}
           </div>
-          <div className="mt-2 sm:mt-3 text-xs text-[var(--text-muted)] text-center">
-            {tappedMoveIndex !== null
-              ? "Tap again on the highlighted move or tap outside to reset"
-              : "Hover over or tap any move to preview the scramble up to that point"}
-          </div>
         </div>
       </div>
     </div>

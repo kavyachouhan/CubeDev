@@ -1,6 +1,11 @@
 "use client";
 
-import { useTheme, TimerFontSize, TimerFontFamily } from "@/lib/theme-context";
+import {
+  useTheme,
+  TimerFontSize,
+  TimerFontFamily,
+  TimerUpdateMode,
+} from "@/lib/theme-context";
 
 export default function TimerCustomization() {
   const {
@@ -8,6 +13,8 @@ export default function TimerCustomization() {
     setTimerFontSize,
     timerFontFamily,
     setTimerFontFamily,
+    timerUpdateMode,
+    setTimerUpdateMode,
   } = useTheme();
 
   const fontSizes: { value: TimerFontSize; label: string; example: string }[] =
@@ -26,6 +33,28 @@ export default function TimerCustomization() {
     { value: "mono", label: "Monospace", style: "font-mono" },
     { value: "sans", label: "Sans Serif", style: "font-inter font-bold" },
     { value: "statement", label: "Statement", style: "font-statement" },
+  ];
+
+  const updateModes: {
+    value: TimerUpdateMode;
+    label: string;
+    description: string;
+  }[] = [
+    {
+      value: "live",
+      label: "Live",
+      description: "Updates every 10ms",
+    },
+    {
+      value: "solving",
+      label: "Solving...",
+      description: "Shows text while solving",
+    },
+    {
+      value: "seconds",
+      label: "Seconds Only",
+      description: "Updates every second",
+    },
   ];
 
   return (
@@ -88,6 +117,42 @@ export default function TimerCustomization() {
                 }`}
               >
                 12.34
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Timer Display Mode */}
+      <div>
+        <label className="text-sm font-medium text-[var(--text-secondary)] mb-3 block">
+          Timer Display Mode
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+          {updateModes.map((mode) => (
+            <button
+              key={mode.value}
+              onClick={() => setTimerUpdateMode(mode.value)}
+              className={`
+                p-4 rounded-lg border-2 transition-all text-left
+                ${
+                  timerUpdateMode === mode.value
+                    ? "border-[var(--primary)] bg-[var(--primary)]/10"
+                    : "border-[var(--border)] hover:border-[var(--border-hover)]"
+                }
+              `}
+            >
+              <div
+                className={`text-sm font-medium mb-1 ${
+                  timerUpdateMode === mode.value
+                    ? "text-[var(--primary)]"
+                    : "text-[var(--text-secondary)]"
+                }`}
+              >
+                {mode.label}
+              </div>
+              <div className="text-xs text-[var(--text-muted)]">
+                {mode.description}
               </div>
             </button>
           ))}

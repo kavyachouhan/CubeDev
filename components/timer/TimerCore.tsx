@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import { useTheme } from "@/lib/theme-context";
 
 type TimerState =
   | "idle"
@@ -33,6 +34,8 @@ export default function TimerCore({
   onMouseDown,
   onMouseUp,
 }: TimerCoreProps) {
+  const { timerUpdateMode, reduceMotion } = useTheme();
+
   // Format time
   const formatTime = (timeMs: number) => {
     if (timeMs === Infinity) return "DNF";
@@ -42,15 +45,39 @@ export default function TimerCore({
     return mins > 0 ? `${mins}:${secs.padStart(5, "0")}` : secs;
   };
 
+  // Format time for "seconds only" mode
+  const formatTimeSecondsOnly = (timeMs: number) => {
+    if (timeMs === Infinity) return "DNF";
+    const seconds = Math.floor(timeMs / 1000);
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return mins > 0
+      ? `${mins}:${secs.toString().padStart(2, "0")}`
+      : secs.toString();
+  };
+
   // Get display time with penalty applied
   const getDisplayTime = () => {
     if (currentPenalty === "DNF") {
       return "DNF";
-    } else if (currentPenalty === "+2") {
-      return formatTime(time + 2000); // add 2 seconds
-    } else {
-      return formatTime(time);
     }
+
+    const displayTime = currentPenalty === "+2" ? time + 2000 : time;
+
+    // Seconds only update mode
+    if (state === "running") {
+      if (timerUpdateMode === "seconds") {
+        return formatTimeSecondsOnly(displayTime);
+      }
+    }
+
+    // Default formatting: live update (or stopped/other states)
+    return formatTime(displayTime);
+  };
+
+  // Check if we should show "Solving..." text
+  const shouldShowSolvingText = () => {
+    return state === "running" && timerUpdateMode === "solving";
   };
 
   // Get timer color based on state
@@ -106,13 +133,41 @@ export default function TimerCore({
       }}
     >
       {/* Main Timer Display */}
-      <div
-        className={`font-bold timer-text ${getTimerColor()} transition-all duration-300 font-mono cursor-pointer select-none py-4`}
-      >
-        {state === "inspection"
-          ? `${inspectionTime.toFixed(2)}`
-          : getDisplayTime()}
-      </div>
+      {shouldShowSolvingText() ? (
+        <div
+          key="solving-text"
+          className={`font-bold text-3xl sm:text-4xl md:text-5xl ${getTimerColor()} font-inter cursor-pointer select-none py-4`}
+          style={{
+            animation: reduceMotion ? "none" : "fadeIn 0.3s ease-in",
+          }}
+        >
+          Solving...
+        </div>
+      ) : (
+        <div
+          key="timer-display"
+          className={`font-bold timer-text ${getTimerColor()} transition-all duration-300 font-mono cursor-pointer select-none py-4`}
+        >
+          {state === "inspection"
+            ? `${inspectionTime.toFixed(2)}`
+            : getDisplayTime()}
+        </div>
+      )}
+
+      {!reduceMotion && (
+        <style jsx>{`
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+              transform: scale(0.95);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+        `}</style>
+      )}
 
       {children}
 

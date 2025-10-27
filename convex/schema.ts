@@ -33,6 +33,7 @@ export default defineSchema({
     colorScheme: v.optional(v.string()), // "blue" | "purple" | "green" | "orange" | "cyan"
     timerFontSize: v.optional(v.string()), // "sm" | "md" | "lg" | "xl"
     timerFontFamily: v.optional(v.string()), // "mono" | "sans" | "statement"
+    timerUpdateMode: v.optional(v.string()), // "live" | "solving" | "seconds"
     reduceMotion: v.optional(v.boolean()), // Reduce animations
     disableGlow: v.optional(v.boolean()), // Disable glow effects
     highContrast: v.optional(v.boolean()), // High contrast mode
