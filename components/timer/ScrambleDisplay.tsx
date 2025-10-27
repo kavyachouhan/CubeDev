@@ -12,6 +12,7 @@ import {
 interface ScrambleDisplayProps {
   scramble: string;
   onNewScramble: () => void;
+  onPartialScrambleHover?: (partialScramble: string) => void;
 }
 
 // Persistent boolean that reads/writes localStorage on first render
@@ -36,10 +37,21 @@ function usePersistentBool(key: string, defaultValue: boolean) {
 export default function ScrambleDisplay({
   scramble,
   onNewScramble,
+  onPartialScrambleHover,
 }: ScrambleDisplayProps) {
   const [isExpanded, setIsExpanded] = usePersistentBool(
     "cubelab-scramble-display-expanded",
     true
+  );
+
+  // State to track hovered/tapped move for partial scramble preview
+  const [hoveredMoveIndex, setHoveredMoveIndex] = useState<number | null>(null);
+  const [tappedMoveIndex, setTappedMoveIndex] = useState<number | null>(null);
+
+  // Parsed moves
+  const moves = useMemo(
+    () => scramble.trim().split(/\s+/).filter(Boolean),
+    [scramble]
   );
 
   // State to track if body is visible (for accessibility and to avoid layout shift)
@@ -126,6 +138,72 @@ export default function ScrambleDisplay({
       setIsExpanded(true);
     }
   };
+
+  // Handlers for hovering/tapping moves
+  const handleMoveHover = (index: number) => {
+    // Don't override tap state with hover on mobile
+    if (tappedMoveIndex !== null) return;
+
+    setHoveredMoveIndex(index);
+    if (onPartialScrambleHover) {
+      const partialScramble = moves.slice(0, index + 1).join(" ");
+      onPartialScrambleHover(partialScramble);
+    }
+  };
+
+  const handleMoveLeave = () => {
+    // Don't override tap state with hover on mobile
+    if (tappedMoveIndex !== null) return;
+
+    setHoveredMoveIndex(null);
+    if (onPartialScrambleHover) {
+      onPartialScrambleHover(scramble);
+    }
+  };
+
+  const handleMoveTap = (
+    index: number,
+    e: React.MouseEvent | React.TouchEvent
+  ) => {
+    // Prevent event from bubbling to timer
+    e.stopPropagation();
+
+    // Toggle tap state
+    if (tappedMoveIndex === index) {
+      setTappedMoveIndex(null);
+      setHoveredMoveIndex(null);
+      if (onPartialScrambleHover) {
+        onPartialScrambleHover(scramble);
+      }
+    } else {
+      setTappedMoveIndex(index);
+      setHoveredMoveIndex(null);
+      if (onPartialScrambleHover) {
+        const partialScramble = moves.slice(0, index + 1).join(" ");
+        onPartialScrambleHover(partialScramble);
+      }
+    }
+  };
+
+  // Handlers for background interaction to reset tapped move
+  const handleBackgroundInteraction = (
+    e: React.MouseEvent | React.TouchEvent
+  ) => {
+    // Prevent event from bubbling to timer
+    if (e.target === e.currentTarget && tappedMoveIndex !== null) {
+      e.stopPropagation();
+      setTappedMoveIndex(null);
+      if (onPartialScrambleHover) {
+        onPartialScrambleHover(scramble);
+      }
+    }
+  };
+
+  // Reset hovered/tapped move on scramble change
+  useEffect(() => {
+    setTappedMoveIndex(null);
+    setHoveredMoveIndex(null);
+  }, [scramble]);
   return (
     <div
       ref={cardRef}
@@ -192,10 +270,56 @@ export default function ScrambleDisplay({
         }
         aria-hidden={!isBodyVisible}
       >
-        <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-          <p className="text-lg font-mono text-[var(--text-primary)] text-center leading-relaxed">
-            {scramble}
-          </p>
+        <div
+          className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]"
+          onClick={handleBackgroundInteraction}
+          onTouchEnd={handleBackgroundInteraction}
+        >
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center items-center leading-relaxed">
+            {moves.map((move, index) => {
+              const isHovered = hoveredMoveIndex === index;
+              const isTapped = tappedMoveIndex === index;
+              const isActive = isHovered || isTapped;
+              const isBeforeActive =
+                hoveredMoveIndex !== null && index <= hoveredMoveIndex;
+              const isBeforeTapped =
+                tappedMoveIndex !== null && index <= tappedMoveIndex;
+
+              return (
+                <span
+                  key={index}
+                  className={`
+                    text-base sm:text-lg font-mono transition-all duration-200 cursor-pointer
+                    px-1.5 sm:px-2 py-0.5 sm:py-1 rounded select-none
+                    ${
+                      isActive
+                        ? "bg-[var(--primary)] text-white scale-105 sm:scale-110 shadow-md"
+                        : isBeforeActive || isBeforeTapped
+                          ? "text-[var(--primary)] bg-[var(--surface)] font-semibold"
+                          : "text-[var(--text-primary)] hover:text-[var(--primary)] hover:bg-[var(--surface)] active:scale-95"
+                    }
+                  `}
+                  onMouseEnter={() => handleMoveHover(index)}
+                  onMouseLeave={handleMoveLeave}
+                  onClick={(e) => {
+                    handleMoveTap(index, e);
+                  }}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    handleMoveTap(index, e);
+                  }}
+                  title="Hover or tap to preview scramble up to this move"
+                >
+                  {move}
+                </span>
+              );
+            })}
+          </div>
+          <div className="mt-2 sm:mt-3 text-xs text-[var(--text-muted)] text-center">
+            {tappedMoveIndex !== null
+              ? "Tap again on the highlighted move or tap outside to reset"
+              : "Hover over or tap any move to preview the scramble up to that point"}
+          </div>
         </div>
       </div>
     </div>

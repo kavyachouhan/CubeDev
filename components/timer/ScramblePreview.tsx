@@ -6,16 +6,22 @@ import { Play } from "lucide-react";
 interface ScramblePreviewProps {
   scramble: string;
   event: string;
+  partialScramble?: string;
 }
 
 export default function ScramblePreview({
   scramble,
   event,
+  partialScramble,
 }: ScramblePreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+
+  // Determine which scramble to display (partial or full)
+  const displayScramble = partialScramble || scramble;
 
   const loadTwisty = async () => {
     if (isLoading || !containerRef.current) return;
@@ -58,18 +64,52 @@ export default function ScramblePreview({
                                   : event === "555bld"
                                     ? "5x5x5"
                                     : "3x3x3",
-        alg: scramble,
+        alg: displayScramble,
         hintFacelets: "none",
         backView: "none",
         controlPanel: "none",
         background: "none",
+        tempoScale: 3, // Faster animations
+        viewerLink: "none",
       });
 
       // Set player size to fill container - responsive heights
       player.style.width = "100%";
       player.style.height = window.innerWidth < 640 ? "180px" : "200px";
 
+      // Enable touch interactions
+      player.style.touchAction = "none";
+      player.style.userSelect = "none";
+      player.style.webkitUserSelect = "none";
+      player.style.cursor = "grab";
+
       containerRef.current?.appendChild(player);
+
+      // Prevent touch events from interfering with timer
+      if (containerRef.current) {
+        const preventDefaultTouch = (e: TouchEvent) => {
+          // Only stop propagation if the touch is on the player
+          if (
+            e.target instanceof HTMLElement &&
+            e.target.closest("twisty-player")
+          ) {
+            e.stopPropagation();
+          }
+        };
+
+        containerRef.current.addEventListener(
+          "touchstart",
+          preventDefaultTouch,
+          { passive: true }
+        );
+        containerRef.current.addEventListener(
+          "touchmove",
+          preventDefaultTouch,
+          { passive: true }
+        );
+      }
+
+      playerRef.current = player;
       setIsLoaded(true);
     } catch (error) {
       console.error("Failed to load twisty player:", error);
@@ -89,19 +129,58 @@ export default function ScramblePreview({
     }
   };
 
+  // Update scramble when it changes
+  useEffect(() => {
+    if (showPreview && isLoaded && playerRef.current) {
+      try {
+        playerRef.current.alg = displayScramble;
+      } catch (error) {
+        console.error("Failed to update scramble:", error);
+      }
+    }
+  }, [displayScramble, showPreview, isLoaded]);
+
   // Load preview when requested
   useEffect(() => {
-    if (showPreview) {
+    if (showPreview && !isLoaded) {
       loadTwisty();
     }
-  }, [showPreview, scramble, event]);
+  }, [showPreview]);
 
-  // Reset loading state when scramble or event changes
+  // Reload player when full scramble or event changes
   useEffect(() => {
     if (showPreview) {
+      // Reload the player with the new scramble
       setIsLoaded(false);
+      playerRef.current = null;
     }
   }, [scramble, event]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      playerRef.current = null;
+    };
+  }, []);
+
+  // Handle responsive resizing
+  useEffect(() => {
+    if (!showPreview || !playerRef.current) return;
+
+    const handleResize = () => {
+      if (playerRef.current) {
+        playerRef.current.style.height =
+          window.innerWidth < 640 ? "180px" : "200px";
+        // Ensure touch events are still enabled after resize
+        playerRef.current.style.touchAction = "none";
+        playerRef.current.style.userSelect = "none";
+        playerRef.current.style.webkitUserSelect = "none";
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [showPreview, isLoaded]);
 
   return (
     <div className="timer-card">
@@ -146,7 +225,13 @@ export default function ScramblePreview({
           )}
           <div
             ref={containerRef}
-            className="w-full min-h-[180px] sm:min-h-[200px] bg-[var(--surface-elevated)] rounded-lg"
+            className="w-full min-h-[180px] sm:min-h-[200px] bg-[var(--surface-elevated)] rounded-lg overflow-hidden"
+            style={{
+              touchAction: "none",
+              WebkitTouchCallout: "none",
+              WebkitUserSelect: "none",
+              userSelect: "none",
+            }}
           ></div>
         </div>
       )}

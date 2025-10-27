@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import dynamic from "next/dynamic";
 import { useUser } from "@/components/UserProvider";
 import { useQuery, useMutation } from "convex/react";
@@ -40,6 +40,9 @@ export default function CubeLabTimer({
   onTimerFocusChange,
 }: CubeLabTimerProps = {}) {
   const { user } = useUser();
+
+  // State for partial scramble preview
+  const [partialScramble, setPartialScramble] = useState<string>("");
 
   // Timer state and operations
   const {
@@ -513,6 +516,7 @@ export default function CubeLabTimer({
             <ScrambleDisplay
               scramble={currentScramble}
               onNewScramble={handleNewScramble}
+              onPartialScrambleHover={setPartialScramble}
             />
           </div>
 
@@ -536,7 +540,11 @@ export default function CubeLabTimer({
           }`}
         >
           {/* Scramble Preview */}
-          <ScramblePreview scramble={currentScramble} event={selectedEvent} />
+          <ScramblePreview
+            scramble={currentScramble}
+            event={selectedEvent}
+            partialScramble={partialScramble || currentScramble}
+          />
 
           {/* Stats */}
           <StatsDisplay

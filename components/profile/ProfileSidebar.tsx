@@ -162,7 +162,7 @@ export default function ProfileSidebar({
           <h1 className="text-2xl font-bold text-[var(--text-primary)] font-statement mb-1">
             {person.name}
           </h1>
-          <p className="text-[var(--text-secondary)] font-inter text-lg">
+          <p className="text-[var(--text-secondary)] font-inter text-md">
             {wcaId}
           </p>
         </div>
