@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  MapPin,
-  Calendar,
-  ExternalLink,
-  Trophy,
-  Clock,
-} from "lucide-react";
+import { MapPin, Calendar, ExternalLink, Trophy, Clock } from "lucide-react";
 import Image from "next/image";
 
 interface WCAPersonalRecord {
@@ -169,7 +163,7 @@ export default function ProfileSidebar({
             {person.name}
           </h1>
           <p className="text-[var(--text-secondary)] font-inter text-lg">
-            {person.wcaId}
+            {wcaId}
           </p>
         </div>
 
