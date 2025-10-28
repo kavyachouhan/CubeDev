@@ -140,21 +140,21 @@ export default function ScramblePreview({
     }
   }, [displayScramble, showPreview, isLoaded]);
 
-  // Load preview when requested
+  // Load twisty player when preview is shown
   useEffect(() => {
     if (showPreview && !isLoaded) {
       loadTwisty();
     }
-  }, [showPreview]);
+  }, [showPreview, isLoaded]);
 
-  // Reload player when full scramble or event changes
+  // Reload player when scramble or event changes
   useEffect(() => {
-    if (showPreview) {
+    if (showPreview && isLoaded) {
       // Reload the player with the new scramble
       setIsLoaded(false);
       playerRef.current = null;
     }
-  }, [scramble, event]);
+  }, [scramble, event, showPreview]);
 
   // Cleanup on unmount
   useEffect(() => {

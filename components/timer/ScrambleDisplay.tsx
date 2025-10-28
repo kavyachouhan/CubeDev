@@ -7,6 +7,7 @@ import {
   EyeOff,
   ChevronDown,
   ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 
 interface ScrambleDisplayProps {
@@ -48,10 +49,53 @@ export default function ScrambleDisplay({
   const [hoveredMoveIndex, setHoveredMoveIndex] = useState<number | null>(null);
   const [tappedMoveIndex, setTappedMoveIndex] = useState<number | null>(null);
 
+  // Scramble history management
+  const [currentScramble, setCurrentScramble] = useState<string>(scramble);
+  const [previousScramble, setPreviousScramble] = useState<string | null>(null);
+  const [isAtCurrent, setIsAtCurrent] = useState<boolean>(true);
+
+  // Update scrambles when new scramble prop is received
+  useEffect(() => {
+    // Only update if we're at the current scramble and the scramble has actually changed
+    if (isAtCurrent && scramble !== currentScramble) {
+      setPreviousScramble(currentScramble);
+      setCurrentScramble(scramble);
+    }
+  }, [scramble, isAtCurrent, currentScramble]);
+
+  // Handle going to previous scramble
+  const handlePrevious = () => {
+    if (previousScramble) {
+      setIsAtCurrent(false);
+      if (onPartialScrambleHover) {
+        onPartialScrambleHover(previousScramble);
+      }
+    }
+  };
+
+  // Handle going to next scramble or generating new scramble
+  const handleNext = () => {
+    if (!isAtCurrent) {
+      // Go to current scramble
+      setIsAtCurrent(true);
+      if (onPartialScrambleHover) {
+        onPartialScrambleHover(currentScramble);
+      }
+    } else {
+      // Generate new scramble
+      onNewScramble();
+    }
+  };
+
+  // Determine which scramble to display
+  const displayScramble = isAtCurrent
+    ? currentScramble
+    : previousScramble || currentScramble;
+
   // Parsed moves
   const moves = useMemo(
-    () => scramble.trim().split(/\s+/).filter(Boolean),
-    [scramble]
+    () => displayScramble.trim().split(/\s+/).filter(Boolean),
+    [displayScramble]
   );
 
   // State to track if body is visible (for accessibility and to avoid layout shift)
@@ -157,7 +201,7 @@ export default function ScrambleDisplay({
 
     setHoveredMoveIndex(null);
     if (onPartialScrambleHover) {
-      onPartialScrambleHover(scramble);
+      onPartialScrambleHover(displayScramble);
     }
   };
 
@@ -173,7 +217,7 @@ export default function ScrambleDisplay({
       setTappedMoveIndex(null);
       setHoveredMoveIndex(null);
       if (onPartialScrambleHover) {
-        onPartialScrambleHover(scramble);
+        onPartialScrambleHover(displayScramble);
       }
     } else {
       setTappedMoveIndex(index);
@@ -194,7 +238,7 @@ export default function ScrambleDisplay({
       e.stopPropagation();
       setTappedMoveIndex(null);
       if (onPartialScrambleHover) {
-        onPartialScrambleHover(scramble);
+        onPartialScrambleHover(displayScramble);
       }
     }
   };
@@ -203,7 +247,7 @@ export default function ScrambleDisplay({
   useEffect(() => {
     setTappedMoveIndex(null);
     setHoveredMoveIndex(null);
-  }, [scramble]);
+  }, [displayScramble]);
   return (
     <div
       ref={cardRef}
@@ -239,13 +283,40 @@ export default function ScrambleDisplay({
           )}
         </button>
         <div className="flex items-center gap-2">
+          {/* Previous scramble button */}
           <button
-            onClick={onNewScramble}
-            className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
-            title="Generate new scramble"
+            onClick={handlePrevious}
+            disabled={!previousScramble}
+            className={`p-1.5 rounded-md transition-colors ${
+              previousScramble
+                ? "text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)]"
+                : "text-[var(--text-muted)] opacity-50 cursor-not-allowed"
+            }`}
+            title={
+              previousScramble
+                ? "Go to previous scramble"
+                : "No previous scramble"
+            }
           >
-            <RotateCcw className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4" />
           </button>
+
+          {/* Next/New scramble button */}
+          <button
+            onClick={handleNext}
+            className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            title={
+              isAtCurrent ? "Generate new scramble" : "Go to current scramble"
+            }
+          >
+            {isAtCurrent ? (
+              <RotateCcw className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+          </button>
+
+          {/* Expand/collapse button */}
           <button
             onClick={toggleExpanded}
             className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
