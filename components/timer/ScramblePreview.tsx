@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Play } from "lucide-react";
 
 interface ScramblePreviewProps {
@@ -19,13 +19,17 @@ export default function ScramblePreview({
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const isLoadingRef = useRef(false); // Track loading state to prevent concurrent loads
+  const lastLoadedScrambleRef = useRef<string>(""); // Track last loaded scramble
 
   // Determine which scramble to display (partial or full)
   const displayScramble = partialScramble || scramble;
 
-  const loadTwisty = async () => {
-    if (isLoading || !containerRef.current) return;
+  const loadTwisty = useCallback(async () => {
+    // Prevent concurrent loads
+    if (isLoadingRef.current || !containerRef.current) return;
 
+    isLoadingRef.current = true;
     setIsLoading(true);
 
     try {
@@ -110,6 +114,7 @@ export default function ScramblePreview({
       }
 
       playerRef.current = player;
+      lastLoadedScrambleRef.current = displayScramble;
       setIsLoaded(true);
     } catch (error) {
       console.error("Failed to load twisty player:", error);
@@ -125,9 +130,10 @@ export default function ScramblePreview({
         `;
       }
     } finally {
+      isLoadingRef.current = false;
       setIsLoading(false);
     }
-  };
+  }, [displayScramble, event]);
 
   // Update scramble when it changes
   useEffect(() => {
@@ -142,24 +148,27 @@ export default function ScramblePreview({
 
   // Load twisty player when preview is shown
   useEffect(() => {
-    if (showPreview && !isLoaded) {
+    if (showPreview && !isLoaded && !isLoadingRef.current) {
       loadTwisty();
     }
-  }, [showPreview, isLoaded]);
+  }, [showPreview, isLoaded, loadTwisty]);
 
   // Reload player when scramble or event changes
   useEffect(() => {
-    if (showPreview && isLoaded) {
+    if (showPreview && isLoaded && scramble !== lastLoadedScrambleRef.current) {
       // Reload the player with the new scramble
       setIsLoaded(false);
       playerRef.current = null;
+      lastLoadedScrambleRef.current = ""; // Reset last loaded scramble
     }
-  }, [scramble, event, showPreview]);
+  }, [scramble, event, showPreview, isLoaded]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       playerRef.current = null;
+      isLoadingRef.current = false;
+      lastLoadedScrambleRef.current = "";
     };
   }, []);
 

@@ -156,6 +156,7 @@ export default function TimerDisplay({
   const onSolveCompleteRef = useRef(onSolveComplete);
   const onTimerStateChangeRef = useRef(onTimerStateChange);
   const prevTimerModeRef = useRef<TimerMode>(timerMode);
+  const celebratedSolveIdRef = useRef<string | null>(null); // Track last celebrated solve ID
 
   // Keep refs updated to avoid stale closures
   useEffect(() => {
@@ -260,6 +261,11 @@ export default function TimerDisplay({
   useEffect(() => {
     if (!lastSolveId || !history || history.length === 0) return;
 
+    // Don't celebrate the same solve multiple times
+    if (celebratedSolveIdRef.current === lastSolveId) {
+      return;
+    }
+
     // Delay detection slightly to ensure solve is saved
     const timer = setTimeout(() => {
       // Import detector inline to avoid issues
@@ -328,6 +334,7 @@ export default function TimerDisplay({
           setCelebrationType("single");
           setCelebrationTime(formatTime(currentSingle));
           setShowCelebration(true);
+          celebratedSolveIdRef.current = lastSolveId;
           return;
         }
 
@@ -364,6 +371,7 @@ export default function TimerDisplay({
             setCelebrationType("ao5");
             setCelebrationTime(formatTime(currentAo5));
             setShowCelebration(true);
+            celebratedSolveIdRef.current = lastSolveId;
             return;
           }
         }
@@ -400,6 +408,7 @@ export default function TimerDisplay({
             setCelebrationType("ao12");
             setCelebrationTime(formatTime(currentAo12));
             setShowCelebration(true);
+            celebratedSolveIdRef.current = lastSolveId;
             return;
           }
         }
@@ -436,6 +445,7 @@ export default function TimerDisplay({
             setCelebrationType("ao100");
             setCelebrationTime(formatTime(currentAo100));
             setShowCelebration(true);
+            celebratedSolveIdRef.current = lastSolveId;
             return;
           }
         }

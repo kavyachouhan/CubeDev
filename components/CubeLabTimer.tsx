@@ -43,6 +43,8 @@ export default function CubeLabTimer({
 
   // State for partial scramble preview
   const [partialScramble, setPartialScramble] = useState<string>("");
+  // State for active scramble (can be set independently)
+  const [activeScramble, setActiveScramble] = useState<string>("");
 
   // Timer state and operations
   const {
@@ -193,6 +195,13 @@ export default function CubeLabTimer({
     handleNewScramble();
   }, []);
 
+  // Sync active scramble with current scramble changes
+  useEffect(() => {
+    if (currentScramble && !activeScramble) {
+      setActiveScramble(currentScramble);
+    }
+  }, [currentScramble, activeScramble]);
+
   // Handle solve completion
   const handleSolveComplete = useCallback(
     async (
@@ -206,10 +215,12 @@ export default function CubeLabTimer({
       if (!currentSession) return null;
 
       const finalTime = calculateFinalTime(time, "none");
+      // Use active scramble instead of current scramble
+      const scrambleToUse = activeScramble || currentScramble;
       const solve = {
         time,
         timestamp: new Date(),
-        scramble: currentScramble,
+        scramble: scrambleToUse,
         penalty: "none" as const,
         finalTime,
         event: selectedEvent,
@@ -238,6 +249,7 @@ export default function CubeLabTimer({
     },
     [
       currentSession,
+      activeScramble,
       currentScramble,
       selectedEvent,
       calculateFinalTime,
@@ -260,10 +272,12 @@ export default function CubeLabTimer({
       if (!currentSession) return null;
 
       const finalTime = calculateFinalTime(time, penalty);
+      // Use active scramble instead of current scramble
+      const scrambleToUse = activeScramble || currentScramble;
       const solve = {
         time,
         timestamp: new Date(),
-        scramble: currentScramble,
+        scramble: scrambleToUse,
         penalty,
         finalTime,
         event: selectedEvent,
@@ -290,6 +304,7 @@ export default function CubeLabTimer({
     },
     [
       currentSession,
+      activeScramble,
       currentScramble,
       selectedEvent,
       calculateFinalTime,
@@ -517,6 +532,7 @@ export default function CubeLabTimer({
               scramble={currentScramble}
               onNewScramble={handleNewScramble}
               onPartialScrambleHover={setPartialScramble}
+              onActiveScrambleChange={setActiveScramble}
             />
           </div>
 
@@ -541,9 +557,11 @@ export default function CubeLabTimer({
         >
           {/* Scramble Preview */}
           <ScramblePreview
-            scramble={currentScramble}
+            scramble={activeScramble || currentScramble}
             event={selectedEvent}
-            partialScramble={partialScramble || currentScramble}
+            partialScramble={
+              partialScramble || activeScramble || currentScramble
+            }
           />
 
           {/* Stats */}

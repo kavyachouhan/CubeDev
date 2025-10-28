@@ -14,6 +14,7 @@ interface ScrambleDisplayProps {
   scramble: string;
   onNewScramble: () => void;
   onPartialScrambleHover?: (partialScramble: string) => void;
+  onActiveScrambleChange?: (scramble: string) => void;
 }
 
 // Persistent boolean that reads/writes localStorage on first render
@@ -39,6 +40,7 @@ export default function ScrambleDisplay({
   scramble,
   onNewScramble,
   onPartialScrambleHover,
+  onActiveScrambleChange,
 }: ScrambleDisplayProps) {
   const [isExpanded, setIsExpanded] = usePersistentBool(
     "cubelab-scramble-display-expanded",
@@ -54,14 +56,47 @@ export default function ScrambleDisplay({
   const [previousScramble, setPreviousScramble] = useState<string | null>(null);
   const [isAtCurrent, setIsAtCurrent] = useState<boolean>(true);
 
-  // Update scrambles when new scramble prop is received
+  // Notify parent of initial active scramble on mount
   useEffect(() => {
-    // Only update if we're at the current scramble and the scramble has actually changed
-    if (isAtCurrent && scramble !== currentScramble) {
+    if (onActiveScrambleChange && scramble) {
+      onActiveScrambleChange(scramble);
+    }
+  }, []); 
+
+  // Handle scramble prop changes
+  useEffect(() => {
+    // If we're viewing previous scramble and a new scramble comes in,
+    // that means a solve just completed with the previous scramble
+    // The new scramble should replace the current scramble, and we should move to it
+    if (!isAtCurrent && scramble !== currentScramble) {
+      // Update scrambles
+      setCurrentScramble(scramble);
+      // Previous scramble stays the same
+      // Move to the current (new) scramble automatically
+      setIsAtCurrent(true);
+      // Notify parent of the new active scramble
+      if (onActiveScrambleChange) {
+        onActiveScrambleChange(scramble);
+      }
+      if (onPartialScrambleHover) {
+        onPartialScrambleHover(scramble);
+      }
+    }
+    else if (isAtCurrent && scramble !== currentScramble) {
       setPreviousScramble(currentScramble);
       setCurrentScramble(scramble);
+      // Notify parent of the new active scramble
+      if (onActiveScrambleChange) {
+        onActiveScrambleChange(scramble);
+      }
     }
-  }, [scramble, isAtCurrent, currentScramble]);
+  }, [
+    scramble,
+    isAtCurrent,
+    currentScramble,
+    onActiveScrambleChange,
+    onPartialScrambleHover,
+  ]);
 
   // Handle going to previous scramble
   const handlePrevious = () => {
@@ -69,6 +104,9 @@ export default function ScrambleDisplay({
       setIsAtCurrent(false);
       if (onPartialScrambleHover) {
         onPartialScrambleHover(previousScramble);
+      }
+      if (onActiveScrambleChange) {
+        onActiveScrambleChange(previousScramble);
       }
     }
   };
@@ -80,6 +118,9 @@ export default function ScrambleDisplay({
       setIsAtCurrent(true);
       if (onPartialScrambleHover) {
         onPartialScrambleHover(currentScramble);
+      }
+      if (onActiveScrambleChange) {
+        onActiveScrambleChange(currentScramble);
       }
     } else {
       // Generate new scramble
