@@ -12,13 +12,17 @@ export function ImportExportSkeleton() {
 export function SessionManagerSkeleton() {
   return (
     <div className="timer-card animate-pulse">
-      <div className="h-5 skeleton-box rounded w-24 mb-3" />
-      <div className="space-y-3">
-        <div className="h-10 skeleton-box rounded-lg w-full" />
-        <div className="grid grid-cols-2 gap-2">
-          <div className="h-8 skeleton-box rounded-lg" />
-          <div className="h-8 skeleton-box rounded-lg" />
+      {/* Header with title and show/hide button */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-1">
+          <div className="h-6 skeleton-box rounded w-24" />
         </div>
+        <div className="h-7 w-7 skeleton-box rounded-md" />
+      </div>
+
+      {/* Dropdown skeleton */}
+      <div className="pb-4">
+        <div className="h-14 skeleton-box rounded-lg w-full" />
       </div>
     </div>
   );
@@ -27,12 +31,17 @@ export function SessionManagerSkeleton() {
 export function EventSelectorSkeleton() {
   return (
     <div className="timer-card animate-pulse">
-      <div className="h-5 skeleton-box rounded w-24 mb-3" />
-      <div className="h-10 skeleton-box rounded-lg w-full mb-3" />
-      <div className="grid grid-cols-4 gap-2">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="aspect-square skeleton-box rounded-lg" />
-        ))}
+      {/* Header with title and show/hide button */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-1">
+          <div className="h-6 skeleton-box rounded w-20" />
+        </div>
+        <div className="h-7 w-7 skeleton-box rounded-md" />
+      </div>
+
+      {/* Dropdown skeleton */}
+      <div className="pb-4">
+        <div className="h-14 skeleton-box rounded-lg w-full" />
       </div>
     </div>
   );
@@ -57,10 +66,7 @@ export function TimerDisplaySkeleton() {
     <div className="timer-card animate-pulse">
       <div className="flex items-center justify-between mb-4">
         <div className="h-6 skeleton-box rounded w-24" />
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 skeleton-box rounded" />
-          <div className="w-6 h-6 skeleton-box rounded" />
-        </div>
+        <div className="h-8 skeleton-box rounded-lg w-20" />
       </div>
       <div className="text-center space-y-6 min-h-[280px] sm:min-h-[320px] md:min-h-[360px] flex flex-col justify-center">
         {/* Timer Display */}
@@ -78,11 +84,8 @@ export function ScramblePreviewSkeleton() {
       <div className="flex items-center justify-between mb-4">
         <div className="h-6 skeleton-box rounded w-40" />
       </div>
-      <div className="w-full min-h-[180px] sm:min-h-[200px] skeleton-box-subtle rounded-lg flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 skeleton-box rounded-lg mx-auto mb-2" />
-          <div className="h-4 skeleton-box rounded w-32 mx-auto" />
-        </div>
+      <div className="w-full min-h-[180px] sm:min-h-[200px] skeleton-box-subtle rounded-lg flex items-center justify-center border border-[var(--border)]">
+        <div className="h-10 skeleton-box rounded-md w-40" />
       </div>
     </div>
   );
@@ -93,10 +96,7 @@ export function StatsDisplaySkeleton() {
     <div className="timer-card animate-pulse">
       <div className="flex items-center justify-between mb-4">
         <div className="h-6 skeleton-box rounded w-32" />
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 skeleton-box rounded" />
-          <div className="w-6 h-6 skeleton-box rounded" />
-        </div>
+        <div className="h-8 skeleton-box rounded-lg w-20" />
       </div>
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -129,10 +129,7 @@ export function TimerHistorySkeleton() {
     <div className="timer-card animate-pulse">
       <div className="flex items-center justify-between mb-4">
         <div className="h-6 skeleton-box rounded w-32" />
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 skeleton-box rounded" />
-          <div className="w-4 h-4 skeleton-box rounded" />
-        </div>
+        <div className="h-8 skeleton-box rounded-lg w-20" />
       </div>
       <div className="space-y-2">
         {[1, 2, 3, 4, 5].map((i) => (

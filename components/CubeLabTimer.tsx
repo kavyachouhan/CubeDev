@@ -195,12 +195,13 @@ export default function CubeLabTimer({
     handleNewScramble();
   }, []);
 
-  // Sync active scramble with current scramble changes
+  // Update active scramble when current scramble changes
   useEffect(() => {
-    if (currentScramble && !activeScramble) {
+    if (currentScramble) {
       setActiveScramble(currentScramble);
+      setPartialScramble(""); // Reset partial scramble when current changes
     }
-  }, [currentScramble, activeScramble]);
+  }, [currentScramble]);
 
   // Handle solve completion
   const handleSolveComplete = useCallback(
