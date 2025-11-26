@@ -1,0 +1,27 @@
+[project]
+name = "cubie-backend"
+version = "1.0"
+description = "Agentic RAG Backend for Cubie AI - CubeDev"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "certifi>=2025.10.5",
+    "convex>=0.7.0",
+    "fastapi>=0.120.3",
+    "httpx>=0.28.1",
+    "langchain>=1.0.3",
+    "langchain-classic>=1.0.0",
+    "langchain-google-genai>=3.0.0",
+    "langchain-mongodb>=0.7.1",
+    "langchain-tavily>=0.2.12",
+    "langgraph>=1.0.2",
+    "passlib[bcrypt]>=1.7.4",
+    "pydantic>=2.12.3",
+    "pydantic-settings>=2.11.0",
+    "pymongo>=4.15.3",
+    "python-dotenv>=1.2.1",
+    "python-jose[cryptography]>=3.5.0",
+    "python-multipart>=0.0.20",
+    "slowapi>=0.1.9",
+    "uvicorn>=0.38.0",
+]

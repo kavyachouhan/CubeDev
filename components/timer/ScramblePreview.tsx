@@ -23,6 +23,30 @@ export default function ScramblePreview({
   // Determine which scramble to display (partial or full)
   const displayScramble = partialScramble || scramble;
 
+  // Map event codes to puzzle IDs
+  const getPuzzleId = (eventCode: string) => {
+    const eventMap = {
+      "222": "2x2x2" as const,
+      "333": "3x3x3" as const,
+      "444": "4x4x4" as const,
+      "555": "5x5x5" as const,
+      "666": "6x6x6" as const,
+      "777": "7x7x7" as const,
+      pyram: "pyraminx" as const,
+      minx: "megaminx" as const,
+      skewb: "skewb" as const,
+      sq1: "square1" as const,
+      clock: "clock" as const,
+      "333bf": "3x3x3" as const,
+      "444bf": "4x4x4" as const,
+      "555bf": "5x5x5" as const,
+      "333oh": "3x3x3" as const,
+      "333fm": "3x3x3" as const,
+      "333ft": "3x3x3" as const,
+    };
+    return eventMap[eventCode as keyof typeof eventMap] || ("3x3x3" as const);
+  };
+
   const loadTwisty = async () => {
     if (isLoading || !containerRef.current) return;
 
@@ -32,44 +56,21 @@ export default function ScramblePreview({
       // Clear previous content
       containerRef.current.innerHTML = "";
 
-      // Dynamically import TwistyPlayer to avoid increasing initial bundle size
+      // Dynamically import TwistyPlayer
       const { TwistyPlayer } = await import("cubing/twisty");
 
+      const puzzleId = getPuzzleId(event);
+
+      // Create player with config
+      // Use experimentalSetupAlg to show the scrambled state
       const player = new TwistyPlayer({
-        puzzle:
-          event === "333"
-            ? "3x3x3"
-            : event === "222"
-              ? "2x2x2"
-              : event === "444"
-                ? "4x4x4"
-                : event === "555"
-                  ? "5x5x5"
-                  : event === "666"
-                    ? "6x6x6"
-                    : event === "777"
-                      ? "7x7x7"
-                      : event === "pyram"
-                        ? "pyraminx"
-                        : event === "minx"
-                          ? "megaminx"
-                          : event === "skewb"
-                            ? "skewb"
-                            : event === "sq1"
-                              ? "square1"
-                              : event === "clock"
-                                ? "clock"
-                                : event === "444bld"
-                                  ? "4x4x4"
-                                  : event === "555bld"
-                                    ? "5x5x5"
-                                    : "3x3x3",
-        alg: displayScramble,
+        puzzle: puzzleId,
+        experimentalSetupAlg: displayScramble,
+        experimentalSetupAnchor: "end",
         hintFacelets: "none",
         backView: "none",
         controlPanel: "none",
         background: "none",
-        tempoScale: 3, // Faster animations
         viewerLink: "none",
       });
 
@@ -80,39 +81,33 @@ export default function ScramblePreview({
       // Enable touch interactions
       player.style.touchAction = "none";
       player.style.userSelect = "none";
-      player.style.webkitUserSelect = "none";
       player.style.cursor = "grab";
 
-      containerRef.current?.appendChild(player);
+      containerRef.current.appendChild(player);
+      playerRef.current = player;
 
       // Prevent touch events from interfering with timer
-      if (containerRef.current) {
-        const preventDefaultTouch = (e: TouchEvent) => {
-          // Only stop propagation if the touch is on the player
-          if (
-            e.target instanceof HTMLElement &&
-            e.target.closest("twisty-player")
-          ) {
-            e.stopPropagation();
-          }
-        };
+      const preventDefaultTouch = (e: TouchEvent) => {
+        // Only stop propagation if the touch is on the player
+        if (
+          e.target instanceof HTMLElement &&
+          e.target.closest("twisty-player")
+        ) {
+          e.stopPropagation();
+        }
+      };
 
-        containerRef.current.addEventListener(
-          "touchstart",
-          preventDefaultTouch,
-          { passive: true }
-        );
-        containerRef.current.addEventListener(
-          "touchmove",
-          preventDefaultTouch,
-          { passive: true }
-        );
-      }
+      containerRef.current.addEventListener("touchstart", preventDefaultTouch, {
+        passive: true,
+      });
+      containerRef.current.addEventListener("touchmove", preventDefaultTouch, {
+        passive: true,
+      });
 
-      playerRef.current = player;
       setIsLoaded(true);
     } catch (error) {
       console.error("Failed to load twisty player:", error);
+
       // Show error message
       if (containerRef.current) {
         containerRef.current.innerHTML = `
@@ -133,7 +128,7 @@ export default function ScramblePreview({
   useEffect(() => {
     if (showPreview && isLoaded && playerRef.current) {
       try {
-        playerRef.current.alg = displayScramble;
+        playerRef.current.experimentalSetupAlg = displayScramble;
       } catch (error) {
         console.error("Failed to update scramble:", error);
       }
@@ -171,10 +166,6 @@ export default function ScramblePreview({
       if (playerRef.current) {
         playerRef.current.style.height =
           window.innerWidth < 640 ? "180px" : "200px";
-        // Ensure touch events are still enabled after resize
-        playerRef.current.style.touchAction = "none";
-        playerRef.current.style.userSelect = "none";
-        playerRef.current.style.webkitUserSelect = "none";
       }
     };
 

@@ -238,4 +238,131 @@ export default defineSchema({
     .index("by_status", ["status"]) // Index for filtering by status
     .index("by_created", ["createdAt"]) // Index for chronological ordering
     .index("by_user", ["userId"]), // Index for user messages
+
+  // Algorithm Sets - groups of algorithms (PLL, OLL, COLL, etc.)
+  algorithmSets: defineTable({
+    name: v.string(), // "PLL", "OLL", "COLL", etc.
+    slug: v.optional(v.string()), // URL-friendly name: "pll", "oll", "coll", etc. (optional during migration)
+    category: v.string(), // "CFOP", "Roux", "ZZ", etc.
+    description: v.string(), // Detailed description
+    caseCount: v.number(), // Number of cases in this set
+    difficulty: v.union(
+      v.literal("beginner"),
+      v.literal("intermediate"),
+      v.literal("advanced")
+    ),
+    iconUrl: v.optional(v.string()), // Icon/badge URL
+    order: v.number(), // Display order
+    isPublished: v.boolean(), // Whether visible to users
+    createdAt: v.number(),
+  })
+    .index("by_category", ["category"])
+    .index("by_published", ["isPublished"])
+    .index("by_order", ["order"])
+    .index("by_slug", ["slug"]),
+
+  // Algorithm Cases - individual cases within sets
+  algorithmCases: defineTable({
+    setId: v.id("algorithmSets"), // Reference to algorithm set
+    caseName: v.string(), // "T-Perm", "OLL 21", etc.
+    slug: v.optional(v.string()), // URL-friendly name: "t-perm", "oll-21", etc. (optional during migration)
+    caseImage: v.optional(v.string()), // URL to case diagram
+    setupMoves: v.string(), // Scramble to create this case
+    recognition: v.array(v.string()), // Recognition tips
+    difficulty: v.number(), // 1-10 scale
+    frequency: v.number(), // How common (1-5 stars)
+    order: v.number(), // Order within set
+    createdAt: v.number(),
+  })
+    .index("by_set", ["setId"])
+    .index("by_set_order", ["setId", "order"])
+    .index("by_difficulty", ["difficulty"])
+    .index("by_slug", ["slug"])
+    .index("by_set_slug", ["setId", "slug"]),
+
+  // Algorithms - individual algorithm variations
+  algorithms: defineTable({
+    caseId: v.id("algorithmCases"), // Reference to case
+    notation: v.string(), // Algorithm notation
+    moveCount: v.number(), // Number of moves
+    fingerTricks: v.optional(v.string()), // Fingertrick description
+    averageSpeed: v.optional(v.number()), // Community average execution time
+    popularity: v.number(), // Popularity score (0-100)
+    isDefault: v.boolean(), // Whether this is the default/recommended
+    createdBy: v.optional(v.string()), // Algorithm author
+    videoUrl: v.optional(v.string()), // Tutorial video URL
+    notes: v.optional(v.string()), // Additional notes
+    createdAt: v.number(),
+  })
+    .index("by_case", ["caseId"])
+    .index("by_case_default", ["caseId", "isDefault"])
+    .index("by_popularity", ["caseId", "popularity"]),
+
+  // User Algorithm Progress - tracks learning progress
+  userAlgorithmProgress: defineTable({
+    userId: v.id("users"), // Reference to user
+    caseId: v.id("algorithmCases"), // Reference to case
+    preferredAlgId: v.id("algorithms"), // User's preferred algorithm
+
+    // SRS Data
+    learningStage: v.union(
+      v.literal("new"),
+      v.literal("learning"),
+      v.literal("reviewing"),
+      v.literal("mastered")
+    ),
+    easeFactor: v.number(), // SRS ease factor (default 2.5)
+    interval: v.number(), // Days until next review
+    nextReviewDate: v.number(), // Timestamp for next review
+    reviewCount: v.number(), // Total reviews completed
+    lapseCount: v.number(), // Times marked as forgotten
+
+    // Performance Metrics
+    recognitionTimes: v.array(v.number()), // Last 10 recognition times (ms)
+    executionTimes: v.array(v.number()), // Last 10 execution times (ms)
+    accuracyRate: v.number(), // % correct recognition (0-100)
+
+    // Timestamps
+    firstLearnedAt: v.number(),
+    lastReviewedAt: v.number(),
+    masteredAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_case", ["userId", "caseId"])
+    .index("by_user_next_review", ["userId", "nextReviewDate"])
+    .index("by_user_stage", ["userId", "learningStage"])
+    .index("by_case", ["caseId"]),
+
+  // Custom Algorithm Sets - user-created collections
+  customAlgorithmSets: defineTable({
+    userId: v.id("users"), // Reference to user
+    name: v.string(), // Set name
+    description: v.optional(v.string()),
+    caseIds: v.array(v.id("algorithmCases")), // Cases in this set
+    isPublic: v.boolean(), // Whether shared publicly
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_public", ["isPublic"]),
+
+  // Algorithm Practice Sessions - tracks practice activity
+  algorithmPracticeSessions: defineTable({
+    userId: v.id("users"), // Reference to user
+    sessionType: v.union(
+      v.literal("recognition"),
+      v.literal("execution"),
+      v.literal("mixed")
+    ),
+    casesReviewed: v.number(), // Number of cases practiced
+    averageRecognitionTime: v.optional(v.number()), // Average time (ms)
+    averageExecutionTime: v.optional(v.number()), // Average time (ms)
+    accuracyRate: v.number(), // % correct (0-100)
+    duration: v.number(), // Session duration (ms)
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_date", ["userId", "createdAt"])
+    .index("by_type", ["sessionType"]),
 });

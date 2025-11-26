@@ -8,10 +8,15 @@
  * @module
  */
 
+import type * as algorithms from "../algorithms.js";
 import type * as challengeRooms from "../challengeRooms.js";
 import type * as challengeStats from "../challengeStats.js";
 import type * as contactMessages from "../contactMessages.js";
 import type * as crons from "../crons.js";
+import type * as seedAlgorithms from "../seedAlgorithms.js";
+import type * as seedCOLL from "../seedCOLL.js";
+import type * as seedF2L from "../seedF2L.js";
+import type * as seedOLL from "../seedOLL.js";
 import type * as users from "../users.js";
 
 import type {
@@ -29,10 +34,15 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  algorithms: typeof algorithms;
   challengeRooms: typeof challengeRooms;
   challengeStats: typeof challengeStats;
   contactMessages: typeof contactMessages;
   crons: typeof crons;
+  seedAlgorithms: typeof seedAlgorithms;
+  seedCOLL: typeof seedCOLL;
+  seedF2L: typeof seedF2L;
+  seedOLL: typeof seedOLL;
   users: typeof users;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

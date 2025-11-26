@@ -26,6 +26,7 @@ Disallow: /_vercel/
 Disallow: /me
 Disallow: /cube-lab/room/*
 Disallow: /cube-lab/chat/*
+Disallow: /cube-lab/cubie/*
 
 # Allow crawling of challenge rooms list but not specific rooms
 Allow: /cube-lab/challenges

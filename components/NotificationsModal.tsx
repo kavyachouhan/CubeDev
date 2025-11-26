@@ -1,0 +1,354 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useUser } from "@/components/UserProvider";
+import {
+  X,
+  Calendar,
+  Clock,
+  ChevronRight,
+  CheckCircle2,
+  Bell,
+  BellOff,
+} from "lucide-react";
+import Link from "next/link";
+import {
+  useNotificationPermission,
+  shouldShowPermissionPrompt,
+} from "@/lib/notification-utils";
+
+interface NotificationsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function NotificationsModal({
+  isOpen,
+  onClose,
+}: NotificationsModalProps) {
+  const { user } = useUser();
+  const { preferences, isSupported, requestPermission, dismissPrompt } =
+    useNotificationPermission();
+  const [showPermissionBanner, setShowPermissionBanner] = useState(false);
+  const [isRequestingPermission, setIsRequestingPermission] = useState(false);
+
+  // Check if we should show the permission prompt on first open
+  useEffect(() => {
+    if (
+      isOpen &&
+      isSupported &&
+      preferences.showPrompt &&
+      shouldShowPermissionPrompt()
+    ) {
+      setShowPermissionBanner(true);
+    }
+  }, [isOpen, isSupported, preferences.showPrompt]);
+
+  // Get due reviews
+  const dueReviews = useQuery(
+    api.algorithms.getDueReviews,
+    user?.convexId ? { userId: user.convexId as any } : "skip"
+  );
+
+  if (!isOpen) return null;
+
+  // Group notifications by urgency
+  const now = Date.now();
+  const oneDayAgo = now - 24 * 60 * 60 * 1000;
+  const twoDaysAgo = now - 48 * 60 * 60 * 1000;
+
+  const overdue =
+    dueReviews?.filter((r) => r.progress.nextReviewDate < oneDayAgo) || [];
+  const dueToday =
+    dueReviews?.filter(
+      (r) =>
+        r.progress.nextReviewDate >= oneDayAgo &&
+        r.progress.nextReviewDate <= now
+    ) || [];
+  const dueSoon =
+    dueReviews?.filter(
+      (r) =>
+        r.progress.nextReviewDate > now &&
+        r.progress.nextReviewDate < now + 24 * 60 * 60 * 1000
+    ) || [];
+
+  const formatTimeAgo = (timestamp: number) => {
+    const diff = now - timestamp;
+    const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+    const hours = Math.floor(diff / (60 * 60 * 1000));
+    const minutes = Math.floor(diff / (60 * 1000));
+
+    if (days > 0) return `${days}d ago`;
+    if (hours > 0) return `${hours}h ago`;
+    if (minutes > 0) return `${minutes}m ago`;
+    return "Just now";
+  };
+
+  const formatDueTime = (timestamp: number) => {
+    const diff = timestamp - now;
+    const hours = Math.floor(diff / (60 * 60 * 1000));
+
+    if (diff < 0) {
+      return formatTimeAgo(timestamp);
+    }
+
+    if (hours < 24) return `In ${hours}h`;
+    return new Date(timestamp).toLocaleDateString();
+  };
+
+  const totalNotifications = dueReviews?.length || 0;
+
+  const handleEnableNotifications = async () => {
+    setIsRequestingPermission(true);
+    const permission = await requestPermission();
+    setIsRequestingPermission(false);
+
+    if (permission === "granted") {
+      setShowPermissionBanner(false);
+    }
+  };
+
+  const handleDismissPrompt = () => {
+    dismissPrompt();
+    setShowPermissionBanner(false);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="timer-card max-w-2xl w-full max-h-[90vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+              Notifications
+            </h2>
+            <p className="text-sm text-[var(--text-muted)] mt-1 font-inter">
+              {totalNotifications} New Notification
+              {totalNotifications !== 1 ? "s" : ""}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Permission Banner */}
+        {showPermissionBanner && (
+          <div className="mb-4 timer-card bg-[var(--primary)]/10 border border-[var(--primary)]/30 p-3 sm:p-4">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                  Enable Desktop Notifications
+                </h3>
+                <p className="text-xs text-[var(--text-muted)] mb-3 font-inter">
+                  Get notified when algorithms are due for review, even when
+                  you're not on CubeDev. Stay on track with your learning!
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <button
+                    onClick={handleEnableNotifications}
+                    disabled={isRequestingPermission}
+                    className="w-full sm:w-auto px-4 py-2 bg-[var(--primary)] text-white text-sm font-semibold rounded-lg hover:bg-[var(--primary-hover)] transition-colors disabled:opacity-50 font-inter"
+                  >
+                    {isRequestingPermission
+                      ? "Requesting..."
+                      : "Enable Notifications"}
+                  </button>
+                  <button
+                    onClick={handleDismissPrompt}
+                    className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors font-inter"
+                  >
+                    Maybe Later
+                  </button>
+                </div>
+              </div>
+              <button
+                onClick={handleDismissPrompt}
+                className="hidden sm:block flex-shrink-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Notifications List */}
+        <div className="flex-1 overflow-y-auto space-y-4">
+          {dueReviews === undefined ? (
+            // Loading skeleton
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="skeleton-box rounded-lg h-24" />
+              ))}
+            </div>
+          ) : totalNotifications === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="w-16 h-16 bg-[var(--surface-elevated)] rounded-full flex items-center justify-center mb-4">
+                <CheckCircle2 className="w-8 h-8 text-[var(--primary)]" />
+              </div>
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2 font-statement">
+                All Caught Up!
+              </h3>
+              <p className="text-sm text-[var(--text-muted)] text-center max-w-sm font-inter">
+                You have no new notifications. Great job keeping up with your
+                schedule!
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Overdue Section */}
+              {overdue.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-[var(--error)] mb-3 font-statement flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    Overdue ({overdue.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {overdue.map((review) => (
+                      <Link
+                        key={review.progress._id}
+                        href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
+                        onClick={onClose}
+                        className="block timer-card bg-[var(--surface-elevated)] border border-[var(--error)]/20 hover:border-[var(--error)]/40 transition-all p-4 group"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-xs font-medium text-[var(--error)] font-inter px-2 py-0.5 bg-[var(--error)]/10 rounded">
+                                {review.set?.name}
+                              </span>
+                            </div>
+                            <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                              {review.case?.caseName}
+                            </h4>
+                            <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter">
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {formatTimeAgo(review.progress.nextReviewDate)}
+                              </span>
+                              <span>
+                                Stage: {review.progress.learningStage}
+                              </span>
+                            </div>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Due Today Section */}
+              {dueToday.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-[var(--warning)] mb-3 font-statement flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Due Today ({dueToday.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {dueToday.map((review) => (
+                      <Link
+                        key={review.progress._id}
+                        href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
+                        onClick={onClose}
+                        className="block timer-card bg-[var(--surface-elevated)] border border-[var(--warning)]/20 hover:border-[var(--warning)]/40 transition-all p-4 group"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-xs font-medium text-[var(--warning)] font-inter px-2 py-0.5 bg-[var(--warning)]/10 rounded">
+                                {review.set?.name}
+                              </span>
+                            </div>
+                            <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                              {review.case?.caseName}
+                            </h4>
+                            <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter">
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {formatTimeAgo(review.progress.nextReviewDate)}
+                              </span>
+                              <span>
+                                Stage: {review.progress.learningStage}
+                              </span>
+                            </div>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Due Soon Section */}
+              {dueSoon.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-[var(--primary)] mb-3 font-statement flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Due Soon ({dueSoon.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {dueSoon.map((review) => (
+                      <Link
+                        key={review.progress._id}
+                        href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
+                        onClick={onClose}
+                        className="block timer-card bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--primary)]/40 transition-all p-4 group"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-xs font-medium text-[var(--primary)] font-inter px-2 py-0.5 bg-[var(--primary)]/10 rounded">
+                                {review.set?.name}
+                              </span>
+                            </div>
+                            <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                              {review.case?.caseName}
+                            </h4>
+                            <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter">
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {formatDueTime(review.progress.nextReviewDate)}
+                              </span>
+                              <span>
+                                Stage: {review.progress.learningStage}
+                              </span>
+                            </div>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Footer Actions */}
+        {totalNotifications > 0 && (
+          <div className="flex gap-3 pt-6 mt-6 border-t border-[var(--border)]">
+            <Link
+              href="/cube-lab/algorithm-trainer/practice"
+              onClick={onClose}
+              className="flex-1 btn-primary text-center"
+            >
+              Practice Now
+            </Link>
+            <button onClick={onClose} className="flex-1 btn-secondary">
+              Close
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

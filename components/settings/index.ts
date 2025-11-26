@@ -3,6 +3,7 @@ export { default as PrivacySection } from "./PrivacySection";
 export { default as DataManagementSection } from "./DataManagementSection";
 export { default as ThemeSection } from "./ThemeSection";
 export { default as AccountDeletionSection } from "./AccountDeletionSection";
+export { default as NotificationSettings } from "./NotificationSettings";
 export { default as ThemeModeSelector } from "./ThemeModeSelector";
 export { default as ColorSchemeSelector } from "./ColorSchemeSelector";
 export { default as TimerCustomization } from "./TimerCustomization";

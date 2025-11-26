@@ -14,9 +14,14 @@ import {
   Bot,
   ChevronLeft,
   ChevronRight,
+  MessageSquarePlus,
+  GraduationCap,
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import SidebarUserDropdown from "@/components/SidebarUserDropdown";
+import NotificationBell from "@/components/NotificationBell";
+import NotificationsModal from "@/components/NotificationsModal";
+import NotificationService from "@/components/NotificationService";
 import { useLogo } from "@/lib/use-logo";
 
 interface CubeLabLayoutProps {
@@ -31,24 +36,27 @@ export default function CubeLabLayout({
   isTimerFocusMode = false,
 }: CubeLabLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    // Retrieve initial state from localStorage
-    if (typeof window !== "undefined") {
-      const savedState = localStorage.getItem("cubelab-sidebar-collapsed");
-      return savedState === "true";
-    }
-    return false;
-  });
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { user, signOut } = useUser();
   const pathname = usePathname();
   const currentYear = new Date().getFullYear();
   const logoSrc = useLogo();
 
-  // Ensure hydration to avoid mismatch
+  // Initialize sidebar state from localStorage after hydration
   useEffect(() => {
     setIsHydrated(true);
-  }, []);
+
+    if (typeof window !== "undefined") {
+      const savedState = localStorage.getItem("cubelab-sidebar-collapsed");
+
+      if (savedState !== null) {
+        // Use saved preference
+        setSidebarCollapsed(savedState === "true");
+      }
+    }
+  }, []); // Only run on mount, not when activeSection changes
 
   // Save sidebar state to localStorage
   const toggleSidebarCollapse = () => {
@@ -71,6 +79,13 @@ export default function CubeLabLayout({
       icon: BarChart3,
       description: "Performance analysis & trends",
       href: "/cube-lab/statistics",
+    },
+    {
+      id: "algorithm-trainer",
+      name: "Algorithm Trainer",
+      icon: GraduationCap,
+      description: "Learn & master algorithms",
+      href: "/cube-lab/algorithm-trainer",
     },
     {
       id: "cubie",
@@ -131,6 +146,11 @@ export default function CubeLabLayout({
                   height={32}
                 />
               </Link>
+              {/* Notification Bell */}
+              <NotificationBell
+                onClick={() => setNotificationsOpen(true)}
+                collapsed={true}
+              />
             </div>
           )}
 
@@ -166,13 +186,20 @@ export default function CubeLabLayout({
             </div>
           )}
 
-          {/* Beta Badge */}
+          {/* Beta Badge and Notification Bell */}
           {!sidebarCollapsed && (
-            <div className="mt-3 lg:mt-3 mb-3 lg:mb-0">
+            <div className="mt-3 lg:mt-3 mb-3 lg:mb-0 flex items-center justify-between">
               <div className="inline-flex items-center px-2.5 py-1 bg-[var(--warning)]/10 border border-[var(--warning)]/20 rounded-full">
                 <span className="text-xs font-medium text-[var(--warning)] font-inter">
                   Beta Version
                 </span>
+              </div>
+              {/* Notification Bell for Desktop Expanded */}
+              <div className="hidden lg:block">
+                <NotificationBell
+                  onClick={() => setNotificationsOpen(true)}
+                  collapsed={false}
+                />
               </div>
             </div>
           )}
@@ -291,27 +318,58 @@ export default function CubeLabLayout({
           <h1 className="text-lg font-bold text-[var(--text-primary)] font-statement">
             {sections.find((s) => s.id === activeSection)?.name || "Cube Lab"}
           </h1>
-          {/* Mobile User Avatar */}
-          {user?.avatar && (
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="p-1 rounded-full hover:bg-[var(--surface-elevated)] transition-colors"
-              title={`${user.name} - Tap to open menu`}
-            >
-              <Image
-                src={user.avatar.url || user.avatar}
-                alt={`${user.name}'s avatar`}
-                width={32}
-                height={32}
-                className="w-8 h-8 rounded-full object-cover border border-[var(--primary)]/50"
-              />
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {/* Notification Bell - Mobile */}
+            <NotificationBell
+              onClick={() => setNotificationsOpen(true)}
+              collapsed={false}
+            />
+            {/* Cubie Session Management Button - Only on Cubie page */}
+            {activeSection === "cubie" && (
+              <button
+                onClick={() => {
+                  // Dispatch custom event to open session modal
+                  window.dispatchEvent(
+                    new CustomEvent("cubie-open-session-modal")
+                  );
+                }}
+                className="p-2 text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                title="View sessions"
+              >
+                <MessageSquarePlus className="w-5 h-5" />
+              </button>
+            )}
+            {/* Mobile User Avatar */}
+            {user && user.avatar && (
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="p-1 rounded-full hover:bg-[var(--surface-elevated)] transition-colors"
+                title={`${user.name} - Tap to open menu`}
+              >
+                <Image
+                  src={user.avatar.url || user.avatar}
+                  alt={`${user.name}'s avatar`}
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-full object-cover border border-[var(--primary)]/50"
+                />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Content Area */}
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
+
+      {/* Notifications Modal */}
+      <NotificationsModal
+        isOpen={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+      />
+
+      {/* Notification Service - monitors for due algorithms */}
+      <NotificationService />
     </div>
   );
 }

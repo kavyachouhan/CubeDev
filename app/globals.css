@@ -358,6 +358,25 @@ body {
   background: var(--border-hover);
 }
 
+/* Thin scrollbar for textarea inputs */
+textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 8px;
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
 /* Selection Colors */
 ::selection {
   background: var(--accent-glow);
@@ -818,6 +837,16 @@ body {
   background: var(--border-hover);
 }
 
+/* Hide scrollbar for session tabs */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Statistics Grid Layout */
 .stats-grid {
   display: grid;
@@ -840,4 +869,43 @@ body {
   .stats-grid {
     grid-template-columns: repeat(4, 1fr);
   }
+}
+
+/* Waving hand animation */
+@keyframes wave {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  10% {
+    transform: rotate(14deg);
+  }
+
+  20% {
+    transform: rotate(-8deg);
+  }
+
+  30% {
+    transform: rotate(14deg);
+  }
+
+  40% {
+    transform: rotate(-4deg);
+  }
+
+  50% {
+    transform: rotate(10deg);
+  }
+
+  60% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-wave {
+  animation: wave 2s ease-in-out infinite;
 }
