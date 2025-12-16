@@ -1,4 +1,4 @@
-import { ExternalLink, Heart, Code, Box, Grid3x3 } from "lucide-react";
+import { ExternalLink, Heart, Code, Box, Grid3x3, Volume2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -50,6 +50,16 @@ export default function CreditsPage() {
       icon: (
         <img src="/wca_logo.png" alt="WCA" className="w-6 h-6 object-contain" />
       ),
+    },
+    {
+      name: "Freesound",
+      description:
+        "A collaborative database of Creative Commons licensed sounds, providing high-quality audio samples for interactive applications",
+      maintainer: "Freesound Community",
+      website: "https://freesound.org/",
+      usage:
+        "Sound effects and audio feedback for competition simulations and timer interactions",
+      icon: <Volume2 className="w-6 h-6 text-[var(--warning)]" />,
     },
   ];
 

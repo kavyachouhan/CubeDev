@@ -41,6 +41,16 @@ export default defineSchema({
     // Account Status
     isDeleted: v.optional(v.boolean()), // Soft delete flag
     deletedAt: v.optional(v.number()), // Deletion timestamp
+
+    // Notification Management
+    dismissedNotifications: v.optional(
+      v.array(
+        v.object({
+          progressId: v.id("userAlgorithmProgress"), // Reference to dismissed progress record
+          dismissedAt: v.number(), // When notification was dismissed
+        })
+      )
+    ), // Array of dismissed algorithm review notifications
   })
     .index("by_wca_id", ["wcaId"]) // Index for fast lookup by WCA ID
     .index("by_wca_user_id", ["wcaUserId"]) // Index for fast lookup by WCA user ID
@@ -353,6 +363,7 @@ export default defineSchema({
     sessionType: v.union(
       v.literal("recognition"),
       v.literal("execution"),
+      v.literal("drill"),
       v.literal("mixed")
     ),
     casesReviewed: v.number(), // Number of cases practiced
@@ -365,4 +376,165 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_user_date", ["userId", "createdAt"])
     .index("by_type", ["sessionType"]),
+
+  // Push Subscriptions - for web push notifications
+  pushSubscriptions: defineTable({
+    userId: v.id("users"), // Reference to user
+    endpoint: v.string(), // Push service endpoint URL
+    keys: v.object({
+      p256dh: v.string(), // P-256 ECDH public key
+      auth: v.string(), // Authentication secret
+    }),
+    userAgent: v.optional(v.string()), // Device/browser info
+    deviceName: v.optional(v.string()), // User-friendly device name
+    createdAt: v.number(), // When subscription was created
+    lastUsedAt: v.number(), // Last time notification was sent
+    isActive: v.boolean(), // Whether subscription is still valid
+    failureCount: v.number(), // Number of failed delivery attempts
+  })
+    .index("by_user", ["userId"])
+    .index("by_endpoint", ["endpoint"])
+    .index("by_user_active", ["userId", "isActive"]),
+
+  // Push Notification Log - track sent notifications
+  pushNotificationLog: defineTable({
+    userId: v.id("users"), // Reference to user
+    subscriptionId: v.optional(v.id("pushSubscriptions")), // Reference to subscription
+    type: v.string(), // Notification type (e.g., "algorithm_due", "challenge_invite")
+    title: v.string(), // Notification title
+    body: v.string(), // Notification body
+    data: v.optional(v.any()), // Additional data payload
+    status: v.union(
+      v.literal("pending"),
+      v.literal("sent"),
+      v.literal("failed"),
+      v.literal("clicked")
+    ),
+    error: v.optional(v.string()), // Error message if failed
+    sentAt: v.number(), // When notification was sent
+    clickedAt: v.optional(v.number()), // When user clicked (if tracked)
+  })
+    .index("by_user", ["userId"])
+    .index("by_type", ["type"])
+    .index("by_status", ["status"])
+    .index("by_user_type", ["userId", "type"]),
+
+  // Feedback Responses - user feedback survey submissions
+  feedbackResponses: defineTable({
+    userId: v.optional(v.id("users")), // Reference to user (optional for anonymous)
+
+    // Survey identification for reusability
+    surveyType: v.string(), // e.g., "general", "feature-specific", "beta-feedback"
+    surveyVersion: v.string(), // e.g., "1.0", "2.0" - track survey changes over time
+
+    // UI/UX Rating (1-5 scale)
+    uiuxRating: v.optional(v.number()),
+
+    // Feature usefulness ratings (flexible structure)
+    featureRatings: v.optional(v.any()), // Allows any feature structure for different surveys
+
+    // Most useful feature
+    mostUsefulFeature: v.optional(v.string()),
+
+    // Feature requests
+    featureRequests: v.optional(v.string()),
+
+    // Would recommend to friends (1-10 NPS scale)
+    recommendScore: v.optional(v.number()),
+
+    // Additional comments
+    additionalComments: v.optional(v.string()),
+
+    // Custom responses for flexible surveys
+    customResponses: v.optional(v.any()), // Allows arbitrary question/answer pairs
+
+    // Metadata
+    createdAt: v.number(),
+    userAgent: v.optional(v.string()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_created", ["createdAt"])
+    .index("by_recommend_score", ["recommendScore"])
+    .index("by_survey_type", ["surveyType"])
+    .index("by_survey_version", ["surveyType", "surveyVersion"]),
+
+  // Competition Simulations - track competition simulation sessions
+  competitionSimulations: defineTable({
+    userId: v.id("users"), // Reference to user
+    competitionId: v.string(), // WCA competition ID
+    competitionName: v.string(), // Competition name
+    competitionDate: v.string(), // Competition start date
+    competitionVenue: v.optional(v.string()), // Competition venue
+    competitionCity: v.optional(v.string()), // Competition city
+    competitionCountry: v.optional(v.string()), // Competition country
+
+    // Selected events for this simulation
+    selectedEvents: v.array(v.string()), // Array of event IDs (e.g., ["333", "222", "444"])
+
+    // Atmosphere settings
+    atmosphereSettings: v.object({
+      crowdNoise: v.number(), // 0-100
+      pressure: v.number(), // 0-100
+      distractions: v.boolean(), // Random distractions
+      timerDelay: v.boolean(), // Random timer delay like real stackmat
+      judgeInteractions: v.boolean(), // Simulate judge interactions
+    }),
+
+    // Simulation status
+    status: v.union(
+      v.literal("in-progress"),
+      v.literal("completed"),
+      v.literal("abandoned")
+    ),
+
+    // Progress tracking
+    completedEvents: v.array(v.string()), // Events fully completed
+    eventProgress: v.any(), // Map of eventId -> completed rounds
+
+    // Timestamps
+    startedAt: v.number(), // When simulation started
+    completedAt: v.optional(v.number()), // When simulation completed
+    lastActivityAt: v.number(), // Last activity timestamp
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_competition", ["competitionId"])
+    .index("by_user_competition", ["userId", "competitionId"])
+    .index("by_status", ["status"])
+    .index("by_user_status", ["userId", "status"]),
+
+  // Competition Simulation Results - individual round results
+  competitionSimulationResults: defineTable({
+    simulationId: v.id("competitionSimulations"), // Reference to simulation
+    userId: v.id("users"), // Reference to user
+
+    // Event and round info
+    eventId: v.string(), // WCA event ID
+    roundNumber: v.number(), // Round number (1, 2, 3, etc.)
+
+    // Solves data
+    solves: v.array(
+      v.object({
+        time: v.number(), // Time in milliseconds
+        scramble: v.string(), // Scramble used
+        penalty: v.union(v.literal("none"), v.literal("+2"), v.literal("DNF")),
+        inspectionViolation: v.optional(
+          v.union(v.literal("+2"), v.literal("DNF"), v.null())
+        ),
+        solvedAt: v.number(), // When this solve was completed
+      })
+    ),
+
+    // Calculated results
+    average: v.number(), // Average time (or DNF flag)
+    best: v.number(), // Best single
+
+    // Timestamps
+    completedAt: v.number(),
+    createdAt: v.number(),
+  })
+    .index("by_simulation", ["simulationId"])
+    .index("by_user", ["userId"])
+    .index("by_user_event", ["userId", "eventId"])
+    .index("by_simulation_event", ["simulationId", "eventId"]),
 });

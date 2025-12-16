@@ -9,16 +9,19 @@ interface RecognitionFlashCardProps {
   caseImage?: string;
   setupMoves: string;
   recognition: string[];
-  algorithm?: string; // The algorithm notation to show after reveal
+  algorithm?: string;
   onAnswer: (
     timeMs: number,
     correct: boolean,
     rating?: "again" | "hard" | "good" | "easy"
   ) => void;
   showAnswer?: boolean;
-  mode?: "recognition" | "all" | "due"; // Add mode to determine which buttons to show
-  hasStarted?: boolean; // Track if practice has started
-  onStart?: () => void; // Callback when practice starts
+  mode?: "srs" | "drill" | "all" | "infinite" | "custom";
+  usePatternMemory?: boolean;
+  hasStarted?: boolean;
+  onStart?: () => void;
+  showSrsRatings?: boolean; // Whether to show SRS rating buttons
+  isInfiniteMode?: boolean; // Whether in infinite drill mode
 }
 
 export default function RecognitionFlashCard({
@@ -29,14 +32,24 @@ export default function RecognitionFlashCard({
   algorithm,
   onAnswer,
   showAnswer = false,
-  mode = "all",
+  mode = "drill",
+  usePatternMemory = false,
   hasStarted = false,
   onStart,
+  showSrsRatings = false,
+  isInfiniteMode = false,
 }: RecognitionFlashCardProps) {
   const [revealed, setRevealed] = useState(showAnswer);
   const [startTime, setStartTime] = useState<number>(Date.now());
   const [recognitionTime, setRecognitionTime] = useState<number | null>(null);
   const [currentTime, setCurrentTime] = useState<number>(Date.now());
+  const [isFlashing, setIsFlashing] = useState(usePatternMemory);
+  const [flashTimeLeft, setFlashTimeLeft] = useState(
+    usePatternMemory ? 3000 : 0
+  );
+
+  // Determine if SRS rating buttons should be shown
+  const shouldShowSrsRatings = showSrsRatings || mode === "srs";
 
   // Reset timer when case changes
   useEffect(() => {
@@ -44,9 +57,27 @@ export default function RecognitionFlashCard({
     setRevealed(showAnswer);
     setRecognitionTime(null);
     setCurrentTime(Date.now());
-  }, [caseName, showAnswer]);
+    setIsFlashing(usePatternMemory);
+    setFlashTimeLeft(usePatternMemory ? 3000 : 0);
+  }, [caseName, showAnswer, usePatternMemory]);
 
-  // Update timer every 100ms
+  // Flash countdown effect
+  useEffect(() => {
+    if (isFlashing && flashTimeLeft > 0) {
+      const interval = setInterval(() => {
+        setFlashTimeLeft((prev) => {
+          if (prev <= 100) {
+            setIsFlashing(false);
+            return 0;
+          }
+          return prev - 100;
+        });
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [isFlashing, flashTimeLeft]);
+
+  // Update timer every 100ms until revealed
   useEffect(() => {
     if (!revealed) {
       const interval = setInterval(() => {
@@ -61,7 +92,7 @@ export default function RecognitionFlashCard({
       const timeMs = Date.now() - startTime;
       setRecognitionTime(timeMs);
       setRevealed(true);
-      // Don't call onAnswer here - wait for user to rate
+      // Do not call onAnswer here - wait for user rating
     }
   };
 
@@ -80,28 +111,37 @@ export default function RecognitionFlashCard({
           <div className="text-center py-12">
             <Eye className="w-16 h-16 text-[var(--primary)] mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-[var(--text-primary)] font-statement mb-2">
-              {mode === "recognition"
-                ? "Recognition Practice"
-                : "Practice Session"}
+              {isInfiniteMode
+                ? "Infinite Drill"
+                : mode === "srs"
+                  ? "SRS Review"
+                  : mode === "custom"
+                    ? "Custom Set Practice"
+                    : "Recognition Drill"}
             </h3>
             <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
-              {mode === "recognition"
-                ? "Practice recognizing algorithm cases quickly. Try to identify each case before revealing the answer."
-                : mode === "due"
+              {isInfiniteMode
+                ? "Drill this case repeatedly until you feel confident. The same case will keep appearing. Use the back button to exit when done."
+                : mode === "srs"
                   ? "Review your due algorithm cases using spaced repetition. Rate each case based on how well you remember it."
-                  : "Practice your learned algorithm cases to improve recognition speed and accuracy."}
+                  : usePatternMemory
+                    ? "The case will flash briefly (3s). Try to remember and identify it after it disappears."
+                    : "Practice recognizing algorithm cases quickly. Cases are shown randomly based on your performance."}
             </p>
             <button
               onClick={onStart}
               className="px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-medium text-lg"
             >
-              Start{" "}
-              {mode === "recognition" ? "Recognition Practice" : "Practice"}
+              {isInfiniteMode
+                ? "Start Drilling"
+                : mode === "srs"
+                  ? "Start SRS Review"
+                  : "Start Practice"}
             </button>
           </div>
         )}
 
-        {/* Practice Content - Only show when started */}
+        {/* Practice Content */}
         {hasStarted && (
           <>
             {/* Timer */}
@@ -116,9 +156,57 @@ export default function RecognitionFlashCard({
               </div>
             )}
 
+            {/* Flash Countdown for Pattern Memory */}
+            {isFlashing && usePatternMemory && (
+              <div className="flex justify-center mb-4">
+                <div className="flex items-center gap-2 px-6 py-3 bg-orange-500/20 border border-orange-500/40 rounded-lg">
+                  <Eye className="w-5 h-5 text-orange-500 animate-pulse" />
+                  <span className="text-xl font-bold font-mono text-orange-500">
+                    {(flashTimeLeft / 1000).toFixed(1)}s
+                  </span>
+                  <span className="text-sm text-orange-500/80">memorize!</span>
+                </div>
+              </div>
+            )}
+
             {/* Case Display */}
             <div className="flex flex-col items-center justify-center min-h-[300px] mb-6">
-              {setupMoves ? (
+              {isFlashing && usePatternMemory ? (
+                // Flashing state
+                setupMoves ? (
+                  <div className="w-full max-w-md relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-purple-500/20 rounded-lg animate-pulse z-10 pointer-events-none" />
+                    <CubeVisualizer3D
+                      algorithm={setupMoves}
+                      puzzle="3x3x3"
+                      autoPlay={false}
+                      showControls={false}
+                      height="300px"
+                    />
+                  </div>
+                ) : caseImage ? (
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-purple-500/20 rounded-lg animate-pulse z-10 pointer-events-none" />
+                    <img
+                      src={caseImage}
+                      alt={`${caseName} case`}
+                      className="max-w-full h-auto rounded-lg"
+                    />
+                  </div>
+                ) : null
+              ) : !isFlashing && usePatternMemory && !revealed ? (
+                // Hidden state in pattern memory mode
+                <div className="w-full max-w-md h-[300px] bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center border-2 border-dashed border-[var(--border)]">
+                  <div className="text-center text-[var(--text-muted)]">
+                    <Eye className="w-16 h-16 mx-auto mb-3 opacity-30" />
+                    <p className="text-lg font-semibold mb-1">
+                      What did you see?
+                    </p>
+                    <p className="text-sm">Try to remember the case</p>
+                  </div>
+                </div>
+              ) : // Normal display after flash or in non-pattern memory mode
+              setupMoves ? (
                 <div className="w-full max-w-md">
                   <CubeVisualizer3D
                     algorithm={setupMoves}
@@ -147,15 +235,17 @@ export default function RecognitionFlashCard({
                 </div>
               )}
 
-              {/* Setup Moves (for reference) */}
-              <div className="mt-4 p-3 bg-[var(--surface-elevated)] rounded-lg">
-                <p className="text-xs text-[var(--text-muted)] text-center mb-1">
-                  Setup
-                </p>
-                <p className="text-sm font-mono text-[var(--text-primary)] text-center">
-                  {setupMoves}
-                </p>
-              </div>
+              {/* Setup Moves */}
+              {!(usePatternMemory && !revealed) && !isFlashing && (
+                <div className="mt-4 p-3 bg-[var(--surface-elevated)] rounded-lg">
+                  <p className="text-xs text-[var(--text-muted)] text-center mb-1">
+                    Setup
+                  </p>
+                  <p className="text-sm font-mono text-[var(--text-primary)] text-center">
+                    {setupMoves}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Question */}
@@ -230,8 +320,36 @@ export default function RecognitionFlashCard({
                 >
                   Show Answer
                 </button>
-              ) : mode === "due" ? (
-                // SRS Rating buttons for spaced repetition mode
+              ) : isInfiniteMode ? (
+                // Infinite Drill mode - simple correct/incorrect buttons
+                <div className="space-y-3">
+                  <div className="text-center">
+                    <p className="text-sm text-[var(--text-muted)]">
+                      Did you recognize it correctly?
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => handleRating("again")}
+                      className="py-3 px-4 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                    >
+                      <span className="text-lg">✗</span>
+                      <span>Incorrect</span>
+                    </button>
+                    <button
+                      onClick={() => handleRating("good")}
+                      className="py-3 px-4 bg-green-500/10 hover:bg-green-500/20 border border-green-500/20 text-green-500 rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                    >
+                      <span className="text-lg">✓</span>
+                      <span>Correct</span>
+                    </button>
+                  </div>
+                  <p className="text-xs text-center text-[var(--text-muted)]">
+                    Same case will repeat for drilling
+                  </p>
+                </div>
+              ) : shouldShowSrsRatings ? (
+                // SRS Rating Buttons
                 <div className="space-y-3">
                   <div className="text-center">
                     <p className="text-sm text-[var(--text-muted)]">
@@ -274,7 +392,7 @@ export default function RecognitionFlashCard({
                   </div>
                 </div>
               ) : (
-                // Simple Next button for free practice modes
+                // Standard Next Case button
                 <button
                   onClick={() => handleRating("good")}
                   className="w-full py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-medium"

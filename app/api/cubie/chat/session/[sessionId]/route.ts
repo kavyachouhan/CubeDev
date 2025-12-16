@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const CUBIE_BACKEND_URL =
-  process.env.NEXT_PUBLIC_CUBIE_BACKEND_URL || "http://localhost:8000";
+const CUBIE_BACKEND_URL = process.env.NEXT_PUBLIC_CUBIE_BACKEND_URL;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { sessionId: string } }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
+    const { sessionId } = await params;
     const authHeader = request.headers.get("authorization");
 
     if (!authHeader) {
@@ -15,7 +15,7 @@ export async function GET(
     }
 
     const response = await fetch(
-      `${CUBIE_BACKEND_URL}/chat/session/${params.sessionId}`,
+      `${CUBIE_BACKEND_URL}/chat/session/${sessionId}`,
       {
         headers: {
           Authorization: authHeader,
@@ -36,9 +36,10 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { sessionId: string } }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
+    const { sessionId } = await params;
     const authHeader = request.headers.get("authorization");
 
     if (!authHeader) {
@@ -46,7 +47,7 @@ export async function DELETE(
     }
 
     const response = await fetch(
-      `${CUBIE_BACKEND_URL}/chat/session/${params.sessionId}`,
+      `${CUBIE_BACKEND_URL}/chat/session/${sessionId}`,
       {
         method: "DELETE",
         headers: {

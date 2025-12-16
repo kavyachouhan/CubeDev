@@ -16,12 +16,14 @@ import {
   ChevronRight,
   MessageSquarePlus,
   GraduationCap,
+  Medal,
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import SidebarUserDropdown from "@/components/SidebarUserDropdown";
 import NotificationBell from "@/components/NotificationBell";
 import NotificationsModal from "@/components/NotificationsModal";
 import NotificationService from "@/components/NotificationService";
+import FeatureRibbon, { RibbonVariant } from "@/components/FeatureRibbon";
 import { useLogo } from "@/lib/use-logo";
 
 interface CubeLabLayoutProps {
@@ -86,13 +88,23 @@ export default function CubeLabLayout({
       icon: GraduationCap,
       description: "Learn & master algorithms",
       href: "/cube-lab/algorithm-trainer",
+      ribbon: {
+        featureKey: "algorithm-trainer-launch",
+        variant: "new" as RibbonVariant,
+        expiryDays: 30,
+      },
     },
     {
-      id: "cubie",
-      name: "Cubie AI",
-      icon: Bot,
-      description: "AI cubing assistant",
-      href: "/cube-lab/cubie",
+      id: "competitions",
+      name: "Competitions",
+      icon: Medal,
+      description: "Competition simulation & practice",
+      href: "/cube-lab/competitions",
+      ribbon: {
+        featureKey: "competitions-launch",
+        variant: "new" as RibbonVariant,
+        expiryDays: 30,
+      },
     },
     {
       id: "challenges",
@@ -102,11 +114,28 @@ export default function CubeLabLayout({
       href: "/cube-lab/challenges",
     },
     {
+      id: "cubie",
+      name: "Cubie AI",
+      icon: Bot,
+      description: "AI cubing assistant",
+      href: "/cube-lab/cubie",
+      ribbon: {
+        featureKey: "cubie-launch",
+        variant: "coming-soon" as RibbonVariant,
+        expiryDays: 60,
+      },
+    },
+    {
       id: "chat",
       name: "Chat",
       icon: MessagesSquare,
       description: "Chat with friends",
       href: "/cube-lab/chat",
+      ribbon: {
+        featureKey: "chat-launch",
+        variant: "coming-soon" as RibbonVariant,
+        expiryDays: 60,
+      },
     },
   ];
 
@@ -115,7 +144,9 @@ export default function CubeLabLayout({
       {/* Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 z-50 bg-[var(--surface)] border-r border-[var(--border)] transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col ${
-          sidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-64"
+          sidebarOpen
+            ? "translate-x-0 w-[80vw] max-w-64"
+            : "-translate-x-full w-[80vw] max-w-64"
         } ${
           sidebarCollapsed && !sidebarOpen ? "lg:w-20" : "lg:w-64"
         } ${isTimerFocusMode ? "blur-md opacity-50 pointer-events-none" : ""}`}
@@ -219,7 +250,7 @@ export default function CubeLabLayout({
                 href={section.href}
                 onClick={() => setSidebarOpen(false)}
                 title={sidebarCollapsed ? section.name : undefined}
-                className={`w-full group sidebar-nav-item flex items-center rounded-lg text-left transition-all ${
+                className={`w-full group sidebar-nav-item flex items-center rounded-lg text-left transition-all relative ${
                   sidebarCollapsed
                     ? "lg:justify-center lg:px-0 lg:py-3"
                     : "gap-3 px-4 py-3"
@@ -229,9 +260,16 @@ export default function CubeLabLayout({
                     : "text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)] hover:text-[var(--primary)]"
                 }`}
               >
-                <Icon
-                  className={`w-5 h-5 flex-shrink-0 ${isActive ? "text-white" : "text-[var(--primary)]"}`}
-                />
+                {/* Icon with ribbon indicator when collapsed */}
+                <div className="relative flex-shrink-0">
+                  <Icon
+                    className={`w-5 h-5 ${isActive ? "text-white" : "text-[var(--primary)]"}`}
+                  />
+                  {/* Ribbon dot indicator for collapsed sidebar */}
+                  {sidebarCollapsed && section.ribbon && (
+                    <span className="hidden lg:block absolute -top-1 -right-1 w-2 h-2 bg-[var(--primary)] rounded-full" />
+                  )}
+                </div>
                 {!sidebarCollapsed && (
                   <div className="flex-1 min-w-0">
                     <div
@@ -245,6 +283,16 @@ export default function CubeLabLayout({
                       {section.description}
                     </div>
                   </div>
+                )}
+                {/* Ribbon positioned absolutely - tilted corner ribbon */}
+                {!sidebarCollapsed && section.ribbon && (
+                  <FeatureRibbon
+                    featureKey={section.ribbon.featureKey}
+                    variant={section.ribbon.variant}
+                    expiryDays={section.ribbon.expiryDays}
+                    position="top-right"
+                    isActive={isActive}
+                  />
                 )}
               </Link>
             );

@@ -28,6 +28,18 @@ Visit CubeDev at **[cubedev.xyz](https://cubedev.xyz)**
 - **CubeDev Stats**: Platform-specific achievements and statistics
 - **Community Features**: Connect with other speedcubers
 
+### Algorithm Trainer
+- **Customizable Drills**: Create and share algorithm sets
+- **Multiple Practice Modes**: Recognition, Execution, Infinite drills
+- **Progress Tracking**: Monitor improvement over time
+- **3D Visualization**: Interactive cube models with playback controls
+
+### Competition Simulations
+- **WCA Round Simulation**: Practice with official competition formats
+- **Event Variety**: Support for multiple WCA events
+- **Realistic Pressure**: Experience competition-like conditions
+- **Result Tracking**: Analyze performance in simulated competitions
+
 ### Challenge Rooms
 
 - **Real-time Competition**: Compete with friends on same scrambles

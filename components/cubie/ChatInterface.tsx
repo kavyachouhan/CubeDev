@@ -5,8 +5,6 @@ import {
   Send,
   Loader2,
   AlertCircle,
-  MessageSquarePlus,
-  Menu,
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import { useCubieAuth } from "./useCubieAuth";
@@ -16,7 +14,6 @@ import SessionManagementModal from "./SessionManagementModal";
 import WelcomeScreen from "./WelcomeScreen";
 import { useRouter } from "next/navigation";
 import {
-  CubieWelcomeSkeleton,
   CubieMessagesSkeleton,
 } from "@/components/SkeletonLoaders";
 
@@ -80,8 +77,9 @@ export default function ChatInterface({
   const isLoadingSessionRef = useRef(false);
 
   const BACKEND_URL = process.env.NEXT_PUBLIC_CUBIE_BACKEND_URL;
+  const MAX_INPUT_LENGTH = 4000; // Max characters for input
 
-  // Auto-scroll to bottom when new messages arrive
+  // Scroll to bottom helper
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -101,21 +99,36 @@ export default function ChatInterface({
         const data = await response.json();
         setSessions(data.sessions || []);
         setSessionsLoaded(true);
+      } else {
+        // Handle error responses (including rate limits)
+        try {
+          const errorData = await response.json();
+          const errorMessage =
+            errorData.detail || `Failed to load sessions (${response.status})`;
+          setError(errorMessage);
+        } catch {
+          setError(`Failed to load sessions (${response.status})`);
+        }
       }
     } catch (error) {
       console.error("Failed to load sessions:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load sessions. Please try again."
+      );
     }
   };
 
   const loadSessionHistory = useCallback(
     async (sessionId: string, forceReload: boolean = false) => {
-      // Prevent multiple simultaneous loads of the same session
+      // Skip if already loading a session and we're not forcing reload
       if (isLoadingSessionRef.current && !forceReload) {
         console.log("Already loading a session, skipping...");
         return;
       }
 
-      // Skip if this session is already loaded and we're not forcing reload
+      // Skip if the requested session is already loaded
       if (loadedSessionRef.current === sessionId && !forceReload) {
         console.log("Session already loaded, skipping...");
         return;
@@ -141,12 +154,12 @@ export default function ChatInterface({
         if (response.ok) {
           const data = await response.json();
 
-          // Update state in the correct order
+          // Update state with loaded session and messages
           setCurrentSession(data.session);
           setMessages(data.messages || []);
           loadedSessionRef.current = sessionId;
 
-          // Dispatch event for dynamic title update
+          // Dispatch event for dynamic title update in header
           window.dispatchEvent(
             new CustomEvent("cubie-session-loaded", {
               detail: {
@@ -156,18 +169,31 @@ export default function ChatInterface({
             })
           );
 
-          // Navigate to session URL only if we're not already there
+          // Update URL without adding to history (to avoid flicker)
           const currentPath = window.location.pathname;
           const targetPath = `/cube-lab/cubie/${sessionId}`;
           if (currentPath !== targetPath) {
-            router.push(targetPath);
+            // Use replaceState to avoid adding to history
+            window.history.replaceState(null, "", targetPath);
           }
         } else {
-          throw new Error("Failed to load session history");
+          // Handle error responses (including rate limits)
+          try {
+            const errorData = await response.json();
+            const errorMessage =
+              errorData.detail || "Failed to load session history";
+            throw new Error(errorMessage);
+          } catch (parseError) {
+            throw new Error("Failed to load session history");
+          }
         }
       } catch (error) {
         console.error("Error loading session:", error);
-        setError("Failed to load conversation history");
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to load conversation history";
+        setError(errorMessage);
         setMessages([]);
         loadedSessionRef.current = null;
       } finally {
@@ -182,29 +208,29 @@ export default function ChatInterface({
     scrollToBottom();
   }, [messages]);
 
-  // Load user sessions on mount (only once)
+  // Load sessions list on user login
   useEffect(() => {
     if (user && !sessionsLoaded) {
       loadSessions();
     }
   }, [user, sessionsLoaded]);
 
-  // Load initial session if provided via URL
+  // Load session history when initialSessionId changes
   useEffect(() => {
     if (initialSessionId && user && sessionsLoaded) {
-      // Only load if it's a different session than what we already have loaded
+      // Load the session if it's different from the currently loaded one
       if (loadedSessionRef.current !== initialSessionId) {
         console.log(`Loading session: ${initialSessionId}`);
         loadSessionHistory(initialSessionId, false);
       }
     } else if (!initialSessionId && loadedSessionRef.current) {
-      // Clear when navigating to base cubie page
+      // Clear session state when no session ID is provided
       console.log("Clearing session state");
       loadedSessionRef.current = null;
       setMessages([]);
       setCurrentSession(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // We only want to react to changes in initialSessionId, user, and sessionsLoaded
   }, [initialSessionId, user, sessionsLoaded]);
 
   const createNewSession = async (initialMessage?: string) => {
@@ -219,18 +245,14 @@ export default function ChatInterface({
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: initialMessage
-            ? initialMessage.slice(0, 50) +
-              (initialMessage.length > 50 ? "..." : "")
-            : "New Conversation",
-          initial_message: initialMessage,
+          // Let backend handle empty initial messages
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
 
-        // Create a full session object
+        // Construct new session object
         const newSession = {
           session_id: data.session_id,
           user_id: data.user_id,
@@ -240,16 +262,20 @@ export default function ChatInterface({
           message_count: 0,
         };
 
-        // Update state immediately for smooth transition
+        // Update state with new session
         setCurrentSession(newSession);
-        setMessages([]);
+        // Deep clear messages if any
         loadedSessionRef.current = data.session_id;
 
-        // Add to sessions list without full reload
+        // Add to sessions list
         setSessions((prev) => [newSession, ...prev]);
 
-        // Navigate to the new session URL
-        router.push(`/cube-lab/cubie/${data.session_id}`);
+        // Navigate to new session URL
+        window.history.replaceState(
+          null,
+          "",
+          `/cube-lab/cubie/${data.session_id}`
+        );
 
         return data.session_id;
       } else {
@@ -271,19 +297,27 @@ export default function ChatInterface({
   };
 
   const handleNewChat = async () => {
-    // Clear state immediately for smooth UX
+    // Clear current session and messages
     setCurrentSession(null);
     setMessages([]);
     setError(null);
     setInputValue("");
     loadedSessionRef.current = null;
 
-    // Navigate to the base cubie page
-    router.push("/cube-lab/cubie");
+    // Navigate to base Cubie URL
+    router.replace("/cube-lab/cubie");
   };
 
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
+
+    // Input length check
+    if (inputValue.length > MAX_INPUT_LENGTH) {
+      setError(
+        `Message too long. Please keep it under ${MAX_INPUT_LENGTH} characters.`
+      );
+      return;
+    }
 
     const token = await getAuthToken();
     if (!token) {
@@ -295,7 +329,7 @@ export default function ChatInterface({
     setInputValue("");
     setError(null);
 
-    // Add user message to UI immediately
+    // Add user message to chat
     const tempUserMessage: Message = {
       id: `temp-${Date.now()}`,
       role: "user",
@@ -307,11 +341,11 @@ export default function ChatInterface({
     setIsLoading(true);
     setAgentStatus("Processing your query...");
 
-    // Don't create empty streaming message initially - let streaming handle it
+    // Unique ID for the streaming assistant message
     const streamingMessageId = `streaming-${Date.now()}`;
 
     try {
-      // Create session if needed
+      // Ensure session exists
       let sessionId = currentSession?.session_id;
       if (!sessionId) {
         sessionId = await createNewSession(userMessage);
@@ -331,18 +365,18 @@ export default function ChatInterface({
           message: userMessage,
           session_id: sessionId,
           use_rag: true,
-          stream: true, // Enable streaming
+          stream: true, // Enable streaming responses
         }),
       });
 
       if (!response.ok) {
-        // Try to parse error message from response
+        // Try to extract error message from response
         let errorMessage = "Failed to get response";
         try {
           const errorData = await response.json();
           errorMessage = errorData.detail || errorData.message || errorMessage;
         } catch {
-          // If JSON parsing fails, use status text
+          // Fallback to status text
           errorMessage = `${response.status}: ${response.statusText}`;
         }
         throw new Error(errorMessage);
@@ -368,14 +402,14 @@ export default function ChatInterface({
                 try {
                   const data = JSON.parse(line.slice(6));
 
-                  // Handle status updates
+                  // Handle different data types
                   if (data.type === "status") {
                     setAgentStatus(data.message || "Processing...");
                   } else if (data.type === "content") {
                     partialResponse = data.partial;
-                    setAgentStatus(""); // Clear status when content starts
+                    setAgentStatus(""); // Clear status
 
-                    // Create message on first content chunk
+                    // Create or update the streaming message
                     if (!messageCreated) {
                       const streamingMessage: Message = {
                         id: streamingMessageId,
@@ -411,7 +445,7 @@ export default function ChatInterface({
                         )
                       );
                     } else {
-                      // Fallback: create message if no content chunks received
+                      // Final message wasn't created for some reason - create it now
                       const completeMessage: Message = {
                         id: data.message_id || streamingMessageId,
                         role: "assistant",
@@ -424,11 +458,11 @@ export default function ChatInterface({
                   } else if (data.type === "error") {
                     throw new Error(data.error);
                   } else if (data.status === "done") {
-                    // Stream complete
+                    // Stream finished
                     setAgentStatus("");
                   }
                 } catch (e) {
-                  // Ignore parse errors for incomplete JSON
+                  // Ignore parse errors for incomplete JSON chunks
                   console.debug("Parse error (likely incomplete chunk):", e);
                 }
               }
@@ -436,7 +470,7 @@ export default function ChatInterface({
           }
         }
       } else {
-        // Non-streaming response
+        // Handle non-streaming response as fallback
         const data = await response.json();
 
         // Check if the response indicates an error
@@ -446,7 +480,7 @@ export default function ChatInterface({
           );
         }
 
-        // Create and add the assistant message for non-streaming
+        // Add assistant message to chat
         const assistantMessage: Message = {
           id: data.message_id || streamingMessageId,
           role: "assistant",
@@ -457,8 +491,10 @@ export default function ChatInterface({
         setMessages((prev) => [...prev, assistantMessage]);
       }
 
-      // Update current session info without reloading all sessions
+      // Reload session to get updated info
       if (sessionId) {
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Brief delay to ensure backend has updated session
+
         try {
           const sessionResponse = await fetch(
             `${BACKEND_URL}/chat/session/${sessionId}`,
@@ -472,13 +508,23 @@ export default function ChatInterface({
             const sessionData = await sessionResponse.json();
             setCurrentSession(sessionData.session);
 
-            // Update the session in the sessions list without full reload
+            // Update sessions list
             setSessions((prev) =>
               prev.map((s) =>
                 s.session_id === sessionId
                   ? { ...s, ...sessionData.session }
                   : s
               )
+            );
+
+            // Dispatch event for dynamic title update
+            window.dispatchEvent(
+              new CustomEvent("cubie-session-loaded", {
+                detail: {
+                  sessionId: sessionData.session.session_id,
+                  title: sessionData.session.title,
+                },
+              })
             );
           }
         } catch (err) {
@@ -497,18 +543,10 @@ export default function ChatInterface({
       setError(errorMessage);
       setAgentStatus(""); // Clear status on error
 
-      // Add an error message from the assistant
-      const errorAssistantMessage: Message = {
-        id: `error-${Date.now()}`,
-        role: "assistant",
-        content: `I apologize, but I encountered an error: ${errorMessage}`,
-        created_at: new Date().toISOString(),
-      };
-
-      setMessages((prev) => [...prev, errorAssistantMessage]);
+      // Remove the temporary user message on error
     } finally {
       setIsLoading(false);
-      setAgentStatus(""); // Ensure status is cleared
+      setAgentStatus(""); // Clear status
     }
   };
 
@@ -519,17 +557,17 @@ export default function ChatInterface({
     }
   };
 
-  // Auto-resize textarea as user types
+  // Auto-resize textarea based on content
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
       const scrollHeight = textareaRef.current.scrollHeight;
-      // Limit to max 3 rows (approximately 120px)
+      // Limit to max 3 rows
       const maxHeight = 120;
       const newHeight = Math.min(scrollHeight, maxHeight);
       textareaRef.current.style.height = `${newHeight}px`;
 
-      // Show scrollbar only when content exceeds max height
+      // Handle scrollbar visibility
       textareaRef.current.style.overflowY =
         scrollHeight > maxHeight ? "auto" : "hidden";
     }
@@ -548,19 +586,30 @@ export default function ChatInterface({
       });
 
       if (response.ok) {
-        // Update sessions list
+        // Remove session from state
         setSessions((prev) => prev.filter((s) => s.session_id !== sessionId));
 
-        // If deleting current session, navigate to home
+        // If the deleted session is the current one, clear state and navigate away
         if (currentSession?.session_id === sessionId) {
           setCurrentSession(null);
           setMessages([]);
           router.push("/cube-lab/cubie");
         }
+      } else {
+        // Handle error responses (including rate limits)
+        try {
+          const errorData = await response.json();
+          const errorMessage = errorData.detail || "Failed to delete session";
+          setError(errorMessage);
+        } catch {
+          setError("Failed to delete session");
+        }
       }
     } catch (error) {
       console.error("Error deleting session:", error);
-      setError("Failed to delete session");
+      setError(
+        error instanceof Error ? error.message : "Failed to delete session"
+      );
     }
   };
 
@@ -590,7 +639,7 @@ export default function ChatInterface({
           )
         );
 
-        // Update current session if it's the one being edited
+        // Update current session if applicable
         if (currentSession?.session_id === sessionId) {
           setCurrentSession((prev) =>
             prev
@@ -609,12 +658,23 @@ export default function ChatInterface({
           );
         }
       } else {
-        throw new Error("Failed to update session");
+        // Handle error responses (including rate limits)
+        try {
+          const errorData = await response.json();
+          const errorMessage = errorData.detail || "Failed to update session";
+          throw new Error(errorMessage);
+        } catch (parseError) {
+          throw new Error("Failed to update session");
+        }
       }
     } catch (error) {
       console.error("Error updating session:", error);
-      setError("Failed to update session title");
-      throw error; // Re-throw to let the component handle it
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to update session title";
+      setError(errorMessage);
+      throw error; // Re-throw for upstream handling
     }
   };
 
@@ -641,7 +701,7 @@ export default function ChatInterface({
       });
 
       if (response.ok) {
-        // Update the message in the state with feedback
+        // Update message with feedback
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === messageId
@@ -657,16 +717,25 @@ export default function ChatInterface({
           )
         );
       } else {
-        throw new Error("Failed to submit feedback");
+        // Handle error responses (including rate limits)
+        try {
+          const errorData = await response.json();
+          const errorMessage = errorData.detail || "Failed to submit feedback";
+          throw new Error(errorMessage);
+        } catch (parseError) {
+          throw new Error("Failed to submit feedback");
+        }
       }
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      setError("Failed to submit feedback");
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to submit feedback";
+      setError(errorMessage);
       throw error;
     }
   };
 
-  // Listen for mobile session modal trigger event
+  // Listen for global event to open session modal
   useEffect(() => {
     const handleOpenModal = () => {
       setIsSessionModalOpen(true);
@@ -710,14 +779,19 @@ export default function ChatInterface({
       <div className="flex-1 overflow-y-auto">
         {isLoadingSession ? (
           <CubieMessagesSkeleton />
-        ) : messages.length === 0 ? (
-          currentSession ? (
-            // Session is loaded but has no messages - this shouldn't normally happen
-            <WelcomeScreen onSendMessage={setInputValue} />
-          ) : (
-            // No session selected, show welcome screen
-            <WelcomeScreen onSendMessage={setInputValue} />
-          )
+        ) : messages.length === 0 && !currentSession && !initialSessionId ? (
+          // No messages and no session - show welcome screen
+          <WelcomeScreen
+            onSendMessage={setInputValue}
+            onFocusInput={() => {
+              setTimeout(() => {
+                textareaRef.current?.focus();
+              }, 100);
+            }}
+          />
+        ) : messages.length === 0 && (currentSession || initialSessionId) ? (
+          // Loading existing session with no messages
+          <CubieMessagesSkeleton />
         ) : (
           <div className="max-w-4xl mx-auto px-3 md:px-4 lg:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
             {messages.map((message) => (
@@ -761,17 +835,35 @@ export default function ChatInterface({
             <textarea
               ref={textareaRef}
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value.length <= MAX_INPUT_LENGTH) {
+                  setInputValue(value);
+                  // Clear error if previously set due to length
+                  if (error?.includes("too long")) {
+                    setError(null);
+                  }
+                }
+              }}
               onKeyDown={handleKeyDown}
               placeholder="Ask Cubie anything about cubing..."
               rows={1}
-              className="w-full pl-4 pr-14 md:pr-16 py-3 md:py-3.5 bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--border-hover)] focus:border-[var(--primary)] focus:outline-none rounded-2xl resize-none text-sm md:text-base text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-inter transition-all duration-200 ease-in-out scrollbar-thin scrollbar-thumb-[var(--border)] scrollbar-track-transparent hover:scrollbar-thumb-[var(--border-hover)]"
+              className={`w-full pl-4 pr-14 md:pr-16 py-3 md:py-3.5 bg-[var(--surface-elevated)] border ${
+                inputValue.length > MAX_INPUT_LENGTH * 0.9
+                  ? "border-[var(--warning)]"
+                  : "border-[var(--border)]"
+              } hover:border-[var(--border-hover)] focus:border-[var(--primary)] focus:outline-none rounded-2xl resize-none text-sm md:text-base text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-inter transition-all duration-200 ease-in-out scrollbar-thin scrollbar-thumb-[var(--border)] scrollbar-track-transparent hover:scrollbar-thumb-[var(--border-hover)]`}
               disabled={isLoading}
               style={{ minHeight: "48px", maxHeight: "120px" }}
+              maxLength={MAX_INPUT_LENGTH}
             />
             <button
               onClick={sendMessage}
-              disabled={!inputValue.trim() || isLoading}
+              disabled={
+                !inputValue.trim() ||
+                isLoading ||
+                inputValue.length > MAX_INPUT_LENGTH
+              }
               className="absolute right-2 bottom-2 w-8 h-8 md:w-9 md:h-9 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:bg-[var(--surface-elevated)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 ease-in-out flex items-center justify-center shrink-0 disabled:opacity-50"
             >
               {isLoading ? (
@@ -781,9 +873,22 @@ export default function ChatInterface({
               )}
             </button>
           </div>
-          <p className="text-xs text-[var(--text-muted)] mt-2 text-center font-inter">
-            Cubie can make mistakes. Please verify important information.
-          </p>
+          <div className="mt-2 flex flex-col sm:flex-row sm:items-center sm:justify-center gap-1 sm:gap-0 sm:relative">
+            {inputValue.length > MAX_INPUT_LENGTH * 0.8 && (
+              <p
+                className={`text-xs font-inter text-right sm:absolute sm:-top-1 sm:right-0 ${
+                  inputValue.length > MAX_INPUT_LENGTH * 0.95
+                    ? "text-[var(--error)]"
+                    : "text-[var(--text-muted)]"
+                }`}
+              >
+                {inputValue.length}/{MAX_INPUT_LENGTH}
+              </p>
+            )}
+            <p className="text-xs text-[var(--text-muted)] text-center font-inter">
+              Cubie can make mistakes. Please verify important information.
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -37,6 +37,24 @@ CubeDev is a comprehensive speedcubing platform that provides tools and resource
 - Progressive difficulty adjustment
 - Targeted practice for weak solving phases
 
+### Algorithm Trainer
+- OLL (Orientation of Last Layer) algorithm sets
+- PLL (Permutation of Last Layer) algorithm sets
+- F2L (First Two Layers) algorithm sets
+- COLL (Corners of Last Layer) algorithm sets
+- Custom algorithm set creation
+- Spaced Repetition System (SRS) for memory retention
+- Multiple practice modes: Recognition Drill, Execution Drill, Infinite Drill, Blind Recognition
+- 3D cube visualization with playback controls
+
+### Competition Simulations
+- Simulate WCA (World Cube Association) competition rounds
+- Practice with real competition formats and cutoffs
+- Experience authentic competition pressure in a training environment
+- Track simulated competition results and improvement over time
+- Multiple event support matching official WCA events
+- Realistic round progression (first round, finals, etc.)
+
 ## Target Audience
 
 - **Beginner Cubers**: Learning to solve and improve basic techniques

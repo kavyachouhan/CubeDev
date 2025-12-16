@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@/components/UserProvider";
 import {
@@ -10,14 +10,13 @@ import {
   Clock,
   ChevronRight,
   CheckCircle2,
-  Bell,
-  BellOff,
 } from "lucide-react";
 import Link from "next/link";
 import {
   useNotificationPermission,
   shouldShowPermissionPrompt,
 } from "@/lib/notification-utils";
+import type { Id } from "@/convex/_generated/dataModel";
 
 interface NotificationsModalProps {
   isOpen: boolean;
@@ -34,7 +33,13 @@ export default function NotificationsModal({
   const [showPermissionBanner, setShowPermissionBanner] = useState(false);
   const [isRequestingPermission, setIsRequestingPermission] = useState(false);
 
-  // Check if we should show the permission prompt on first open
+  // Mutations
+  const dismissNotification = useMutation(api.users.dismissNotification);
+  const clearAllDismissed = useMutation(
+    api.users.clearAllDismissedNotifications
+  );
+
+  // Show permission prompt if needed
   useEffect(() => {
     if (
       isOpen &&
@@ -46,15 +51,15 @@ export default function NotificationsModal({
     }
   }, [isOpen, isSupported, preferences.showPrompt]);
 
-  // Get due reviews
+  // Fetch due reviews for notifications
   const dueReviews = useQuery(
-    api.algorithms.getDueReviews,
+    api.algorithms.getReviewsForNotifications,
     user?.convexId ? { userId: user.convexId as any } : "skip"
   );
 
   if (!isOpen) return null;
 
-  // Group notifications by urgency
+  // Categorize reviews
   const now = Date.now();
   const oneDayAgo = now - 24 * 60 * 60 * 1000;
   const twoDaysAgo = now - 48 * 60 * 60 * 1000;
@@ -113,6 +118,32 @@ export default function NotificationsModal({
   const handleDismissPrompt = () => {
     dismissPrompt();
     setShowPermissionBanner(false);
+  };
+
+  const handleDismissNotification = async (
+    e: React.MouseEvent,
+    progressId: Id<"userAlgorithmProgress">
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (user?.convexId) {
+      await dismissNotification({
+        userId: user.convexId as Id<"users">,
+        progressId,
+      });
+    }
+  };
+
+  const handleDismissAll = async () => {
+    if (user?.convexId && dueReviews) {
+      // Dismiss all notifications
+      for (const review of dueReviews) {
+        await dismissNotification({
+          userId: user.convexId as Id<"users">,
+          progressId: review.progress._id,
+        });
+      }
+    }
   };
 
   return (
@@ -180,7 +211,7 @@ export default function NotificationsModal({
         {/* Notifications List */}
         <div className="flex-1 overflow-y-auto space-y-4">
           {dueReviews === undefined ? (
-            // Loading skeleton
+            // Loading State
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="skeleton-box rounded-lg h-24" />
@@ -210,35 +241,50 @@ export default function NotificationsModal({
                   </h3>
                   <div className="space-y-2">
                     {overdue.map((review) => (
-                      <Link
+                      <div
                         key={review.progress._id}
-                        href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
-                        onClick={onClose}
-                        className="block timer-card bg-[var(--surface-elevated)] border border-[var(--error)]/20 hover:border-[var(--error)]/40 transition-all p-4 group"
+                        className="relative timer-card bg-[var(--surface-elevated)] border border-[var(--error)]/20 hover:border-[var(--error)]/40 transition-all p-4 group"
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-xs font-medium text-[var(--error)] font-inter px-2 py-0.5 bg-[var(--error)]/10 rounded">
-                                {review.set?.name}
-                              </span>
+                        <Link
+                          href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
+                          onClick={onClose}
+                          className="block pr-8"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-xs font-medium text-[var(--error)] font-inter px-2 py-0.5 bg-[var(--error)]/10 rounded">
+                                  {review.set?.name}
+                                </span>
+                              </div>
+                              <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                                {review.case?.caseName}
+                              </h4>
+                              <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter">
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  {formatTimeAgo(
+                                    review.progress.nextReviewDate
+                                  )}
+                                </span>
+                                <span>
+                                  Stage: {review.progress.learningStage}
+                                </span>
+                              </div>
                             </div>
-                            <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
-                              {review.case?.caseName}
-                            </h4>
-                            <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter">
-                              <span className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                {formatTimeAgo(review.progress.nextReviewDate)}
-                              </span>
-                              <span>
-                                Stage: {review.progress.learningStage}
-                              </span>
-                            </div>
+                            <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
                           </div>
-                          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
-                        </div>
-                      </Link>
+                        </Link>
+                        <button
+                          onClick={(e) =>
+                            handleDismissNotification(e, review.progress._id)
+                          }
+                          className="absolute top-3 right-3 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] rounded transition-colors z-10"
+                          title="Dismiss notification"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -253,35 +299,50 @@ export default function NotificationsModal({
                   </h3>
                   <div className="space-y-2">
                     {dueToday.map((review) => (
-                      <Link
+                      <div
                         key={review.progress._id}
-                        href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
-                        onClick={onClose}
-                        className="block timer-card bg-[var(--surface-elevated)] border border-[var(--warning)]/20 hover:border-[var(--warning)]/40 transition-all p-4 group"
+                        className="relative timer-card bg-[var(--surface-elevated)] border border-[var(--warning)]/20 hover:border-[var(--warning)]/40 transition-all p-4 group"
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-xs font-medium text-[var(--warning)] font-inter px-2 py-0.5 bg-[var(--warning)]/10 rounded">
-                                {review.set?.name}
-                              </span>
+                        <Link
+                          href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
+                          onClick={onClose}
+                          className="block pr-8"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-xs font-medium text-[var(--warning)] font-inter px-2 py-0.5 bg-[var(--warning)]/10 rounded">
+                                  {review.set?.name}
+                                </span>
+                              </div>
+                              <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                                {review.case?.caseName}
+                              </h4>
+                              <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter">
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  {formatTimeAgo(
+                                    review.progress.nextReviewDate
+                                  )}
+                                </span>
+                                <span>
+                                  Stage: {review.progress.learningStage}
+                                </span>
+                              </div>
                             </div>
-                            <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
-                              {review.case?.caseName}
-                            </h4>
-                            <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter">
-                              <span className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                {formatTimeAgo(review.progress.nextReviewDate)}
-                              </span>
-                              <span>
-                                Stage: {review.progress.learningStage}
-                              </span>
-                            </div>
+                            <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
                           </div>
-                          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
-                        </div>
-                      </Link>
+                        </Link>
+                        <button
+                          onClick={(e) =>
+                            handleDismissNotification(e, review.progress._id)
+                          }
+                          className="absolute top-3 right-3 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] rounded transition-colors z-10"
+                          title="Dismiss notification"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -296,35 +357,50 @@ export default function NotificationsModal({
                   </h3>
                   <div className="space-y-2">
                     {dueSoon.map((review) => (
-                      <Link
+                      <div
                         key={review.progress._id}
-                        href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
-                        onClick={onClose}
-                        className="block timer-card bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--primary)]/40 transition-all p-4 group"
+                        className="relative timer-card bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--primary)]/40 transition-all p-4 group"
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-xs font-medium text-[var(--primary)] font-inter px-2 py-0.5 bg-[var(--primary)]/10 rounded">
-                                {review.set?.name}
-                              </span>
+                        <Link
+                          href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
+                          onClick={onClose}
+                          className="block pr-8"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-xs font-medium text-[var(--primary)] font-inter px-2 py-0.5 bg-[var(--primary)]/10 rounded">
+                                  {review.set?.name}
+                                </span>
+                              </div>
+                              <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                                {review.case?.caseName}
+                              </h4>
+                              <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter">
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  {formatDueTime(
+                                    review.progress.nextReviewDate
+                                  )}
+                                </span>
+                                <span>
+                                  Stage: {review.progress.learningStage}
+                                </span>
+                              </div>
                             </div>
-                            <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
-                              {review.case?.caseName}
-                            </h4>
-                            <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter">
-                              <span className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                {formatDueTime(review.progress.nextReviewDate)}
-                              </span>
-                              <span>
-                                Stage: {review.progress.learningStage}
-                              </span>
-                            </div>
+                            <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
                           </div>
-                          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
-                        </div>
-                      </Link>
+                        </Link>
+                        <button
+                          onClick={(e) =>
+                            handleDismissNotification(e, review.progress._id)
+                          }
+                          className="absolute top-3 right-3 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] rounded transition-colors z-10"
+                          title="Dismiss notification"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -335,16 +411,27 @@ export default function NotificationsModal({
 
         {/* Footer Actions */}
         {totalNotifications > 0 && (
-          <div className="flex gap-3 pt-6 mt-6 border-t border-[var(--border)]">
-            <Link
-              href="/cube-lab/algorithm-trainer/practice"
-              onClick={onClose}
-              className="flex-1 btn-primary text-center"
+          <div className="flex flex-col gap-3 pt-6 mt-6 border-t border-[var(--border)]">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/cube-lab/algorithm-trainer/practice"
+                onClick={onClose}
+                className="flex-1 btn-primary text-center py-3 sm:py-3"
+              >
+                Practice Now
+              </Link>
+              <button
+                onClick={onClose}
+                className="flex-1 btn-secondary py-3 sm:py-3"
+              >
+                Close
+              </button>
+            </div>
+            <button
+              onClick={handleDismissAll}
+              className="w-full text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors py-2 font-inter"
             >
-              Practice Now
-            </Link>
-            <button onClick={onClose} className="flex-1 btn-secondary">
-              Close
+              Dismiss All Notifications
             </button>
           </div>
         )}

@@ -17,4 +17,11 @@ crons.interval(
   internal.challengeStats.updateAllUserStats
 );
 
+// Run every 4 hours to send push notifications for due algorithms
+crons.interval(
+  "send-due-algorithm-push-notifications",
+  { hours: 4 },
+  internal.pushNodeActions.sendDueAlgorithmNotifications
+);
+
 export default crons;

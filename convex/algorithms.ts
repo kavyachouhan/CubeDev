@@ -2,9 +2,7 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
 
-// ==================== ALGORITHM SETS ====================
-
-// Get all published algorithm sets
+// Algorithm SRS calculation function
 export const getAllSets = query({
   args: {},
   handler: async (ctx) => {
@@ -43,7 +41,7 @@ export const getSetBySlugWithCases = query({
       .first();
 
     if (!set) {
-      // Fallback: try to find by name if slug doesn't exist
+      // Fallback: try to find by set name if slug doesn't exist
       const setByName = await ctx.db
         .query("algorithmSets")
         .filter((q) => q.eq(q.field("name"), slug.toUpperCase()))
@@ -69,8 +67,6 @@ export const getSetBySlugWithCases = query({
     return { set, cases };
   },
 });
-
-// ==================== ALGORITHM CASES ====================
 
 // Get a specific case with its algorithms
 export const getCaseWithAlgorithms = query({
@@ -161,7 +157,6 @@ export const getCaseBySlugWithAlgorithms = query({
   },
 });
 
-// ==================== USER PROGRESS ====================
 
 // Get user's progress for a specific set
 export const getUserSetProgress = query({
@@ -265,6 +260,50 @@ export const getDueReviews = query({
   },
 });
 
+// Get reviews for notifications (includes both due and upcoming within 24h)
+export const getReviewsForNotifications = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, { userId }) => {
+    const now = Date.now();
+    const oneDayFromNow = now + 24 * 60 * 60 * 1000;
+
+    // Get user's dismissed notifications
+    const user = await ctx.db.get(userId);
+    const dismissedNotifications = user?.dismissedNotifications || [];
+    const dismissedProgressIds = new Set(
+      dismissedNotifications.map((d) => d.progressId)
+    );
+
+    const allProgress = await ctx.db
+      .query("userAlgorithmProgress")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    // Filter for reviews that are due or within the next 24 hours
+    const relevantReviews = allProgress.filter(
+      (p) =>
+        p.learningStage !== "new" &&
+        p.learningStage !== "mastered" &&
+        p.nextReviewDate <= oneDayFromNow &&
+        !dismissedProgressIds.has(p._id) // Filter out dismissed notifications
+    );
+
+    // Get case details for each review
+    const reviewsWithCases = await Promise.all(
+      relevantReviews.map(async (progress) => {
+        const algorithmCase = await ctx.db.get(progress.caseId);
+        const set = algorithmCase
+          ? await ctx.db.get(algorithmCase.setId)
+          : null;
+        const preferredAlg = await ctx.db.get(progress.preferredAlgId);
+        return { progress, case: algorithmCase, set, algorithm: preferredAlg };
+      })
+    );
+
+    return reviewsWithCases.filter((r) => r.case !== null);
+  },
+});
+
 // Get all learned cases for free practice (not just due)
 export const getAllLearnedCases = query({
   args: { userId: v.id("users") },
@@ -274,7 +313,7 @@ export const getAllLearnedCases = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    // Filter for all cases that are not "new" (i.e., user has started learning)
+    // Filter to learned cases
     const learnedCases = allProgress.filter((p) => p.learningStage !== "new");
 
     // Get case details for each learned case
@@ -290,6 +329,213 @@ export const getAllLearnedCases = query({
     );
 
     return casesWithDetails.filter((r) => r.case !== null);
+  },
+});
+
+// Get random cases for practice session
+export const getRandomPracticeCases = query({
+  args: {
+    userId: v.id("users"),
+    count: v.optional(v.number()),
+    setId: v.optional(v.id("algorithmSets")),
+    difficulty: v.optional(
+      v.union(
+        v.literal("beginner"),
+        v.literal("intermediate"),
+        v.literal("advanced")
+      )
+    ),
+  },
+  handler: async (ctx, { userId, count = 10, setId, difficulty }) => {
+    // Get user's progress for all cases
+    const allProgress = await ctx.db
+      .query("userAlgorithmProgress")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    // Get all cases or filter by set
+    let allCases = setId
+      ? await ctx.db
+          .query("algorithmCases")
+          .withIndex("by_set", (q) => q.eq("setId", setId))
+          .collect()
+      : await ctx.db.query("algorithmCases").collect();
+
+    // Filter by difficulty if specified
+    if (difficulty) {
+      const sets = await ctx.db.query("algorithmSets").collect();
+      const setsByDifficulty = sets
+        .filter((s) => s.difficulty === difficulty)
+        .map((s) => s._id);
+      allCases = allCases.filter((c) => setsByDifficulty.includes(c.setId));
+    }
+
+    // Filter to only learned cases
+    const learnedCaseIds = new Set(
+      allProgress.filter((p) => p.learningStage !== "new").map((p) => p.caseId)
+    );
+    const learnedCases = allCases.filter((c) => learnedCaseIds.has(c._id));
+
+    // If no learned cases, return empty
+    if (learnedCases.length === 0) {
+      return [];
+    }
+
+    // Create progress map for weighting
+    const progressMap = new Map(allProgress.map((p) => [p.caseId, p]));
+    const now = Date.now();
+
+    // Weight cases based on performance, recency, and mastery degradation
+    const weightedCases = learnedCases.map((algorithmCase) => {
+      const progress = progressMap.get(algorithmCase._id);
+      if (!progress) {
+        return { case: algorithmCase, weight: 1 };
+      }
+
+      let weight = 1;
+
+      // 1. Lower accuracy = higher weight
+      const accuracyFactor = Math.max(0.1, 1 - progress.accuracyRate / 100);
+      weight *= 1 + accuracyFactor;
+
+      // 2. Slower recognition = higher weight
+      if (progress.recognitionTimes.length > 0) {
+        const avgRecognition =
+          progress.recognitionTimes.reduce((a, b) => a + b, 0) /
+          progress.recognitionTimes.length;
+        // Normalize to 0-1 scale (assuming 10s is very slow)
+        const timeFactor = Math.min(1, avgRecognition / 10000);
+        weight *= 1 + timeFactor;
+      }
+
+      // 3. More lapses = higher weight
+      if (progress.lapseCount > 0) {
+        weight *= 1 + progress.lapseCount * 0.2;
+      }
+
+      // 4. Newer cases (fewer reviews) get slight boost
+      if (progress.reviewCount < 5) {
+        weight *= 1.3;
+      }
+
+      // 5. RECENCY WEIGHTING: Cases not practiced recently get boosted
+      // Calculate days since last review
+      const daysSinceReview =
+        (now - progress.lastReviewedAt) / (1000 * 60 * 60 * 24);
+      if (daysSinceReview > 7) {
+        // Boost cases not practiced in over a week (up to 2x boost at 30+ days)
+        const recencyBoost = Math.min(2, 1 + (daysSinceReview - 7) / 23);
+        weight *= recencyBoost;
+      }
+
+      // 6. MASTERY DEGRADATION: Mastered cases re-enter rotation after long periods
+      // This helps prevent skill decay on "mastered" algorithms
+      if (progress.learningStage === "mastered" && progress.masteredAt) {
+        const daysSinceMastery =
+          (now - progress.masteredAt) / (1000 * 60 * 60 * 24);
+        // After 30 days of mastery, start adding weight to bring them back
+        if (daysSinceMastery > 30) {
+          // Gradual increase: 0.5x at 30 days, up to 1.5x at 90+ days
+          const masteryDecay = Math.min(
+            1.5,
+            0.5 + (daysSinceMastery - 30) / 60
+          );
+          weight *= masteryDecay;
+        } else {
+          // Recently mastered cases get lower weight to focus on learning cases
+          weight *= 0.3;
+        }
+      }
+
+      return { case: algorithmCase, progress, weight };
+    });
+
+    // Weighted random selection
+    const selectedCases: typeof weightedCases = [];
+    const casesToSelect = Math.min(count, weightedCases.length);
+
+    for (let i = 0; i < casesToSelect; i++) {
+      const totalWeight = weightedCases.reduce((sum, c) => sum + c.weight, 0);
+      let random = Math.random() * totalWeight;
+
+      let selectedIndex = 0;
+      for (let j = 0; j < weightedCases.length; j++) {
+        random -= weightedCases[j].weight;
+        if (random <= 0) {
+          selectedIndex = j;
+          break;
+        }
+      }
+
+      selectedCases.push(weightedCases[selectedIndex]);
+      weightedCases.splice(selectedIndex, 1);
+    }
+
+    // Get full details for selected cases
+    const casesWithDetails = await Promise.all(
+      selectedCases.map(async ({ case: algorithmCase, progress }) => {
+        const set = await ctx.db.get(algorithmCase.setId);
+        const preferredAlg = progress
+          ? await ctx.db.get(progress.preferredAlgId)
+          : await ctx.db
+              .query("algorithms")
+              .withIndex("by_case_default", (q) =>
+                q.eq("caseId", algorithmCase._id).eq("isDefault", true)
+              )
+              .first();
+
+        return {
+          progress: progress || null,
+          case: algorithmCase,
+          set,
+          algorithm: preferredAlg,
+        };
+      })
+    );
+
+    return casesWithDetails;
+  },
+});
+
+// Get a single case for practice by slug
+export const getCaseForPractice = query({
+  args: {
+    userId: v.id("users"),
+    caseSlug: v.string(),
+  },
+  handler: async (ctx, { userId, caseSlug }) => {
+    // Get the case by slug
+    const algorithmCase = await ctx.db
+      .query("algorithmCases")
+      .withIndex("by_slug", (q) => q.eq("slug", caseSlug))
+      .first();
+
+    if (!algorithmCase) {
+      return [];
+    }
+
+    // Get user progress for this case
+    const progress = await ctx.db
+      .query("userAlgorithmProgress")
+      .withIndex("by_user_case", (q) =>
+        q.eq("userId", userId).eq("caseId", algorithmCase._id)
+      )
+      .first();
+
+    // Get set and preferred algorithm
+    const set = await ctx.db.get(algorithmCase.setId);
+    const preferredAlg = progress?.preferredAlgId
+      ? await ctx.db.get(progress.preferredAlgId)
+      : null;
+
+    return [
+      {
+        progress: progress || null,
+        case: algorithmCase,
+        set,
+        algorithm: preferredAlg,
+      },
+    ];
   },
 });
 
@@ -336,7 +582,7 @@ export const getUserReviewHistory = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    // Filter only cases that have been reviewed (not just new)
+    // Filter to reviewed cases
     const reviewed = allProgress.filter(
       (p) => p.learningStage !== "new" && p.reviewCount > 0
     );
@@ -357,7 +603,104 @@ export const getUserReviewHistory = query({
   },
 });
 
-// ==================== MUTATIONS ====================
+// Get recognition metrics for analytics
+export const getRecognitionMetrics = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, { userId }) => {
+    const allProgress = await ctx.db
+      .query("userAlgorithmProgress")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    // Filter to learned cases
+    const learnedCases = allProgress.filter((p) => p.learningStage !== "new");
+
+    if (learnedCases.length === 0) {
+      return {
+        totalCases: 0,
+        mastered: 0,
+        averageRecognitionTime: 0,
+        averageExecutionTime: 0,
+        fastestRecognition: 0,
+        slowestRecognition: 0,
+        accuracyRate: 0,
+        improvementRate: 0,
+      };
+    }
+
+    // Calculate metrics
+    let totalRecognitionTime = 0;
+    let totalExecutionTime = 0;
+    let recognitionCount = 0;
+    let executionCount = 0;
+    let fastestRecognition = Infinity;
+    let slowestRecognition = 0;
+    let totalAccuracy = 0;
+
+    for (const progress of learnedCases) {
+      // Recognition times
+      if (progress.recognitionTimes.length > 0) {
+        const avgRecognition =
+          progress.recognitionTimes.reduce((a, b) => a + b, 0) /
+          progress.recognitionTimes.length;
+        totalRecognitionTime += avgRecognition;
+        recognitionCount++;
+
+        const fastest = Math.min(...progress.recognitionTimes);
+        const slowest = Math.max(...progress.recognitionTimes);
+        fastestRecognition = Math.min(fastestRecognition, fastest);
+        slowestRecognition = Math.max(slowestRecognition, slowest);
+      }
+
+      // Execution times
+      if (progress.executionTimes.length > 0) {
+        const avgExecution =
+          progress.executionTimes.reduce((a, b) => a + b, 0) /
+          progress.executionTimes.length;
+        totalExecutionTime += avgExecution;
+        executionCount++;
+      }
+
+      // Accuracy
+      totalAccuracy += progress.accuracyRate;
+    }
+
+    const mastered = learnedCases.filter(
+      (p) => p.learningStage === "mastered"
+    ).length;
+
+    return {
+      totalCases: learnedCases.length,
+      mastered,
+      averageRecognitionTime:
+        recognitionCount > 0 ? totalRecognitionTime / recognitionCount : 0,
+      averageExecutionTime:
+        executionCount > 0 ? totalExecutionTime / executionCount : 0,
+      fastestRecognition:
+        fastestRecognition === Infinity ? 0 : fastestRecognition,
+      slowestRecognition,
+      accuracyRate: totalAccuracy / learnedCases.length,
+      improvementRate: 0, // Calculated on frontend from session history
+    };
+  },
+});
+
+// Get recent practice sessions
+export const getRecentSessions = query({
+  args: {
+    userId: v.id("users"),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, { userId, limit = 10 }) => {
+    const sessions = await ctx.db
+      .query("algorithmPracticeSessions")
+      .withIndex("by_user_date", (q) => q.eq("userId", userId))
+      .order("desc")
+      .take(limit);
+
+    return sessions;
+  },
+});
 
 // Start learning a new algorithm case
 export const startLearning = mutation({
@@ -394,7 +737,7 @@ export const startLearning = mutation({
       lapseCount: 0,
       recognitionTimes: [],
       executionTimes: [],
-      accuracyRate: 0, // Start at 0% - no reviews done yet
+      accuracyRate: 0, // Initial accuracy
       firstLearnedAt: now,
       lastReviewedAt: now,
       createdAt: now,
@@ -469,11 +812,13 @@ export const recordReview = mutation({
 
     // Determine new learning stage
     let newStage = progress.learningStage;
-    if (
-      rating === "easy" &&
-      progress.reviewCount >= 5 &&
-      newAccuracyRate >= 95
-    ) {
+    const intervalBasedMastery = srsResult.interval >= 21;
+    const easyMastery =
+      rating === "easy" && progress.reviewCount >= 5 && newAccuracyRate >= 95;
+    const goodMastery =
+      rating === "good" && progress.reviewCount >= 8 && newAccuracyRate >= 90;
+
+    if (intervalBasedMastery || easyMastery || goodMastery) {
       newStage = "mastered";
     } else if (
       progress.learningStage === "learning" &&
@@ -539,6 +884,7 @@ export const recordPracticeSession = mutation({
     sessionType: v.union(
       v.literal("recognition"),
       v.literal("execution"),
+      v.literal("drill"),
       v.literal("mixed")
     ),
     casesReviewed: v.number(),
@@ -557,15 +903,7 @@ export const recordPracticeSession = mutation({
   },
 });
 
-// ==================== ADVANCED SRS ALGORITHM ====================
-// Based on SM-2+ algorithm with improvements for algorithm learning
-// Features:
-// - Graduating intervals for new cards
-// - Variable ease factor adjustments
-// - Interval fuzzing for better distribution
-// - Lapse handling with reduced intervals
-// - Different intervals for hard/good/easy ratings
-
+// Advanced SRS Algorithm Implementation
 interface SRSCard {
   easeFactor: number;
   interval: number;
@@ -605,14 +943,7 @@ const SRS_CONFIG = {
   FUZZ_RANGE: 0.1,
 };
 
-/**
- * Advanced SRS calculation with support for:
- * - New card learning steps
- * - Graduating intervals
- * - Variable ease factors
- * - Interval fuzzing
- * - Lapse handling
- */
+// Calculate new SRS values based on user rating
 function calculateSRS(
   card: SRSCard,
   rating: "again" | "hard" | "good" | "easy"
@@ -647,7 +978,7 @@ function calculateSRS(
   // Calculate new interval based on review count and rating
   let newInterval: number;
 
-  // New card (in learning phase)
+  // First review (new card)
   if (reviewCount === 0) {
     if (rating === "easy") {
       newInterval = SRS_CONFIG.EASY_INTERVAL;
@@ -684,8 +1015,7 @@ function calculateSRS(
     const modifier = SRS_CONFIG.INTERVAL_MODIFIERS[rating];
     newInterval = interval * easeFactor * modifier;
 
-    // Apply fuzzing to distribute reviews more evenly
-    // Fuzzing is only applied to intervals > 7 days
+    // Apply fuzzing for intervals greater than 7 days
     if (newInterval > 7) {
       const fuzzRange = newInterval * SRS_CONFIG.FUZZ_RANGE;
       const fuzzOffset = (Math.random() * 2 - 1) * fuzzRange;
@@ -702,3 +1032,233 @@ function calculateSRS(
     reviewCount: reviewCount + 1,
   };
 }
+
+// Get user's custom algorithm sets
+export const getUserCustomSets = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, { userId }) => {
+    const sets = await ctx.db
+      .query("customAlgorithmSets")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    return sets.sort((a, b) => b.createdAt - a.createdAt);
+  },
+});
+
+// Get a specific custom set by ID
+export const getCustomSetById = query({
+  args: { setId: v.id("customAlgorithmSets") },
+  handler: async (ctx, { setId }) => {
+    return await ctx.db.get(setId);
+  },
+});
+
+// Get all cases for custom set selection (with set names)
+export const getAllCasesForCustomSets = query({
+  args: {},
+  handler: async (ctx) => {
+    const cases = await ctx.db.query("algorithmCases").collect();
+    const sets = await ctx.db.query("algorithmSets").collect();
+
+    const setMap = new Map(sets.map((s) => [s._id, s.name]));
+
+    return cases.map((c) => ({
+      ...c,
+      setName: setMap.get(c.setId) || "Unknown",
+    }));
+  },
+});
+
+// Get all case names for blind recognition mode
+export const getAllCaseNames = query({
+  args: {},
+  handler: async (ctx) => {
+    const cases = await ctx.db.query("algorithmCases").collect();
+    return cases.map((c) => c.caseName);
+  },
+});
+
+// Create a new custom set
+export const createCustomSet = mutation({
+  args: {
+    userId: v.id("users"),
+    name: v.string(),
+    description: v.optional(v.string()),
+    caseIds: v.array(v.id("algorithmCases")),
+    isPublic: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const setId = await ctx.db.insert("customAlgorithmSets", {
+      userId: args.userId,
+      name: args.name,
+      description: args.description,
+      caseIds: args.caseIds,
+      isPublic: args.isPublic,
+      createdAt: now,
+      updatedAt: now,
+    });
+    return setId;
+  },
+});
+
+// Update a custom set
+export const updateCustomSet = mutation({
+  args: {
+    setId: v.id("customAlgorithmSets"),
+    name: v.optional(v.string()),
+    description: v.optional(v.string()),
+  },
+  handler: async (ctx, { setId, name, description }) => {
+    const updates: any = { updatedAt: Date.now() };
+    if (name !== undefined) updates.name = name;
+    if (description !== undefined) updates.description = description;
+
+    await ctx.db.patch(setId, updates);
+  },
+});
+
+// Delete a custom set
+export const deleteCustomSet = mutation({
+  args: { setId: v.id("customAlgorithmSets") },
+  handler: async (ctx, { setId }) => {
+    await ctx.db.delete(setId);
+  },
+});
+
+// Add a case to a custom set
+export const addCaseToCustomSet = mutation({
+  args: {
+    setId: v.id("customAlgorithmSets"),
+    caseId: v.id("algorithmCases"),
+  },
+  handler: async (ctx, { setId, caseId }) => {
+    const set = await ctx.db.get(setId);
+    if (!set) throw new Error("Custom set not found");
+
+    if (!set.caseIds.includes(caseId)) {
+      await ctx.db.patch(setId, {
+        caseIds: [...set.caseIds, caseId],
+        updatedAt: Date.now(),
+      });
+    }
+  },
+});
+
+// Remove a case from a custom set
+export const removeCaseFromCustomSet = mutation({
+  args: {
+    setId: v.id("customAlgorithmSets"),
+    caseId: v.id("algorithmCases"),
+  },
+  handler: async (ctx, { setId, caseId }) => {
+    const set = await ctx.db.get(setId);
+    if (!set) throw new Error("Custom set not found");
+
+    await ctx.db.patch(setId, {
+      caseIds: set.caseIds.filter((id) => id !== caseId),
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// Toggle custom set visibility (public/private)
+export const toggleCustomSetVisibility = mutation({
+  args: { setId: v.id("customAlgorithmSets") },
+  handler: async (ctx, { setId }) => {
+    const set = await ctx.db.get(setId);
+    if (!set) throw new Error("Custom set not found");
+
+    await ctx.db.patch(setId, {
+      isPublic: !set.isPublic,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// Import a custom set from JSON data
+export const importCustomSet = mutation({
+  args: {
+    userId: v.id("users"),
+    data: v.object({
+      name: v.string(),
+      description: v.optional(v.string()),
+      caseIds: v.array(v.string()),
+    }),
+  },
+  handler: async (ctx, { userId, data }) => {
+    const now = Date.now();
+
+    // Validate case IDs exist
+    const validCaseIds: any[] = [];
+    for (const caseIdStr of data.caseIds) {
+      try {
+        const caseDoc = await ctx.db.get(caseIdStr as any);
+        if (caseDoc) {
+          validCaseIds.push(caseIdStr);
+        }
+      } catch {
+        // Skip invalid IDs
+      }
+    }
+
+    const setId = await ctx.db.insert("customAlgorithmSets", {
+      userId,
+      name: data.name + " (Imported)",
+      description: data.description,
+      caseIds: validCaseIds,
+      isPublic: false,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    return setId;
+  },
+});
+
+// Get cases from a custom set for practice
+export const getCustomSetCasesForPractice = query({
+  args: {
+    userId: v.id("users"),
+    setId: v.id("customAlgorithmSets"),
+  },
+  handler: async (ctx, { userId, setId }) => {
+    const customSet = await ctx.db.get(setId);
+    if (!customSet) return [];
+
+    const casesWithDetails = await Promise.all(
+      customSet.caseIds.map(async (caseId) => {
+        const algorithmCase = await ctx.db.get(caseId);
+        if (!algorithmCase) return null;
+
+        const set = await ctx.db.get(algorithmCase.setId);
+
+        const progress = await ctx.db
+          .query("userAlgorithmProgress")
+          .withIndex("by_user_case", (q) =>
+            q.eq("userId", userId).eq("caseId", caseId)
+          )
+          .first();
+
+        const preferredAlg = progress?.preferredAlgId
+          ? await ctx.db.get(progress.preferredAlgId)
+          : await ctx.db
+              .query("algorithms")
+              .withIndex("by_case_default", (q) =>
+                q.eq("caseId", caseId).eq("isDefault", true)
+              )
+              .first();
+
+        return {
+          progress: progress || null,
+          case: algorithmCase,
+          set,
+          algorithm: preferredAlg,
+        };
+      })
+    );
+
+    return casesWithDetails.filter((c) => c !== null);
+  },
+});

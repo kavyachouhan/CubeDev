@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   User,
   Bot,
@@ -10,10 +10,12 @@ import {
   ThumbsDown,
 } from "lucide-react";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Message } from "./ChatInterface";
 import { useUser } from "@/components/UserProvider";
-import { formatToLocalTime } from "@/lib/date-utils";
 import FeedbackModal from "./FeedbackModal";
+import LinkWarningModal from "./LinkWarningModal";
 
 interface ChatMessageProps {
   message: Message;
@@ -36,15 +38,15 @@ export default function ChatMessage({
   >(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showFeedbackBadge, setShowFeedbackBadge] = useState(false);
+  const [isLinkWarningOpen, setIsLinkWarningOpen] = useState(false);
+  const [pendingUrl, setPendingUrl] = useState("");
+  const messageContentRef = useRef<HTMLDivElement>(null);
 
-  // Check if message has a valid MongoDB ObjectId (24 hex characters)
+  // Validate message ID format (assuming MongoDB ObjectId)
   const hasValidMessageId =
     message.id &&
     message.id.length === 24 &&
     /^[a-f0-9]{24}$/i.test(message.id);
-
-  // Format UTC time to user's local timezone
-  const formattedTime = formatToLocalTime(message.created_at);
 
   const handleFeedbackClick = (type: "like" | "dislike") => {
     setSelectedFeedbackType(type);
@@ -60,7 +62,7 @@ export default function ChatMessage({
       setIsFeedbackModalOpen(false);
       setSelectedFeedbackType(null);
 
-      // Show badge and fade it after 3 seconds
+      // Show feedback badge
       setShowFeedbackBadge(true);
       setTimeout(() => {
         setShowFeedbackBadge(false);
@@ -77,6 +79,46 @@ export default function ChatMessage({
       setIsFeedbackModalOpen(false);
       setSelectedFeedbackType(null);
     }
+  };
+
+  // Intercept link clicks in bot messages
+  useEffect(() => {
+    if (isUser || !messageContentRef.current) return;
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === "A") {
+        const href = target.getAttribute("href");
+        if (
+          href &&
+          (href.startsWith("http://") || href.startsWith("https://"))
+        ) {
+          e.preventDefault();
+          setPendingUrl(href);
+          setIsLinkWarningOpen(true);
+        }
+      }
+    };
+
+    const contentElement = messageContentRef.current;
+    contentElement.addEventListener("click", handleClick);
+
+    return () => {
+      contentElement.removeEventListener("click", handleClick);
+    };
+  }, [isUser, message.content]);
+
+  const handleProceedToLink = () => {
+    if (pendingUrl) {
+      window.open(pendingUrl, "_blank", "noopener,noreferrer");
+      setIsLinkWarningOpen(false);
+      setPendingUrl("");
+    }
+  };
+
+  const handleCloseLinkWarning = () => {
+    setIsLinkWarningOpen(false);
+    setPendingUrl("");
   };
 
   return (
@@ -118,17 +160,24 @@ export default function ChatMessage({
               : "bg-[var(--surface-elevated)] border border-[var(--border)] text-[var(--text-primary)]"
           }`}
         >
-          <p className="font-inter text-sm md:text-base leading-relaxed whitespace-pre-wrap break-words">
-            {message.content}
-          </p>
+          {isUser ? (
+            <p className="font-inter text-sm md:text-base leading-relaxed whitespace-pre-wrap break-words">
+              {message.content}
+            </p>
+          ) : (
+            <div
+              ref={messageContentRef}
+              className="font-inter text-sm md:text-base leading-relaxed prose-chat"
+            >
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {message.content}
+              </ReactMarkdown>
+            </div>
+          )}
         </div>
 
         {/* Metadata */}
         <div className="mt-1.5 md:mt-2 flex items-center gap-2 md:gap-3 text-xs text-[var(--text-muted)] flex-wrap">
-          <span className="flex items-center gap-1 font-inter">
-            {formattedTime}
-          </span>
-
           {/* Show tools used for assistant messages */}
           {!isUser &&
             message.metadata?.tools_used &&
@@ -170,7 +219,7 @@ export default function ChatMessage({
             </div>
           )}
 
-          {/* Feedback Badge - Shows after submission and fades */}
+          {/* Feedback Badge */}
           {!isUser && showFeedbackBadge && message.feedback && (
             <div
               className={`flex items-center gap-1 px-2 py-0.5 rounded-md transition-opacity duration-500 ${
@@ -204,9 +253,6 @@ export default function ChatMessage({
             </span>
           )}
         </div>
-
-        
-        
 
         {/* Sources */}
         {!isUser &&
@@ -244,6 +290,14 @@ export default function ChatMessage({
             isSubmitting={isSubmitting}
           />
         )}
+
+        {/* Link Warning Modal */}
+        <LinkWarningModal
+          isOpen={isLinkWarningOpen}
+          onClose={handleCloseLinkWarning}
+          url={pendingUrl}
+          onProceed={handleProceedToLink}
+        />
       </div>
     </div>
   );

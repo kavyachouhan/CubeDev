@@ -4,6 +4,7 @@ import "./globals.css";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import { UserProvider } from "@/components/UserProvider";
 import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
+import { FeedbackProvider } from "@/components/feedback";
 import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
@@ -58,7 +59,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Prevent theme flash by applying theme before React hydration */}
-        <script 
+        <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -95,7 +96,7 @@ export default function RootLayout({
         <ConvexClientProvider>
           <UserProvider>
             <ThemeProviderWrapper>
-              {children}
+              <FeedbackProvider>{children}</FeedbackProvider>
               <Analytics />
             </ThemeProviderWrapper>
           </UserProvider>

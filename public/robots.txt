@@ -35,6 +35,19 @@ Disallow: /cube-lab/challenges/room/*
 # Allow statistics and timer pages for discovery
 Allow: /cube-lab/timer
 Allow: /cube-lab/statistics
+Allow: /cube-lab/algorithm-trainer
+Allow: /cube-lab/algorithm-trainer/sets/*
+Allow: /cube-lab/algorithm-trainer/cases/*
+
+# Allow competitions list but disallow personal simulation URLs
+Allow: /cube-lab/competitions
+Disallow: /cube-lab/competitions/*/simulate/*
+
+# Disallow user-specific practice and custom pages
+Disallow: /cube-lab/algorithm-trainer/custom
+Disallow: /cube-lab/algorithm-trainer/custom/*
+Disallow: /cube-lab/algorithm-trainer/practice
+Disallow: /cube-lab/algorithm-trainer/stats
 
 # Sitemap location
 Sitemap: https://cubedev.xyz/sitemap.xml

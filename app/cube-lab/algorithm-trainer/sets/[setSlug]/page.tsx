@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useUser } from "@/components/UserProvider";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -13,14 +13,13 @@ import Link from "next/link";
 
 export default function AlgorithmSetPage() {
   const params = useParams();
-  const router = useRouter();
   const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStage, setFilterStage] = useState<string>("all");
 
   const setSlug = params.setSlug as string;
 
-  // Get set with cases using slug
+  // Get set details and cases
   const setData = useQuery(api.algorithms.getSetBySlugWithCases, {
     slug: setSlug,
   });
@@ -43,7 +42,7 @@ export default function AlgorithmSetPage() {
 
   const { set, cases } = setData;
 
-  // Filter cases based on search and stage filter
+  // Filter cases based on search and learning stage
   const filteredCases = cases.filter((c: any) => {
     const matchesSearch = c.caseName
       .toLowerCase()
@@ -73,7 +72,7 @@ export default function AlgorithmSetPage() {
           <div>
             <Link
               href="/cube-lab/algorithm-trainer"
-              className="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors mb-4"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors w-fit mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Algorithm Trainer

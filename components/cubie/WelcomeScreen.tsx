@@ -21,9 +21,13 @@ import {
 
 interface WelcomeScreenProps {
   onSendMessage: (message: string) => void;
+  onFocusInput?: () => void;
 }
 
-export default function WelcomeScreen({ onSendMessage }: WelcomeScreenProps) {
+export default function WelcomeScreen({
+  onSendMessage,
+  onFocusInput,
+}: WelcomeScreenProps) {
   const allSuggestions = [
     {
       icon: <TrendingUp className="w-5 h-5" />,
@@ -118,7 +122,7 @@ export default function WelcomeScreen({ onSendMessage }: WelcomeScreenProps) {
     },
   ];
 
-  // Randomly select 4 suggestions each time the component renders
+  // Randomly select 4 suggestions to display
   const suggestions = useMemo(() => {
     const shuffled = [...allSuggestions].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, 4);
@@ -146,7 +150,10 @@ export default function WelcomeScreen({ onSendMessage }: WelcomeScreenProps) {
           {suggestions.map((suggestion, index) => (
             <button
               key={index}
-              onClick={() => onSendMessage(suggestion.message)}
+              onClick={() => {
+                onSendMessage(suggestion.message);
+                onFocusInput?.();
+              }}
               className="p-4 bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--primary)] rounded-xl text-left transition-all group"
             >
               <div className="flex items-start gap-3">

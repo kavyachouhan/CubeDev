@@ -9,6 +9,7 @@ import {
   LogOut,
   ChevronUp,
   Home,
+  Mail,
 } from "lucide-react";
 
 interface SidebarUserDropdownProps {
@@ -107,6 +108,15 @@ export default function SidebarUserDropdown({
                 Public Profile
               </Link>
             )}
+
+            <Link
+              href="/contact"
+              className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+              onClick={() => setIsOpen(false)}
+            >
+              <Mail className="w-4 h-4" />
+              Contact
+            </Link>
 
             <Link
               href="/me"

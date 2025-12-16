@@ -4,8 +4,15 @@ interface CacheEntry<T> {
   expiresAt: number;
 }
 
+interface CacheResult<T> {
+  data: T | null;
+  isStale: boolean;
+  timestamp: number | null;
+}
+
 const CACHE_PREFIX = "wca_cache_";
 const DEFAULT_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const DEFAULT_STALE_THRESHOLD = 15 * 60 * 1000; // 15 minutes in milliseconds
 
 // Retrieve data from cache if not expired
 export function getFromCache<T>(key: string): T | null {
@@ -28,6 +35,59 @@ export function getFromCache<T>(key: string): T | null {
     return entry.data;
   } catch (error) {
     console.warn("Failed to read from cache:", error);
+    return null;
+  }
+}
+
+// Retrieve data from cache with stale check
+export function getFromCacheWithStaleCheck<T>(
+  key: string,
+  staleThreshold: number = DEFAULT_STALE_THRESHOLD
+): CacheResult<T> {
+  if (typeof window === "undefined") {
+    return { data: null, isStale: false, timestamp: null };
+  }
+
+  try {
+    const cacheKey = CACHE_PREFIX + key;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (!cached) {
+      return { data: null, isStale: false, timestamp: null };
+    }
+
+    const entry: CacheEntry<T> = JSON.parse(cached);
+    const now = Date.now();
+
+    // Check if cache has fully expired
+    if (now > entry.expiresAt) {
+      localStorage.removeItem(cacheKey);
+      return { data: null, isStale: false, timestamp: null };
+    }
+
+    // Check if data is stale
+    const isStale = now - entry.timestamp > staleThreshold;
+
+    return { data: entry.data, isStale, timestamp: entry.timestamp };
+  } catch (error) {
+    console.warn("Failed to read from cache with stale check:", error);
+    return { data: null, isStale: false, timestamp: null };
+  }
+}
+
+// Get cache age in milliseconds
+export function getCacheAge(key: string): number | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const cacheKey = CACHE_PREFIX + key;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (!cached) return null;
+
+    const entry = JSON.parse(cached);
+    return Date.now() - entry.timestamp;
+  } catch {
     return null;
   }
 }

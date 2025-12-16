@@ -778,3 +778,76 @@ export const getUserAccountStatus = query({
     };
   },
 });
+
+// Dismiss a notification for an algorithm review
+export const dismissNotification = mutation({
+  args: {
+    userId: v.id("users"),
+    progressId: v.id("userAlgorithmProgress"),
+  },
+  handler: async (ctx, { userId, progressId }) => {
+    const user = await ctx.db.get(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const dismissedNotifications = user.dismissedNotifications || [];
+
+    // Check if already dismissed
+    const alreadyDismissed = dismissedNotifications.some(
+      (d) => d.progressId === progressId
+    );
+
+    if (alreadyDismissed) {
+      return; // Already dismissed, nothing to do
+    }
+
+    // Add to dismissed list
+    dismissedNotifications.push({
+      progressId,
+      dismissedAt: Date.now(),
+    });
+
+    await ctx.db.patch(userId, { dismissedNotifications });
+  },
+});
+
+// Undismiss a notification for an algorithm review
+export const undismissNotification = mutation({
+  args: {
+    userId: v.id("users"),
+    progressId: v.id("userAlgorithmProgress"),
+  },
+  handler: async (ctx, { userId, progressId }) => {
+    const user = await ctx.db.get(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const dismissedNotifications = user.dismissedNotifications || [];
+
+    // Remove from dismissed list
+    const updatedDismissed = dismissedNotifications.filter(
+      (d) => d.progressId !== progressId
+    );
+
+    await ctx.db.patch(userId, {
+      dismissedNotifications: updatedDismissed,
+    });
+  },
+});
+
+// Clear all dismissed notifications
+export const clearAllDismissedNotifications = mutation({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, { userId }) => {
+    const user = await ctx.db.get(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await ctx.db.patch(userId, { dismissedNotifications: [] });
+  },
+});

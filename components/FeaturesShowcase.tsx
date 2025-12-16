@@ -12,6 +12,8 @@ import {
   TrendingUp,
   User,
   Palette,
+  GraduationCap,
+  Brain,
 } from "lucide-react";
 
 interface Feature {
@@ -375,6 +377,111 @@ export default function FeaturesShowcase() {
       ),
     },
     {
+      id: "algorithm-trainer",
+      title: "Algorithm Trainer",
+      description:
+        "Master OLL, PLL, F2L, and more with our intelligent spaced repetition system. Track your progress, get personalized practice sessions, and never forget an algorithm again.",
+      icon: <GraduationCap className="w-6 h-6" />,
+      preview: (
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
+          <div className="space-y-6">
+            <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold text-[var(--text-primary)] font-button">
+                  Algorithm Progress
+                </h4>
+                <span className="text-xs text-[var(--primary)] font-button px-2 py-1 bg-[var(--primary)]/10 rounded">
+                  SRS Active
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="text-center p-3 bg-[var(--background)] rounded">
+                  <div className="text-2xl font-bold text-[var(--success)] font-mono">
+                    47
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] font-inter">
+                    Mastered
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-[var(--background)] rounded">
+                  <div className="text-2xl font-bold text-[var(--warning)] font-mono">
+                    12
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] font-inter">
+                    Due for Review
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3 mb-4">
+                <div className="text-sm font-semibold text-[var(--text-primary)] font-button">
+                  Algorithm Sets
+                </div>
+                {[
+                  {
+                    name: "PLL",
+                    progress: 85,
+                    mastered: 18,
+                    total: 21,
+                    color: "bg-[var(--success)]",
+                  },
+                  {
+                    name: "OLL",
+                    progress: 65,
+                    mastered: 37,
+                    total: 57,
+                    color: "bg-[var(--primary)]",
+                  },
+                  {
+                    name: "F2L",
+                    progress: 40,
+                    mastered: 17,
+                    total: 41,
+                    color: "bg-[var(--warning)]",
+                  },
+                ].map((set) => (
+                  <div
+                    key={set.name}
+                    className="p-3 bg-[var(--background)] rounded"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                        {set.name}
+                      </span>
+                      <span className="text-xs text-[var(--text-muted)] font-inter">
+                        {set.mastered}/{set.total}
+                      </span>
+                    </div>
+                    <div className="w-full h-2 bg-[var(--border)] rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${set.color} transition-all`}
+                        style={{ width: `${set.progress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)] font-inter">
+                <Brain className="w-4 h-4 text-[var(--primary)]" />
+                <span>Spaced repetition optimizes your learning</span>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button className="flex-1 px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
+                Practice Now
+              </button>
+              <button className="px-4 py-3 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-secondary)] hover:text-[var(--primary)] rounded-lg transition-all">
+                Browse
+              </button>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
       id: "practice-mode",
       title: "Practice Mode",
       description:
@@ -460,6 +567,102 @@ export default function FeaturesShowcase() {
             <button className="w-full px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
               Continue Drill
             </button>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "competition-simulation",
+      title: "Competition Simulation",
+      description:
+        "Experience the thrill of competition with realistic simulation. Practice under competition conditions with averages, cutoffs, time limits, and proper WCA-style rounds.",
+      icon: <Trophy className="w-6 h-6" />,
+      preview: (
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
+          <div className="space-y-6">
+            <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold text-[var(--text-primary)] font-button">
+                  Competition Round
+                </h4>
+                <span className="text-xs text-[var(--success)] font-button px-2 py-1 bg-[var(--success)]/10 rounded">
+                  Live
+                </span>
+              </div>
+
+              <div className="text-center p-4 bg-[var(--background)] rounded-lg mb-4">
+                <div className="text-xs text-[var(--text-muted)] font-inter mb-1">
+                  Current Solve
+                </div>
+                <div className="text-4xl font-bold text-[var(--primary)] font-mono">
+                  3 / 5
+                </div>
+                <div className="text-sm text-[var(--text-secondary)] font-inter mt-1">
+                  Ao5 Round
+                </div>
+              </div>
+
+              <div className="grid grid-cols-5 gap-2 mb-4">
+                {["12.43", "11.87", "13.21", "--", "--"].map((time, i) => (
+                  <div
+                    key={i}
+                    className={`text-center p-2 rounded ${
+                      time === "--"
+                        ? "bg-[var(--border)]"
+                        : "bg-[var(--background)]"
+                    }`}
+                  >
+                    <div
+                      className={`text-xs font-mono ${
+                        time === "--"
+                          ? "text-[var(--text-muted)]"
+                          : i === 1
+                            ? "text-[var(--success)] font-bold"
+                            : "text-[var(--text-primary)]"
+                      }`}
+                    >
+                      {time}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[var(--text-secondary)] font-inter">
+                    Current Average
+                  </span>
+                  <span className="text-[var(--primary)] font-mono font-bold">
+                    12.50
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[var(--text-secondary)] font-inter">
+                    Time Limit
+                  </span>
+                  <span className="text-[var(--text-primary)] font-mono">
+                    1:00.00
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[var(--text-secondary)] font-inter">
+                    Cutoff
+                  </span>
+                  <span className="text-[var(--success)] font-mono">
+                    Passed
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button className="flex-1 px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
+                Next Solve
+              </button>
+              <button className="px-4 py-3 border border-[var(--border)] hover:border-[var(--error)] text-[var(--text-secondary)] hover:text-[var(--error)] rounded-lg transition-all">
+                DNF
+              </button>
+            </div>
           </div>
         </div>
       ),

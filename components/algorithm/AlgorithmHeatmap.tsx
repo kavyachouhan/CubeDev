@@ -60,7 +60,7 @@ const MONTHS = [
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-// Persistent boolean that reads/writes localStorage on first render
+// Custom hook for persistent boolean state in localStorage
 function usePersistentBool(key: string, defaultValue: boolean) {
   const [state, setState] = useState<boolean>(() => {
     if (typeof window === "undefined") return defaultValue;
@@ -97,7 +97,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
     true
   );
 
-  // Handle outside clicks to close tooltip
+  // Handle click outside to close clicked day tooltip
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -125,7 +125,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
     startDate.setDate(today.getDate() - daysBack + 1); // +1 to include start date
     startDate.setHours(0, 0, 0, 0); // Start of the day
 
-    // Align start date to the previous Sunday for full week display
+    // Find the first day to display (start of the week containing startDate)
     const firstDay = new Date(startDate);
     const dayOffset = firstDay.getDay();
     firstDay.setDate(firstDay.getDate() - dayOffset);
@@ -142,7 +142,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
         return;
       }
 
-      // Check if review is within our date range
+      // Only count reviews within the selected period
       if (reviewDate >= startDate && reviewDate <= today) {
         const dateKey = reviewDate.toISOString().split("T")[0];
         reviewCounts.set(dateKey, (reviewCounts.get(dateKey) || 0) + 1);
@@ -162,11 +162,11 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
     const p80 = getPercentile(80);
     const p95 = getPercentile(95);
 
-    // Set end date to today for loop boundary
+    // Set the end date for the heatmap
     const endOfToday = new Date(today);
     endOfToday.setHours(23, 59, 59, 999);
 
-    // Calculate total weeks and days to display
+    // Calculate total weeks to display
     const totalWeeks = Math.ceil(
       (endOfToday.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24 * 7)
     );
@@ -176,13 +176,13 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
       const currentDate = new Date(firstDay);
       currentDate.setDate(firstDay.getDate() + i);
 
-      // Stop if we're past today
+      // Stop if we've passed the end date
       if (currentDate > endOfToday) break;
 
       const dateKey = currentDate.toISOString().split("T")[0];
       const count = reviewCounts.get(dateKey) || 0;
 
-      // Calculate intensity level (0-5) based on percentiles
+      // Determine intensity level based on percentiles
       let level = 0;
       if (count > 0) {
         if (count >= p95) level = 5;
@@ -220,7 +220,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
     heatmapData.forEach((day, index) => {
       currentWeek.push(day);
 
-      // If Saturday or last day, push the week
+      // If it's Saturday or the last day, finalize the week
       if (day.dayOfWeek === 6 || index === heatmapData.length - 1) {
         // Determine if this week starts a new month
         const firstDayOfWeek = currentWeek[0];
@@ -243,7 +243,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
 
   // Calculate overall stats
   const stats = useMemo(() => {
-    // Calculate days back from today
+    // Determine days back from selected period
     const daysBack =
       selectedPeriod === "3m" ? 90 : selectedPeriod === "6m" ? 180 : 365;
 
@@ -268,7 +268,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
     const averagePerDay =
       totalDays > 0 ? filteredReviews.length / totalDays : 0;
 
-    // Calculate streaks (current and longest)
+    // Calculate streaks
     let currentStreak = 0;
     let longestStreak = 0;
     let tempStreak = 0;
@@ -396,11 +396,11 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
             onClick={() => setShowHeatmap(!showHeatmap)}
             className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
             title={
-              showHeatmap ? "Hide learning activity" : "Show learning activity"
+              showHeatmap ? "Hide review activity" : "Show review activity"
             }
           >
             <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
-              Recent Activity
+              Review Activity
             </h3>
             {showHeatmap ? (
               <ChevronDown className="w-4 h-4" />
@@ -412,7 +412,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
             onClick={() => setShowHeatmap(!showHeatmap)}
             className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
             title={
-              showHeatmap ? "Hide learning activity" : "Show learning activity"
+              showHeatmap ? "Hide review activity" : "Show review activity"
             }
           >
             {showHeatmap ? (

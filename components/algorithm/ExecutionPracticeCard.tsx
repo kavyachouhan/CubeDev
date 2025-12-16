@@ -9,7 +9,6 @@ interface ExecutionPracticeCardProps {
   algorithm: string;
   setupMoves: string;
   onComplete: (timeMs: number) => void;
-  mode?: "execution" | "all" | "due";
   hasStarted?: boolean;
   onStart?: () => void;
 }
@@ -19,7 +18,6 @@ export default function ExecutionPracticeCard({
   algorithm,
   setupMoves,
   onComplete,
-  mode = "all",
   hasStarted = false,
   onStart,
 }: ExecutionPracticeCardProps) {
@@ -32,7 +30,7 @@ export default function ExecutionPracticeCard({
   const [inspectionTime, setInspectionTime] = useState<number>(15);
   const [keyHoldStart, setKeyHoldStart] = useState<number>(0);
   const [touchHoldStart, setTouchHoldStart] = useState<number>(0);
-  const holdTimeRequired = 300; // milliseconds to hold before ready state
+  const holdTimeRequired = 300; // milliseconds
   const inspectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -119,11 +117,11 @@ export default function ExecutionPracticeCard({
       e.preventDefault();
 
       if (timerState === "idle") {
-        // Start holding to begin inspection
+        // Start holding
         setKeyHoldStart(Date.now());
         setTimerState("holding");
       } else if (timerState === "inspection") {
-        // During inspection, start holding to prepare timer
+        // During inspection, start holding
         setKeyHoldStart(Date.now());
         setTimerState("holding");
       } else if (timerState === "running") {
@@ -140,16 +138,16 @@ export default function ExecutionPracticeCard({
         const holdDuration = Date.now() - keyHoldStart;
 
         if (holdDuration >= holdTimeRequired) {
-          // If held long enough, check what to do
+          // Held long enough to trigger action
           if (inspectionTime < 15) {
-            // We were in inspection, now start timer
+            // Inspection complete, start timer
             startTimer();
           } else {
             // Start inspection
             startInspection();
           }
         } else {
-          // Not held long enough, revert to previous state
+          // Not held long enough, revert state
           if (inspectionTime < 15) {
             setTimerState("inspection");
           } else {
@@ -195,7 +193,7 @@ export default function ExecutionPracticeCard({
     setTouchHoldStart(0);
   };
 
-  // Touch event handlers for mobile support
+  // Touch event handlers
   const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
     if (!hasStarted) return;
     e.preventDefault();
@@ -292,7 +290,7 @@ export default function ExecutionPracticeCard({
           <div className="text-center py-12">
             <Play className="w-16 h-16 text-[var(--primary)] mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-[var(--text-primary)] font-statement mb-2">
-              Execution Practice
+              Execution Drill
             </h3>
             <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
               Practice executing algorithms as fast as possible. Focus on smooth
@@ -302,12 +300,12 @@ export default function ExecutionPracticeCard({
               onClick={onStart}
               className="px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-medium text-lg"
             >
-              Start Execution Practice
+              Start Execution Drill
             </button>
           </div>
         )}
 
-        {/* Practice Content - Only show when started */}
+        {/* Practice Content */}
         {hasStarted && (
           <>
             {/* Case Info */}
@@ -373,7 +371,7 @@ export default function ExecutionPracticeCard({
                   {getStatusText()}
                 </p>
 
-                {/* Manual buttons for backup */}
+                {/* Manual buttons */}
                 {timerState === "finished" && (
                   <div className="flex gap-2 justify-center mt-4">
                     <button

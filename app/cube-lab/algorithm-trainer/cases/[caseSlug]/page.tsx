@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useUser } from "@/components/UserProvider";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -18,17 +18,16 @@ import { Id } from "@/convex/_generated/dataModel";
 
 export default function AlgorithmCasePage() {
   const params = useParams();
-  const router = useRouter();
   const { user } = useUser();
 
   const caseSlug = params.caseSlug as string;
 
-  // Get case with algorithms using slug
+  // Queries
   const caseData = useQuery(api.algorithms.getCaseBySlugWithAlgorithms, {
     slug: caseSlug,
   });
 
-  // Get user progress for this case
+  // Queries dependent on user and case data
   const userProgress = useQuery(
     api.algorithms.getUserCaseProgress,
     user?.convexId && caseData?.case?._id
@@ -46,7 +45,7 @@ export default function AlgorithmCasePage() {
 
   useEffect(() => {
     if (caseData) {
-      // Set preferred algorithm or default
+      // Set selected algorithm based on user progress or default
       if (userProgress?.preferredAlgId) {
         setSelectedAlgId(userProgress.preferredAlgId);
       } else {
@@ -86,9 +85,9 @@ export default function AlgorithmCasePage() {
     }
   };
 
-  // Early returns must happen AFTER all hooks
+  // Loading state
   if (!user) {
-    return null; // ProtectedRoute will handle redirect
+    return null; // Let ProtectedRoute handle redirect
   }
 
   if (caseData === undefined) {
@@ -425,13 +424,22 @@ export default function AlgorithmCasePage() {
                     <span className="truncate">Start Learning This Case</span>
                   </button>
                 ) : (
-                  <Link
-                    href={`/cube-lab/algorithm-trainer/practice?mode=all&case=${algorithmCase._id}`}
-                    className="w-full sm:flex-1 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
-                  >
-                    <Brain className="w-5 h-5 flex-shrink-0" />
-                    <span className="truncate">Practice This Case</span>
-                  </Link>
+                  <>
+                    <Link
+                      href={`/cube-lab/algorithm-trainer/practice?mode=all&case=${algorithmCase.slug || caseSlug}`}
+                      className="w-full sm:flex-1 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                    >
+                      <Brain className="w-5 h-5 flex-shrink-0" />
+                      <span className="truncate">Practice This Case</span>
+                    </Link>
+                    <Link
+                      href={`/cube-lab/algorithm-trainer/practice?mode=infinite&case=${algorithmCase.slug || caseSlug}`}
+                      className="w-full sm:flex-1 py-3 border border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)]/10 rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                    >
+                      <PlayCircle className="w-5 h-5 flex-shrink-0" />
+                      <span className="truncate">Drill This Case</span>
+                    </Link>
+                  </>
                 )}
               </div>
             </div>

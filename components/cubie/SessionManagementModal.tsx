@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { X, MessageSquare, Pencil, Trash2, Check, Plus } from "lucide-react";
 import { Session } from "./ChatInterface";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 interface SessionManagementModalProps {
   isOpen: boolean;
@@ -28,9 +29,12 @@ export default function SessionManagementModal({
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [deleteSessionId, setDeleteSessionId] = useState<string | null>(null);
+  const [deleteSessionTitle, setDeleteSessionTitle] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
   const editInputRef = useRef<HTMLInputElement>(null);
 
-  // Focus input when editing starts
+  // Focus the input when entering edit mode
   useEffect(() => {
     if (editingSessionId && editInputRef.current) {
       editInputRef.current.focus();
@@ -78,14 +82,51 @@ export default function SessionManagementModal({
     onClose();
   };
 
-  const handleSelectSession = (sessionId: string) => {
-    onSelectSession(sessionId);
+  const handleSelectSession = (session: Session) => {
+    // Notify other parts of the app that a session has been loaded
+    window.dispatchEvent(
+      new CustomEvent("cubie-session-loaded", {
+        detail: {
+          sessionId: session.session_id,
+          title: session.title,
+        },
+      })
+    );
+    onSelectSession(session.session_id);
     onClose();
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, session: Session) => {
+    e.stopPropagation();
+    setDeleteSessionId(session.session_id);
+    setDeleteSessionTitle(session.title);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteSessionId) return;
+
+    setIsDeleting(true);
+    try {
+      await onDeleteSession(deleteSessionId);
+      setDeleteSessionId(null);
+      setDeleteSessionTitle("");
+    } catch (error) {
+      console.error("Failed to delete session:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    if (!isDeleting) {
+      setDeleteSessionId(null);
+      setDeleteSessionTitle("");
+    }
   };
 
   if (!isOpen) return null;
 
-  // Sort sessions by updated_at (most recent first)
+  // Sort sessions by updated_at descending
   const sortedSessions = [...sessions].sort((a, b) => {
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
   });
@@ -194,9 +235,7 @@ export default function SessionManagementModal({
                     ) : (
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() =>
-                            handleSelectSession(session.session_id)
-                          }
+                          onClick={() => handleSelectSession(session)}
                           className="flex-1 text-left min-w-0 flex items-start gap-2"
                         >
                           <MessageSquare
@@ -231,10 +270,7 @@ export default function SessionManagementModal({
                             <Pencil className="w-4 h-4 text-[var(--primary)]" />
                           </button>
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onDeleteSession(session.session_id);
-                            }}
+                            onClick={(e) => handleDeleteClick(e, session)}
                             className="p-1.5 hover:bg-[var(--error)]/20 rounded transition-colors"
                             title="Delete session"
                           >
@@ -253,11 +289,19 @@ export default function SessionManagementModal({
         {/* Footer */}
         <div className="p-4 border-t border-[var(--border)] bg-[var(--surface-elevated)]">
           <p className="text-xs text-[var(--text-muted)] text-center font-inter">
-            {sessions.length} {sessions.length === 1 ? "chat" : "chats"}{" "}
-            total
+            {sessions.length} {sessions.length === 1 ? "chat" : "chats"} total
           </p>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteSessionId !== null}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+        sessionTitle={deleteSessionTitle}
+      />
     </div>
   );
 }
