@@ -27,6 +27,8 @@ from app.schemas.chat_schemas import (
 )
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from app.utils.cache_manager import get_cache_manager, get_wca_cache, get_rag_cache, get_query_cache
 
 load_dotenv()
 
@@ -50,6 +52,49 @@ app.add_middleware(
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 
+# Rate limit exception handler
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    # The exc.detail from slowapi contains rate limit config like "1 per 1 minute"
+    # We need to parse and provide a better user-friendly message
+    detail = str(exc.detail) if exc.detail else ""
+    
+    # Calculate retry-after time (default to 60 seconds for per-minute limits)
+    retry_seconds = 60
+    
+    # Try to extract time from the detail string
+    if "minute" in detail.lower():
+        retry_seconds = 60
+    elif "hour" in detail.lower():
+        retry_seconds = 3600
+    elif "second" in detail.lower():
+        # Try to extract number of seconds
+        import re
+        match = re.search(r'(\d+)\s*per\s*(\d+)\s*second', detail.lower())
+        if match:
+            retry_seconds = int(match.group(2))
+    
+    # Format user-friendly message
+    if retry_seconds < 60:
+        time_message = f"{retry_seconds} second{'s' if retry_seconds != 1 else ''}"
+    else:
+        minutes = retry_seconds // 60
+        time_message = f"{minutes} minute{'s' if minutes != 1 else ''}"
+    
+    return JSONResponse(
+        status_code=429,
+        content={
+            "detail": f"Limit exceeded. Please try again in {time_message}.",
+            "retry_after": str(retry_seconds)
+        }
+    )
+
+# Initialize cache managers
+cache_manager = get_cache_manager()
+wca_cache = get_wca_cache()
+rag_cache = get_rag_cache()
+query_cache = get_query_cache()
+
 # Initialize services
 chat_service = ChatService(db)
 
@@ -57,7 +102,8 @@ chat_service = ChatService(db)
 # ==================== HEALTH & STATUS ====================
 
 @app.get("/")
-def read_root():
+@limiter.limit("20/minute")
+async def read_root(request: Request):
     """Root endpoint."""
     return {
         "service": "Cubie AI Backend",
@@ -68,7 +114,8 @@ def read_root():
 
 
 @app.get("/health", response_model=HealthResponse)
-async def health_check():
+@limiter.limit("30/minute")
+async def health_check(request: Request):
     """Health check endpoint."""
     try:
         # Check database connection
@@ -91,7 +138,7 @@ async def health_check():
 # ==================== CHAT ENDPOINTS ====================
 
 @app.post("/chat", response_model=ChatMessageResponse)
-@limiter.limit("5/minute")
+@limiter.limit("3/minute")
 async def send_message(
     request: Request,
     chat_request: ChatMessageRequest,
@@ -105,8 +152,9 @@ async def send_message(
     2. Creates a new session or uses existing one
     3. Processes the query through the agentic RAG system
     4. Returns the AI response with metadata or streams it
+    5. Uses caching for common queries to reduce load
     
-    Rate limit: 5 requests per minute per user
+    Rate limit: 3 requests per minute per user
     """
     try:
         user_id = current_user["user_id"]
@@ -215,14 +263,17 @@ async def send_message(
 
 
 @app.post("/chat/session", response_model=SessionResponse)
+@limiter.limit("20/minute")
 async def create_session(
-    request: NewSessionRequest,
+    request: Request,
+    session_request: NewSessionRequest,
     current_user: dict = Depends(get_current_user)
 ):
     """
     Create a new chat session.
     
     Optionally provide an initial message to start the conversation.
+    Rate limit: 20 sessions per minute per IP
     """
     try:
         user_id = current_user["user_id"]
@@ -230,13 +281,13 @@ async def create_session(
         
         session_info = await orchestrator.create_new_session(
             user_id=user_id,
-            initial_message=request.initial_message
+            initial_message=session_request.initial_message
         )
         
         # If initial message provided, process it
-        if request.initial_message:
+        if session_request.initial_message:
             await orchestrator.process_query(
-                user_query=request.initial_message,
+                user_query=session_request.initial_message,
                 user_id=user_id,
                 session_id=session_info["session_id"],
                 use_rag=True,
@@ -244,12 +295,12 @@ async def create_session(
             )
         
         # Update title if provided
-        if request.title:
+        if session_request.title:
             chat_service.update_session(
                 session_id=session_info["session_id"],
-                title=request.title
+                title=session_request.title
             )
-            session_info["title"] = request.title
+            session_info["title"] = session_request.title
         
         return SessionResponse(**session_info)
         
@@ -261,7 +312,9 @@ async def create_session(
 
 
 @app.get("/chat/sessions", response_model=UserSessionsResponse)
+@limiter.limit("30/minute")
 async def get_user_sessions(
+    request: Request,
     limit: int = 50,
     skip: int = 0,
     current_user: dict = Depends(get_current_user)
@@ -270,6 +323,7 @@ async def get_user_sessions(
     Get all chat sessions for the current user.
     
     Returns sessions ordered by last updated (most recent first).
+    Rate limit: 30 requests per minute per IP
     """
     try:
         user_id = current_user["user_id"]
@@ -308,7 +362,9 @@ async def get_user_sessions(
 
 
 @app.get("/chat/session/{session_id}", response_model=SessionHistoryResponse)
+@limiter.limit("30/minute")
 async def get_session_history(
+    request: Request,
     session_id: str,
     limit: Optional[int] = None,
     current_user: dict = Depends(get_current_user)
@@ -317,6 +373,7 @@ async def get_session_history(
     Get full history for a specific chat session.
     
     Returns session details and all messages.
+    Rate limit: 30 requests per minute per IP
     """
     try:
         user_id = current_user["user_id"]
@@ -360,12 +417,15 @@ async def get_session_history(
 
 
 @app.delete("/chat/session/{session_id}")
+@limiter.limit("15/minute")
 async def delete_session(
+    request: Request,
     session_id: str,
     current_user: dict = Depends(get_current_user)
 ):
     """
     Delete a chat session and all its messages.
+    Rate limit: 15 requests per minute per IP
     """
     try:
         user_id = current_user["user_id"]
@@ -399,13 +459,16 @@ async def delete_session(
 
 
 @app.put("/chat/session/{session_id}", response_model=SessionResponse)
+@limiter.limit("20/minute")
 async def update_session(
+    request: Request,
     session_id: str,
-    request: UpdateSessionRequest,
+    update_request: UpdateSessionRequest,
     current_user: dict = Depends(get_current_user)
 ):
     """
     Update a chat session (e.g., change title).
+    Rate limit: 20 requests per minute per IP
     """
     try:
         user_id = current_user["user_id"]
@@ -419,7 +482,7 @@ async def update_session(
             )
         
         # Update session
-        success = chat_service.update_session(session_id, title=request.title)
+        success = chat_service.update_session(session_id, title=update_request.title)
         
         if not success:
             raise HTTPException(
@@ -450,18 +513,21 @@ async def update_session(
 
 
 @app.post("/chat/feedback")
+@limiter.limit("30/minute")
 async def submit_feedback(
-    request: MessageFeedbackRequest,
+    request: Request,
+    feedback_request: MessageFeedbackRequest,
     current_user: dict = Depends(get_current_user)
 ):
     """
     Submit feedback for a bot message.
+    Rate limit: 30 requests per minute per IP
     """
     try:
         from app.models.chat import MessageFeedback, FeedbackType
         
         # Get message and verify access
-        message = chat_service.get_message(request.message_id)
+        message = chat_service.get_message(feedback_request.message_id)
         if not message:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -476,13 +542,13 @@ async def submit_feedback(
         
         # Create feedback
         feedback = MessageFeedback(
-            feedback_type=FeedbackType(request.feedback_type),
-            comment=request.comment
+            feedback_type=FeedbackType(feedback_request.feedback_type),
+            comment=feedback_request.comment
         )
         
         # Update message
         success = chat_service.update_message_feedback(
-            message_id=request.message_id,
+            message_id=feedback_request.message_id,
             feedback=feedback
         )
         

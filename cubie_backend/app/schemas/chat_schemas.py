@@ -16,8 +16,8 @@ class ChatMessageRequest(BaseModel):
     message: str = Field(
         ...,
         min_length=1,
-        max_length=5000,
-        description="User's message content"
+        max_length=4000,
+        description="User's message content (max 4000 characters)"
     )
     
     session_id: Optional[str] = Field(
@@ -196,14 +196,14 @@ class ChatMessageResponse(BaseModel):
                 "metadata": {
                     "tools_used": [
                         {
-                            "tool_type": "knowledge_base",
+                            "tool_type": "Knowledge Base",
                             "query": "F2L speed improvement",
                             "execution_time_ms": 250.5
                         }
                     ],
                     "sources": [
                         {
-                            "type": "knowledge_base",
+                            "type": "Knowledge Base",
                             "title": "F2L Training Guide",
                             "category": "tutorials"
                         }
@@ -223,6 +223,14 @@ class ChatMessageResponse(BaseModel):
         }
 
 
+class FeedbackResponse(BaseModel):
+    """Schema for message feedback."""
+    
+    feedback_type: str
+    comment: Optional[str] = None
+    created_at: str
+
+
 class MessageResponse(BaseModel):
     """Schema for a single message."""
     
@@ -230,6 +238,7 @@ class MessageResponse(BaseModel):
     role: str
     content: str
     metadata: Optional[MessageMetadataResponse] = None
+    feedback: Optional[FeedbackResponse] = None
     created_at: str
     
     class Config:

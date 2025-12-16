@@ -39,10 +39,10 @@ class Role(str, Enum):
 
 class ToolType(str, Enum):
     """Types of tools that can be used in chat."""
-    KNOWLEDGE_BASE = "knowledge_base"
-    WCA_DATA = "wca_data"
-    WCA_LIVE = "wca_live"
-    SOLVE_ANALYSIS = "solve_analysis"
+    KNOWLEDGE_BASE = "Knowledge Base"
+    WCA_DATA = "Competition Data"
+    SOLVE_ANALYSIS = "Performance Analysis"
+    WEB_SEARCH = "Web Search"
 
 class FeedbackType(str, Enum):
     """User feedback types for bot messages."""

@@ -12,6 +12,7 @@ from pymongo.database import Database
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
+from app.utils.cache_manager import get_rag_cache
 
 load_dotenv()
 
@@ -241,6 +242,7 @@ class KnowledgeBaseManager:
             knowledge_base: CubeDevKnowledgeBase instance
         """
         self.kb = knowledge_base
+        self.cache = get_rag_cache()
     
     async def ingest_cubing_knowledge(
         self,
@@ -306,7 +308,7 @@ class KnowledgeBaseManager:
         use_mmr: bool = True
     ) -> Dict[str, Any]:
         """
-        Query the knowledge base.
+        Query the knowledge base with caching.
         
         Args:
             query: User query
@@ -318,6 +320,18 @@ class KnowledgeBaseManager:
         Returns:
             Dict with query results and metadata
         """
+        # Check cache first
+        cached_result = await self.cache.get_retrieval(query, k)
+        if cached_result:
+            return {
+                "status": "success",
+                "query": query,
+                "results": cached_result,
+                "result_count": len(cached_result),
+                "search_type": "cached",
+                "cached": True
+            }
+        
         # Build filter
         filter_dict = {}
         if category:
@@ -334,18 +348,24 @@ class KnowledgeBaseManager:
                     filter=filter_dict if filter_dict else None
                 )
                 
+                result_list = [
+                    {
+                        "content": doc.page_content,
+                        "metadata": doc.metadata
+                    }
+                    for doc in results
+                ]
+                
+                # Cache the results
+                await self.cache.set_retrieval(query, k, result_list)
+                
                 return {
                     "status": "success",
                     "query": query,
-                    "results": [
-                        {
-                            "content": doc.page_content,
-                            "metadata": doc.metadata
-                        }
-                        for doc in results
-                    ],
+                    "results": result_list,
                     "result_count": len(results),
-                    "search_type": "mmr"
+                    "search_type": "mmr",
+                    "cached": False
                 }
             else:
                 # Use similarity search with scores
@@ -355,19 +375,25 @@ class KnowledgeBaseManager:
                     filter=filter_dict if filter_dict else None
                 )
                 
+                result_list = [
+                    {
+                        "content": doc.page_content,
+                        "metadata": doc.metadata,
+                        "score": score
+                    }
+                    for doc, score in results
+                ]
+                
+                # Cache the results
+                await self.cache.set_retrieval(query, k, result_list)
+                
                 return {
                     "status": "success",
                     "query": query,
-                    "results": [
-                        {
-                            "content": doc.page_content,
-                            "metadata": doc.metadata,
-                            "score": score
-                        }
-                        for doc, score in results
-                    ],
+                    "results": result_list,
                     "result_count": len(results),
-                    "search_type": "similarity_with_score"
+                    "search_type": "similarity_with_score",
+                    "cached": False
                 }
         except Exception as e:
             return {

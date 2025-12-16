@@ -1,6 +1,7 @@
 """
-Convex Authentication Middleware for Cubie Backend
-Validates JWT tokens issued by Convex
+Authentication Middleware for Cubie Backend
+Validates JWT tokens for user authentication
+Supports both CubeDev JWT tokens and legacy Convex tokens
 """
 
 from typing import Optional
@@ -10,7 +11,7 @@ from jose import JWTError, jwt
 import httpx
 import os
 from dotenv import load_dotenv
-from functools import lru_cache
+from app.auth.jwt_utils import verify_access_token, decode_token_without_verification
 
 load_dotenv()
 
@@ -18,17 +19,28 @@ security = HTTPBearer()
 
 CONVEX_URL = os.getenv("CONVEX_URL", "")
 CONVEX_SITE_URL = os.getenv("CONVEX_SITE_URL", "")
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "")
 
 
-@lru_cache(maxsize=100)
+# Cache for JWKS to avoid repeated fetches
+_jwks_cache = {"data": None, "timestamp": 0}
+JWKS_CACHE_TTL = 3600  # 1 hour
+
 async def get_convex_jwks():
     """
     Fetch Convex JWKS (JSON Web Key Set) for token validation.
-    Cached for performance.
+    Cached for performance (1 hour TTL).
     
     Returns:
         JWKS dict
     """
+    import time
+    
+    # Check cache first
+    current_time = time.time()
+    if _jwks_cache["data"] and (current_time - _jwks_cache["timestamp"]) < JWKS_CACHE_TTL:
+        return _jwks_cache["data"]
+    
     try:
         # Convex JWKS endpoint is on the .convex.cloud domain
         # Format: https://<deployment-name>.convex.cloud/.well-known/jwks.json
@@ -41,6 +53,11 @@ async def get_convex_jwks():
             response.raise_for_status()
             jwks_data = response.json()
             print(f"DEBUG: JWKS fetched successfully, keys count: {len(jwks_data.get('keys', []))}")
+            
+            # Update cache
+            _jwks_cache["data"] = jwks_data
+            _jwks_cache["timestamp"] = current_time
+            
             return jwks_data
     except Exception as e:
         print(f"Error fetching JWKS: {e}")
@@ -50,12 +67,12 @@ async def get_convex_jwks():
         )
 
 
-async def verify_convex_token(token: str) -> dict:
+async def verify_token(token: str) -> dict:
     """
-    Verify Convex JWT token or simple auth token.
+    Verify JWT token (CubeDev tokens or Convex tokens).
     
     Args:
-        token: JWT token or base64 encoded auth payload from Authorization header
+        token: JWT token from Authorization header
     
     Returns:
         Decoded token payload with user information
@@ -64,17 +81,32 @@ async def verify_convex_token(token: str) -> dict:
         HTTPException: If token is invalid
     """
     try:
-        # For development, you might want to skip validation
-        # Remove this in production!
+        # Skip validation in development mode (DANGEROUS - only for local dev)
         if os.getenv("SKIP_AUTH_VALIDATION", "false").lower() == "true":
-            # Return mock user for development
+            print("WARNING: AUTH VALIDATION DISABLED - DEVELOPMENT MODE ONLY")
             return {
                 "sub": "dev_user_id",
                 "user_id": "dev_user_id",
-                "email": "dev@example.com"
+                "email": "dev@example.com",
+                "wca_id": "DEV2024"
             }
         
-        # Try to decode as simple base64 token first (temporary solution)
+        # First, try to verify as CubeDev JWT token (production method)
+        if JWT_SECRET_KEY:
+            try:
+                payload = verify_access_token(token)
+                return {
+                    "sub": payload.get("sub"),
+                    "user_id": payload.get("user_id"),
+                    "email": payload.get("email"),
+                    "wca_id": payload.get("wca_id"),
+                    "token_type": "cubedev_jwt"
+                }
+            except JWTError as e:
+                print(f"CubeDev JWT validation failed: {e}")
+                # Continue to try other methods
+        
+        # Fallback: Try simple base64 token (legacy method - to be deprecated)
         try:
             import base64
             import json
@@ -92,21 +124,61 @@ async def verify_convex_token(token: str) -> dict:
                         detail="Token expired"
                     )
                 
-                print(f"DEBUG: Simple auth token verified for convexId: {payload['convexId']}")
+                print(f"⚠ Legacy token verified for convexId: {payload['convexId']}")
+                print("  Note: This authentication method is deprecated. Please upgrade to JWT.")
                 
                 # Return normalized payload
                 return {
                     "sub": payload['convexId'],
                     "user_id": payload['convexId'],
                     "email": payload.get('email'),
-                    "wca_id": payload.get('wcaId')
+                    "wca_id": payload.get('wcaId'),
+                    "token_type": "legacy_base64"
                 }
-        except Exception as e:
-            # Not a simple token, try JWT validation
-            print(f"DEBUG: Not a simple token, trying JWT: {e}")
+        except Exception:
+            # Not a simple token, continue to Convex JWT
             pass
         
-        # If not a simple token, try JWT validation
+        # Fallback: Try Convex-issued JWT token
+        if CONVEX_URL:
+            try:
+                payload = await verify_convex_jwt(token)
+                print(f"✓ Convex JWT verified for user: {payload.get('sub')}")
+                return payload
+            except Exception as e:
+                print(f"Convex JWT validation failed: {e}")
+        
+        # All methods failed
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid authentication token. Please sign in again."
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Auth Error: {type(e).__name__}: {str(e)}")
+        raise HTTPException(
+            status_code=401,
+            detail=f"Authentication failed: {str(e)}"
+        )
+
+
+async def verify_convex_jwt(token: str) -> dict:
+    """
+    Verify Convex-issued JWT token.
+    Legacy support for Convex authentication.
+    
+    Args:
+        token: JWT token from Convex
+    
+    Returns:
+        Decoded token payload
+    
+    Raises:
+        HTTPException: If token is invalid
+    """
+    try:
         # Decode without verification first to inspect the token
         unverified_payload = jwt.get_unverified_claims(token)
         print(f"DEBUG: Token issuer: {unverified_payload.get('iss')}")
@@ -148,21 +220,27 @@ async def verify_convex_token(token: str) -> dict:
         
         print(f"DEBUG: Token verified successfully for user: {payload.get('sub')}")
         
-        return payload
+        return {
+            "sub": payload.get("sub"),
+            "user_id": payload.get("sub"),
+            "email": payload.get("email"),
+            "wca_id": payload.get("wca_id"),
+            "token_type": "convex_jwt"
+        }
         
     except JWTError as e:
         print(f"JWT Error: {type(e).__name__}: {str(e)}")
         raise HTTPException(
             status_code=401,
-            detail=f"Invalid authentication token: {str(e)}"
+            detail=f"Invalid Convex token: {str(e)}"
         )
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Auth Error: {type(e).__name__}: {str(e)}")
+        print(f"Convex Auth Error: {type(e).__name__}: {str(e)}")
         raise HTTPException(
             status_code=401,
-            detail=f"Authentication failed: {str(e)}"
+            detail=f"Convex authentication failed: {str(e)}"
         )
 
 
@@ -171,6 +249,7 @@ async def get_current_user(
 ) -> dict:
     """
     Dependency to get current authenticated user.
+    Verifies JWT token and returns user information.
     
     Args:
         credentials: HTTP Bearer credentials from request
@@ -182,7 +261,7 @@ async def get_current_user(
         HTTPException: If authentication fails
     """
     token = credentials.credentials
-    user_info = await verify_convex_token(token)
+    user_info = await verify_token(token)
     
     # Extract user ID from token
     user_id = user_info.get("sub") or user_info.get("user_id")
@@ -198,6 +277,7 @@ async def get_current_user(
         "email": user_info.get("email"),
         "name": user_info.get("name"),
         "wca_id": user_info.get("wca_id"),
+        "token_type": user_info.get("token_type", "unknown"),
         "token_data": user_info
     }
 
@@ -297,7 +377,7 @@ async def check_rate_limit(user_id: str) -> bool:
         True if within limits
     
     Raises:
-        HTTPException: If rate limit exceeded
+        HTTPException: If rate limit exceeded with retry_after information
     """
     now = datetime.now()
     
@@ -309,9 +389,22 @@ async def check_rate_limit(user_id: str) -> bool:
     
     # Check limit
     if len(_user_rate_limits[user_id]) >= RATE_LIMIT_MAX_REQUESTS:
+        # Calculate when the oldest request will expire
+        oldest_request = min(_user_rate_limits[user_id])
+        time_until_reset = (oldest_request + RATE_LIMIT_WINDOW - now).total_seconds()
+        retry_after_seconds = max(1, int(time_until_reset))  # At least 1 second
+        
+        # Format the retry message with time
+        if retry_after_seconds < 60:
+            time_message = f"{retry_after_seconds} second{'s' if retry_after_seconds != 1 else ''}"
+        else:
+            minutes = retry_after_seconds // 60
+            time_message = f"{minutes} minute{'s' if minutes != 1 else ''}"
+        
         raise HTTPException(
             status_code=429,
-            detail="Rate limit exceeded. Please try again later."
+            detail=f"Rate limit exceeded. Please try again in {time_message}.",
+            headers={"Retry-After": str(retry_after_seconds)}
         )
     
     # Add current request
