@@ -10,6 +10,7 @@ interface RecognitionFlashCardProps {
   setupMoves: string;
   recognition: string[];
   algorithm?: string;
+  puzzleType?: string; // "3x3x3", "2x2x2", etc.
   onAnswer: (
     timeMs: number,
     correct: boolean,
@@ -30,6 +31,7 @@ export default function RecognitionFlashCard({
   setupMoves,
   recognition,
   algorithm,
+  puzzleType = "3x3x3",
   onAnswer,
   showAnswer = false,
   mode = "drill",
@@ -178,7 +180,7 @@ export default function RecognitionFlashCard({
                     <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-purple-500/20 rounded-lg animate-pulse z-10 pointer-events-none" />
                     <CubeVisualizer3D
                       algorithm={setupMoves}
-                      puzzle="3x3x3"
+                      puzzle={puzzleType as any}
                       autoPlay={false}
                       showControls={false}
                       height="300px"
@@ -210,7 +212,7 @@ export default function RecognitionFlashCard({
                 <div className="w-full max-w-md">
                   <CubeVisualizer3D
                     algorithm={setupMoves}
-                    puzzle="3x3x3"
+                    puzzle={puzzleType as any}
                     autoPlay={false}
                     showControls={false}
                     height="300px"

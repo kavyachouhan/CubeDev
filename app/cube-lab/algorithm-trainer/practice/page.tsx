@@ -13,13 +13,7 @@ import {
   BlindRecognitionCard,
 } from "@/components/algorithm";
 import { AlgorithmPracticeSkeleton } from "@/components/SkeletonLoaders";
-import {
-  ArrowLeft,
-  Check,
-  CheckCircle2,
-  X,
-  RotateCcw,
-} from "lucide-react";
+import { ArrowLeft, Check, CheckCircle2, X, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
 
@@ -594,6 +588,7 @@ function PracticePageContent() {
                       currentReview.case.setupMoves
                     }
                     setupMoves={currentReview.case.setupMoves}
+                    puzzleType={currentReview.set?.puzzleType || "3x3x3"}
                     onComplete={handleExecutionComplete}
                     hasStarted={hasStarted}
                     onStart={() => setHasStarted(true)}
@@ -604,6 +599,7 @@ function PracticePageContent() {
                     setupMoves={currentReview.case.setupMoves}
                     recognition={currentReview.case.recognition}
                     algorithm={currentReview.algorithm?.notation}
+                    puzzleType={currentReview.set?.puzzleType || "3x3x3"}
                     allCaseNames={allCaseNames || []}
                     onAnswer={handleAnswer}
                     hasStarted={hasStarted}
@@ -620,6 +616,7 @@ function PracticePageContent() {
                     setupMoves={currentReview.case.setupMoves}
                     recognition={currentReview.case.recognition}
                     algorithm={currentReview.algorithm?.notation}
+                    puzzleType={currentReview.set?.puzzleType || "3x3x3"}
                     onAnswer={handleAnswer}
                     mode={mode}
                     usePatternMemory={usePatternMemory}

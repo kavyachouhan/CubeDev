@@ -42,6 +42,7 @@ function AlgorithmSetCardWrapper({
       description={set.description}
       caseCount={set.caseCount}
       difficulty={set.difficulty}
+      puzzleType={set.puzzleType}
       learned={progress?.learned || 0}
       mastered={progress?.mastered || 0}
       isLocked={false}

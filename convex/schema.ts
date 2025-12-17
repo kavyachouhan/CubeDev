@@ -253,7 +253,7 @@ export default defineSchema({
   algorithmSets: defineTable({
     name: v.string(), // "PLL", "OLL", "COLL", etc.
     slug: v.optional(v.string()), // URL-friendly name: "pll", "oll", "coll", etc. (optional during migration)
-    category: v.string(), // "CFOP", "Roux", "ZZ", etc.
+    category: v.string(), // "CFOP", "Roux", "ZZ", "2x2", etc.
     description: v.string(), // Detailed description
     caseCount: v.number(), // Number of cases in this set
     difficulty: v.union(
@@ -261,6 +261,7 @@ export default defineSchema({
       v.literal("intermediate"),
       v.literal("advanced")
     ),
+    puzzleType: v.optional(v.string()), // "3x3x3", "2x2x2", "4x4x4", etc. - defaults to "3x3x3" if not specified
     iconUrl: v.optional(v.string()), // Icon/badge URL
     order: v.number(), // Display order
     isPublished: v.boolean(), // Whether visible to users

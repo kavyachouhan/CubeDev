@@ -10,6 +10,7 @@ interface AlgorithmSetCardProps {
   description: string;
   caseCount: number;
   difficulty: "beginner" | "intermediate" | "advanced";
+  puzzleType?: string;
   learned: number;
   mastered: number;
   isLocked?: boolean;
@@ -22,6 +23,7 @@ export default function AlgorithmSetCard({
   description,
   caseCount,
   difficulty,
+  puzzleType,
   learned,
   mastered,
   isLocked = false,
@@ -55,9 +57,18 @@ export default function AlgorithmSetCard({
           <h3 className="text-xl font-bold text-[var(--text-primary)] font-statement">
             {name}
           </h3>
-          <p className={`text-sm font-medium ${difficultyColors[difficulty]}`}>
-            {difficultyLabels[difficulty]}
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <p
+              className={`text-sm font-medium ${difficultyColors[difficulty]}`}
+            >
+              {difficultyLabels[difficulty]}
+            </p>
+            {puzzleType && puzzleType !== "3x3x3" && (
+              <span className="text-xs px-2 py-0.5 bg-[var(--surface-elevated)] text-[var(--text-muted)] rounded-full border border-[var(--border)]">
+                {puzzleType}
+              </span>
+            )}
+          </div>
         </div>
         {isLocked && <Lock className="w-5 h-5 text-[var(--text-muted)]" />}
       </div>

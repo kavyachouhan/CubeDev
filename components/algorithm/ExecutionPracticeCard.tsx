@@ -8,6 +8,7 @@ interface ExecutionPracticeCardProps {
   caseName: string;
   algorithm: string;
   setupMoves: string;
+  puzzleType?: string; // "3x3x3", "2x2x2", etc.
   onComplete: (timeMs: number) => void;
   hasStarted?: boolean;
   onStart?: () => void;
@@ -17,6 +18,7 @@ export default function ExecutionPracticeCard({
   caseName,
   algorithm,
   setupMoves,
+  puzzleType = "3x3x3",
   onComplete,
   hasStarted = false,
   onStart,
@@ -327,7 +329,7 @@ export default function ExecutionPracticeCard({
             <div className="mb-6">
               <CubeVisualizer3D
                 algorithm={setupMoves}
-                puzzle="3x3x3"
+                puzzle={puzzleType as any}
                 autoPlay={false}
                 showControls={true}
                 height="300px"

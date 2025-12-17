@@ -37,6 +37,7 @@ export const seedOLLAlgorithms = mutation({
         "Orientation of Last Layer - 57 algorithms to orient all pieces on the last layer",
       caseCount: 57,
       difficulty: "advanced",
+      puzzleType: "3x3x3",
       order: 2,
       isPublished: true,
       createdAt: now,

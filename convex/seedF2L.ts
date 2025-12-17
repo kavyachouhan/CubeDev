@@ -37,6 +37,7 @@ export const seedF2LAlgorithms = mutation({
         "First Two Layers - 42 algorithms to efficiently pair and insert corners with edges",
       caseCount: 42,
       difficulty: "intermediate",
+      puzzleType: "3x3x3",
       order: 4,
       isPublished: true,
       createdAt: now,

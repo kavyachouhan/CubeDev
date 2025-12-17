@@ -10,6 +10,7 @@ interface BlindRecognitionCardProps {
   setupMoves: string;
   recognition: string[];
   algorithm?: string;
+  puzzleType?: string; // "3x3x3", "2x2x2", etc.
   allCaseNames: string[]; // List of all possible case names
   onAnswer: (
     timeMs: number,
@@ -26,6 +27,7 @@ export default function BlindRecognitionCard({
   setupMoves,
   recognition,
   algorithm,
+  puzzleType = "3x3x3",
   allCaseNames,
   onAnswer,
   hasStarted = false,
@@ -145,7 +147,7 @@ export default function BlindRecognitionCard({
                 <div className="w-full max-w-md">
                   <CubeVisualizer3D
                     algorithm={setupMoves}
-                    puzzle="3x3x3"
+                    puzzle={puzzleType as any}
                     autoPlay={false}
                     showControls={false}
                     height="300px"

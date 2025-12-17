@@ -37,6 +37,7 @@ export const seedPLLAlgorithms = mutation({
         "Permutation of Last Layer - 21 algorithms to solve the last layer after OLL",
       caseCount: 21,
       difficulty: "intermediate",
+      puzzleType: "3x3x3",
       order: 1,
       isPublished: true,
       createdAt: now,

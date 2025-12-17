@@ -107,6 +107,10 @@ export default function TimerDisplay({
     "cubelab-focus-mode-enabled",
     false
   );
+  const [mutePbSound, setMutePbSound] = usePersistentBool(
+    "cubelab-mute-pb-sound",
+    false
+  );
 
   // Achievement/Celebration state
   const [showCelebration, setShowCelebration] = useState(false);
@@ -459,8 +463,9 @@ export default function TimerDisplay({
   const initializeAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
       try {
-        audioContextRef.current = new (window.AudioContext ||
-          (window as any).webkitAudioContext)();
+        audioContextRef.current = new (
+          window.AudioContext || (window as any).webkitAudioContext
+        )();
       } catch (error) {
         console.log("Audio context not available:", error);
       }
@@ -1062,6 +1067,8 @@ export default function TimerDisplay({
           setSelectedSplitMethod={setSelectedSplitMethod}
           consistencyCoach={consistencyCoach}
           setConsistencyCoach={setConsistencyCoach}
+          mutePbSound={mutePbSound}
+          setMutePbSound={setMutePbSound}
         />
 
         {/* Render timer based on selected mode */}
@@ -1112,6 +1119,7 @@ export default function TimerDisplay({
                 achievementType={celebrationType}
                 timeValue={celebrationTime}
                 onComplete={() => setShowCelebration(false)}
+                muted={mutePbSound}
               />
             </div>
 

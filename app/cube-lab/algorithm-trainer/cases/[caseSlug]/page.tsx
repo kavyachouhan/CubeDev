@@ -228,7 +228,7 @@ export default function AlgorithmCasePage() {
                   {selectedAlgorithm && (
                     <CubeVisualizer3D
                       algorithm={selectedAlgorithm.notation}
-                      puzzle="3x3x3"
+                      puzzle={(set.puzzleType as any) || "3x3x3"}
                       autoPlay={false}
                       showControls={true}
                       height="350px"

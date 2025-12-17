@@ -37,6 +37,7 @@ export const seedCOLLAlgorithms = mutation({
         "Corners and Orientation of Last Layer - 42 algorithms to solve corners while edges are already oriented",
       caseCount: 42,
       difficulty: "advanced",
+      puzzleType: "3x3x3",
       order: 3,
       isPublished: true,
       createdAt: now,

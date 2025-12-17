@@ -19,6 +19,7 @@ interface ConfettiCelebrationProps {
   achievementType: "single" | "ao5" | "ao12" | "ao100";
   timeValue?: string;
   onComplete?: () => void;
+  muted?: boolean;
 }
 
 export default function ConfettiCelebration({
@@ -26,6 +27,7 @@ export default function ConfettiCelebration({
   achievementType,
   timeValue,
   onComplete,
+  muted = false,
 }: ConfettiCelebrationProps) {
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -95,8 +97,8 @@ export default function ConfettiCelebration({
       timeoutsRef.current.push(t);
     });
 
-    // Play confetti sound
-    if (!prefersReduced) {
+    // Play confetti sound (unless muted)
+    if (!prefersReduced && !muted) {
       try {
         const audio = new Audio("/yay_confetti.wav");
         audio.volume = 0.85;

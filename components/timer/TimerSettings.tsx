@@ -5,6 +5,7 @@ import {
   Eye,
   Zap,
   Volume2,
+  VolumeX,
   ChevronDown,
   Check,
   Timer,
@@ -38,6 +39,8 @@ interface TimerSettingsProps {
       | ConsistencyCoachSettings
       | ((prev: ConsistencyCoachSettings) => ConsistencyCoachSettings)
   ) => void;
+  mutePbSound: boolean;
+  setMutePbSound: (muted: boolean) => void;
 }
 
 export default function TimerSettings({
@@ -54,6 +57,8 @@ export default function TimerSettings({
   setSelectedSplitMethod,
   consistencyCoach,
   setConsistencyCoach,
+  mutePbSound,
+  setMutePbSound,
 }: TimerSettingsProps) {
   const [showSplitMethodDropdown, setShowSplitMethodDropdown] = useState(false);
   const [showSoundDropdown, setShowSoundDropdown] = useState(false);
@@ -274,6 +279,33 @@ export default function TimerSettings({
             onClick={() => setFocusModeEnabled(!focusModeEnabled)}
             className={`w-11 h-6 rounded-full transition-colors flex items-center ${
               focusModeEnabled
+                ? "bg-[var(--primary)] justify-end"
+                : "bg-[var(--border)] justify-start"
+            }`}
+          >
+            <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
+          </button>
+        </div>
+
+        {/* Mute PB Sound Toggle */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
+              <VolumeX className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                Mute PB Sound
+              </span>
+              <p className="text-xs text-[var(--text-muted)] font-inter">
+                Silence sound when achieving a personal best
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setMutePbSound(!mutePbSound)}
+            className={`w-11 h-6 rounded-full transition-colors flex items-center ${
+              mutePbSound
                 ? "bg-[var(--primary)] justify-end"
                 : "bg-[var(--border)] justify-start"
             }`}
