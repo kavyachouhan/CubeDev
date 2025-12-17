@@ -236,23 +236,35 @@ export default function CubeDevStats({
   const users = useQuery(api.users.getAllUsers);
   const cubeDevUser = users?.find((user) => user.wcaId === wcaId);
 
+  // Determine if we should skip data queries based on privacy settings
+  const shouldSkipDataQueries =
+    privacySettings === undefined ||
+    privacySettings?.hideProfile ||
+    privacySettings?.isDeleted ||
+    !cubeDevUser?._id;
+
   // Query user's solves
   const solves = useQuery(
     api.users.getUserSolves,
-    cubeDevUser?._id ? { userId: cubeDevUser._id } : "skip"
+    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id }
   );
 
   // Query challenge stats
   const challengeStats = useQuery(
     api.challengeStats.getUserChallengeStats,
-    cubeDevUser?._id ? { userId: cubeDevUser._id } : "skip"
+    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id }
   );
 
   // Query room participations for room list
   const roomParticipations = useQuery(
     api.challengeRooms.getUserRoomParticipations,
-    cubeDevUser?._id ? { userId: cubeDevUser._id } : "skip"
+    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id }
   );
+
+  // Show loading state while privacy settings are loading
+  if (privacySettings === undefined || users === undefined) {
+    return <EventStatsSkeleton />;
+  }
 
   // If user is deleted, show appropriate message
   if (privacySettings?.isDeleted) {
