@@ -237,8 +237,11 @@ export default function CubeDevStats({
   const cubeDevUser = users?.find((user) => user.wcaId === wcaId);
 
   // Determine if we should skip data queries based on privacy settings
+  // Skip if: privacy settings haven't loaded, profile is private/hidden, user is deleted, or user doesn't exist
   const shouldSkipDataQueries =
     privacySettings === undefined ||
+    users === undefined ||
+    privacySettings?.isPrivate ||
     privacySettings?.hideProfile ||
     privacySettings?.isDeleted ||
     !cubeDevUser?._id;
@@ -324,7 +327,7 @@ export default function CubeDevStats({
   return (
     <div className="space-y-8">
       {/* Event Selector */}
-      {privacySettings?.hideProfile ? (
+      {privacySettings?.hideProfile || privacySettings?.isPrivate ? (
         <div className="timer-card">
           <div className="text-center py-12">
             <div className="flex justify-center mb-4">
@@ -333,10 +336,12 @@ export default function CubeDevStats({
               </div>
             </div>
             <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
-              Event Statistics Hidden
+              {cubeDevUser ? "Event Statistics Hidden" : "User Not Registered"}
             </h3>
             <p className="text-[var(--text-secondary)]">
-              User has chosen to hide their profile from public view.
+              {cubeDevUser
+                ? "User has chosen to hide their profile from public view."
+                : "This user is not registered on CubeDev."}
             </p>
           </div>
         </div>
@@ -470,7 +475,7 @@ export default function CubeDevStats({
       )}
 
       {/* CubeDev Platform Stats */}
-      {privacySettings?.hideProfile ? (
+      {privacySettings?.hideProfile || privacySettings?.isPrivate ? (
         <div className="timer-card">
           <div className="text-center py-12">
             <div className="flex justify-center mb-4">
@@ -479,10 +484,14 @@ export default function CubeDevStats({
               </div>
             </div>
             <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
-              Platform Statistics Hidden
+              {cubeDevUser
+                ? "Platform Statistics Hidden"
+                : "User Not Registered"}
             </h3>
             <p className="text-[var(--text-secondary)]">
-              User has chosen to hide their profile from public view.
+              {cubeDevUser
+                ? "User has chosen to hide their profile from public view."
+                : "This user is not registered on CubeDev."}
             </p>
           </div>
         </div>
@@ -714,7 +723,7 @@ export default function CubeDevStats({
       )}
 
       {/* Solve Heatmap */}
-      {privacySettings?.hideProfile ? (
+      {privacySettings?.hideProfile || privacySettings?.isPrivate ? (
         <div className="timer-card">
           <div className="text-center py-12">
             <div className="flex justify-center mb-4">
@@ -723,10 +732,12 @@ export default function CubeDevStats({
               </div>
             </div>
             <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
-              Solve Activity Hidden
+              {cubeDevUser ? "Solve Activity Hidden" : "User Not Registered"}
             </h3>
             <p className="text-[var(--text-secondary)]">
-              User has chosen to hide their profile from public view.
+              {cubeDevUser
+                ? "User has chosen to hide their profile from public view."
+                : "This user is not registered on CubeDev."}
             </p>
           </div>
         </div>
