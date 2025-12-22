@@ -24,6 +24,7 @@ import type * as seedEG1 from "../seedEG1.js";
 import type * as seedEG2 from "../seedEG2.js";
 import type * as seedF2L from "../seedF2L.js";
 import type * as seedOLL from "../seedOLL.js";
+import type * as seedZBLL from "../seedZBLL.js";
 import type * as users from "../users.js";
 
 import type {
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   seedEG2: typeof seedEG2;
   seedF2L: typeof seedF2L;
   seedOLL: typeof seedOLL;
+  seedZBLL: typeof seedZBLL;
   users: typeof users;
 }>;
 
