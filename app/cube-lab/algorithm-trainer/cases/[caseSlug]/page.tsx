@@ -409,6 +409,7 @@ export default function AlgorithmCasePage() {
                     algorithms={algorithms}
                     currentAlgId={selectedAlgId || ""}
                     onSelectAlgorithm={handleSelectAlgorithm}
+                    puzzleType={(set.puzzleType as any) || "3x3x3"}
                   />
                 </div>
               )}

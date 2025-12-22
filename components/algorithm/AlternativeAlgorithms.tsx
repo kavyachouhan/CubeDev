@@ -4,6 +4,19 @@ import { useState } from "react";
 import { CheckCircle2, TrendingUp, Users, Zap } from "lucide-react";
 import CubeVisualizer3D from "./CubeVisualizer3D";
 
+type PuzzleType =
+  | "3x3x3"
+  | "2x2x2"
+  | "4x4x4"
+  | "5x5x5"
+  | "6x6x6"
+  | "7x7x7"
+  | "pyraminx"
+  | "megaminx"
+  | "skewb"
+  | "square1"
+  | "clock";
+
 interface Algorithm {
   _id: string;
   notation: string;
@@ -20,12 +33,14 @@ interface AlternativeAlgorithmsProps {
   algorithms: Algorithm[];
   currentAlgId: string;
   onSelectAlgorithm: (algId: string) => void;
+  puzzleType?: PuzzleType;
 }
 
 export default function AlternativeAlgorithms({
   algorithms,
   currentAlgId,
   onSelectAlgorithm,
+  puzzleType = "3x3x3",
 }: AlternativeAlgorithmsProps) {
   const [expandedAlg, setExpandedAlg] = useState<string | null>(null);
 
@@ -149,7 +164,7 @@ export default function AlternativeAlgorithms({
                   <div className="mt-4 pt-4 border-t border-[var(--border)]">
                     <CubeVisualizer3D
                       algorithm={alg.notation}
-                      puzzle="3x3x3"
+                      puzzle={puzzleType}
                       autoPlay={false}
                       showControls={true}
                       height="250px"

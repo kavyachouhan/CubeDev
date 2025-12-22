@@ -1,6 +1,7 @@
 "use client";
 
-import { MapPin, Calendar, ExternalLink, Trophy, Clock } from "lucide-react";
+import { useState } from "react";
+import { MapPin, Calendar, ExternalLink, Trophy, Clock, User } from "lucide-react";
 import Image from "next/image";
 
 interface WCAPersonalRecord {
@@ -132,6 +133,7 @@ export default function ProfileSidebar({
 
   const bestEvent = getBestEvent();
   const totalEvents = personalRecords?.length || 0;
+  const [imageError, setImageError] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -140,7 +142,7 @@ export default function ProfileSidebar({
         {/* Avatar */}
         <div className="mb-6">
           <div className="relative mx-auto w-32 h-32 rounded-full overflow-hidden bg-[var(--surface-elevated)] border-4 border-[var(--border)]">
-            {person.avatar?.url ? (
+            {person.avatar?.url && !imageError ? (
               <Image
                 src={person.avatar.url}
                 alt={person.name}
@@ -148,10 +150,17 @@ export default function ProfileSidebar({
                 className="object-cover"
                 sizes="128px"
                 priority
+                onError={() => setImageError(true)}
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-[var(--text-muted)]">
-                {person.name.charAt(0).toUpperCase()}
+              <div className="w-full h-full flex items-center justify-center">
+                {imageError ? (
+                  <User className="w-12 h-12 text-[var(--text-muted)]" />
+                ) : (
+                  <span className="text-4xl font-bold text-[var(--text-muted)]">
+                    {person.name.charAt(0).toUpperCase()}
+                  </span>
+                )}
               </div>
             )}
           </div>

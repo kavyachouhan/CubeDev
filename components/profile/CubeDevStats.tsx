@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
@@ -309,6 +309,19 @@ export default function CubeDevStats({
   const attemptedEvents = Array.from(
     new Set(timerSolves.map((solve) => solve.event))
   ).sort();
+
+  // Ensure selected event is valid
+  useEffect(() => {
+    if (attemptedEvents.length > 0) {
+      if (!attemptedEvents.includes(selectedEvent)) {
+        // Default to 3x3 if attempted, else first attempted event
+        const defaultEvent = attemptedEvents.includes("333")
+          ? "333"
+          : attemptedEvents[0];
+        setSelectedEvent(defaultEvent);
+      }
+    }
+  }, [attemptedEvents.join(",")]);
 
   // Filter solves by selected event
   const eventSolves = timerSolves.filter(
