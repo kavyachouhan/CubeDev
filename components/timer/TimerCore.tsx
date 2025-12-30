@@ -106,7 +106,7 @@ export default function TimerCore({
       case "idle":
         return "Hold SPACE or touch and hold timer, then release to start";
       case "holding":
-        return "Release to start inspection";
+        return "Release to start";
       case "inspection":
         return "Get ready... (Hold SPACE/touch for timer)";
       case "ready":

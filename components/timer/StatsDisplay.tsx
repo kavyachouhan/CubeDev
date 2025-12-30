@@ -10,6 +10,10 @@ import {
 } from "lucide-react";
 import { TimerRecord } from "../../lib/stats-utils";
 import SessionStatsModal from "./SessionStatsModal";
+import {
+  ExtendedStatsVisibility,
+  DEFAULT_EXTENDED_STATS,
+} from "./StatsVisibilitySettings";
 
 // Persistent boolean that reads/writes localStorage on first render
 function usePersistentBool(key: string, defaultValue: boolean) {
@@ -35,6 +39,7 @@ function usePersistentBool(key: string, defaultValue: boolean) {
 interface StatsDisplayProps {
   history: TimerRecord[];
   selectedEvent: string;
+  extendedStatsVisibility?: ExtendedStatsVisibility;
 }
 
 // Helpers to truncate/round to nearest centisecond (10 ms)
@@ -53,6 +58,7 @@ const formatMs = (ms: number) => {
 export default function StatsDisplay({
   history,
   selectedEvent,
+  extendedStatsVisibility = DEFAULT_EXTENDED_STATS,
 }: StatsDisplayProps) {
   const [showStats, setShowStats] = usePersistentBool(
     "cubelab-stats-display-expanded",
@@ -112,6 +118,9 @@ export default function StatsDisplay({
 
   const ao5 = wcaAverageN(5);
   const ao12 = wcaAverageN(12);
+  const ao25 = wcaAverageN(25);
+  const ao50 = wcaAverageN(50);
+  const ao100 = wcaAverageN(100);
 
   // Current mean of 3 (rounded to 0.01 s for display)
   const mo3 = (() => {
@@ -259,6 +268,92 @@ export default function StatsDisplay({
               </div>
             </div>
 
+            {/* Extended Averages - Ao25, Ao50, Ao100 */}
+            {(extendedStatsVisibility.ao25 ||
+              extendedStatsVisibility.ao50 ||
+              extendedStatsVisibility.ao100) && (
+              <div
+                className={`grid gap-4 mb-6 pt-4 border-t border-[var(--border)] ${
+                  [
+                    extendedStatsVisibility.ao25,
+                    extendedStatsVisibility.ao50,
+                    extendedStatsVisibility.ao100,
+                  ].filter(Boolean).length === 1
+                    ? "grid-cols-1"
+                    : [
+                          extendedStatsVisibility.ao25,
+                          extendedStatsVisibility.ao50,
+                          extendedStatsVisibility.ao100,
+                        ].filter(Boolean).length === 2
+                      ? "grid-cols-2"
+                      : "grid-cols-3"
+                }`}
+              >
+                {extendedStatsVisibility.ao25 && (
+                  <div className="text-center">
+                    <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                      Current Ao25
+                    </div>
+                    <div
+                      className={`text-lg font-bold font-mono ${
+                        ao25 === Infinity
+                          ? "text-[var(--error)]"
+                          : "text-[var(--primary)]"
+                      }`}
+                    >
+                      {ao25 == null
+                        ? "-"
+                        : isFinite(ao25)
+                          ? formatMs(ao25)
+                          : "DNF"}
+                    </div>
+                  </div>
+                )}
+
+                {extendedStatsVisibility.ao50 && (
+                  <div className="text-center">
+                    <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                      Current Ao50
+                    </div>
+                    <div
+                      className={`text-lg font-bold font-mono ${
+                        ao50 === Infinity
+                          ? "text-[var(--error)]"
+                          : "text-[var(--primary)]"
+                      }`}
+                    >
+                      {ao50 == null
+                        ? "-"
+                        : isFinite(ao50)
+                          ? formatMs(ao50)
+                          : "DNF"}
+                    </div>
+                  </div>
+                )}
+
+                {extendedStatsVisibility.ao100 && (
+                  <div className="text-center">
+                    <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                      Current Ao100
+                    </div>
+                    <div
+                      className={`text-lg font-bold font-mono ${
+                        ao100 === Infinity
+                          ? "text-[var(--error)]"
+                          : "text-[var(--primary)]"
+                      }`}
+                    >
+                      {ao100 == null
+                        ? "-"
+                        : isFinite(ao100)
+                          ? formatMs(ao100)
+                          : "DNF"}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Total solves */}
             <div className="grid grid-cols-1 gap-4 mb-6">
               <div className="text-center">
@@ -300,6 +395,7 @@ export default function StatsDisplay({
         onClose={() => setIsModalOpen(false)}
         history={history}
         selectedEvent={selectedEvent}
+        extendedStatsVisibility={extendedStatsVisibility}
       />
     </>
   );

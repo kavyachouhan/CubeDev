@@ -18,6 +18,10 @@ import ManualTimerCore from "./ManualTimerCore";
 import StackmatTimerCore from "./StackmatTimerCore";
 import ConfettiCelebration from "./ConfettiCelebration";
 import { formatTime } from "@/lib/stats-utils";
+import {
+  ExtendedStatsVisibility,
+  DEFAULT_EXTENDED_STATS,
+} from "./StatsVisibilitySettings";
 
 // Persistent boolean that reads/writes localStorage on first render
 function usePersistentBool(key: string, defaultValue: boolean) {
@@ -58,6 +62,8 @@ interface TimerDisplayProps {
   lastSolveId?: string | null;
   onTimerStateChange?: (isActive: boolean) => void;
   history?: import("@/lib/stats-utils").TimerRecord[];
+  extendedStatsVisibility?: ExtendedStatsVisibility;
+  onToggleExtendedStat?: (stat: keyof ExtendedStatsVisibility) => void;
 }
 
 type TimerState =
@@ -75,6 +81,8 @@ export default function TimerDisplay({
   lastSolveId,
   onTimerStateChange,
   history = [],
+  extendedStatsVisibility,
+  onToggleExtendedStat,
 }: TimerDisplayProps) {
   const [state, setState] = useState<TimerState>("idle");
   const [time, setTime] = useState(0);
@@ -1069,6 +1077,12 @@ export default function TimerDisplay({
           setConsistencyCoach={setConsistencyCoach}
           mutePbSound={mutePbSound}
           setMutePbSound={setMutePbSound}
+          extendedStatsVisibility={
+            extendedStatsVisibility || DEFAULT_EXTENDED_STATS
+          }
+          onToggleExtendedStat={
+            onToggleExtendedStat || (() => {})
+          }
         />
 
         {/* Render timer based on selected mode */}

@@ -18,6 +18,7 @@ import {
   TimerPageSkeleton,
   ScramblePreviewSkeleton,
 } from "./timer/TimerSkeletons";
+import { useExtendedStatsVisibility } from "./timer/StatsVisibilitySettings";
 
 // Import custom hooks
 import { useTimerState } from "./timer/hooks/useTimerState";
@@ -84,6 +85,12 @@ export default function CubeLabTimer({
   } = useDatabaseSync(user?.convexId);
 
   const { loadFromCache, saveToCache } = useLocalStorageManager(user?.convexId);
+
+  // Extended stats visibility settings
+  const {
+    visibility: extendedStatsVisibility,
+    toggleStat: toggleExtendedStat,
+  } = useExtendedStatsVisibility();
 
   // Fetch session solves from database
   const dbSessionSolves = useQuery(
@@ -546,6 +553,8 @@ export default function CubeLabTimer({
               lastSolveId={lastSolveId}
               onTimerStateChange={handleTimerFocusChange}
               history={getSessionHistory(currentSession.id)}
+              extendedStatsVisibility={extendedStatsVisibility}
+              onToggleExtendedStat={toggleExtendedStat}
             />
           </div>
         </div>
@@ -569,6 +578,7 @@ export default function CubeLabTimer({
           <StatsDisplay
             history={getSessionHistory(currentSession.id)}
             selectedEvent={selectedEvent}
+            extendedStatsVisibility={extendedStatsVisibility}
           />
 
           {/* History */}

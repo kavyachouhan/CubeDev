@@ -3,12 +3,17 @@
 import { useState, useMemo } from "react";
 import { X, Copy, Download } from "lucide-react";
 import { TimerRecord } from "../../lib/stats-utils";
+import {
+  ExtendedStatsVisibility,
+  DEFAULT_EXTENDED_STATS,
+} from "./StatsVisibilitySettings";
 
 interface SessionStatsModalProps {
   isOpen: boolean;
   onClose: () => void;
   history: TimerRecord[];
   selectedEvent: string;
+  extendedStatsVisibility?: ExtendedStatsVisibility;
 }
 
 // Map of event IDs to display names
@@ -62,6 +67,7 @@ export default function SessionStatsModal({
   onClose,
   history,
   selectedEvent,
+  extendedStatsVisibility = DEFAULT_EXTENDED_STATS,
 }: SessionStatsModalProps) {
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -157,6 +163,10 @@ export default function SessionStatsModal({
     const ao5BestResult = bestWcaAverageN(5);
     const ao12CurrentResult = wcaAverageN(12);
     const ao12BestResult = bestWcaAverageN(12);
+    const ao25CurrentResult = wcaAverageN(25);
+    const ao25BestResult = bestWcaAverageN(25);
+    const ao50CurrentResult = wcaAverageN(50);
+    const ao50BestResult = bestWcaAverageN(50);
     const ao100CurrentResult = wcaAverageN(100);
     const ao100BestResult = bestWcaAverageN(100);
 
@@ -240,6 +250,14 @@ export default function SessionStatsModal({
       ao12CurrentStdDev: ao12CurrentResult.stdDev,
       ao12Best: ao12BestResult.avg,
       ao12BestStdDev: ao12BestResult.stdDev,
+      ao25Current: ao25CurrentResult.avg,
+      ao25CurrentStdDev: ao25CurrentResult.stdDev,
+      ao25Best: ao25BestResult.avg,
+      ao25BestStdDev: ao25BestResult.stdDev,
+      ao50Current: ao50CurrentResult.avg,
+      ao50CurrentStdDev: ao50CurrentResult.stdDev,
+      ao50Best: ao50BestResult.avg,
+      ao50BestStdDev: ao50BestResult.stdDev,
       ao100Current: ao100CurrentResult.avg,
       ao100CurrentStdDev: ao100CurrentResult.stdDev,
       ao100Best: ao100BestResult.avg,
@@ -324,7 +342,41 @@ export default function SessionStatsModal({
     }
     text += `\n\n`;
 
-    if (stats.ao100Current !== null) {
+    if (extendedStatsVisibility.ao25 && stats.ao25Current !== null) {
+      text += `avg of 25\n`;
+      text += `    current: ${isFinite(stats.ao25Current) ? formatMs(stats.ao25Current) : "DNF"}`;
+      if (isFinite(stats.ao25Current) && stats.ao25CurrentStdDev !== null) {
+        text += ` (σ = ${formatMs(stats.ao25CurrentStdDev)})`;
+      }
+      text += `\n    best: ${stats.ao25Best !== null && isFinite(stats.ao25Best) ? formatMs(stats.ao25Best) : "DNF"}`;
+      if (
+        stats.ao25Best !== null &&
+        isFinite(stats.ao25Best) &&
+        stats.ao25BestStdDev !== null
+      ) {
+        text += ` (σ = ${formatMs(stats.ao25BestStdDev)})`;
+      }
+      text += `\n\n`;
+    }
+
+    if (extendedStatsVisibility.ao50 && stats.ao50Current !== null) {
+      text += `avg of 50\n`;
+      text += `    current: ${isFinite(stats.ao50Current) ? formatMs(stats.ao50Current) : "DNF"}`;
+      if (isFinite(stats.ao50Current) && stats.ao50CurrentStdDev !== null) {
+        text += ` (σ = ${formatMs(stats.ao50CurrentStdDev)})`;
+      }
+      text += `\n    best: ${stats.ao50Best !== null && isFinite(stats.ao50Best) ? formatMs(stats.ao50Best) : "DNF"}`;
+      if (
+        stats.ao50Best !== null &&
+        isFinite(stats.ao50Best) &&
+        stats.ao50BestStdDev !== null
+      ) {
+        text += ` (σ = ${formatMs(stats.ao50BestStdDev)})`;
+      }
+      text += `\n\n`;
+    }
+
+    if (extendedStatsVisibility.ao100 && stats.ao100Current !== null) {
       text += `avg of 100\n`;
       text += `    current: ${isFinite(stats.ao100Current) ? formatMs(stats.ao100Current) : "DNF"}`;
       if (isFinite(stats.ao100Current) && stats.ao100CurrentStdDev !== null) {
@@ -611,8 +663,100 @@ export default function SessionStatsModal({
               </div>
             </div>
 
-            {/* Avg of 100 (if available) */}
-            {stats.ao100Current !== null && (
+            {/* Avg of 25 (if enabled and available) */}
+            {extendedStatsVisibility.ao25 && stats.ao25Current !== null && (
+              <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-2">
+                  Avg of 25
+                </div>
+                <div className="space-y-1 text-sm font-mono">
+                  <div>
+                    <span className="text-[var(--text-secondary)]">
+                      current:{" "}
+                    </span>
+                    <span
+                      className={`font-semibold ${stats.ao25Current === Infinity ? "text-[var(--error)]" : "text-[var(--primary)]"}`}
+                    >
+                      {isFinite(stats.ao25Current)
+                        ? formatMs(stats.ao25Current)
+                        : "DNF"}
+                    </span>
+                    {isFinite(stats.ao25Current) &&
+                      stats.ao25CurrentStdDev !== null && (
+                        <span className="text-[var(--text-muted)] ml-1">
+                          (σ = {formatMs(stats.ao25CurrentStdDev)})
+                        </span>
+                      )}
+                  </div>
+                  <div>
+                    <span className="text-[var(--text-secondary)]">best: </span>
+                    <span
+                      className={`font-semibold ${stats.ao25Best === Infinity ? "text-[var(--error)]" : "text-[var(--primary)]"}`}
+                    >
+                      {stats.ao25Best !== null && isFinite(stats.ao25Best)
+                        ? formatMs(stats.ao25Best)
+                        : "DNF"}
+                    </span>
+                    {stats.ao25Best !== null &&
+                      isFinite(stats.ao25Best) &&
+                      stats.ao25BestStdDev !== null && (
+                        <span className="text-[var(--text-muted)] ml-1">
+                          (σ = {formatMs(stats.ao25BestStdDev)})
+                        </span>
+                      )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Avg of 50 (if enabled and available) */}
+            {extendedStatsVisibility.ao50 && stats.ao50Current !== null && (
+              <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-2">
+                  Avg of 50
+                </div>
+                <div className="space-y-1 text-sm font-mono">
+                  <div>
+                    <span className="text-[var(--text-secondary)]">
+                      current:{" "}
+                    </span>
+                    <span
+                      className={`font-semibold ${stats.ao50Current === Infinity ? "text-[var(--error)]" : "text-[var(--primary)]"}`}
+                    >
+                      {isFinite(stats.ao50Current)
+                        ? formatMs(stats.ao50Current)
+                        : "DNF"}
+                    </span>
+                    {isFinite(stats.ao50Current) &&
+                      stats.ao50CurrentStdDev !== null && (
+                        <span className="text-[var(--text-muted)] ml-1">
+                          (σ = {formatMs(stats.ao50CurrentStdDev)})
+                        </span>
+                      )}
+                  </div>
+                  <div>
+                    <span className="text-[var(--text-secondary)]">best: </span>
+                    <span
+                      className={`font-semibold ${stats.ao50Best === Infinity ? "text-[var(--error)]" : "text-[var(--primary)]"}`}
+                    >
+                      {stats.ao50Best !== null && isFinite(stats.ao50Best)
+                        ? formatMs(stats.ao50Best)
+                        : "DNF"}
+                    </span>
+                    {stats.ao50Best !== null &&
+                      isFinite(stats.ao50Best) &&
+                      stats.ao50BestStdDev !== null && (
+                        <span className="text-[var(--text-muted)] ml-1">
+                          (σ = {formatMs(stats.ao50BestStdDev)})
+                        </span>
+                      )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Avg of 100 (if enabled and available) */}
+            {extendedStatsVisibility.ao100 && stats.ao100Current !== null && (
               <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
                 <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-2">
                   Avg of 100

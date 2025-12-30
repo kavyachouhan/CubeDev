@@ -18,6 +18,9 @@ import {
   ConsistencyCoachSettings,
 } from "@/lib/phase-splits";
 import { Tooltip } from "./Tooltip";
+import StatsVisibilitySettings, {
+  ExtendedStatsVisibility,
+} from "./StatsVisibilitySettings";
 
 export type TimerMode = "normal" | "manual" | "stackmat";
 
@@ -41,6 +44,8 @@ interface TimerSettingsProps {
   ) => void;
   mutePbSound: boolean;
   setMutePbSound: (muted: boolean) => void;
+  extendedStatsVisibility: ExtendedStatsVisibility;
+  onToggleExtendedStat: (stat: keyof ExtendedStatsVisibility) => void;
 }
 
 export default function TimerSettings({
@@ -59,6 +64,8 @@ export default function TimerSettings({
   setConsistencyCoach,
   mutePbSound,
   setMutePbSound,
+  extendedStatsVisibility,
+  onToggleExtendedStat,
 }: TimerSettingsProps) {
   const [showSplitMethodDropdown, setShowSplitMethodDropdown] = useState(false);
   const [showSoundDropdown, setShowSoundDropdown] = useState(false);
@@ -612,6 +619,12 @@ export default function TimerSettings({
             </div>
           </div>
         )}
+
+        {/* Extended stats visibility */}
+        <StatsVisibilitySettings
+          visibility={extendedStatsVisibility}
+          onToggle={onToggleExtendedStat}
+        />
       </div>
     </div>
   );

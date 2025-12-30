@@ -16,7 +16,10 @@ export { default as ImportModal } from "./ImportModal";
 export { default as ScramblePreview } from "./ScramblePreview";
 export { default as SessionStatsModal } from "./SessionStatsModal";
 export { default as SolveEditModal } from "./SolveEditModal";
+export { default as StatsVisibilitySettings } from "./StatsVisibilitySettings";
 export { Tooltip } from "./Tooltip";
 
 export type { TimerMode } from "./TimerSettings";
+export type { ExtendedStatsVisibility } from "./StatsVisibilitySettings";
+export { useExtendedStatsVisibility } from "./StatsVisibilitySettings";
 export { useStackmatAudio } from "./hooks/useStackmatAudio";
