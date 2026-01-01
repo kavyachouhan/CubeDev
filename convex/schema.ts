@@ -121,6 +121,31 @@ export default defineSchema({
     .index("by_solve_date", ["solveDate"]) // Index for chronological ordering
     .index("by_session_date", ["sessionId", "solveDate"]), // Index for session chronological ordering
 
+  // Pre-computed user statistics per event (updated on solve add/delete/update)
+  userEventStats: defineTable({
+    userId: v.id("users"), // Reference to user
+    event: v.string(), // WCA event code (333, 222, etc.)
+
+    // Core Statistics (all times in milliseconds)
+    totalSolves: v.number(), // Total number of solves for this event
+    totalNonDnfSolves: v.number(), // Number of non-DNF solves
+    bestSingle: v.optional(v.number()), // Best single time (truncated to centiseconds)
+    bestAo5: v.optional(v.number()), // Best average of 5 (rounded to centiseconds)
+    bestAo12: v.optional(v.number()), // Best average of 12 (rounded to centiseconds)
+    bestAo100: v.optional(v.number()), // Best average of 100 (rounded to centiseconds)
+    overallAverage: v.optional(v.number()), // Mean of all non-DNF solves (rounded to centiseconds)
+
+    // Activity Statistics
+    firstSolveDate: v.optional(v.number()), // Timestamp of first solve
+    lastSolveDate: v.optional(v.number()), // Timestamp of most recent solve
+    activeDays: v.number(), // Number of unique days with solves
+
+    // Last updated timestamp
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"]) // Index for user's event stats
+    .index("by_user_event", ["userId", "event"]), // Index for specific user-event combo
+
   // Challenge Rooms - async scramble rooms for competitions
   challengeRooms: defineTable({
     // Basic Room Info

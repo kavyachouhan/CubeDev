@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useQuery } from "convex/react";
+import { useState, useEffect, useRef } from "react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import {
@@ -246,13 +246,43 @@ export default function CubeDevStats({
     privacySettings?.isDeleted ||
     !cubeDevUser?._id;
 
-  // Query user's solves (use paginated version with higher limit for profile stats)
-  const solvesResult = useQuery(
-    api.users.getUserRecentSolves,
-    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id, limit: 2000 }
+  // Query pre-computed event stats (efficient - doesn't load all solves)
+  const eventStats = useQuery(
+    api.users.getUserEventStats,
+    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id }
   );
-  // For backwards compatibility, alias to solves
-  const solves = solvesResult;
+
+  // Mutation to recalculate stats for existing users who don't have cached stats
+  const recalculateAllStats = useMutation(api.users.recalculateAllUserStats);
+  const hasTriggeredRecalc = useRef(false);
+
+  // Query user's recent solves only for activity heatmap (limited subset)
+  const recentSolves = useQuery(
+    api.users.getUserRecentSolves,
+    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id, limit: 1000 }
+  );
+
+  // If user has solves but no cached stats, trigger a recalculation
+  useEffect(() => {
+    if (
+      !shouldSkipDataQueries &&
+      cubeDevUser?._id &&
+      eventStats !== undefined &&
+      eventStats.length === 0 &&
+      recentSolves !== undefined &&
+      recentSolves.length > 0 &&
+      !hasTriggeredRecalc.current
+    ) {
+      hasTriggeredRecalc.current = true;
+      recalculateAllStats({ userId: cubeDevUser._id }).catch(console.error);
+    }
+  }, [
+    shouldSkipDataQueries,
+    cubeDevUser?._id,
+    eventStats,
+    recentSolves,
+    recalculateAllStats,
+  ]);
 
   // Query challenge stats
   const challengeStats = useQuery(
@@ -292,9 +322,9 @@ export default function CubeDevStats({
     );
   }
 
-  // Convert Convex solves to TimerRecord format
+  // Convert recent solves for activity heatmap only
   const timerSolves: TimerRecord[] =
-    solves?.map((solve) => ({
+    recentSolves?.map((solve) => ({
       id: solve._id,
       time: solve.time,
       timestamp: new Date(solve.solveDate),
@@ -307,10 +337,10 @@ export default function CubeDevStats({
       tags: solve.tags,
     })) || [];
 
-  // Get unique events that user has attempted
-  const attemptedEvents = Array.from(
-    new Set(timerSolves.map((solve) => solve.event))
-  ).sort();
+  // Get unique events from pre-computed stats (more accurate than recent solves)
+  const attemptedEvents = eventStats
+    ? eventStats.map((stat) => stat.event).sort()
+    : [];
 
   // Ensure selected event is valid
   useEffect(() => {
@@ -325,19 +355,16 @@ export default function CubeDevStats({
     }
   }, [attemptedEvents.join(",")]);
 
-  // Filter solves by selected event
-  const eventSolves = timerSolves.filter(
-    (solve) => solve.event === selectedEvent
+  // Get pre-computed stats for selected event
+  const selectedEventStats = eventStats?.find(
+    (stat) => stat.event === selectedEvent
   );
 
-  // Calculate event-specific stats
-  const eventStats = calculateEventStats(eventSolves);
-
-  // Calculate activity stats from all solves
+  // Calculate activity stats from recent solves (for heatmap)
   const activityStats = calculateActivityStats(timerSolves);
 
   // Show skeleton loaders while data is loading
-  const isLoadingData = !solves || !challengeStats || !roomParticipations;
+  const isLoadingData = !eventStats || !challengeStats || !roomParticipations;
 
   return (
     <div className="space-y-8">
@@ -417,7 +444,7 @@ export default function CubeDevStats({
                       Total Solves
                     </div>
                     <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
-                      {eventStats.totalSolves.toLocaleString()}
+                      {(selectedEventStats?.totalSolves ?? 0).toLocaleString()}
                     </div>
                   </div>
                 </div>
@@ -433,8 +460,8 @@ export default function CubeDevStats({
                       Overall AVG
                     </div>
                     <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-mono">
-                      {eventStats.overallAverage
-                        ? formatMs(eventStats.overallAverage)
+                      {selectedEventStats?.overallAverage
+                        ? formatMs(selectedEventStats.overallAverage)
                         : "--:--"}
                     </div>
                   </div>
@@ -451,8 +478,8 @@ export default function CubeDevStats({
                       Best Single
                     </div>
                     <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-mono">
-                      {eventStats.bestSingle
-                        ? formatMs(eventStats.bestSingle)
+                      {selectedEventStats?.bestSingle
+                        ? formatMs(selectedEventStats.bestSingle)
                         : "--:--"}
                     </div>
                   </div>
@@ -470,15 +497,15 @@ export default function CubeDevStats({
                     </div>
                     <div
                       className={`text-sm sm:text-lg font-bold font-mono ${
-                        eventStats.ao5 === Infinity
+                        selectedEventStats?.bestAo5 === Infinity
                           ? "text-[var(--error)]"
                           : "text-[var(--text-primary)]"
                       }`}
                     >
-                      {eventStats.ao5 == null
+                      {selectedEventStats?.bestAo5 == null
                         ? "--:--"
-                        : isFinite(eventStats.ao5)
-                          ? formatMs(eventStats.ao5)
+                        : isFinite(selectedEventStats.bestAo5)
+                          ? formatMs(selectedEventStats.bestAo5)
                           : "DNF"}
                     </div>
                   </div>

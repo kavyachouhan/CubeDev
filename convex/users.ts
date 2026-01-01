@@ -1,5 +1,6 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
+import { internal } from "./_generated/api";
 
 // Upsert (create or update) user profile
 export const upsertUser = mutation({
@@ -496,6 +497,13 @@ export const saveSolve = mutation({
       updatedAt: now,
     });
 
+    // Schedule stats recalculation (async, doesn't block the solve save)
+    // We use ctx.scheduler to avoid blocking the main operation
+    await ctx.scheduler.runAfter(0, internal.users.recalculateUserEventStats, {
+      userId: args.userId,
+      event: args.event,
+    });
+
     return solveId;
   },
 });
@@ -577,6 +585,19 @@ export const batchImportSolves = mutation({
       updatedAt: now,
     });
 
+    // Schedule stats recalculation for all imported events
+    const uniqueEvents = new Set(args.solves.map((s) => s.event));
+    for (const event of uniqueEvents) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.users.recalculateUserEventStats,
+        {
+          userId: args.userId,
+          event,
+        }
+      );
+    }
+
     return {
       importedCount: savedSolveIds.length,
       totalAttempted: args.solves.length,
@@ -656,6 +677,9 @@ export const deleteSolve = mutation({
   handler: async (ctx, args) => {
     const solve = await ctx.db.get(args.solveId);
     if (solve) {
+      const userId = solve.userId;
+      const event = solve.event;
+
       // Delete the solve
       await ctx.db.delete(args.solveId);
 
@@ -669,6 +693,16 @@ export const deleteSolve = mutation({
         solveCount: remainingSolves.length,
         updatedAt: Date.now(),
       });
+
+      // Schedule stats recalculation
+      await ctx.scheduler.runAfter(
+        0,
+        internal.users.recalculateUserEventStats,
+        {
+          userId,
+          event,
+        }
+      );
     }
   },
 });
@@ -706,26 +740,36 @@ export const updateSolve = mutation({
   },
   handler: async (ctx, args) => {
     const { solveId, ...updates } = args;
+    const solve = await ctx.db.get(solveId);
+
+    if (!solve) return;
 
     // If time or penalty is updated, recalculate finalTime
     if (updates.time !== undefined || updates.penalty !== undefined) {
-      const solve = await ctx.db.get(solveId);
-      if (solve) {
-        const newTime = updates.time ?? solve.time;
-        const newPenalty = updates.penalty ?? solve.penalty;
+      const newTime = updates.time ?? solve.time;
+      const newPenalty = updates.penalty ?? solve.penalty;
 
-        let finalTime = newTime;
-        if (newPenalty === "+2") {
-          finalTime = newTime + 2000;
-        } else if (newPenalty === "DNF") {
-          finalTime = Infinity;
-        }
-
-        await ctx.db.patch(solveId, {
-          ...updates,
-          finalTime: finalTime,
-        });
+      let finalTime = newTime;
+      if (newPenalty === "+2") {
+        finalTime = newTime + 2000;
+      } else if (newPenalty === "DNF") {
+        finalTime = Infinity;
       }
+
+      await ctx.db.patch(solveId, {
+        ...updates,
+        finalTime: finalTime,
+      });
+
+      // Schedule stats recalculation if time/penalty changed
+      await ctx.scheduler.runAfter(
+        0,
+        internal.users.recalculateUserEventStats,
+        {
+          userId: solve.userId,
+          event: solve.event,
+        }
+      );
     } else {
       await ctx.db.patch(solveId, updates);
     }
@@ -890,5 +934,285 @@ export const clearAllDismissedNotifications = mutation({
     }
 
     await ctx.db.patch(userId, { dismissedNotifications: [] });
+  },
+});
+
+// ============================================
+// PRE-COMPUTED STATISTICS MANAGEMENT
+// ============================================
+
+// Helper: Truncate to centiseconds (for singles)
+const truncToCentisMs = (ms: number) => Math.floor(ms / 10) * 10;
+
+// Helper: Round to centiseconds (for averages)
+const roundToCentisMs = (ms: number) => Math.round(ms / 10) * 10;
+
+// Helper: Calculate WCA Average of N from an array of times
+const calculateWcaAverageN = (times: number[], n: number): number | null => {
+  if (times.length < n) return null;
+
+  // Get the last N times
+  const lastN = times.slice(-n);
+
+  const dnfs = lastN.filter((v) => !isFinite(v)).length;
+  if (dnfs >= 2) return Infinity; // average is DNF if 2 or more DNFs
+
+  // Sort to drop best and worst
+  const sorted = [...lastN].sort((a, b) => a - b);
+  sorted.shift(); // drop best
+  sorted.pop(); // drop worst
+
+  // Calculate average of remaining
+  const sum = sorted.reduce((acc, v) => acc + (isFinite(v) ? v : 0), 0);
+  return roundToCentisMs(sum / (n - 2));
+};
+
+// Helper: Calculate best rolling average of N across all solves
+const calculateBestAverageN = (times: number[], n: number): number | null => {
+  if (times.length < n) return null;
+
+  let bestAvg: number | null = null;
+
+  for (let i = 0; i <= times.length - n; i++) {
+    const window = times.slice(i, i + n);
+    const dnfs = window.filter((v) => !isFinite(v)).length;
+
+    if (dnfs >= 2) continue; // Skip DNF averages
+
+    const sorted = [...window].sort((a, b) => a - b);
+    sorted.shift();
+    sorted.pop();
+
+    const avg =
+      sorted.reduce((acc, v) => acc + (isFinite(v) ? v : 0), 0) / (n - 2);
+    const rounded = roundToCentisMs(avg);
+
+    if (bestAvg === null || rounded < bestAvg) {
+      bestAvg = rounded;
+    }
+  }
+
+  return bestAvg;
+};
+
+// Internal function to recalculate stats for a user's event
+// This is called after solve add/delete/update via the scheduler
+export const recalculateUserEventStats = internalMutation({
+  args: {
+    userId: v.id("users"),
+    event: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    // Fetch ALL solves for this user-event combo (server-side, no client limit)
+    const solves = await ctx.db
+      .query("solves")
+      .withIndex("by_user_event", (q) =>
+        q.eq("userId", args.userId).eq("event", args.event)
+      )
+      .collect();
+
+    // Sort by solve date ascending for proper average calculation
+    solves.sort((a, b) => a.solveDate - b.solveDate);
+
+    // Calculate statistics
+    const totalSolves = solves.length;
+    const nonDnfSolves = solves.filter((s) => s.penalty !== "DNF");
+    const totalNonDnfSolves = nonDnfSolves.length;
+
+    // Extract times (truncated for singles, with Infinity for DNF)
+    const times = solves.map((s) =>
+      s.penalty === "DNF" ? Infinity : truncToCentisMs(s.finalTime)
+    );
+
+    // Best single (excluding DNFs)
+    const nonDnfTimes = times.filter((t) => isFinite(t));
+    const bestSingle =
+      nonDnfTimes.length > 0 ? Math.min(...nonDnfTimes) : undefined;
+
+    // Best averages
+    const bestAo5 = calculateBestAverageN(times, 5) ?? undefined;
+    const bestAo12 = calculateBestAverageN(times, 12) ?? undefined;
+    const bestAo100 = calculateBestAverageN(times, 100) ?? undefined;
+
+    // Overall average (mean of non-DNF solves)
+    const overallAverage =
+      nonDnfTimes.length > 0
+        ? roundToCentisMs(
+            nonDnfTimes.reduce((a, b) => a + b, 0) / nonDnfTimes.length
+          )
+        : undefined;
+
+    // Activity stats
+    const firstSolveDate = solves.length > 0 ? solves[0].solveDate : undefined;
+    const lastSolveDate =
+      solves.length > 0 ? solves[solves.length - 1].solveDate : undefined;
+
+    // Count unique active days
+    const uniqueDays = new Set<string>();
+    for (const solve of solves) {
+      const dateKey = new Date(solve.solveDate).toISOString().split("T")[0];
+      uniqueDays.add(dateKey);
+    }
+    const activeDays = uniqueDays.size;
+
+    // Check if stats record exists
+    const existingStats = await ctx.db
+      .query("userEventStats")
+      .withIndex("by_user_event", (q) =>
+        q.eq("userId", args.userId).eq("event", args.event)
+      )
+      .first();
+
+    const statsData = {
+      userId: args.userId,
+      event: args.event,
+      totalSolves,
+      totalNonDnfSolves,
+      bestSingle,
+      bestAo5,
+      bestAo12,
+      bestAo100,
+      overallAverage,
+      firstSolveDate,
+      lastSolveDate,
+      activeDays,
+      updatedAt: now,
+    };
+
+    if (existingStats) {
+      await ctx.db.patch(existingStats._id, statsData);
+    } else {
+      await ctx.db.insert("userEventStats", statsData);
+    }
+
+    return statsData;
+  },
+});
+
+// Query to get pre-computed stats for all events for a user
+export const getUserEventStats = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("userEventStats")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+  },
+});
+
+// Query to get pre-computed stats for a specific event
+export const getUserEventStatsByEvent = query({
+  args: {
+    userId: v.id("users"),
+    event: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("userEventStats")
+      .withIndex("by_user_event", (q) =>
+        q.eq("userId", args.userId).eq("event", args.event)
+      )
+      .first();
+  },
+});
+
+// Batch recalculate stats for all events a user has solves in
+// Useful for migration or after bulk imports
+export const recalculateAllUserStats = mutation({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    // Get all unique events for this user
+    const solves = await ctx.db
+      .query("solves")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    const uniqueEvents = new Set<string>();
+    for (const solve of solves) {
+      uniqueEvents.add(solve.event);
+    }
+
+    // Recalculate stats for each event
+    const results = [];
+    for (const event of uniqueEvents) {
+      // Inline recalculation (can't call mutation from mutation)
+      const now = Date.now();
+
+      const eventSolves = solves
+        .filter((s) => s.event === event)
+        .sort((a, b) => a.solveDate - b.solveDate);
+
+      const totalSolves = eventSolves.length;
+      const nonDnfSolves = eventSolves.filter((s) => s.penalty !== "DNF");
+      const totalNonDnfSolves = nonDnfSolves.length;
+
+      const times = eventSolves.map((s) =>
+        s.penalty === "DNF" ? Infinity : truncToCentisMs(s.finalTime)
+      );
+
+      const nonDnfTimes = times.filter((t) => isFinite(t));
+      const bestSingle =
+        nonDnfTimes.length > 0 ? Math.min(...nonDnfTimes) : undefined;
+
+      const bestAo5 = calculateBestAverageN(times, 5) ?? undefined;
+      const bestAo12 = calculateBestAverageN(times, 12) ?? undefined;
+      const bestAo100 = calculateBestAverageN(times, 100) ?? undefined;
+
+      const overallAverage =
+        nonDnfTimes.length > 0
+          ? roundToCentisMs(
+              nonDnfTimes.reduce((a, b) => a + b, 0) / nonDnfTimes.length
+            )
+          : undefined;
+
+      const firstSolveDate =
+        eventSolves.length > 0 ? eventSolves[0].solveDate : undefined;
+      const lastSolveDate =
+        eventSolves.length > 0
+          ? eventSolves[eventSolves.length - 1].solveDate
+          : undefined;
+
+      const uniqueDays = new Set<string>();
+      for (const solve of eventSolves) {
+        const dateKey = new Date(solve.solveDate).toISOString().split("T")[0];
+        uniqueDays.add(dateKey);
+      }
+      const activeDays = uniqueDays.size;
+
+      const existingStats = await ctx.db
+        .query("userEventStats")
+        .withIndex("by_user_event", (q) =>
+          q.eq("userId", args.userId).eq("event", event)
+        )
+        .first();
+
+      const statsData = {
+        userId: args.userId,
+        event,
+        totalSolves,
+        totalNonDnfSolves,
+        bestSingle,
+        bestAo5,
+        bestAo12,
+        bestAo100,
+        overallAverage,
+        firstSolveDate,
+        lastSolveDate,
+        activeDays,
+        updatedAt: now,
+      };
+
+      if (existingStats) {
+        await ctx.db.patch(existingStats._id, statsData);
+      } else {
+        await ctx.db.insert("userEventStats", statsData);
+      }
+
+      results.push({ event, totalSolves });
+    }
+
+    return { recalculatedEvents: results.length, events: results };
   },
 });
