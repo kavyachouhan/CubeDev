@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Download, Upload } from "lucide-react";
+import { useState, useCallback } from "react";
+import { Download, Upload, Loader2 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import ImportModal from "../timer/ImportModal";
 
@@ -32,14 +32,24 @@ interface Session {
 export default function DataManagementSection() {
   const { user } = useUser();
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+
+  // Convex client for paginated fetching
+  const convex = useConvex();
 
   // Convex mutations
   const createSession = useMutation(api.users.createSession);
   const batchImportSolves = useMutation(api.users.batchImportSolves);
 
-  // Fetch user solves and sessions
-  const solves = useQuery(
+  // Fetch user solves (paginated - first page for display)
+  const solvesResult = useQuery(
     api.users.getUserSolves,
+    user?.convexId ? { userId: user.convexId as any, limit: 1000 } : "skip"
+  );
+
+  // Get solve count to show user how many solves they have
+  const solveCount = useQuery(
+    api.users.getUserSolveCount,
     user?.convexId ? { userId: user.convexId as any } : "skip"
   );
 
@@ -48,9 +58,12 @@ export default function DataManagementSection() {
     user?.convexId ? { userId: user.convexId as any } : "skip"
   );
 
+  // Use allSolvesLoaded if available (for export), otherwise use first page
+  const solvesData = solvesResult?.solves ?? [];
+
   // Map to TimerRecord and Session types
   const timerSolves: TimerRecord[] =
-    solves?.map((solve) => ({
+    solvesData.map((solve: any) => ({
       id: solve._id,
       time: solve.time,
       timestamp: new Date(solve.solveDate),
@@ -73,47 +86,81 @@ export default function DataManagementSection() {
       convexId: session._id,
     })) || [];
 
-  // Export function
-  const handleExport = () => {
-    // Prepare data
-    const exportData = {
-      exportedAt: new Date().toISOString(),
-      format: "cubedev-v1",
-      sessions: timerSessions.map((session) => ({
-        id: session.id,
-        name: session.name,
-        event: session.event,
-        createdAt: session.createdAt.toISOString(),
-        solveCount: session.solveCount,
-      })),
-      solves: timerSolves.map((solve) => ({
-        id: solve.id,
+  // Export function - progressively loads all solves before exporting
+  const handleExport = useCallback(async () => {
+    if (!user?.convexId) return;
+
+    setIsExporting(true);
+
+    try {
+      // Progressively fetch all solves using pagination
+      const allSolves: any[] = [];
+      let cursor: string | null = null;
+      let isDone = false;
+
+      while (!isDone) {
+        const result: {
+          solves: any[];
+          cursor: string | null;
+          isDone: boolean;
+        } = await convex.query(api.users.getUserSolves, {
+          userId: user.convexId as any,
+          limit: 2000,
+          cursor: cursor ?? undefined,
+        });
+
+        allSolves.push(...result.solves);
+        cursor = result.cursor;
+        isDone = result.isDone;
+      }
+
+      // Convert to export format
+      const exportSolves = allSolves.map((solve: any) => ({
+        id: solve._id,
         time: solve.time,
-        timestamp: solve.timestamp.toISOString(),
+        timestamp: new Date(solve.solveDate).toISOString(),
         scramble: solve.scramble,
         penalty: solve.penalty,
         finalTime: solve.finalTime,
         event: solve.event,
         sessionId: solve.sessionId,
-        notes: solve.notes,
+        notes: solve.comment,
         tags: solve.tags,
-      })),
-    };
+      }));
 
-    // Create and download file
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-      type: "text/plain;charset=utf-8",
-    });
+      // Prepare data
+      const exportData = {
+        exportedAt: new Date().toISOString(),
+        format: "cubedev-v1",
+        sessions: timerSessions.map((session) => ({
+          id: session.id,
+          name: session.name,
+          event: session.event,
+          createdAt: session.createdAt.toISOString(),
+          solveCount: session.solveCount,
+        })),
+        solves: exportSolves,
+      };
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `cubedev-export-${new Date().toISOString().split("T")[0]}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+      // Create and download file
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+        type: "text/plain;charset=utf-8",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `cubedev-export-${new Date().toISOString().split("T")[0]}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to export data:", error);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [user?.convexId, convex, timerSessions]);
 
   // Import function - creates new session and imports solves
   const handleImportSolves = async (importedSolves: TimerRecord[]) => {
@@ -214,7 +261,7 @@ export default function DataManagementSection() {
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
             <div className="bg-[var(--surface-elevated)] rounded-lg p-3 md:p-4 border border-[var(--border)]">
               <div className="text-lg md:text-2xl font-bold text-[var(--text-primary)]">
-                {timerSolves.length.toLocaleString()}
+                {(solveCount ?? timerSolves.length).toLocaleString()}
               </div>
               <div className="text-xs md:text-sm text-[var(--text-muted)]">
                 Total Solves
@@ -245,11 +292,20 @@ export default function DataManagementSection() {
             {/* Export Button */}
             <button
               onClick={handleExport}
-              disabled={timerSolves.length === 0}
+              disabled={isExporting || (solveCount ?? timerSolves.length) === 0}
               className="flex items-center justify-center gap-2 px-4 py-2 md:py-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
             >
-              <Download className="w-4 h-4" />
-              Export Data
+              {isExporting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Exporting...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  Export Data
+                </>
+              )}
             </button>
 
             {/* Import Button */}

@@ -28,10 +28,15 @@ export const useDatabaseSync = (userId?: string) => {
     api.users.getUserSessions,
     userIdAsId ? { userId: userIdAsId } : "skip"
   );
-  const dbSolves = useQuery(
-    api.users.getUserSolves,
-    userIdAsId ? { userId: userIdAsId } : "skip"
+  // Use getUserRecentSolves instead of getUserSolves to prevent loading 20k+ solves at once
+  // This loads only the most recent 500 solves for timer stats
+  const dbSolvesResult = useQuery(
+    api.users.getUserRecentSolves,
+    userIdAsId ? { userId: userIdAsId, limit: 500 } : "skip"
   );
+
+  // For backwards compatibility, expose dbSolves directly
+  const dbSolves = dbSolvesResult;
 
   // Convert database sessions to local format
   const convertDbSessionsToLocal = useCallback(

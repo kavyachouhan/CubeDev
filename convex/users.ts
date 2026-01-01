@@ -597,15 +597,56 @@ export const getSessionSolves = query({
   },
 });
 
-// Get all solves for a user
+// Get all solves for a user (paginated to prevent timeout on large datasets)
 export const getUserSolves = query({
-  args: { userId: v.id("users") },
+  args: {
+    userId: v.id("users"),
+    limit: v.optional(v.number()),
+    cursor: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
+    const limit = args.limit ?? 1000; // Default limit to prevent loading 20k+ solves at once
+
+    const result = await ctx.db
+      .query("solves")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .paginate({ numItems: limit, cursor: args.cursor ?? null });
+
+    return {
+      solves: result.page,
+      cursor: result.continueCursor,
+      isDone: result.isDone,
+    };
+  },
+});
+
+// Get recent solves for a user (limited, for timer stats display)
+export const getUserRecentSolves = query({
+  args: {
+    userId: v.id("users"),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 500; // Default to 500 recent solves for stats
+
     return await ctx.db
       .query("solves")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .order("desc")
+      .take(limit);
+  },
+});
+
+// Get solve count for a user (lightweight query for UI)
+export const getUserSolveCount = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const solves = await ctx.db
+      .query("solves")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .collect();
+    return solves.length;
   },
 });
 

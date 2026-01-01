@@ -246,11 +246,13 @@ export default function CubeDevStats({
     privacySettings?.isDeleted ||
     !cubeDevUser?._id;
 
-  // Query user's solves
-  const solves = useQuery(
-    api.users.getUserSolves,
-    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id }
+  // Query user's solves (use paginated version with higher limit for profile stats)
+  const solvesResult = useQuery(
+    api.users.getUserRecentSolves,
+    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id, limit: 2000 }
   );
+  // For backwards compatibility, alias to solves
+  const solves = solvesResult;
 
   // Query challenge stats
   const challengeStats = useQuery(

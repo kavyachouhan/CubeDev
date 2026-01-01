@@ -192,20 +192,24 @@ async def get_user_solve_data(
                         "format": "json"
                     }
                 )
+                solves_response.raise_for_status()
+                solves_data = solves_response.json()
+                all_solves = solves_data.get("value", solves_data) if isinstance(solves_data, dict) else solves_data
+                all_solves = all_solves if isinstance(all_solves, list) else []
             else:
+                # Use getUserRecentSolves to prevent timeout on large datasets
                 solves_response = await client.post(
                     f"{CONVEX_URL}/api/query",
                     json={
-                        "path": "users:getUserSolves",
-                        "args": {"userId": user_id},
+                        "path": "users:getUserRecentSolves",
+                        "args": {"userId": user_id, "limit": 2000},
                         "format": "json"
                     }
                 )
-            
-            solves_response.raise_for_status()
-            solves_data = solves_response.json()
-            all_solves = solves_data.get("value", solves_data) if isinstance(solves_data, dict) else solves_data
-            all_solves = all_solves if isinstance(all_solves, list) else []
+                solves_response.raise_for_status()
+                solves_data = solves_response.json()
+                all_solves = solves_data.get("value", solves_data) if isinstance(solves_data, dict) else solves_data
+                all_solves = all_solves if isinstance(all_solves, list) else []
             
             # Filter solves by date and event
             solves = []
@@ -565,12 +569,12 @@ async def compare_with_personal_bests(
             return {"status": "error", "message": "CONVEX_URL not configured"}
         
         async with httpx.AsyncClient(timeout=30.0) as client:
-            # Fetch all-time solves for PB calculation
+            # Fetch all-time solves for PB calculation (use paginated query)
             solves_response = await client.post(
                 f"{CONVEX_URL}/api/query",
                 json={
-                    "path": "users:getUserSolves",
-                    "args": {"userId": user_id},
+                    "path": "users:getUserRecentSolves",
+                    "args": {"userId": user_id, "limit": 5000},
                     "format": "json"
                 }
             )
@@ -817,12 +821,12 @@ async def track_progress_over_time(
         cutoff_timestamp = int(cutoff_date.timestamp() * 1000)
         
         async with httpx.AsyncClient(timeout=30.0) as client:
-            # Fetch user solves
+            # Fetch user solves (use paginated query)
             solves_response = await client.post(
                 f"{CONVEX_URL}/api/query",
                 json={
-                    "path": "users:getUserSolves",
-                    "args": {"userId": user_id},
+                    "path": "users:getUserRecentSolves",
+                    "args": {"userId": user_id, "limit": 2000},
                     "format": "json"
                 }
             )
