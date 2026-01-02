@@ -25,8 +25,28 @@ interface TimerRecord {
   tags?: string[];
 }
 
+// Pre-computed event stats from database
+interface EventStats {
+  _id: string;
+  userId: string;
+  event: string;
+  totalSolves: number;
+  totalNonDnfSolves: number;
+  bestSingle?: number;
+  bestAo5?: number;
+  bestAo12?: number;
+  bestAo100?: number;
+  overallAverage?: number;
+  firstSolveDate?: number;
+  lastSolveDate?: number;
+  activeDays?: number;
+  updatedAt: number;
+}
+
 interface PersonalBestsCardProps {
   solves: TimerRecord[];
+  precomputedStats?: EventStats[]; // Optional pre-computed stats for accurate PBs
+  selectedEvent?: string; // Current event filter
 }
 
 const formatTime = (ms: number): string => {
@@ -101,11 +121,63 @@ const findBestAverage = (
   return bestAvg !== null ? { value: bestAvg, index: bestIndex } : null;
 };
 
-export default function PersonalBestsCard({ solves }: PersonalBestsCardProps) {
+export default function PersonalBestsCard({
+  solves,
+  precomputedStats,
+  selectedEvent,
+}: PersonalBestsCardProps) {
   const [showPersonalBests, setShowPersonalBests] = usePersistentBool(
     "cubelab-personal-bests-expanded",
     true
   );
+
+  // Get aggregated stats from precomputed data if available
+  const aggregatedPrecomputedStats = useMemo(() => {
+    if (!precomputedStats || precomputedStats.length === 0) return null;
+
+    // If a specific event is selected, filter to that event
+    const relevantStats =
+      selectedEvent && selectedEvent !== "all"
+        ? precomputedStats.filter((s) => s.event === selectedEvent)
+        : precomputedStats;
+
+    if (relevantStats.length === 0) return null;
+
+    // Aggregate across all relevant events
+    const totalSolves = relevantStats.reduce(
+      (sum, s) => sum + s.totalSolves,
+      0
+    );
+    const totalNonDnfSolves = relevantStats.reduce(
+      (sum, s) => sum + s.totalNonDnfSolves,
+      0
+    );
+
+    // Find best values across all events
+    const bestSingles = relevantStats
+      .map((s) => s.bestSingle)
+      .filter((v): v is number => v !== undefined);
+    const bestAo5s = relevantStats
+      .map((s) => s.bestAo5)
+      .filter((v): v is number => v !== undefined);
+    const bestAo12s = relevantStats
+      .map((s) => s.bestAo12)
+      .filter((v): v is number => v !== undefined);
+    const bestAo100s = relevantStats
+      .map((s) => s.bestAo100)
+      .filter((v): v is number => v !== undefined);
+
+    return {
+      bestSingle: bestSingles.length > 0 ? Math.min(...bestSingles) : null,
+      bestAo5: bestAo5s.length > 0 ? Math.min(...bestAo5s) : null,
+      bestAo12: bestAo12s.length > 0 ? Math.min(...bestAo12s) : null,
+      bestAo100: bestAo100s.length > 0 ? Math.min(...bestAo100s) : null,
+      totalSolves,
+      successRate:
+        totalSolves > 0 ? (totalNonDnfSolves / totalSolves) * 100 : 0,
+    };
+  }, [precomputedStats, selectedEvent]);
+
   const personalBests = useMemo(() => {
     if (solves.length === 0) return null;
 
@@ -203,7 +275,8 @@ export default function PersonalBestsCard({ solves }: PersonalBestsCardProps) {
     }
   };
 
-  if (!personalBests) {
+  // Show empty state only if no data from either source
+  if (!personalBests && !aggregatedPrecomputedStats) {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -226,7 +299,9 @@ export default function PersonalBestsCard({ solves }: PersonalBestsCardProps) {
           <button
             onClick={() => setShowPersonalBests(!showPersonalBests)}
             className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
-            title={showPersonalBests ? "Hide personal bests" : "Show personal bests"}
+            title={
+              showPersonalBests ? "Hide personal bests" : "Show personal bests"
+            }
           >
             {showPersonalBests ? (
               <EyeOff className="w-4 h-4" />
@@ -251,27 +326,42 @@ export default function PersonalBestsCard({ solves }: PersonalBestsCardProps) {
     );
   }
 
+  // Use precomputed stats for PBs when available (more accurate for users with many solves)
+  // Fall back to calculated values from recent solves if no precomputed data
+  const displayBestSingle =
+    aggregatedPrecomputedStats?.bestSingle ?? personalBests?.bestSingle?.value;
+  const displayBestAo5 =
+    aggregatedPrecomputedStats?.bestAo5 ?? personalBests?.bestAo5?.value;
+  const displayBestAo12 =
+    aggregatedPrecomputedStats?.bestAo12 ?? personalBests?.bestAo12?.value;
+  const displayBestAo100 =
+    aggregatedPrecomputedStats?.bestAo100 ?? personalBests?.bestAo100?.value;
+  const displayTotalSolves =
+    aggregatedPrecomputedStats?.totalSolves ?? personalBests?.totalSolves ?? 0;
+  const displaySuccessRate =
+    aggregatedPrecomputedStats?.successRate ?? personalBests?.successRate ?? 0;
+
   const records = [
     {
       label: "Best Single",
-      value: personalBests.bestSingle?.value,
-      date: personalBests.bestSingle?.solve.timestamp,
+      value: displayBestSingle,
+      date: personalBests?.bestSingle?.solve.timestamp,
       icon: Trophy,
       color: "text-[var(--warning)]",
       bgColor: "bg-[var(--warning)]/10",
     },
     {
       label: "Best Ao5",
-      value: personalBests.bestAo5?.value,
-      date: personalBests.bestAo5?.solve.timestamp,
+      value: displayBestAo5,
+      date: personalBests?.bestAo5?.solve.timestamp,
       icon: Target,
       color: "text-[var(--primary)]",
       bgColor: "bg-[var(--primary)]/10",
     },
     {
       label: "Best Ao12",
-      value: personalBests.bestAo12?.value,
-      date: personalBests.bestAo12?.solve.timestamp,
+      value: displayBestAo12,
+      date: personalBests?.bestAo12?.solve.timestamp,
       icon: TrendingUp,
       color: "text-[var(--accent)]",
       bgColor: "bg-[var(--accent)]/10",
@@ -298,16 +388,18 @@ export default function PersonalBestsCard({ solves }: PersonalBestsCardProps) {
           )}
         </button>
         <button
-            onClick={() => setShowPersonalBests(!showPersonalBests)}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
-            title={showPersonalBests ? "Hide personal bests" : "Show personal bests"}
-          >
-            {showPersonalBests ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
+          onClick={() => setShowPersonalBests(!showPersonalBests)}
+          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+          title={
+            showPersonalBests ? "Hide personal bests" : "Show personal bests"
+          }
+        >
+          {showPersonalBests ? (
+            <EyeOff className="w-4 h-4" />
+          ) : (
+            <Eye className="w-4 h-4" />
+          )}
+        </button>
       </div>
 
       {showPersonalBests && (

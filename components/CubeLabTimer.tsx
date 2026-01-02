@@ -92,13 +92,50 @@ export default function CubeLabTimer({
     toggleStat: toggleExtendedStat,
   } = useExtendedStatsVisibility();
 
-  // Fetch session solves from database
-  const dbSessionSolves = useQuery(
+  // State for pagination cursor
+  const [sessionSolvesCursor, setSessionSolvesCursor] = useState<string | null>(
+    null
+  );
+  const [allSessionSolves, setAllSessionSolves] = useState<any[]>([]);
+
+  // Fetch session solves from database (paginated with larger limit for better UX)
+  const dbSessionSolvesResult = useQuery(
     api.users.getSessionSolves,
     currentSession?.convexId
-      ? { sessionId: currentSession.convexId as any }
+      ? {
+          sessionId: currentSession.convexId as any,
+          limit: 1000, // Load 1000 at a time for smoother experience
+          cursor: sessionSolvesCursor || undefined,
+        }
       : "skip"
   );
+
+  // Accumulate solves as we paginate
+  useEffect(() => {
+    if (dbSessionSolvesResult?.solves) {
+      setAllSessionSolves((prev) => {
+        // If cursor is null, it's the first fetch - replace all
+        if (!sessionSolvesCursor) {
+          return dbSessionSolvesResult.solves;
+        }
+        // Otherwise, append new solves (avoiding duplicates by ID)
+        const existingIds = new Set(prev.map((s: any) => s._id));
+        const newSolves = dbSessionSolvesResult.solves.filter(
+          (s: any) => !existingIds.has(s._id)
+        );
+        return [...prev, ...newSolves];
+      });
+    }
+  }, [dbSessionSolvesResult, sessionSolvesCursor]);
+
+  // Reset accumulated solves when session changes
+  useEffect(() => {
+    setAllSessionSolves([]);
+    setSessionSolvesCursor(null);
+  }, [currentSession?.convexId]);
+
+  // Extract solves array for backward compatibility
+  const dbSessionSolves = allSessionSolves;
 
   // Batch import mutation
   const batchImportSolves = useMutation(api.users.batchImportSolves);
@@ -552,7 +589,7 @@ export default function CubeLabTimer({
               onApplyPenalty={handleLastSolvePenalty}
               lastSolveId={lastSolveId}
               onTimerStateChange={handleTimerFocusChange}
-              history={getSessionHistory(currentSession.id)}
+              history={getAllSessionSolves(currentSession.id)}
               extendedStatsVisibility={extendedStatsVisibility}
               onToggleExtendedStat={toggleExtendedStat}
             />
@@ -576,7 +613,7 @@ export default function CubeLabTimer({
 
           {/* Stats */}
           <StatsDisplay
-            history={getSessionHistory(currentSession.id)}
+            history={getAllSessionSolves(currentSession.id)}
             selectedEvent={selectedEvent}
             extendedStatsVisibility={extendedStatsVisibility}
           />

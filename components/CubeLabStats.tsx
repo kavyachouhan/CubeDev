@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useUser } from "@/components/UserProvider";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { useSessionState } from "./timer/hooks/useSessionState";
 import { useDatabaseSync } from "./timer/hooks/useDatabaseSync";
 import { useLocalStorageManager } from "./timer/hooks/useLocalStorageManager";
@@ -56,6 +58,12 @@ export default function CubeLabStats() {
   const { sessions, isSessionsInitialized } = useSessionState(user?.convexId);
   const { dbSolves, isLoading } = useDatabaseSync(user?.convexId);
   const { loadFromCache } = useLocalStorageManager(user?.convexId);
+
+  // Precomputed event stats from the database
+  const eventStats = useQuery(
+    api.users.getUserEventStats,
+    user?.convexId ? { userId: user.convexId as any } : "skip"
+  );
 
   const [filters, setFilters] = useState<FilterState>({
     timeFilter: "30d",
@@ -316,7 +324,11 @@ export default function CubeLabStats() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Personal Bests */}
         <div className="timer-card">
-          <PersonalBestsCard solves={filteredSolves} />
+          <PersonalBestsCard
+            solves={filteredSolves}
+            precomputedStats={eventStats}
+            selectedEvent={filters.eventFilter}
+          />
         </div>
 
         {/* Time Distribution */}

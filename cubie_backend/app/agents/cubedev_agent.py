@@ -184,18 +184,38 @@ async def get_user_solve_data(
             
             # Fetch solves - either for specific session or all user solves
             if session_id:
-                solves_response = await client.post(
-                    f"{CONVEX_URL}/api/query",
-                    json={
-                        "path": "users:getSessionSolves",
-                        "args": {"sessionId": session_id},
-                        "format": "json"
-                    }
-                )
-                solves_response.raise_for_status()
-                solves_data = solves_response.json()
-                all_solves = solves_data.get("value", solves_data) if isinstance(solves_data, dict) else solves_data
-                all_solves = all_solves if isinstance(all_solves, list) else []
+                # Fetch all pages of session solves to ensure accurate data
+                all_solves = []
+                cursor = None
+                is_done = False
+                
+                while not is_done:
+                    query_args = {"sessionId": session_id, "limit": 1000}
+                    if cursor:
+                        query_args["cursor"] = cursor
+                    
+                    solves_response = await client.post(
+                        f"{CONVEX_URL}/api/query",
+                        json={
+                            "path": "users:getSessionSolves",
+                            "args": query_args,
+                            "format": "json"
+                        }
+                    )
+                    solves_response.raise_for_status()
+                    solves_data = solves_response.json()
+                    
+                    # Handle paginated response structure
+                    solves_value = solves_data.get("value", solves_data) if isinstance(solves_data, dict) else solves_data
+                    if isinstance(solves_value, dict) and "solves" in solves_value:
+                        page_solves = solves_value.get("solves", [])
+                        all_solves.extend(page_solves)
+                        cursor = solves_value.get("cursor")
+                        is_done = solves_value.get("isDone", True)
+                    else:
+                        # Legacy format - just a list
+                        all_solves = solves_value if isinstance(solves_value, list) else []
+                        is_done = True
             else:
                 # Use getUserRecentSolves to prevent timeout on large datasets
                 solves_response = await client.post(

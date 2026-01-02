@@ -606,15 +606,27 @@ export const batchImportSolves = mutation({
   },
 });
 
-// Get solves for a session
+// Get all solves for a session (paginated to prevent timeout on large datasets)
 export const getSessionSolves = query({
-  args: { sessionId: v.id("sessions") },
+  args: {
+    sessionId: v.id("sessions"),
+    limit: v.optional(v.number()),
+    cursor: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const limit = args.limit ?? 500; // Default limit to prevent loading too many solves at once
+
+    const result = await ctx.db
       .query("solves")
       .withIndex("by_session", (q) => q.eq("sessionId", args.sessionId))
       .order("desc")
-      .collect();
+      .paginate({ numItems: limit, cursor: args.cursor ?? null });
+
+    return {
+      solves: result.page,
+      cursor: result.continueCursor,
+      isDone: result.isDone,
+    };
   },
 });
 
@@ -659,15 +671,18 @@ export const getUserRecentSolves = query({
   },
 });
 
-// Get solve count for a user (lightweight query for UI)
+// Get solve count for a user (uses pre-computed stats for performance)
 export const getUserSolveCount = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
-    const solves = await ctx.db
-      .query("solves")
+    // Use pre-computed event stats for accurate count without loading all solves
+    const eventStats = await ctx.db
+      .query("userEventStats")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .collect();
-    return solves.length;
+
+    // Sum up total solves across all events
+    return eventStats.reduce((total, stat) => total + stat.totalSolves, 0);
   },
 });
 
@@ -679,20 +694,19 @@ export const deleteSolve = mutation({
     if (solve) {
       const userId = solve.userId;
       const event = solve.event;
+      const sessionId = solve.sessionId;
 
       // Delete the solve
       await ctx.db.delete(args.solveId);
 
-      // Update session solve count
-      const remainingSolves = await ctx.db
-        .query("solves")
-        .withIndex("by_session", (q) => q.eq("sessionId", solve.sessionId))
-        .collect();
-
-      await ctx.db.patch(solve.sessionId, {
-        solveCount: remainingSolves.length,
-        updatedAt: Date.now(),
-      });
+      // Update session solve count (decrement instead of recounting)
+      const session = await ctx.db.get(sessionId);
+      if (session) {
+        await ctx.db.patch(sessionId, {
+          solveCount: Math.max(0, session.solveCount - 1),
+          updatedAt: Date.now(),
+        });
+      }
 
       // Schedule stats recalculation
       await ctx.scheduler.runAfter(
@@ -711,14 +725,21 @@ export const deleteSolve = mutation({
 export const deleteSession = mutation({
   args: { sessionId: v.id("sessions") },
   handler: async (ctx, args) => {
-    // First delete all solves in this session
-    const solves = await ctx.db
-      .query("solves")
-      .withIndex("by_session", (q) => q.eq("sessionId", args.sessionId))
-      .collect();
+    // Delete solves in batches to prevent timeout on large sessions
+    let hasMore = true;
+    while (hasMore) {
+      const solves = await ctx.db
+        .query("solves")
+        .withIndex("by_session", (q) => q.eq("sessionId", args.sessionId))
+        .take(100); // Delete 100 at a time
 
-    for (const solve of solves) {
-      await ctx.db.delete(solve._id);
+      if (solves.length === 0) {
+        hasMore = false;
+      } else {
+        for (const solve of solves) {
+          await ctx.db.delete(solve._id);
+        }
+      }
     }
 
     // Then delete the session
@@ -776,7 +797,8 @@ export const updateSolve = mutation({
   },
 });
 
-// Get user statistics
+// Get user statistics (DEPRECATED - use getUserEventStats instead for better performance)
+// This function may timeout for sessions with many solves
 export const getUserStats = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
@@ -786,13 +808,14 @@ export const getUserStats = query({
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .collect();
 
-    // Get solve count for each session
+    // Get solve count for each session (limited to prevent timeout)
     const stats = await Promise.all(
       sessions.map(async (session) => {
+        // Only fetch first 1000 solves to prevent timeout
         const solves = await ctx.db
           .query("solves")
           .withIndex("by_session", (q) => q.eq("sessionId", session._id))
-          .collect();
+          .take(1000);
 
         const validSolves = solves.filter((solve) => solve.penalty !== "DNF");
         const times = validSolves.map((solve) => solve.finalTime);
@@ -808,7 +831,7 @@ export const getUserStats = query({
           sessionId: session._id,
           sessionName: session.name,
           event: session.event,
-          solveCount: solves.length,
+          solveCount: solves.length, // May be inaccurate if > 1000 solves
           average: average,
           best: best,
         };
