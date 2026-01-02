@@ -17,6 +17,7 @@ import {
   History,
   Compass,
   RefreshCw,
+  CircleCheck,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,10 +31,9 @@ import {
   formatCompetitionDateRange,
 } from "@/lib/date-utils";
 import SimulationHistory from "./SimulationHistory";
+import UpcomingCompetitionsSuggestions from "./UpcomingCompetitionsSuggestions";
 import RegionDropdown from "./RegionDropdown";
-import {
-  CompetitionCardsSkeleton,
-} from "@/components/SkeletonLoaders";
+import { CompetitionCardsSkeleton } from "@/components/SkeletonLoaders";
 import CompetitionWalkthrough from "./CompetitionWalkthrough";
 
 // WCA Events with icons
@@ -106,16 +106,28 @@ const REGIONS = [
 export default function CompetitionBrowser() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialTab =
-    searchParams.get("tab") === "simulation" ? "history" : "browse";
+  const getInitialTab = (): "browse" | "registered" | "history" => {
+    const tab = searchParams.get("tab");
+    if (tab === "registered") return "registered";
+    if (tab === "simulation") return "history";
+    return "browse";
+  };
 
-  const [activeTab, setActiveTab] = useState<"browse" | "history">(initialTab);
+  const [activeTab, setActiveTab] = useState<
+    "browse" | "registered" | "history"
+  >(getInitialTab());
 
   // Sync URL with tab changes
-  const handleTabChange = (tab: "browse" | "history") => {
+  const handleTabChange = (tab: "browse" | "registered" | "history") => {
     setActiveTab(tab);
     const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set("tab", tab === "history" ? "simulation" : "browse");
+    if (tab === "history") {
+      newParams.set("tab", "simulation");
+    } else if (tab === "registered") {
+      newParams.set("tab", "registered");
+    } else {
+      newParams.set("tab", "browse");
+    }
     router.replace(`/cube-lab/competitions?${newParams.toString()}`, {
       scroll: false,
     });
@@ -354,7 +366,7 @@ export default function CompetitionBrowser() {
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Tab Navigation */}
         <div className="border-b border-[var(--border)]">
-          <nav className="flex space-x-6 sm:space-x-8">
+          <nav className="flex space-x-4 sm:space-x-6 overflow-x-auto">
             <button
               onClick={() => handleTabChange("browse")}
               className={`flex items-center gap-2 py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
@@ -364,7 +376,20 @@ export default function CompetitionBrowser() {
               }`}
             >
               <Compass className="w-4 h-4" />
-              Browse Competitions
+              <span className="hidden sm:inline">Browse</span>
+              <span className="sm:hidden">Browse</span>
+            </button>
+            <button
+              onClick={() => handleTabChange("registered")}
+              className={`flex items-center gap-2 py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                activeTab === "registered"
+                  ? "border-[var(--primary)] text-[var(--primary)]"
+                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+              }`}
+            >
+              <CircleCheck className="w-4 h-4" />
+              <span className="hidden sm:inline">Registered</span>
+              <span className="sm:hidden">Registered</span>
             </button>
             <button
               onClick={() => handleTabChange("history")}
@@ -375,10 +400,18 @@ export default function CompetitionBrowser() {
               }`}
             >
               <History className="w-4 h-4" />
-              My Simulations
+              <span className="hidden sm:inline">Simulations</span>
+              <span className="sm:hidden">Simulations</span>
             </button>
           </nav>
         </div>
+
+        {/* Registered Tab Content */}
+        {activeTab === "registered" && (
+          <div className="space-y-6">
+            <UpcomingCompetitionsSuggestions />
+          </div>
+        )}
 
         {/* History Tab Content */}
         {activeTab === "history" && (

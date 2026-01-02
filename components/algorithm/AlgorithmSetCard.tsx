@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Lock, CheckCircle, Clock } from "lucide-react";
+import { Lock, CircleCheck, Clock } from "lucide-react";
 
 interface AlgorithmSetCardProps {
   setId: string;
@@ -136,7 +136,7 @@ export default function AlgorithmSetCard({
         <div className="mt-4">
           {mastered === caseCount ? (
             <div className="flex items-center justify-center gap-2 py-2 bg-green-500/10 border border-green-500/20 rounded-lg">
-              <CheckCircle className="w-4 h-4 text-green-500" />
+              <CircleCheck className="w-4 h-4 text-green-500" />
               <span className="text-sm font-medium text-green-500">
                 Fully Mastered!
               </span>

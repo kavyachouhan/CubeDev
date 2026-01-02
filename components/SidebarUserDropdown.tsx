@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   User,
+  Users,
   Settings,
   LogOut,
   ChevronUp,
@@ -108,6 +109,15 @@ export default function SidebarUserDropdown({
                 Public Profile
               </Link>
             )}
+
+            <Link
+              href="/cubers"
+              className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+              onClick={() => setIsOpen(false)}
+            >
+              <Users className="w-4 h-4" />
+              Cubers
+            </Link>
 
             <Link
               href="/contact"

@@ -14,7 +14,7 @@ async function getUserByWcaId(ctx: any, wcaId: string) {
 // Create a new competition simulation
 export const createSimulation = mutation({
   args: {
-    wcaId: v.string(), // Accept wcaId from client
+    wcaId: v.string(), // WCA ID of the user
     competitionId: v.string(),
     competitionName: v.string(),
     competitionDate: v.string(),
@@ -22,6 +22,7 @@ export const createSimulation = mutation({
     competitionCity: v.optional(v.string()),
     competitionCountry: v.optional(v.string()),
     selectedEvents: v.array(v.string()),
+    eventRounds: v.optional(v.any()),
     atmosphereSettings: v.object({
       crowdNoise: v.number(),
       pressure: v.number(),
@@ -54,6 +55,7 @@ export const createSimulation = mutation({
       competitionCity: args.competitionCity,
       competitionCountry: args.competitionCountry,
       selectedEvents: args.selectedEvents,
+      eventRounds: args.eventRounds,
       atmosphereSettings: args.atmosphereSettings,
       status: "in-progress",
       completedEvents: [],

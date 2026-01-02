@@ -93,6 +93,7 @@ export default function CompetitionDetail() {
   const [eventProgress, setEventProgress] = useState<Map<string, number>>(
     new Map()
   ); // eventId -> rounds completed
+  const [eventRounds, setEventRounds] = useState<Record<string, number>>({}); // eventId -> actual rounds from WCIF
 
   // Fetch competition details
   useEffect(() => {
@@ -102,11 +103,20 @@ export default function CompetitionDetail() {
 
       try {
         const cacheKey = `comp_detail_${competitionId}`;
+        const wcifCacheKey = `comp_wcif_${competitionId}`;
         const cached = getFromCache<WCACompetition>(cacheKey);
+        const cachedWcif = getFromCache<Record<string, number>>(wcifCacheKey);
 
         if (cached) {
           setCompetition(cached);
+          if (cachedWcif) {
+            setEventRounds(cachedWcif);
+          }
           setIsLoading(false);
+          // Fetch WCIF data if not cached
+          if (!cachedWcif) {
+            fetchWcifData(cached.event_ids);
+          }
           return;
         }
 
@@ -132,12 +142,87 @@ export default function CompetitionDetail() {
 
         saveToCache(cacheKey, comp, 60 * 60 * 1000); // 1hr cache
         setCompetition(comp);
+
+        // Fetch WCIF data to get actual round counts
+        fetchWcifData(comp.event_ids);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Failed to load competition"
         );
       } finally {
         setIsLoading(false);
+      }
+    };
+
+    // Fetch WCIF data to get actual rounds per event
+    const fetchWcifData = async (eventIds: string[]) => {
+      try {
+        const wcifCacheKey = `comp_wcif_${competitionId}`;
+        const wcifResponse = await fetch(
+          `${WCA_CONFIG.API_BASE_URL}/competitions/${competitionId}/wcif/public`
+        );
+
+        if (wcifResponse.ok) {
+          const wcifData = await wcifResponse.json();
+          const rounds: Record<string, number> = {};
+
+          // Extract rounds from WCIF events data
+          if (wcifData.events && Array.isArray(wcifData.events)) {
+            wcifData.events.forEach(
+              (event: { id: string; rounds?: unknown[] }) => {
+                if (event.rounds && Array.isArray(event.rounds)) {
+                  rounds[event.id] = event.rounds.length;
+                }
+              }
+            );
+          }
+
+          // For any events without WCIF data, use fallback
+          eventIds.forEach((eventId) => {
+            if (!rounds[eventId]) {
+              // Fallback: major events get 3 rounds, others get 2
+              const majorEvents = [
+                "333",
+                "222",
+                "444",
+                "333oh",
+                "pyram",
+                "skewb",
+              ];
+              rounds[eventId] = majorEvents.includes(eventId) ? 3 : 2;
+            }
+          });
+
+          setEventRounds(rounds);
+          saveToCache(wcifCacheKey, rounds, 60 * 60 * 1000); // 1hr cache
+        } else {
+          // Fallback if WCIF fetch fails
+          const fallbackRounds: Record<string, number> = {};
+          eventIds.forEach((eventId) => {
+            const majorEvents = [
+              "333",
+              "222",
+              "444",
+              "333oh",
+              "pyram",
+              "skewb",
+            ];
+            fallbackRounds[eventId] = majorEvents.includes(eventId) ? 3 : 2;
+          });
+          setEventRounds(fallbackRounds);
+        }
+      } catch (wcifErr) {
+        console.warn(
+          "Failed to fetch WCIF data, using fallback rounds:",
+          wcifErr
+        );
+        // Fallback if WCIF fetch fails
+        const fallbackRounds: Record<string, number> = {};
+        eventIds.forEach((eventId) => {
+          const majorEvents = ["333", "222", "444", "333oh", "pyram", "skewb"];
+          fallbackRounds[eventId] = majorEvents.includes(eventId) ? 3 : 2;
+        });
+        setEventRounds(fallbackRounds);
       }
     };
 
@@ -181,8 +266,11 @@ export default function CompetitionDetail() {
 
   // Helpers
   const getMaxRounds = (eventId: string): number => {
-    // Big events typically have more rounds at major competitions
-    // For simulation, we'll keep it simple: 1-3 rounds based on event type
+    // Use actual rounds from WCIF data if available
+    if (eventRounds[eventId] && eventRounds[eventId] > 0) {
+      return eventRounds[eventId];
+    }
+    // Fallback: major events get 3 rounds, others get 2
     const majorEvents = ["333", "222", "444", "333oh", "pyram", "skewb"];
     return majorEvents.includes(eventId) ? 3 : 2;
   };

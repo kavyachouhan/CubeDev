@@ -56,6 +56,7 @@ export default function SimulationConfig() {
 
   // Configuration state
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
+  const [eventRounds, setEventRounds] = useState<Record<string, number>>({});
   const [atmosphere, setAtmosphere] =
     useState<AtmosphereSettings>(DEFAULT_ATMOSPHERE);
 
@@ -72,13 +73,22 @@ export default function SimulationConfig() {
 
       try {
         const cacheKey = `comp_detail_${competitionId}`;
+        const wcifCacheKey = `comp_wcif_${competitionId}`;
         const cached = getFromCache<WCACompetition>(cacheKey);
+        const cachedWcif = getFromCache<Record<string, number>>(wcifCacheKey);
 
         if (cached) {
           setCompetition(cached);
           // Default to selecting all events
           setSelectedEvents(cached.event_ids);
+          if (cachedWcif) {
+            setEventRounds(cachedWcif);
+          }
           setIsLoading(false);
+          // Still try to fetch WCIF if we don't have it cached
+          if (!cachedWcif) {
+            fetchWcifData(cached.event_ids);
+          }
           return;
         }
 
@@ -106,12 +116,87 @@ export default function SimulationConfig() {
         setCompetition(comp);
         // Default to selecting all events
         setSelectedEvents(comp.event_ids);
+
+        // Fetch WCIF data to get actual round counts
+        fetchWcifData(comp.event_ids);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Failed to load competition"
         );
       } finally {
         setIsLoading(false);
+      }
+    };
+
+    // Fetch WCIF data to get actual rounds per event
+    const fetchWcifData = async (eventIds: string[]) => {
+      try {
+        const wcifCacheKey = `comp_wcif_${competitionId}`;
+        const wcifResponse = await fetch(
+          `${WCA_CONFIG.API_BASE_URL}/competitions/${competitionId}/wcif/public`
+        );
+
+        if (wcifResponse.ok) {
+          const wcifData = await wcifResponse.json();
+          const rounds: Record<string, number> = {};
+
+          // Extract rounds from WCIF events data
+          if (wcifData.events && Array.isArray(wcifData.events)) {
+            wcifData.events.forEach(
+              (event: { id: string; rounds?: unknown[] }) => {
+                if (event.rounds && Array.isArray(event.rounds)) {
+                  rounds[event.id] = event.rounds.length;
+                }
+              }
+            );
+          }
+
+          // For any events without WCIF data, use fallback
+          eventIds.forEach((eventId) => {
+            if (!rounds[eventId]) {
+              // Fallback: major events get 3 rounds, others get 2
+              const majorEvents = [
+                "333",
+                "222",
+                "444",
+                "333oh",
+                "pyram",
+                "skewb",
+              ];
+              rounds[eventId] = majorEvents.includes(eventId) ? 3 : 2;
+            }
+          });
+
+          setEventRounds(rounds);
+          saveToCache(wcifCacheKey, rounds, 60 * 60 * 1000); // 1hr cache
+        } else {
+          // Fallback if WCIF fetch fails
+          const fallbackRounds: Record<string, number> = {};
+          eventIds.forEach((eventId) => {
+            const majorEvents = [
+              "333",
+              "222",
+              "444",
+              "333oh",
+              "pyram",
+              "skewb",
+            ];
+            fallbackRounds[eventId] = majorEvents.includes(eventId) ? 3 : 2;
+          });
+          setEventRounds(fallbackRounds);
+        }
+      } catch (wcifErr) {
+        console.warn(
+          "Failed to fetch WCIF data, using fallback rounds:",
+          wcifErr
+        );
+        // Fallback if WCIF fetch fails
+        const fallbackRounds: Record<string, number> = {};
+        eventIds.forEach((eventId) => {
+          const majorEvents = ["333", "222", "444", "333oh", "pyram", "skewb"];
+          fallbackRounds[eventId] = majorEvents.includes(eventId) ? 3 : 2;
+        });
+        setEventRounds(fallbackRounds);
       }
     };
 
@@ -156,6 +241,7 @@ export default function SimulationConfig() {
         competitionCity: competition.city,
         competitionCountry: competition.country_iso2,
         selectedEvents,
+        eventRounds, // Pass the actual rounds per event from WCIF data
         atmosphereSettings: atmosphere,
       });
 

@@ -8,7 +8,7 @@ import {
   Pause,
   RotateCcw,
   AlertTriangle,
-  CheckCircle,
+  CircleCheck,
   Volume2,
   VolumeX,
   ChevronRight,
@@ -75,8 +75,9 @@ export default function RoundSimulator({
 
   // Initialize audio context
   useEffect(() => {
-    audioContextRef.current = new (window.AudioContext ||
-      (window as any).webkitAudioContext)();
+    audioContextRef.current = new (
+      window.AudioContext || (window as any).webkitAudioContext
+    )();
     return () => {
       audioContextRef.current?.close();
     };
@@ -551,7 +552,7 @@ export default function RoundSimulator({
                 onClick={() => confirmSolve("none")}
                 className="flex items-center justify-center gap-2 px-6 py-3 bg-[var(--success)] text-white font-medium rounded-lg"
               >
-                <CheckCircle className="w-5 h-5" />
+                <CircleCheck className="w-5 h-5" />
                 OK
               </button>
               <button

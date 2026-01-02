@@ -14,6 +14,12 @@ export { default as CompetitionWalkthrough } from "./CompetitionWalkthrough";
 
 // New redesigned components
 export { default as CompetitionTimer } from "./CompetitionTimer";
+export { default as CompetitionManualTimer } from "./CompetitionManualTimer";
+export { default as CompetitionStackmatTimer } from "./CompetitionStackmatTimer";
+export {
+  default as CompetitionTimerModeSelector,
+  type CompetitionTimerMode,
+} from "./CompetitionTimerModeSelector";
 export { default as CompetitionScramblePanel } from "./CompetitionScramblePanel";
 export { default as SolveProgressIndicator } from "./SolveProgressIndicator";
 export { default as SimulationAtmospherePanel } from "./SimulationAtmospherePanel";
@@ -24,6 +30,7 @@ export {
 
 // New simulation features
 export { default as SimulationHistory } from "./SimulationHistory";
+export { default as UpcomingCompetitionsSuggestions } from "./UpcomingCompetitionsSuggestions";
 export { default as MockSchedule } from "./MockSchedule";
 export { default as InspectionViolationTrainer } from "./InspectionViolationTrainer";
 export { default as JudgeErrorSimulator } from "./JudgeErrorSimulator";

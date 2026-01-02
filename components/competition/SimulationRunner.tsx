@@ -118,7 +118,18 @@ export default function SimulationRunner() {
     }
   }, [simulation, savedResults, isInitialized]);
 
+  // Helper to get max rounds for an event
   const getMaxRounds = (eventId: string): number => {
+    // Use stored eventRounds from simulation if available
+    if (simulation?.eventRounds && typeof simulation.eventRounds === "object") {
+      const rounds = (simulation.eventRounds as Record<string, number>)[
+        eventId
+      ];
+      if (typeof rounds === "number" && rounds > 0) {
+        return rounds;
+      }
+    }
+    // Fallback for older simulations without eventRounds data
     const majorEvents = ["333", "222", "444", "333oh", "pyram", "skewb"];
     return majorEvents.includes(eventId) ? 3 : 2;
   };

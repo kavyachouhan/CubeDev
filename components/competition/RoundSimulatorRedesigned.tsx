@@ -11,6 +11,11 @@ import {
 } from "./CompetitionDetail";
 import { scrambleGenerator } from "@/components/timer/ScrambleGenerator";
 import CompetitionTimer from "./CompetitionTimer";
+import CompetitionManualTimer from "./CompetitionManualTimer";
+import CompetitionStackmatTimer from "./CompetitionStackmatTimer";
+import CompetitionTimerModeSelector, {
+  CompetitionTimerMode,
+} from "./CompetitionTimerModeSelector";
 import CompetitionScramblePanel from "./CompetitionScramblePanel";
 import SolveProgressIndicator from "./SolveProgressIndicator";
 import SimulationAtmospherePanel from "./SimulationAtmospherePanel";
@@ -47,6 +52,22 @@ export default function RoundSimulatorRedesigned({
   const [isLoadingScramble, setIsLoadingScramble] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [timerMode, setTimerMode] = useState<CompetitionTimerMode>(() => {
+    if (typeof window === "undefined") return "normal";
+    try {
+      const saved = localStorage.getItem("cubelab-competition-timer-mode");
+      return (saved as CompetitionTimerMode) || "normal";
+    } catch {
+      return "normal";
+    }
+  });
+
+  // Persist timer mode
+  useEffect(() => {
+    try {
+      localStorage.setItem("cubelab-competition-timer-mode", timerMode);
+    } catch {}
+  }, [timerMode]);
 
   // Competition audio
   const { startCrowdNoise, stopCrowdNoise, playEffect } = useCompetitionAudio(
@@ -150,12 +171,19 @@ export default function RoundSimulatorRedesigned({
             <span className="hidden sm:inline">Back</span>
           </button>
 
-          <SimulationAtmospherePanel
-            atmosphere={atmosphere}
-            soundEnabled={soundEnabled}
-            onToggleSound={() => setSoundEnabled(!soundEnabled)}
-            isCompact
-          />
+          <div className="flex items-center gap-3">
+            <CompetitionTimerModeSelector
+              timerMode={timerMode}
+              onTimerModeChange={setTimerMode}
+              disabled={isTimerRunning}
+            />
+            <SimulationAtmospherePanel
+              atmosphere={atmosphere}
+              soundEnabled={soundEnabled}
+              onToggleSound={() => setSoundEnabled(!soundEnabled)}
+              isCompact
+            />
+          </div>
         </div>
 
         {/* Competition/Event Header */}
@@ -231,21 +259,57 @@ export default function RoundSimulatorRedesigned({
               />
             </div>
 
-            {/* Timer */}
-            <CompetitionTimer
-              onSolveComplete={handleSolveComplete}
-              inspectionEnabled={true}
-              timerDelay={atmosphere.timerDelay}
-              soundEnabled={soundEnabled}
-              isDisabled={isLoadingScramble}
-              onStateChange={(state) => {
-                setIsTimerRunning(state === "running");
-                // Play applause effect when solve completes
-                if (state === "stopped" && atmosphere.crowdNoise > 30) {
-                  playEffect("applause");
-                }
-              }}
-            />
+            {/* Timer - Render based on selected mode */}
+            {timerMode === "normal" ? (
+              <CompetitionTimer
+                onSolveComplete={handleSolveComplete}
+                inspectionEnabled={true}
+                timerDelay={atmosphere.timerDelay}
+                soundEnabled={soundEnabled}
+                isDisabled={isLoadingScramble}
+                onStateChange={(state) => {
+                  setIsTimerRunning(state === "running");
+                  // Play applause effect when solve completes
+                  if (state === "stopped" && atmosphere.crowdNoise > 30) {
+                    playEffect("applause");
+                  }
+                }}
+              />
+            ) : timerMode === "manual" ? (
+              <CompetitionManualTimer
+                onSolveComplete={handleSolveComplete}
+                inspectionEnabled={true}
+                isDisabled={isLoadingScramble}
+                onStateChange={(state) => {
+                  setIsTimerRunning(
+                    state === "input" || state === "inspecting"
+                  );
+                  // Play applause effect when solve completes
+                  if (
+                    state === "idle" &&
+                    solves.length > 0 &&
+                    atmosphere.crowdNoise > 30
+                  ) {
+                    playEffect("applause");
+                  }
+                }}
+              />
+            ) : (
+              <CompetitionStackmatTimer
+                onSolveComplete={handleSolveComplete}
+                inspectionEnabled={true}
+                isDisabled={isLoadingScramble}
+                onStateChange={(state) => {
+                  setIsTimerRunning(
+                    state === "running" || state === "inspecting"
+                  );
+                  // Play applause effect when solve completes
+                  if (state === "stopped" && atmosphere.crowdNoise > 30) {
+                    playEffect("applause");
+                  }
+                }}
+              />
+            )}
 
             {/* Completed Solves Summary */}
             {solves.length > 0 && (

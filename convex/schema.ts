@@ -497,6 +497,9 @@ export default defineSchema({
     // Selected events for this simulation
     selectedEvents: v.array(v.string()), // Array of event IDs (e.g., ["333", "222", "444"])
 
+    // Rounds per event
+    eventRounds: v.optional(v.any()), // Map of eventId -> number of rounds
+
     // Atmosphere settings
     atmosphereSettings: v.object({
       crowdNoise: v.number(), // 0-100

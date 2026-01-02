@@ -892,6 +892,62 @@ export function CompetitionCardsSkeleton({ count = 5 }: { count?: number }) {
   );
 }
 
+// Registered Competitions skeleton
+export function RegisteredCompetitionsSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 skeleton-box rounded" />
+          <div className="h-6 skeleton-box rounded w-56" />
+        </div>
+        <div className="h-4 skeleton-box rounded w-24" />
+      </div>
+
+      <div className="h-4 skeleton-box rounded w-72" />
+
+      {/* Competition Cards */}
+      <div className="grid gap-3 sm:gap-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="timer-card">
+            <div className="flex items-start justify-between gap-3 sm:gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap mb-2">
+                  <div className="h-5 skeleton-box rounded w-48 sm:w-64" />
+                  <div className="h-5 skeleton-box rounded-full w-20" />
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3.5 h-3.5 skeleton-box rounded" />
+                    <div className="h-3 skeleton-box rounded w-28" />
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3.5 h-3.5 skeleton-box rounded" />
+                    <div className="h-3 skeleton-box rounded w-24" />
+                  </div>
+                </div>
+
+                {/* Event icons */}
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {Array.from({ length: 8 }).map((_, j) => (
+                    <div key={j} className="w-7 h-7 skeleton-box rounded" />
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex-shrink-0">
+                <div className="h-8 sm:h-9 skeleton-box rounded-lg w-10 sm:w-24" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // Simulation History skeleton
 export function SimulationHistorySkeleton() {
   return (

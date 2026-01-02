@@ -199,8 +199,8 @@ export default function WCAScorecard({
 
         {/* Competitor Info */}
         <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <div>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <div className="flex-shrink-0">
               <div className="text-xs text-[var(--text-muted)] mb-1">ID</div>
               <div className="border border-[var(--border)] px-2 py-1 bg-[var(--surface-elevated)] rounded-lg">
                 <span className="font-mono text-sm text-[var(--text-primary)]">
@@ -208,17 +208,17 @@ export default function WCAScorecard({
                 </span>
               </div>
             </div>
-            <div>
+            <div className="min-w-0 flex-1 max-w-[180px] sm:max-w-[200px]">
               <div className="text-xs text-[var(--text-muted)] mb-1">Name</div>
-              <div className="border border-[var(--border)] px-3 py-1 bg-[var(--surface-elevated)] rounded-lg">
-                <span className="text-sm font-medium text-[var(--text-primary)]">
+              <div className="border border-[var(--border)] px-3 py-1 bg-[var(--surface-elevated)] rounded-lg overflow-hidden">
+                <span className="text-sm font-medium text-[var(--text-primary)] block truncate">
                   {displayName}
                 </span>
               </div>
             </div>
           </div>
           {displayWcaId && (
-            <div className="text-right">
+            <div className="text-right flex-shrink-0">
               <div className="text-xs text-[var(--text-muted)]">
                 {displayWcaId}
               </div>

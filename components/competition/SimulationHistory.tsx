@@ -20,16 +20,30 @@ import { WCA_EVENTS } from "./CompetitionBrowser";
 import { formatTime } from "@/lib/stats-utils";
 import { SimulationHistorySkeleton } from "@/components/SkeletonLoaders";
 
-// Helper to get max rounds for an event (matches SimulationRunner logic)
-const getMaxRounds = (eventId: string): number => {
+// Helper to get max rounds for an event, with fallback for older simulations
+const getMaxRoundsWithFallback = (
+  eventId: string,
+  eventRounds?: Record<string, number> | null
+): number => {
+  // Use stored eventRounds if available
+  if (eventRounds && typeof eventRounds === "object") {
+    const rounds = eventRounds[eventId];
+    if (typeof rounds === "number" && rounds > 0) {
+      return rounds;
+    }
+  }
+  // Fallback for older simulations without eventRounds data
   const majorEvents = ["333", "222", "444", "333oh", "pyram", "skewb"];
   return majorEvents.includes(eventId) ? 3 : 2;
 };
 
-// Calculate total rounds for a simulation
-const getTotalRounds = (selectedEvents: string[]): number => {
+// Calculate total rounds for a simulation using stored eventRounds or fallback
+const getTotalRounds = (
+  selectedEvents: string[],
+  eventRounds?: Record<string, number> | null
+): number => {
   return selectedEvents.reduce(
-    (total, eventId) => total + getMaxRounds(eventId),
+    (total, eventId) => total + getMaxRoundsWithFallback(eventId, eventRounds),
     0
   );
 };
@@ -175,7 +189,10 @@ export default function SimulationHistory({
       <div className="space-y-2">
         {recentSimulations.slice(0, limit).map((sim: any) => {
           const isInProgress = sim.status === "in-progress";
-          const totalRounds = getTotalRounds(sim.selectedEvents || []);
+          const totalRounds = getTotalRounds(
+            sim.selectedEvents || [],
+            sim.eventRounds
+          );
           const completedRounds = getCompletedRounds(sim.eventProgress);
           const progress =
             totalRounds > 0

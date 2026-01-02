@@ -7,7 +7,7 @@ import {
   Minus,
   BarChart3,
   Clock,
-  CheckCircle,
+  CircleCheck,
   Eye,
 } from "lucide-react";
 
@@ -164,7 +164,7 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
       label: "Total Time",
     },
     {
-      icon: CheckCircle,
+      icon: CircleCheck,
       iconBg: "bg-green-500/10",
       iconColor: "text-green-500 dark:text-green-400",
       value: `${stats.avgAccuracy.toFixed(0)}%`,

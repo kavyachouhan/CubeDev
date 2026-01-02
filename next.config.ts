@@ -59,6 +59,51 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["cubing"],
   },
+  // Define redirects
+  async redirects() {
+    return [
+      {
+        source: "/timer",
+        destination: "/cube-lab/timer",
+        permanent: true,
+      },
+      {
+        source: "/algorithm-trainer",
+        destination: "/cube-lab/algorithm-trainer",
+        permanent: true,
+      },
+      {
+        source: "/challenges",
+        destination: "/cube-lab/challenges",
+        permanent: true,
+      },
+      {
+        source: "/chat",
+        destination: "/cube-lab/chat",
+        permanent: true,
+      },
+      {
+        source: "/competitions",
+        destination: "/cube-lab/competitions",
+        permanent: true,
+      },
+      {
+        source: "/cubie",
+        destination: "/cube-lab/cubie",
+        permanent: true,
+      },
+      {
+        source: "/statistics",
+        destination: "/cube-lab/statistics",
+        permanent: true,
+      },
+      {
+        source: "/stats",
+        destination: "/cube-lab/statistics",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
