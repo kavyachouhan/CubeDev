@@ -416,7 +416,7 @@ export default function PersonalBestsCard({
                 </div>
               </div>
               <div className="text-sm sm:text-lg font-bold text-[var(--primary)] font-mono truncate">
-                {personalBests.totalSolves.toLocaleString()}
+                {displayTotalSolves.toLocaleString()}
               </div>
             </div>
 
@@ -431,14 +431,14 @@ export default function PersonalBestsCard({
               </div>
               <div
                 className={`text-sm sm:text-lg font-bold font-mono truncate ${
-                  personalBests.successRate >= 95
+                  displaySuccessRate >= 95
                     ? "text-[var(--success)]"
-                    : personalBests.successRate >= 85
+                    : displaySuccessRate >= 85
                       ? "text-[var(--warning)]"
                       : "text-[var(--error)]"
                 }`}
               >
-                {personalBests.successRate.toFixed(1)}%
+                {displaySuccessRate.toFixed(1)}%
               </div>
             </div>
 
@@ -452,7 +452,7 @@ export default function PersonalBestsCard({
                 </div>
               </div>
               <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-mono truncate">
-                {personalBests.averageTime
+                {personalBests?.averageTime
                   ? formatTime(personalBests.averageTime)
                   : "—"}
               </div>
@@ -515,10 +515,10 @@ export default function PersonalBestsCard({
                       Current Ao5
                     </div>
                     <div className="font-mono font-bold text-sm sm:text-base text-[var(--primary)] truncate">
-                      {personalBests.currentAo5 &&
+                      {personalBests?.currentAo5 &&
                       isFinite(personalBests.currentAo5)
                         ? formatTime(personalBests.currentAo5)
-                        : personalBests.currentAo5 === Infinity
+                        : personalBests?.currentAo5 === Infinity
                           ? "DNF"
                           : "—"}
                     </div>
@@ -531,10 +531,10 @@ export default function PersonalBestsCard({
                       Current Ao12
                     </div>
                     <div className="font-mono font-bold text-sm sm:text-base text-[var(--accent)] truncate">
-                      {personalBests.currentAo12 &&
+                      {personalBests?.currentAo12 &&
                       isFinite(personalBests.currentAo12)
                         ? formatTime(personalBests.currentAo12)
-                        : personalBests.currentAo12 === Infinity
+                        : personalBests?.currentAo12 === Infinity
                           ? "DNF"
                           : "—"}
                     </div>
