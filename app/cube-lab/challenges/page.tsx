@@ -10,6 +10,7 @@ import CreateRoomModal from "@/components/challenges/CreateRoomModal";
 import JoinRoomModal from "@/components/challenges/JoinRoomModal";
 import PublicRoomsList from "@/components/challenges/PublicRoomsList";
 import RecentRoomsModal from "@/components/challenges/RecentRoomsModal";
+import ChallengeRoomWalkthrough from "@/components/challenges/ChallengeRoomWalkthrough";
 import {
   Plus,
   Users,
@@ -189,6 +190,9 @@ export default function ChallengesPage() {
               onClose={() => setShowRecentModal(false)}
             />
           )}
+
+          {/* Walkthrough */}
+          <ChallengeRoomWalkthrough />
         </div>
       </CubeLabLayout>
     </ProtectedRoute>

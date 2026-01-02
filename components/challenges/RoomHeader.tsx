@@ -5,7 +5,7 @@ import {
   Users,
   Trophy,
   Copy,
-  Check,
+  CopyCheck,
   Goal,
   Edit3,
 } from "lucide-react";
@@ -63,7 +63,7 @@ export default function RoomHeader({
             title="Share room link"
           >
             {copied ? (
-              <Check className="w-4 h-4" />
+              <CopyCheck className="w-4 h-4" />
             ) : (
               <Copy className="w-4 h-4" />
             )}

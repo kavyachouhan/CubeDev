@@ -7,3 +7,4 @@ export { default as RoomJoinCard } from "./RoomJoinCard";
 export { default as RoomTimer } from "./RoomTimer";
 export { default as EditRoomModal } from "./EditRoomModal";
 export { default as RecentRoomsModal } from "./RecentRoomsModal";
+export { default as ChallengeRoomWalkthrough } from "./ChallengeRoomWalkthrough";

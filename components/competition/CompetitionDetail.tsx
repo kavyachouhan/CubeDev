@@ -154,7 +154,7 @@ export default function CompetitionDetail() {
       }
     };
 
-    // Fetch WCIF data to get actual rounds per event
+    // Fetch WCIF data for round counts
     const fetchWcifData = async (eventIds: string[]) => {
       try {
         const wcifCacheKey = `comp_wcif_${competitionId}`;
