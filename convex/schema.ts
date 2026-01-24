@@ -566,4 +566,197 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_user_event", ["userId", "eventId"])
     .index("by_simulation_event", ["simulationId", "eventId"]),
+
+  // Coach Profiles - user coaching setup and goals
+  coachProfiles: defineTable({
+    userId: v.id("users"), // Reference to user
+    
+    // Current skill level (from session analysis)
+    currentAverage: v.optional(v.number()), // Current average time in ms
+    skillLevel: v.union(
+      v.literal("beginner"),
+      v.literal("intermediate"),
+      v.literal("advanced"),
+      v.literal("expert")
+    ),
+    primaryEvent: v.string(), // Main event user wants to improve (333, 222, etc.)
+    
+    // Goals
+    goalType: v.union(
+      v.literal("sub-60"),
+      v.literal("sub-45"),
+      v.literal("sub-30"),
+      v.literal("sub-20"),
+      v.literal("sub-15"),
+      v.literal("sub-12"),
+      v.literal("sub-10"),
+      v.literal("sub-8"),
+      v.literal("competition-ready"),
+      v.literal("custom")
+    ),
+    customGoalTime: v.optional(v.number()), // For custom goals, time in ms
+    targetDate: v.number(), // Target date to achieve goal
+    
+    // Time commitment
+    dailyPracticeMinutes: v.number(), // Daily practice time commitment
+    practiceSchedule: v.optional(v.array(v.string())), // Days of week available
+    
+    // Session reference for baseline
+    baselineSessionId: v.optional(v.id("sessions")), // Session used to determine current level
+    
+    // Onboarding status
+    onboardingCompleted: v.boolean(),
+    onboardingCompletedAt: v.optional(v.number()),
+    
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_skill_level", ["skillLevel"])
+    .index("by_goal_type", ["goalType"]),
+
+  // Coach Training Plans - weekly training plans
+  coachTrainingPlans: defineTable({
+    userId: v.id("users"), // Reference to user
+    profileId: v.id("coachProfiles"), // Reference to coach profile
+    
+    // Plan period
+    weekNumber: v.number(), // Week number in the program
+    weekStartDate: v.number(), // Start date of this week
+    weekEndDate: v.number(), // End date of this week
+    
+    // Plan status
+    status: v.union(
+      v.literal("active"),
+      v.literal("completed"),
+      v.literal("skipped")
+    ),
+    
+    // Daily training activities
+    dailyPlans: v.array(
+      v.object({
+        dayOfWeek: v.number(), // 0 = Sunday, 6 = Saturday
+        date: v.number(), // Timestamp for this day
+        focus: v.string(), // Main focus for the day (e.g., "Cross Practice", "F2L Efficiency")
+        activities: v.array(
+          v.object({
+            type: v.union(
+              v.literal("timed-solves"),
+              v.literal("untimed-practice"),
+              v.literal("algorithm-drill"),
+              v.literal("slow-solves"),
+              v.literal("reconstruction"),
+              v.literal("cross-practice"),
+              v.literal("f2l-practice"),
+              v.literal("lookahead-training"),
+              v.literal("competition-sim"),
+              v.literal("rest")
+            ),
+            title: v.string(), // Display title
+            description: v.string(), // Detailed description
+            durationMinutes: v.number(), // Estimated duration
+            targetSolves: v.optional(v.number()), // Number of solves to complete
+            completed: v.boolean(),
+            completedAt: v.optional(v.number()),
+          })
+        ),
+        isCompleted: v.boolean(),
+        isRestDay: v.boolean(),
+      })
+    ),
+    
+    // Progress tracking
+    completedDays: v.number(),
+    totalDays: v.number(),
+    
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_profile", ["profileId"])
+    .index("by_user_status", ["userId", "status"])
+    .index("by_week_start", ["weekStartDate"]),
+
+  // Coach Journal Entries - daily practice logs
+  coachJournalEntries: defineTable({
+    userId: v.id("users"), // Reference to user
+    profileId: v.id("coachProfiles"), // Reference to coach profile
+    planId: v.optional(v.id("coachTrainingPlans")), // Reference to training plan
+    
+    // Entry date
+    entryDate: v.number(), // Date of the journal entry
+    
+    // Session reference (optional)
+    linkedSessionId: v.optional(v.id("sessions")), // Link to a timer session
+    
+    // Session stats (computed from linked session or manual entry)
+    solveCount: v.optional(v.number()),
+    sessionAverage: v.optional(v.number()), // Average time in ms
+    bestSingle: v.optional(v.number()), // Best single in ms
+    practiceMinutes: v.optional(v.number()), // Total practice time
+    
+    // Reflection
+    mood: v.union(
+      v.literal("great"),
+      v.literal("good"),
+      v.literal("okay"),
+      v.literal("frustrated"),
+      v.literal("tired")
+    ),
+    wentWell: v.optional(v.string()), // What went well
+    challenges: v.optional(v.string()), // What was challenging
+    notes: v.optional(v.string()), // Additional notes
+    
+    // Focus areas practiced
+    focusAreas: v.optional(v.array(v.string())), // e.g., ["cross", "f2l", "lookahead"]
+    
+    // Activities completed (from training plan)
+    completedActivities: v.optional(v.array(v.string())), // Activity titles completed
+    
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_profile", ["profileId"])
+    .index("by_plan", ["planId"])
+    .index("by_user_date", ["userId", "entryDate"])
+    .index("by_entry_date", ["entryDate"]),
+
+  // Coach Progress Snapshots - periodic progress tracking
+  coachProgressSnapshots: defineTable({
+    userId: v.id("users"), // Reference to user
+    profileId: v.id("coachProfiles"), // Reference to coach profile
+    
+    // Snapshot date
+    snapshotDate: v.number(),
+    weekNumber: v.number(), // Week number in the program
+    
+    // Performance metrics
+    averageTime: v.number(), // Current average in ms
+    bestSingle: v.optional(v.number()), // Best single in ms
+    bestAo5: v.optional(v.number()), // Best Ao5 in ms
+    bestAo12: v.optional(v.number()), // Best Ao12 in ms
+    
+    // Practice stats
+    totalSolves: v.number(),
+    totalPracticeMinutes: v.number(),
+    journalEntries: v.number(),
+    
+    // Progress towards goal
+    progressPercentage: v.number(), // 0-100
+    onTrack: v.boolean(), // Whether user is on track to meet goal
+    
+    // Notes
+    aiInsights: v.optional(v.string()), // AI-generated insights
+    
+    // Timestamps
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_profile", ["profileId"])
+    .index("by_user_week", ["userId", "weekNumber"])
+    .index("by_snapshot_date", ["snapshotDate"]),
 });

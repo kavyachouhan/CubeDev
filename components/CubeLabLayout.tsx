@@ -17,6 +17,7 @@ import {
   MessageSquarePlus,
   GraduationCap,
   Medal,
+  Compass,
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import SidebarUserDropdown from "@/components/SidebarUserDropdown";
@@ -102,6 +103,18 @@ export default function CubeLabLayout({
       href: "/cube-lab/competitions",
       ribbon: {
         featureKey: "competitions-launch",
+        variant: "new" as RibbonVariant,
+        expiryDays: 30,
+      },
+    },
+    {
+      id: "coach",
+      name: "Coach",
+      icon: Compass,
+      description: "Personalized training plans",
+      href: "/cube-lab/coach",
+      ribbon: {
+        featureKey: "coach-launch",
         variant: "new" as RibbonVariant,
         expiryDays: 30,
       },

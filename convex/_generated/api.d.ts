@@ -11,6 +11,7 @@
 import type * as algorithms from "../algorithms.js";
 import type * as challengeRooms from "../challengeRooms.js";
 import type * as challengeStats from "../challengeStats.js";
+import type * as coach from "../coach.js";
 import type * as competitionSimulations from "../competitionSimulations.js";
 import type * as contactMessages from "../contactMessages.js";
 import type * as crons from "../crons.js";
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   algorithms: typeof algorithms;
   challengeRooms: typeof challengeRooms;
   challengeStats: typeof challengeStats;
+  coach: typeof coach;
   competitionSimulations: typeof competitionSimulations;
   contactMessages: typeof contactMessages;
   crons: typeof crons;
