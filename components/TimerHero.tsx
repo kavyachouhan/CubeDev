@@ -343,7 +343,7 @@ export default function TimerHero() {
           {/* Left side - Headings */}
           <div className="space-y-6 lg:space-y-8">
             {/* Beta Badge */}
-            <div className="inline-flex items-center px-3 py-1 bg-[var(--warning)]/10 border border-[var(--warning)]/20 rounded-full">
+            <div className="inline-flex items-center px-3 py-1 bg-[var(--warning)]/10 border border-[var(--warning)]/20 rounded-full mt-8 md:mt-0">
               <span className="text-sm font-medium text-[var(--warning)] font-inter">
                 Beta Version
               </span>
