@@ -9,6 +9,7 @@ export default function Footer() {
   const logoSrc = useLogo();
 
   const links = [
+    { name: "Contribute", href: "/contribute" },
     { name: "Credits", href: "/credits" },
     { name: "Privacy", href: "/privacy" },
     { name: "Terms", href: "/terms" },

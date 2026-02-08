@@ -107,6 +107,11 @@ const nextConfig: NextConfig = {
         destination: "/cube-lab/coach",
         permanent: true,
       },
+      {
+        source: "/contribute",
+        destination: "/cube-lab/coach/contribute",
+        permanent: true,
+      }
     ];
   },
 };
