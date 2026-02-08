@@ -1,8 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Calendar, ExternalLink, Trophy, Clock, User } from "lucide-react";
+import {
+  MapPin,
+  Calendar,
+  ExternalLink,
+  Trophy,
+  Clock,
+  User,
+} from "lucide-react";
 import Image from "next/image";
+import ProfileShareMenu from "./ProfileShareMenu";
 
 interface WCAPersonalRecord {
   event_id: string;
@@ -103,14 +111,14 @@ export default function ProfileSidebar({
         current.world_ranking > 0 ? current.world_ranking : Infinity,
         current.average_world_ranking && current.average_world_ranking > 0
           ? current.average_world_ranking
-          : Infinity
+          : Infinity,
       );
 
       const bestRank = Math.min(
         best.world_ranking > 0 ? best.world_ranking : Infinity,
         best.average_world_ranking && best.average_world_ranking > 0
           ? best.average_world_ranking
-          : Infinity
+          : Infinity,
       );
 
       if (currentBestRank < bestRank) {
@@ -123,7 +131,7 @@ export default function ProfileSidebar({
       bestRanked.world_ranking > 0 ? bestRanked.world_ranking : Infinity,
       bestRanked.average_world_ranking && bestRanked.average_world_ranking > 0
         ? bestRanked.average_world_ranking
-        : Infinity
+        : Infinity,
     );
 
     return isFinite(bestRank)
@@ -203,7 +211,7 @@ export default function ProfileSidebar({
         )}
 
         {/* View WCA Profile Link */}
-        <div className="mt-6">
+        <div className="mt-6 flex flex-col gap-3 items-center">
           <a
             href={`https://www.worldcubeassociation.org/persons/${wcaId}`}
             target="_blank"
@@ -213,6 +221,7 @@ export default function ProfileSidebar({
             <ExternalLink className="w-4 h-4" />
             View WCA Profile
           </a>
+          <ProfileShareMenu person={person} wcaId={wcaId} />
         </div>
       </div>
 
@@ -229,16 +238,16 @@ export default function ProfileSidebar({
                 (record) =>
                   record.world_ranking > 0 ||
                   (record.average_world_ranking &&
-                    record.average_world_ranking > 0)
+                    record.average_world_ranking > 0),
               )
               .sort((a, b) => {
                 const aRank = Math.min(
                   a.world_ranking || Infinity,
-                  a.average_world_ranking || Infinity
+                  a.average_world_ranking || Infinity,
                 );
                 const bRank = Math.min(
                   b.world_ranking || Infinity,
-                  b.average_world_ranking || Infinity
+                  b.average_world_ranking || Infinity,
                 );
                 return aRank - bRank;
               })
@@ -249,7 +258,7 @@ export default function ProfileSidebar({
                   record.average_world_ranking &&
                     record.average_world_ranking > 0
                     ? record.average_world_ranking
-                    : Infinity
+                    : Infinity,
                 );
                 const bestTime =
                   record.world_ranking > 0 &&

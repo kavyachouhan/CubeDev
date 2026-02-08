@@ -10,11 +10,8 @@ import {
   Menu,
   X,
   Trophy,
-  MessagesSquare,
-  Bot,
   ChevronLeft,
   ChevronRight,
-  MessageSquarePlus,
   GraduationCap,
   Medal,
   Compass,
@@ -24,6 +21,7 @@ import SidebarUserDropdown from "@/components/SidebarUserDropdown";
 import NotificationBell from "@/components/NotificationBell";
 import NotificationsModal from "@/components/NotificationsModal";
 import NotificationService from "@/components/NotificationService";
+import CoachingNotificationService from "@/components/CoachingNotificationService";
 import FeatureRibbon, { RibbonVariant } from "@/components/FeatureRibbon";
 import { useLogo } from "@/lib/use-logo";
 
@@ -39,7 +37,10 @@ export default function CubeLabLayout({
   isTimerFocusMode = false,
 }: CubeLabLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // null = not initialized, true/false = user preference after hydration
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean | null>(
+    null,
+  );
   const [isHydrated, setIsHydrated] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { user, signOut } = useUser();
@@ -53,11 +54,7 @@ export default function CubeLabLayout({
 
     if (typeof window !== "undefined") {
       const savedState = localStorage.getItem("cubelab-sidebar-collapsed");
-
-      if (savedState !== null) {
-        // Use saved preference
-        setSidebarCollapsed(savedState === "true");
-      }
+      setSidebarCollapsed(savedState === "true");
     }
   }, []); // Only run on mount, not when activeSection changes
 
@@ -67,6 +64,9 @@ export default function CubeLabLayout({
     setSidebarCollapsed(newState);
     localStorage.setItem("cubelab-sidebar-collapsed", String(newState));
   };
+
+  // If sidebarCollapsed is still null (not initialized), treat it as false (expanded)
+  const isCollapsed = sidebarCollapsed === true;
 
   const sections = [
     {
@@ -96,6 +96,18 @@ export default function CubeLabLayout({
       },
     },
     {
+      id: "coach",
+      name: "Coach",
+      icon: Compass,
+      description: "Personalized training & goals",
+      href: "/cube-lab/coach",
+      ribbon: {
+        featureKey: "coach-launch",
+        variant: "new" as RibbonVariant,
+        expiryDays: 30,
+      },
+    },
+    {
       id: "competitions",
       name: "Competitions",
       icon: Medal,
@@ -108,47 +120,11 @@ export default function CubeLabLayout({
       },
     },
     {
-      id: "coach",
-      name: "Coach",
-      icon: Compass,
-      description: "Personalized training plans",
-      href: "/cube-lab/coach",
-      ribbon: {
-        featureKey: "coach-launch",
-        variant: "new" as RibbonVariant,
-        expiryDays: 30,
-      },
-    },
-    {
       id: "challenges",
       name: "Challenge Rooms",
       icon: Trophy,
       description: "Compete in scramble rooms",
       href: "/cube-lab/challenges",
-    },
-    {
-      id: "cubie",
-      name: "Cubie AI",
-      icon: Bot,
-      description: "AI cubing assistant",
-      href: "/cube-lab/cubie",
-      ribbon: {
-        featureKey: "cubie-launch",
-        variant: "coming-soon" as RibbonVariant,
-        expiryDays: 60,
-      },
-    },
-    {
-      id: "chat",
-      name: "Chat",
-      icon: MessagesSquare,
-      description: "Chat with friends",
-      href: "/cube-lab/chat",
-      ribbon: {
-        featureKey: "chat-launch",
-        variant: "coming-soon" as RibbonVariant,
-        expiryDays: 60,
-      },
     },
   ];
 
@@ -161,15 +137,15 @@ export default function CubeLabLayout({
             ? "translate-x-0 w-[80vw] max-w-64"
             : "-translate-x-full w-[80vw] max-w-64"
         } ${
-          sidebarCollapsed && !sidebarOpen ? "lg:w-20" : "lg:w-64"
-        } ${isTimerFocusMode ? "blur-md opacity-50 pointer-events-none" : ""}`}
+          isHydrated && isCollapsed && !sidebarOpen ? "lg:w-20" : "lg:w-64"
+        } ${isTimerFocusMode ? "blur-md opacity-50 pointer-events-none" : ""} ${!isHydrated ? "lg:invisible" : ""}`}
       >
         {/* Sidebar Header */}
         <div
-          className={`flex flex-col px-6 py-4 border-b border-[var(--border)] ${sidebarCollapsed ? "lg:px-3" : ""}`}
+          className={`flex flex-col px-6 py-4 border-b border-[var(--border)] ${isCollapsed ? "lg:px-3" : ""}`}
         >
           {/* Logo and Title */}
-          {sidebarCollapsed && (
+          {isCollapsed && (
             <div className="hidden lg:flex flex-col items-center gap-3">
               {/* Expand Button */}
               <button
@@ -199,7 +175,7 @@ export default function CubeLabLayout({
           )}
 
           {/* Desktop: Expanded state OR Mobile: Always show - Logo and text with buttons */}
-          {!sidebarCollapsed && (
+          {!isCollapsed && (
             <div className="flex items-center justify-between h-8">
               <Link href="/cube-lab/timer" className="flex items-center gap-3">
                 <Image
@@ -231,7 +207,7 @@ export default function CubeLabLayout({
           )}
 
           {/* Beta Badge and Notification Bell */}
-          {!sidebarCollapsed && (
+          {!isCollapsed && (
             <div className="mt-3 lg:mt-3 mb-3 lg:mb-0 flex items-center justify-between">
               <div className="inline-flex items-center px-2.5 py-1 bg-[var(--warning)]/10 border border-[var(--warning)]/20 rounded-full">
                 <span className="text-xs font-medium text-[var(--warning)] font-inter">
@@ -251,7 +227,7 @@ export default function CubeLabLayout({
 
         {/* Navigation */}
         <nav
-          className={`flex-1 py-6 space-y-2 overflow-y-auto sidebar-nav-container ${sidebarCollapsed ? "lg:px-2" : "px-4"}`}
+          className={`flex-1 py-6 space-y-2 overflow-y-auto sidebar-nav-container ${isCollapsed ? "lg:px-2" : "px-4"}`}
         >
           {sections.map((section) => {
             const Icon = section.icon;
@@ -262,9 +238,9 @@ export default function CubeLabLayout({
                 key={section.id}
                 href={section.href}
                 onClick={() => setSidebarOpen(false)}
-                title={sidebarCollapsed ? section.name : undefined}
+                title={isCollapsed ? section.name : undefined}
                 className={`w-full group sidebar-nav-item flex items-center rounded-lg text-left transition-all relative ${
-                  sidebarCollapsed
+                  isCollapsed
                     ? "lg:justify-center lg:px-0 lg:py-3"
                     : "gap-3 px-4 py-3"
                 } ${
@@ -279,11 +255,11 @@ export default function CubeLabLayout({
                     className={`w-5 h-5 ${isActive ? "text-white" : "text-[var(--primary)]"}`}
                   />
                   {/* Ribbon dot indicator for collapsed sidebar */}
-                  {sidebarCollapsed && section.ribbon && (
+                  {isCollapsed && section.ribbon && (
                     <span className="hidden lg:block absolute -top-1 -right-1 w-2 h-2 bg-[var(--primary)] rounded-full" />
                   )}
                 </div>
-                {!sidebarCollapsed && (
+                {!isCollapsed && (
                   <div className="flex-1 min-w-0">
                     <div
                       className={`font-semibold font-statement truncate ${isActive ? "text-white" : "text-[var(--text-primary)]"}`}
@@ -298,7 +274,7 @@ export default function CubeLabLayout({
                   </div>
                 )}
                 {/* Ribbon positioned absolutely - tilted corner ribbon */}
-                {!sidebarCollapsed && section.ribbon && (
+                {!isCollapsed && section.ribbon && (
                   <FeatureRibbon
                     featureKey={section.ribbon.featureKey}
                     variant={section.ribbon.variant}
@@ -314,45 +290,23 @@ export default function CubeLabLayout({
 
         {/* Sidebar Footer */}
         <div
-          className={`mt-auto p-4 border-t border-[var(--border)] space-y-4 sidebar-footer ${sidebarCollapsed ? "lg:p-2 lg:space-y-2" : ""}`}
+          className={`mt-auto p-4 border-t border-[var(--border)] space-y-4 sidebar-footer ${isCollapsed ? "lg:p-2 lg:space-y-2" : ""}`}
         >
           {/* User Dropdown */}
           {user && (
             <div className="w-full">
-              {sidebarCollapsed ? (
-                <div className="hidden lg:flex justify-center">
-                  <button
-                    onClick={() => {
-                      setSidebarCollapsed(false);
-                      localStorage.setItem(
-                        "cubelab-sidebar-collapsed",
-                        "false"
-                      );
-                    }}
-                    className="p-2 rounded-full hover:bg-[var(--surface-elevated)] transition-colors"
-                    title={`${user.name} - Click to expand sidebar`}
-                  >
-                    {user.avatar && (
-                      <Image
-                        src={user.avatar.url || user.avatar}
-                        alt={`${user.name}'s avatar`}
-                        width={32}
-                        height={32}
-                        className="w-8 h-8 rounded-full object-cover border border-[var(--primary)]/50"
-                      />
-                    )}
-                  </button>
-                </div>
-              ) : (
-                <SidebarUserDropdown user={user} onSignOut={signOut} />
-              )}
+              <SidebarUserDropdown
+                user={user}
+                onSignOut={signOut}
+                collapsed={isCollapsed}
+              />
             </div>
           )}
 
           {/* Footer Text */}
-          {!sidebarCollapsed && (
-            <div className="text-xs text-[var(--text-muted)] text-center font-inter">
-              © {currentYear} CubeDev. Built for the <br /> cubing community.
+          {!isCollapsed && (
+            <div className="text-[9px] text-[var(--text-muted)] text-center font-inter">
+              © {currentYear} CubeDev. Built for the cubing community.
             </div>
           )}
         </div>
@@ -386,12 +340,12 @@ export default function CubeLabLayout({
               collapsed={false}
             />
             {/* Cubie Session Management Button - Only on Cubie page */}
-            {activeSection === "cubie" && (
+            {/* {activeSection === "cubie" && (
               <button
                 onClick={() => {
                   // Dispatch custom event to open session modal
                   window.dispatchEvent(
-                    new CustomEvent("cubie-open-session-modal")
+                    new CustomEvent("cubie-open-session-modal"),
                   );
                 }}
                 className="p-2 text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
@@ -399,7 +353,7 @@ export default function CubeLabLayout({
               >
                 <MessageSquarePlus className="w-5 h-5" />
               </button>
-            )}
+            )} */}
             {/* Mobile User Avatar */}
             {user && user.avatar && (
               <button
@@ -431,6 +385,9 @@ export default function CubeLabLayout({
 
       {/* Notification Service - monitors for due algorithms */}
       <NotificationService />
+
+      {/* Coaching Notification Service - monitors practice reminders, streaks, etc. */}
+      <CoachingNotificationService />
     </div>
   );
 }

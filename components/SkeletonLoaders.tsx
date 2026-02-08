@@ -1515,3 +1515,408 @@ export function WCAScorecardSkeleton() {
     </div>
   );
 }
+
+// Coach Dashboard Skeleton
+export function CoachDashboardSkeleton() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      {/* Goal Summary Card */}
+      <div className="timer-card">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 skeleton-box rounded-full" />
+            <div>
+              <div className="h-3 skeleton-box rounded w-16 mb-2" />
+              <div className="h-5 skeleton-box rounded w-28" />
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="h-3 skeleton-box rounded w-20 mb-2" />
+            <div className="h-5 skeleton-box rounded w-24" />
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 p-1 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md ${
+              i === 1 ? "bg-[var(--primary)]/20" : ""
+            }`}
+          >
+            <div className="w-4 h-4 skeleton-box rounded" />
+            <div className="hidden sm:block h-4 skeleton-box rounded w-20" />
+          </div>
+        ))}
+      </div>
+
+      {/* Tab Content Skeleton */}
+      <CoachTrainingPlanSkeleton />
+    </div>
+  );
+}
+
+// Coach Training Plan Skeleton
+export function CoachTrainingPlanSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      {/* Week Header Card */}
+      <div className="timer-card">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 skeleton-box rounded-full" />
+            <div>
+              <div className="h-5 skeleton-box rounded w-20 mb-2" />
+              <div className="h-4 skeleton-box rounded w-32" />
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="h-4 skeleton-box rounded w-16 mb-2" />
+            <div className="h-2 skeleton-box rounded w-24" />
+          </div>
+        </div>
+      </div>
+
+      {/* Daily Plans */}
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="timer-card border border-[var(--border)]">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 skeleton-box rounded-full" />
+              <div>
+                <div className="h-4 skeleton-box rounded w-24 mb-2" />
+                <div className="h-3 skeleton-box rounded w-32" />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-6 skeleton-box rounded-full w-16" />
+              <div className="w-5 h-5 skeleton-box rounded" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Coach Journal Calendar Skeleton
+export function CoachJournalCalendarSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      {/* Calendar Header */}
+      <div className="timer-card">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 skeleton-box rounded-lg" />
+            <div className="h-6 skeleton-box rounded w-32" />
+            <div className="w-8 h-8 skeleton-box rounded-lg" />
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 skeleton-box rounded-lg" />
+            <div className="w-8 h-8 skeleton-box rounded-lg" />
+          </div>
+        </div>
+
+        {/* Week Day Headers */}
+        <div className="grid grid-cols-7 gap-1 mb-2">
+          {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+            <div key={i} className="h-4 skeleton-box rounded w-full" />
+          ))}
+        </div>
+
+        {/* Calendar Grid */}
+        <div className="grid grid-cols-7 gap-1">
+          {Array.from({ length: 35 }).map((_, i) => (
+            <div
+              key={i}
+              className="aspect-square p-1 skeleton-box-subtle rounded-lg border border-[var(--border)]"
+            >
+              <div className="h-4 skeleton-box rounded w-4" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Selected Day Details */}
+      <div className="timer-card">
+        <div className="flex items-center justify-between mb-4">
+          <div className="h-5 skeleton-box rounded w-40" />
+          <div className="h-9 skeleton-box rounded-lg w-28" />
+        </div>
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="p-3 skeleton-box-subtle rounded-lg border border-[var(--border)]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 skeleton-box rounded-full" />
+                <div className="flex-1">
+                  <div className="h-4 skeleton-box rounded w-32 mb-2" />
+                  <div className="h-3 skeleton-box rounded w-24" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Coach Progress Skeleton
+export function CoachProgressSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      {/* Goal Progress Card */}
+      <CoachGoalProgressSkeleton />
+
+      {/* Practice Streak Card */}
+      <CoachPracticeStreakSkeleton />
+
+      {/* Weekly Summary Card */}
+      <CoachWeeklySummarySkeleton />
+
+      {/* Learning Metrics Card */}
+      <CoachLearningMetricsSkeleton />
+
+      {/* Monthly Overview Card */}
+      <CoachMonthlyOverviewSkeleton />
+    </div>
+  );
+}
+
+// Goal Progress Card Skeleton
+export function CoachGoalProgressSkeleton() {
+  return (
+    <div className="timer-card animate-pulse">
+      <div className="flex items-center justify-between mb-4">
+        <div className="h-5 skeleton-box rounded w-28" />
+        <div className="w-5 h-5 skeleton-box rounded" />
+      </div>
+
+      <div className="space-y-4">
+        {/* Status Badge */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="h-4 skeleton-box rounded w-32" />
+          <div className="h-6 skeleton-box rounded-full w-24" />
+        </div>
+
+        {/* Progress Bar */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <div className="h-4 skeleton-box rounded w-20" />
+            <div className="h-6 skeleton-box rounded w-12" />
+            <div className="h-4 skeleton-box rounded w-20" />
+          </div>
+          <div className="h-4 skeleton-box rounded-full w-full" />
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]"
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-5 h-5 skeleton-box rounded" />
+                <div className="h-3 skeleton-box rounded w-16" />
+              </div>
+              <div className="h-5 skeleton-box rounded w-20 mb-1" />
+              <div className="h-3 skeleton-box rounded w-16" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Practice Streak Card Skeleton
+export function CoachPracticeStreakSkeleton() {
+  return (
+    <div className="timer-card animate-pulse">
+      <div className="flex items-center justify-between mb-4">
+        <div className="h-5 skeleton-box rounded w-32" />
+        <div className="w-5 h-5 skeleton-box rounded" />
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-5 h-5 skeleton-box rounded" />
+              <div className="h-3 skeleton-box rounded w-14" />
+            </div>
+            <div className="h-5 skeleton-box rounded w-16 mb-1" />
+            <div className="h-3 skeleton-box rounded w-20" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Weekly Summary Card Skeleton
+export function CoachWeeklySummarySkeleton() {
+  return (
+    <div className="timer-card animate-pulse">
+      <div className="flex items-center justify-between mb-4">
+        <div className="h-5 skeleton-box rounded w-36" />
+        <div className="w-5 h-5 skeleton-box rounded" />
+      </div>
+
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-5 h-5 skeleton-box rounded" />
+              <div className="h-3 skeleton-box rounded w-16" />
+            </div>
+            <div className="h-5 skeleton-box rounded w-12" />
+          </div>
+        ))}
+      </div>
+
+      {/* Chart Area */}
+      <div className="h-48 skeleton-box rounded-lg" />
+    </div>
+  );
+}
+
+// Learning Metrics Card Skeleton
+export function CoachLearningMetricsSkeleton() {
+  return (
+    <div className="timer-card animate-pulse">
+      <div className="flex items-center justify-between mb-4">
+        <div className="h-5 skeleton-box rounded w-36" />
+        <div className="w-5 h-5 skeleton-box rounded" />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Learning Velocity */}
+        <div className="bg-[var(--surface-elevated)] rounded-lg p-4 border border-[var(--border)]">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 skeleton-box rounded-lg" />
+            <div className="h-4 skeleton-box rounded w-32" />
+          </div>
+          <div className="h-8 skeleton-box rounded w-20 mb-2" />
+          <div className="h-3 skeleton-box rounded w-full" />
+        </div>
+
+        {/* Consistency */}
+        <div className="bg-[var(--surface-elevated)] rounded-lg p-4 border border-[var(--border)]">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 skeleton-box rounded-lg" />
+            <div className="h-4 skeleton-box rounded w-28" />
+          </div>
+          <div className="h-8 skeleton-box rounded w-16 mb-2" />
+          <div className="h-3 skeleton-box rounded w-full" />
+        </div>
+      </div>
+
+      {/* Mood Distribution */}
+      <div className="mt-4 bg-[var(--surface-elevated)] rounded-lg p-4 border border-[var(--border)]">
+        <div className="h-4 skeleton-box rounded w-36 mb-3" />
+        <div className="flex gap-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex-1">
+              <div className="h-16 skeleton-box rounded-lg mb-2" />
+              <div className="h-3 skeleton-box rounded w-full" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Monthly Overview Card Skeleton
+export function CoachMonthlyOverviewSkeleton() {
+  return (
+    <div className="timer-card animate-pulse">
+      <div className="flex items-center justify-between mb-4">
+        <div className="h-5 skeleton-box rounded w-40" />
+        <div className="w-5 h-5 skeleton-box rounded" />
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-5 h-5 skeleton-box rounded" />
+              <div className="h-3 skeleton-box rounded w-14" />
+            </div>
+            <div className="h-5 skeleton-box rounded w-16 mb-1" />
+            <div className="h-3 skeleton-box rounded w-20" />
+          </div>
+        ))}
+      </div>
+
+      {/* Comparison Stats */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+          <div className="h-3 skeleton-box rounded w-24 mb-2" />
+          <div className="h-5 skeleton-box rounded w-20" />
+        </div>
+        <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+          <div className="h-3 skeleton-box rounded w-24 mb-2" />
+          <div className="h-5 skeleton-box rounded w-20" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// All Time Stats Card Skeleton
+export function CoachAllTimeStatsSkeleton() {
+  return (
+    <div className="timer-card animate-pulse">
+      <div className="flex items-center justify-between mb-4">
+        <div className="h-5 skeleton-box rounded w-32" />
+        <div className="w-5 h-5 skeleton-box rounded" />
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="bg-[var(--surface-elevated)] rounded-lg p-4 border border-[var(--border)] text-center"
+          >
+            <div className="w-8 h-8 skeleton-box rounded-full mx-auto mb-2" />
+            <div className="h-6 skeleton-box rounded w-16 mx-auto mb-2" />
+            <div className="h-3 skeleton-box rounded w-20 mx-auto" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Progress History Card Skeleton
+export function CoachProgressHistorySkeleton() {
+  return (
+    <div className="timer-card animate-pulse">
+      <div className="flex items-center justify-between mb-4">
+        <div className="h-5 skeleton-box rounded w-36" />
+        <div className="w-5 h-5 skeleton-box rounded" />
+      </div>
+
+      {/* Chart */}
+      <div className="h-64 skeleton-box rounded-lg" />
+    </div>
+  );
+}

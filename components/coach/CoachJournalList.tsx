@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  BookOpen, 
-  Calendar, 
-  Clock, 
+import {
+  BookOpen,
+  Clock,
   ChevronRight,
   Smile,
   Meh,
   Frown,
   Battery,
-  Target
+  Target,
 } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
 
@@ -23,11 +22,17 @@ interface JournalEntry {
   sessionAverage?: number;
   bestSingle?: number;
   practiceMinutes?: number;
+  customAverage?: number;
+  customSolveCount?: number;
   mood: "great" | "good" | "okay" | "frustrated" | "tired";
   wentWell?: string;
   challenges?: string;
   notes?: string;
   focusAreas?: string[];
+  completedTaskIndices?: number[];
+  mediaUrls?: string[];
+  mediaFileIds?: string[];
+  mediaTypes?: string[];
   createdAt: number;
 }
 
@@ -66,13 +71,13 @@ function formatDate(timestamp: number): string {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  
+
   if (date.toDateString() === today.toDateString()) {
     return "Today";
   } else if (date.toDateString() === yesterday.toDateString()) {
     return "Yesterday";
   }
-  
+
   return date.toLocaleDateString("en-US", {
     weekday: "short",
     month: "short",
@@ -96,7 +101,9 @@ export default function CoachJournalList({
     return (
       <div className="timer-card text-center py-12">
         <BookOpen className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
-        <h3 className="font-semibold text-[var(--text-primary)] mb-2">No Journal Entries Yet</h3>
+        <h3 className="font-semibold text-[var(--text-primary)] mb-2">
+          No Journal Entries Yet
+        </h3>
         <p className="text-sm text-[var(--text-muted)] mb-4">
           Start tracking your progress by adding your first journal entry.
         </p>
@@ -116,7 +123,7 @@ export default function CoachJournalList({
     <div className="space-y-3">
       {entries.map((entry) => {
         const MoodIcon = moodIcons[entry.mood] || Meh;
-        
+
         return (
           <button
             key={entry._id}
@@ -124,10 +131,12 @@ export default function CoachJournalList({
             className="timer-card w-full flex items-center gap-4 text-left hover:border-[var(--border-hover)] transition-all"
           >
             {/* Mood Icon */}
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${moodBgColors[entry.mood]}`}>
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${moodBgColors[entry.mood]}`}
+            >
               <MoodIcon className={`w-5 h-5 ${moodColors[entry.mood]}`} />
             </div>
-            
+
             {/* Entry Details */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
@@ -152,7 +161,7 @@ export default function CoachJournalList({
                   </div>
                 )}
               </div>
-              
+
               <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
                 {entry.practiceMinutes && (
                   <span className="flex items-center gap-1">
@@ -172,14 +181,14 @@ export default function CoachJournalList({
                   </span>
                 )}
               </div>
-              
+
               {entry.wentWell && (
                 <p className="text-sm text-[var(--text-secondary)] mt-1 truncate">
                   {entry.wentWell}
                 </p>
               )}
             </div>
-            
+
             <ChevronRight className="w-5 h-5 text-[var(--text-muted)]" />
           </button>
         );

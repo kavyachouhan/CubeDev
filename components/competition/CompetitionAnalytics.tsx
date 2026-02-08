@@ -396,11 +396,8 @@ export default function CompetitionAnalytics({
               className="flex items-center justify-between w-full text-left"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-[var(--primary)]/10 rounded-lg">
-                  <User className="w-5 h-5 text-[var(--primary)]" />
-                </div>
                 <div>
-                  <h3 className="font-bold text-[var(--text-primary)]">
+                  <h3 className="font-bold text-[var(--text-primary)] font-statement">
                     Compare with Actual Results
                   </h3>
                   <p className="text-xs text-[var(--text-muted)]">
@@ -421,7 +418,7 @@ export default function CompetitionAnalytics({
                 {/* Input Section */}
                 {!compareMode && (
                   <>
-                    <p className="text-sm text-[var(--text-secondary)]">
+                    <p className="text-sm text-[var(--text-primary)]">
                       Enter a WCA ID to compare your simulation with actual
                       competition results.
                     </p>
@@ -775,7 +772,7 @@ export default function CompetitionAnalytics({
 
         {/* Results by Event */}
         <div className="timer-card">
-          <h3 className="font-bold text-[var(--text-primary)] mb-4">
+          <h3 className="font-bold text-[var(--text-primary)] mb-4 font-statement">
             Results by Event
           </h3>
           <div className="space-y-4">
@@ -870,7 +867,7 @@ export default function CompetitionAnalytics({
 
         {/* Performance Trends */}
         <div className="timer-card">
-          <h3 className="font-bold text-[var(--text-primary)] mb-4">
+          <h3 className="font-bold text-[var(--text-primary)] mb-4 font-statement">
             Performance Analysis
           </h3>
 

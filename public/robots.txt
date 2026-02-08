@@ -38,6 +38,7 @@ Allow: /cube-lab/statistics
 Allow: /cube-lab/algorithm-trainer
 Allow: /cube-lab/algorithm-trainer/sets/*
 Allow: /cube-lab/algorithm-trainer/cases/*
+Allow: /cube-lab/coach
 
 # Allow competitions list but disallow personal simulation URLs
 Allow: /cube-lab/competitions

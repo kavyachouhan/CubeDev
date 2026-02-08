@@ -16,9 +16,9 @@ self.addEventListener("activate", (event) => {
       return Promise.all(
         cacheNames
           .filter((name) => name.startsWith("cubedev-") && name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+          .map((name) => caches.delete(name)),
       );
-    })
+    }),
   );
   // Take control of all pages immediately
   self.clients.claim();
@@ -92,23 +92,22 @@ self.addEventListener("notificationclick", (event) => {
     return;
   }
 
-  // Open or focus the app
+  // Get the origin from the first client or use relative URL
   event.waitUntil(
     clients
       .matchAll({ type: "window", includeUncontrolled: true })
       .then((clientList) => {
-        // Check if there's already a window open
+        // Try to find an existing window and navigate to the URL
         for (const client of clientList) {
-          if (client.url.includes("cubedev") && "focus" in client) {
-            client.navigate(url);
-            return client.focus();
+          if ("focus" in client && "navigate" in client) {
+            return client.navigate(url).then(() => client.focus());
           }
         }
         // Open new window if none exists
         if (clients.openWindow) {
           return clients.openWindow(url);
         }
-      })
+      }),
   );
 });
 

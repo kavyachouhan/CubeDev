@@ -14,6 +14,9 @@ import {
   Palette,
   GraduationCap,
   Brain,
+  Target,
+  Calendar,
+  BookMarked,
 } from "lucide-react";
 
 interface Feature {
@@ -26,7 +29,7 @@ interface Feature {
 
 export default function FeaturesShowcase() {
   const [visibleFeatures, setVisibleFeatures] = useState<Set<number>>(
-    new Set()
+    new Set(),
   );
   const featureRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -35,7 +38,7 @@ export default function FeaturesShowcase() {
       id: "modern-timer",
       title: "Modern Timer",
       description:
-        "Professional speedcubing timer with multiple input modes including manual entry, Stackmat integration, and keyboard timing. Features inspection periods, penalty options, and precision timing.",
+        "Professional speedcubing timer with multiple input modes including manual entry, Stackmat integration, and keyboard timing. Features inspection periods, penalty options, phase-specific drills and precision timing.",
       icon: <Timer className="w-6 h-6" />,
       preview: (
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
@@ -225,10 +228,10 @@ export default function FeaturesShowcase() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-[var(--text-primary)] font-button">
-                    Aman Sharma
+                    Kavya Chouhan
                   </h4>
                   <div className="text-sm text-[var(--text-secondary)] font-inter">
-                    2025SHAR01 • IN
+                    2022CHOU06 • IN
                   </div>
                 </div>
               </div>
@@ -286,90 +289,118 @@ export default function FeaturesShowcase() {
       ),
     },
     {
-      id: "challenge-rooms",
-      title: "Challenge Rooms",
+      id: "personal-coach",
+      title: "Personal Coach",
       description:
-        "Create and join timed challenge rooms with friends, compete on same scrambles, track leaderboards, and enjoy real-time competition.",
-      icon: <Trophy className="w-6 h-6" />,
+        "Your dedicated cubing coach with personalized training plans, progress tracking, and structured practice sessions. Set goals, log your practice journal, and get actionable insights to break through plateaus.",
+      icon: <Target className="w-6 h-6" />,
       preview: (
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
             <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-semibold text-[var(--text-primary)] font-button">
-                  Friday Night Challenge
+                  Your Training Plan
                 </h4>
                 <span className="text-xs text-[var(--success)] font-button px-2 py-1 bg-[var(--success)]/10 rounded">
-                  Live
+                  Active
                 </span>
               </div>
 
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 bg-[var(--primary)]/20 rounded-full flex items-center justify-center">
-                  <Trophy className="w-4 h-4 text-[var(--primary)]" />
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                    Ao5 Format • 3x3
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="text-center p-3 bg-[var(--background)] rounded">
+                  <div className="text-2xl font-bold text-[var(--primary)] font-mono">
+                    Sub-15
                   </div>
                   <div className="text-xs text-[var(--text-muted)] font-inter">
-                    8 participants • Expires in 2h 15m
+                    Current Goal
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-[var(--background)] rounded">
+                  <div className="text-2xl font-bold text-[var(--success)] font-mono">
+                    72%
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] font-inter">
+                    Progress
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-2 mb-4">
-                <div className="text-sm font-semibold text-[var(--text-primary)] font-button">
-                  Leaderboard
+              <div className="space-y-3 mb-4">
+                <div className="text-sm font-semibold text-[var(--text-primary)] font-button flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-[var(--primary)]" />
+                  This Week's Focus
                 </div>
                 {[
                   {
-                    rank: 1,
-                    name: "speedcuber_pro",
-                    time: "9.87",
-                    color: "text-[var(--success)]",
+                    day: "Mon",
+                    task: "F2L Efficiency",
+                    status: "completed",
                   },
                   {
-                    rank: 2,
-                    name: "cube_master",
-                    time: "10.24",
-                    color: "text-[var(--primary)]",
+                    day: "Tue",
+                    task: "Cross Planning",
+                    status: "completed",
                   },
                   {
-                    rank: 3,
-                    name: "fast_fingers",
-                    time: "11.56",
-                    color: "text-[var(--warning)]",
+                    day: "Wed",
+                    task: "OLL Recognition",
+                    status: "current",
                   },
-                ].map((entry) => (
+                  {
+                    day: "Thu",
+                    task: "Full Solves",
+                    status: "upcoming",
+                  },
+                ].map((item) => (
                   <div
-                    key={entry.rank}
-                    className="flex items-center justify-between p-2 bg-[var(--background)] rounded"
+                    key={item.day}
+                    className={`flex items-center justify-between p-2 rounded ${
+                      item.status === "current"
+                        ? "bg-[var(--primary)]/10 border border-[var(--primary)]"
+                        : "bg-[var(--background)]"
+                    }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span
-                        className={`text-sm font-bold ${entry.color} font-mono w-4`}
-                      >
-                        #{entry.rank}
+                      <span className="text-xs font-medium text-[var(--text-muted)] font-inter w-8">
+                        {item.day}
                       </span>
-                      <span className="text-sm text-[var(--text-primary)] font-inter">
-                        {entry.name}
+                      <span
+                        className={`text-sm font-inter ${
+                          item.status === "completed"
+                            ? "text-[var(--text-muted)] line-through"
+                            : item.status === "current"
+                              ? "text-[var(--primary)] font-medium"
+                              : "text-[var(--text-secondary)]"
+                        }`}
+                      >
+                        {item.task}
                       </span>
                     </div>
-                    <span className="text-sm font-bold text-[var(--text-primary)] font-mono">
-                      {entry.time}
-                    </span>
+                    {item.status === "completed" && (
+                      <span className="text-xs text-[var(--success)]">✓</span>
+                    )}
+                    {item.status === "current" && (
+                      <span className="text-xs text-[var(--primary)] font-button">
+                        Today
+                      </span>
+                    )}
                   </div>
                 ))}
+              </div>
+
+              <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)] font-inter">
+                <BookMarked className="w-4 h-4 text-[var(--accent)]" />
+                <span>5 journal entries this week</span>
               </div>
             </div>
 
             <div className="flex gap-2">
               <button className="flex-1 px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
-                Join Room
+                Start Training
               </button>
               <button className="px-4 py-3 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-secondary)] hover:text-[var(--primary)] rounded-lg transition-all">
-                Create
+                Journal
               </button>
             </div>
           </div>
@@ -482,96 +513,6 @@ export default function FeaturesShowcase() {
       ),
     },
     {
-      id: "practice-mode",
-      title: "Practice Mode",
-      description:
-        "Structured training sessions with phase-specific drills and BPM (Blocks Per Minute) mode to improve your solving efficiency.",
-      icon: <BookOpen className="w-6 h-6" />,
-      preview: (
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
-          <div className="space-y-6">
-            <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="font-semibold text-[var(--text-primary)] font-button">
-                  F2L Phase Drill
-                </h4>
-                <span className="text-xs text-[var(--accent)] font-button">
-                  BPM Mode
-                </span>
-              </div>
-
-              <div className="space-y-3 mb-4">
-                <div className="flex items-center justify-between p-3 bg-[var(--background)] rounded">
-                  <div>
-                    <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                      Cross Phase
-                    </div>
-                    <div className="text-xs text-[var(--text-muted)] font-inter">
-                      Focus on efficiency
-                    </div>
-                  </div>
-                  <div className="text-sm font-bold text-[var(--success)] font-mono">
-                    2.1s avg
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-[var(--background)] rounded border-2 border-[var(--primary)]">
-                  <div>
-                    <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                      F2L Pairs
-                    </div>
-                    <div className="text-xs text-[var(--text-muted)] font-inter">
-                      Current drill
-                    </div>
-                  </div>
-                  <div className="text-sm font-bold text-[var(--primary)] font-mono">
-                    4.2 BPM
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-[var(--background)] rounded opacity-50">
-                  <div>
-                    <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                      Last Layer
-                    </div>
-                    <div className="text-xs text-[var(--text-muted)] font-inter">
-                      Coming next
-                    </div>
-                  </div>
-                  <div className="text-sm font-bold text-[var(--text-muted)] font-mono">
-                    --
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-[var(--text-secondary)] font-inter">
-                    Session Progress
-                  </span>
-                  <span className="text-sm text-[var(--primary)] font-mono">
-                    12/25 pairs
-                  </span>
-                </div>
-
-                <div className="w-full h-2 bg-[var(--border)] rounded-full overflow-hidden">
-                  <div className="w-1/2 h-full bg-[var(--primary)] animate-pulse"></div>
-                </div>
-
-                <div className="text-xs text-[var(--text-muted)] font-inter text-center">
-                  Target: 5.0 BPM • Current: 4.2 BPM
-                </div>
-              </div>
-            </div>
-
-            <button className="w-full px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
-              Continue Drill
-            </button>
-          </div>
-        </div>
-      ),
-    },
-    {
       id: "competition-simulation",
       title: "Competition Simulation",
       description:
@@ -668,183 +609,99 @@ export default function FeaturesShowcase() {
       ),
     },
     {
-      id: "import-export",
-      title: "Import & Export Data",
+      id: "challenge-rooms",
+      title: "Challenge Rooms",
       description:
-        "Seamless data portability with support for major timer formats, backup functionality, and easy migration from other timers.",
-      icon: <Download className="w-6 h-6" />,
+        "Create and join timed challenge rooms with friends, compete on same scrambles, track leaderboards, and enjoy real-time competition.",
+      icon: <Trophy className="w-6 h-6" />,
       preview: (
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
             <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
-              <h4 className="font-semibold text-[var(--text-primary)] font-button mb-4">
-                Data Management
-              </h4>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold text-[var(--text-primary)] font-button">
+                  Friday Night Challenge
+                </h4>
+                <span className="text-xs text-[var(--success)] font-button px-2 py-1 bg-[var(--success)]/10 rounded">
+                  Live
+                </span>
+              </div>
 
-              <div className="space-y-3 mb-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-[var(--primary)]/20 rounded-full flex items-center justify-center">
+                  <Trophy className="w-4 h-4 text-[var(--primary)]" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                    Ao5 Format • 3x3
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] font-inter">
+                    8 participants • Expires in 2h 15m
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="text-sm font-semibold text-[var(--text-primary)] font-button">
+                  Leaderboard
+                </div>
                 {[
                   {
-                    name: "csTimer",
-                    status: "Ready to import",
+                    rank: 1,
+                    name: "speedcuber_pro",
+                    time: "9.87",
                     color: "text-[var(--success)]",
                   },
                   {
-                    name: "Twisty Timer",
-                    status: "Supported format",
+                    rank: 2,
+                    name: "cube_master",
+                    time: "10.24",
                     color: "text-[var(--primary)]",
                   },
                   {
-                    name: "CubeDesk",
-                    status: "Compatible",
-                    color: "text-[var(--accent)]",
+                    rank: 3,
+                    name: "fast_fingers",
+                    time: "11.56",
+                    color: "text-[var(--warning)]",
                   },
-                ].map((service, i) => (
+                ].map((entry) => (
                   <div
-                    key={service.name}
-                    className="flex items-center justify-between p-3 bg-[var(--background)] rounded transition-all duration-300"
-                    style={{ animationDelay: `${i * 150}ms` }}
+                    key={entry.rank}
+                    className="flex items-center justify-between p-2 bg-[var(--background)] rounded"
                   >
-                    <div className="flex items-center gap-3">
-                      <div>
-                        <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                          {service.name}
-                        </div>
-                        <div className="text-xs text-[var(--text-muted)] font-inter">
-                          {service.status}
-                        </div>
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-sm font-bold ${entry.color} font-mono w-4`}
+                      >
+                        #{entry.rank}
+                      </span>
+                      <span className="text-sm text-[var(--text-primary)] font-inter">
+                        {entry.name}
+                      </span>
                     </div>
-                    <div className={`text-xs ${service.color} font-inter`}>
-                      ✓
-                    </div>
+                    <span className="text-sm font-bold text-[var(--text-primary)] font-mono">
+                      {entry.time}
+                    </span>
                   </div>
                 ))}
-              </div>
-
-              <div className="bg-[var(--background)] p-3 rounded border border-[var(--border)]">
-                <div className="text-sm font-medium text-[var(--text-primary)] font-inter mb-2">
-                  Export includes:
-                </div>
-                <div className="text-xs text-[var(--text-secondary)] font-inter space-y-1">
-                  <div>• All solve times and scrambles</div>
-                  <div>• Session information</div>
-                  <div>• Notes and tags</div>
-                </div>
               </div>
             </div>
 
             <div className="flex gap-2">
-              <button className="flex-1 px-4 py-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] text-[var(--text-primary)] text-base rounded-lg font-button transition-all">
-                Import Data
-              </button>
               <button className="flex-1 px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
-                Export Data
+                Join Room
+              </button>
+              <button className="px-4 py-3 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-secondary)] hover:text-[var(--primary)] rounded-lg transition-all">
+                Create
               </button>
             </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "theme-customization",
-      title: "Theme Customization",
-      description:
-        "Personalize your experience with multiple color schemes, dark and light modes, and customizable timer appearance to match your style and preferences.",
-      icon: <Palette className="w-6 h-6" />,
-      preview: (
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
-          <div className="space-y-6">
-            <div className="bg-[var(--surface-elevated)] p-4 sm:p-6 rounded-lg border border-[var(--border)]">
-              <h4 className="font-semibold text-[var(--text-primary)] font-button mb-4">
-                Appearance Settings
-              </h4>
-
-              <div className="space-y-4 mb-4">
-                <div>
-                  <div className="text-sm font-medium text-[var(--text-primary)] font-inter mb-2">
-                    Theme Mode
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <button className="p-2 bg-[var(--primary)] text-white text-xs rounded font-button">
-                      Dark
-                    </button>
-                    <button className="p-2 border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded font-button hover:border-[var(--primary)] transition-all">
-                      Light
-                    </button>
-                    <button className="p-2 border border-[var(--border)] text-[var(--text-secondary)] text-xs rounded font-button hover:border-[var(--primary)] transition-all">
-                      Auto
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="text-sm font-medium text-[var(--text-primary)] font-inter mb-2">
-                    Color Scheme
-                  </div>
-                  <div className="grid grid-cols-5 gap-2">
-                    {[
-                      { name: "Blue", color: "#3B82F6" },
-                      { name: "Purple", color: "#A855F7" },
-                      { name: "Green", color: "#10B981" },
-                      { name: "Orange", color: "#F97316" },
-                      { name: "Cyan", color: "#06B6D4" },
-                    ].map((scheme) => (
-                      <button
-                        key={scheme.name}
-                        className="aspect-square rounded-lg border-2 border-[var(--border)] hover:border-[var(--primary)] transition-all flex items-center justify-center"
-                        style={{ backgroundColor: scheme.color + "20" }}
-                      >
-                        <div
-                          className="w-6 h-6 rounded-full"
-                          style={{ backgroundColor: scheme.color }}
-                        ></div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-[var(--background)] rounded">
-                  <div>
-                    <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                      Timer Font Size
-                    </div>
-                    <div className="text-xs text-[var(--text-muted)] font-inter">
-                      Large
-                    </div>
-                  </div>
-                  <div className="text-2xl font-bold text-[var(--primary)] font-mono">
-                    Aa
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-[var(--background)] rounded">
-                  <div>
-                    <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                      High Contrast
-                    </div>
-                    <div className="text-xs text-[var(--text-muted)] font-inter">
-                      Better visibility
-                    </div>
-                  </div>
-                  <div className="w-10 h-6 bg-[var(--primary)] rounded-full relative">
-                    <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button className="w-full px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-base rounded-lg font-button transition-all">
-              Customize Theme
-            </button>
           </div>
         </div>
       ),
     },
   ];
 
-  // Intersection Observer to trigger animations
+  // Track which features are visible for animation
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
 
@@ -856,7 +713,7 @@ export default function FeaturesShowcase() {
               setVisibleFeatures((prev) => new Set([...prev, index]));
             }
           },
-          { threshold: 0.3 }
+          { threshold: 0.3 },
         );
         observer.observe(ref);
         observers.push(observer);

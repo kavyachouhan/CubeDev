@@ -81,10 +81,12 @@ export default function ShareMenu({ shareData, onCopyLink }: ShareMenuProps) {
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
@@ -134,67 +136,144 @@ export default function ShareMenu({ shareData, onCopyLink }: ShareMenuProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full mb-2 right-0 w-64 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-lg z-50 overflow-hidden">
-          <div className="p-3 border-b border-[var(--border)]">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-[var(--text-primary)]">
-                Share Results
-              </span>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
-              >
-                <X className="w-4 h-4 text-[var(--text-muted)]" />
-              </button>
+        <>
+          {/* Mobile: Bottom sheet with backdrop */}
+          <div className="fixed inset-0 z-[100] sm:hidden">
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setIsOpen(false)}
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-[var(--surface)] border-t border-[var(--border)] rounded-t-2xl shadow-lg">
+              {/* Handle bar */}
+              <div className="flex justify-center pt-3 pb-2">
+                <div className="w-10 h-1 bg-[var(--border)] rounded-full" />
+              </div>
+
+              {/* Title */}
+              <div className="px-4 pb-3 border-b border-[var(--border)]">
+                <h3 className="text-base font-semibold text-[var(--text-primary)] text-center">
+                  Share Results
+                </h3>
+              </div>
+
+              {/* Share options */}
+              <div className="p-4">
+                {/* Copy Link */}
+                <button
+                  onClick={handleCopyLink}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-xl transition-colors mb-2"
+                >
+                  <div className="w-10 h-10 rounded-full bg-[var(--surface-elevated)] border border-[var(--border)] flex items-center justify-center text-[var(--text-primary)]">
+                    {copied ? (
+                      <CircleCheck className="w-5 h-5 text-[var(--success)]" />
+                    ) : (
+                      <Link className="w-5 h-5" />
+                    )}
+                  </div>
+                  <span className="font-medium">
+                    {copied ? "Copied!" : "Copy to Clipboard"}
+                  </span>
+                </button>
+
+                {/* Native share */}
+                {typeof navigator !== "undefined" && "share" in navigator && (
+                  <button
+                    onClick={handleNativeShare}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-xl transition-colors mb-4"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-[var(--primary)] flex items-center justify-center text-white">
+                      <Share2 className="w-5 h-5" />
+                    </div>
+                    <span className="font-medium">Share via...</span>
+                  </button>
+                )}
+
+                {/* Social options grid */}
+                <div className="flex justify-center gap-4 pt-2 pb-4">
+                  {SHARE_OPTIONS.map((option) => (
+                    <button
+                      key={option.name}
+                      onClick={() => handleShare(option)}
+                      className="flex flex-col items-center gap-2"
+                    >
+                      <div
+                        className={`w-12 h-12 rounded-full ${option.color} flex items-center justify-center text-white transition-transform hover:scale-110`}
+                      >
+                        {option.icon}
+                      </div>
+                      <span className="text-[10px] text-[var(--text-muted)]">
+                        {option.name === "X (Twitter)" ? "X" : option.name}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="p-2">
-            {/* Native share (mobile) */}
-            {typeof navigator !== "undefined" && "share" in navigator && (
+          {/* Desktop: Dropdown menu */}
+          <div className="hidden sm:block absolute bottom-full mb-2 right-0 w-64 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-lg z-[100] overflow-hidden">
+            <div className="p-3 border-b border-[var(--border)]">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-[var(--text-primary)]">
+                  Share Results
+                </span>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-1 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4 text-[var(--text-muted)]" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-2">
+              {/* Native share (mobile) */}
+              {typeof navigator !== "undefined" && "share" in navigator && (
+                <button
+                  onClick={handleNativeShare}
+                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[var(--primary)] flex items-center justify-center text-white">
+                    <Share2 className="w-4 h-4" />
+                  </div>
+                  <span>Share via...</span>
+                </button>
+              )}
+
+              {/* Copy Link */}
               <button
-                onClick={handleNativeShare}
+                onClick={handleCopyLink}
                 className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
               >
-                <div className="w-8 h-8 rounded-full bg-[var(--primary)] flex items-center justify-center text-white">
-                  <Share2 className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-full bg-[var(--surface-elevated)] border border-[var(--border)] flex items-center justify-center text-[var(--text-primary)]">
+                  {copied ? (
+                    <CircleCheck className="w-4 h-4 text-[var(--success)]" />
+                  ) : (
+                    <Link className="w-4 h-4" />
+                  )}
                 </div>
-                <span>Share via...</span>
+                <span>{copied ? "Copied!" : "Copy to Clipboard"}</span>
               </button>
-            )}
 
-            {/* Copy Link */}
-            <button
-              onClick={handleCopyLink}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
-            >
-              <div className="w-8 h-8 rounded-full bg-[var(--surface-elevated)] border border-[var(--border)] flex items-center justify-center text-[var(--text-primary)]">
-                {copied ? (
-                  <CircleCheck className="w-4 h-4" />
-                ) : (
-                  <Link className="w-4 h-4" />
-                )}
+              <div className="my-2 border-t border-[var(--border)]" />
+
+              {/* Social options */}
+              <div className="grid grid-cols-4 gap-2 p-2">
+                {SHARE_OPTIONS.map((option) => (
+                  <button
+                    key={option.name}
+                    onClick={() => handleShare(option)}
+                    className={`w-10 h-10 rounded-full ${option.color} flex items-center justify-center text-white transition-transform hover:scale-110`}
+                    title={option.name}
+                  >
+                    {option.icon}
+                  </button>
+                ))}
               </div>
-              <span>{copied ? "Copied!" : "Copy to Clipboard"}</span>
-            </button>
-
-            <div className="my-2 border-t border-[var(--border)]" />
-
-            {/* Social options */}
-            <div className="grid grid-cols-4 gap-2 p-2">
-              {SHARE_OPTIONS.map((option) => (
-                <button
-                  key={option.name}
-                  onClick={() => handleShare(option)}
-                  className={`w-10 h-10 rounded-full ${option.color} flex items-center justify-center text-white transition-transform hover:scale-110`}
-                  title={option.name}
-                >
-                  {option.icon}
-                </button>
-              ))}
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

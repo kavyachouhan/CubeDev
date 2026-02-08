@@ -5,6 +5,7 @@ import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import { UserProvider } from "@/components/UserProvider";
 import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
 import { FeedbackProvider } from "@/components/feedback";
+import { DEFAULT_SURVEY_CONFIGS } from "@/components/feedback/surveyConfig";
 import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
@@ -20,7 +21,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "CubeDev - Professional Speedcubing Tools",
   description:
-    "Professional timing, advanced analytics, and training tools designed for cubers who want to push their limits. Master your speedcubing with CubeDev.",
+    "Professional timing, advanced analytics, personalized coaching, and training tools designed for cubers who want to push their limits. Set goals, track progress, and master speedcubing with CubeDev.",
   keywords: [
     "speedcubing",
     "rubiks cube",
@@ -29,6 +30,11 @@ export const metadata: Metadata = {
     "speedsolving",
     "WCA",
     "puzzle",
+    "speedcubing coach",
+    "cubing goals",
+    "training plans",
+    "speedcubing training",
+    "cubing analytics",
   ],
   authors: [{ name: "CubeDev Team" }],
   creator: "CubeDev",
@@ -46,7 +52,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CubeDev - Professional Speedcubing Tools",
     description:
-      "Master your speedcubing with professional timing and analytics tools",
+      "Master your speedcubing with professional timing, analytics tools, and personalized coaching. Set goals and track your progress.",
   },
 };
 
@@ -64,6 +70,7 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
+                  // Apply theme preferences
                   const stored = localStorage.getItem('cubedev-theme-preferences');
                   let themeMode = 'dark';
                   let colorScheme = 'blue';
@@ -81,6 +88,12 @@ export default function RootLayout({
                   
                   document.documentElement.setAttribute('data-theme', effectiveTheme);
                   document.documentElement.setAttribute('data-color-scheme', colorScheme);
+                  
+                  // Apply sidebar state
+                  const sidebarState = localStorage.getItem('cubelab-sidebar-collapsed');
+                  if (sidebarState === 'true') {
+                    document.documentElement.setAttribute('data-sidebar-collapsed', 'true');
+                  }
                 } catch (e) {
                   document.documentElement.setAttribute('data-theme', 'dark');
                   document.documentElement.setAttribute('data-color-scheme', 'blue');
@@ -96,7 +109,9 @@ export default function RootLayout({
         <ConvexClientProvider>
           <UserProvider>
             <ThemeProviderWrapper>
-              <FeedbackProvider>{children}</FeedbackProvider>
+              <FeedbackProvider defaultConfig={DEFAULT_SURVEY_CONFIGS.general}>
+                {children}
+              </FeedbackProvider>
               <Analytics />
             </ThemeProviderWrapper>
           </UserProvider>

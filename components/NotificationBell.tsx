@@ -4,6 +4,7 @@ import { Bell } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useInAppNotifications } from "@/lib/notification-utils";
 
 interface NotificationBellProps {
   onClick: () => void;
@@ -19,7 +20,15 @@ export default function NotificationBell({
   // Fetch reviews for notifications
   const reviews = useQuery(
     api.algorithms.getReviewsForNotifications,
-    user?.convexId ? { userId: user.convexId as any } : "skip"
+    user?.convexId ? { userId: user.convexId as any } : "skip",
+  );
+
+  // Fetch in-app notifications
+  const { notifications: allInAppNotifications } = useInAppNotifications();
+
+  // Filter out "algorithm-due" notifications since those are handled by the reviews query
+  const inAppNotifications = allInAppNotifications.filter(
+    (n) => n.type !== "algorithm-due",
   );
 
   // Calculate notification count
@@ -32,16 +41,19 @@ export default function NotificationBell({
     reviews?.filter(
       (r) =>
         r.progress.nextReviewDate >= oneDayAgo &&
-        r.progress.nextReviewDate <= now
+        r.progress.nextReviewDate <= now,
     ) || [];
   const dueSoon =
     reviews?.filter(
       (r) =>
         r.progress.nextReviewDate > now &&
-        r.progress.nextReviewDate < now + 24 * 60 * 60 * 1000
+        r.progress.nextReviewDate < now + 24 * 60 * 60 * 1000,
     ) || [];
 
-  const notificationCount = overdue.length + dueToday.length + dueSoon.length;
+  const algorithmNotificationCount =
+    overdue.length + dueToday.length + dueSoon.length;
+  const notificationCount =
+    algorithmNotificationCount + inAppNotifications.length;
   const hasNotifications = notificationCount > 0;
 
   return (

@@ -9,13 +9,14 @@ import Link from "next/link";
 import type { Id } from "@/convex/_generated/dataModel";
 import FeedbackDropdown from "./FeedbackDropdown";
 
-// Default features to rate
+// Default features to rate - keep in sync with surveyConfig.ts
 export const DEFAULT_FEATURES = [
   { key: "timer", label: "Timer" },
   { key: "algorithmTrainer", label: "Algorithm Trainer" },
   { key: "challenges", label: "Challenge Rooms" },
   { key: "statistics", label: "Statistics" },
   { key: "competitions", label: "Competition Simulator" },
+  { key: "coach", label: "Coach" },
 ] as const;
 
 // Survey configuration interface
@@ -45,7 +46,7 @@ const DEFAULT_CONFIG: Required<Omit<SurveyConfig, "customQuestions">> & {
   customQuestions?: SurveyConfig["customQuestions"];
 } = {
   surveyType: "general",
-  surveyVersion: "1.0",
+  surveyVersion: "2.0", // Updated to 2.0 to include Coach
   title: "Share Your Feedback",
   successTitle: "Thank You!",
   successMessage:
@@ -81,7 +82,7 @@ export default function FeedbackSurveyModal({
       ...userConfig,
       features: userConfig?.features || DEFAULT_CONFIG.features,
     }),
-    [userConfig]
+    [userConfig],
   );
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -97,7 +98,7 @@ export default function FeedbackSurveyModal({
         initial[f.key] = 0;
       });
       return initial;
-    }
+    },
   );
   const [mostUsefulFeature, setMostUsefulFeature] = useState("");
   const [featureRequests, setFeatureRequests] = useState("");

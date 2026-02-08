@@ -76,7 +76,7 @@ const wcaAverageN = (solves: TimerRecord[], n: number): number | null => {
 
   // Use truncated singles for calculation
   const values = lastN.map((r) =>
-    isFinite(r.finalTime) ? truncToCentisMs(r.finalTime) : Infinity
+    isFinite(r.finalTime) ? truncToCentisMs(r.finalTime) : Infinity,
   );
 
   const dnfs = values.filter((v) => !isFinite(v)).length;
@@ -110,7 +110,7 @@ const calculateEventStats = (solves: TimerRecord[]) => {
 
   // Order by timestamp ascending
   const ordered = [...solves].sort(
-    (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+    (a, b) => a.timestamp.getTime() - b.timestamp.getTime(),
   );
 
   // Extract truncated singles (ignore DNFs) for calculations
@@ -127,7 +127,7 @@ const calculateEventStats = (solves: TimerRecord[]) => {
   // Overall average (session mean)
   const overallAverage = truncatedSingles.length
     ? roundToCentisMs(
-        truncatedSingles.reduce((a, b) => a + b, 0) / truncatedSingles.length
+        truncatedSingles.reduce((a, b) => a + b, 0) / truncatedSingles.length,
       )
     : null;
 
@@ -173,7 +173,7 @@ const calculateActivityStats = (solves: TimerRecord[]) => {
       const prevDate = new Date(sortedDays[i - 1]);
       const currDate = new Date(sortedDays[i]);
       const dayDiff = Math.floor(
-        (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)
+        (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24),
       );
 
       if (dayDiff === 1) {
@@ -249,7 +249,7 @@ export default function CubeDevStats({
   // Query pre-computed event stats (efficient - doesn't load all solves)
   const eventStats = useQuery(
     api.users.getUserEventStats,
-    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id }
+    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id },
   );
 
   // Mutation to recalculate stats for existing users who don't have cached stats
@@ -259,7 +259,7 @@ export default function CubeDevStats({
   // Query user's recent solves only for activity heatmap (limited subset)
   const recentSolves = useQuery(
     api.users.getUserRecentSolves,
-    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id, limit: 1000 }
+    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id, limit: 1000 },
   );
 
   // If user has solves but no cached stats, trigger a recalculation
@@ -287,13 +287,13 @@ export default function CubeDevStats({
   // Query challenge stats
   const challengeStats = useQuery(
     api.challengeStats.getUserChallengeStats,
-    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id }
+    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id },
   );
 
   // Query room participations for room list
   const roomParticipations = useQuery(
     api.challengeRooms.getUserRoomParticipations,
-    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id }
+    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id },
   );
 
   // Show loading state while privacy settings are loading
@@ -357,7 +357,7 @@ export default function CubeDevStats({
 
   // Get pre-computed stats for selected event
   const selectedEventStats = eventStats?.find(
-    (stat) => stat.event === selectedEvent
+    (stat) => stat.event === selectedEvent,
   );
 
   // Calculate activity stats from recent solves (for heatmap)
@@ -603,7 +603,12 @@ export default function CubeDevStats({
                     Total Solves
                   </div>
                   <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
-                    {timerSolves.length.toLocaleString()}
+                    {(
+                      eventStats?.reduce(
+                        (sum, stat) => sum + stat.totalSolves,
+                        0,
+                      ) ?? 0
+                    ).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -748,7 +753,7 @@ export default function CubeDevStats({
                       <button
                         onClick={() =>
                           router.push(
-                            `/cube-lab/challenges/room/${participation.roomPublicId}`
+                            `/cube-lab/challenges/room/${participation.roomPublicId}`,
                           )
                         }
                         className="px-3 py-1 text-xs bg-[var(--primary)] text-white rounded hover:bg-[var(--primary-hover)] transition-colors"

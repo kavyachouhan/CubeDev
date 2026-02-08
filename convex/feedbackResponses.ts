@@ -1,8 +1,13 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-// Constants for survey versions and types
-export const CURRENT_SURVEY_VERSION = "1.0";
+// Define current survey versions for each type. This allows us to track when we need to prompt users for new feedback based on version changes.
+export const SURVEY_VERSIONS = {
+  general: "2.0", // Bumped to 2.0 to include Coach feature
+  coach: "1.0",
+  cubie: "1.0",
+} as const;
+
 export const DEFAULT_SURVEY_TYPE = "general";
 
 // Submit feedback response
@@ -21,7 +26,7 @@ export const submitFeedback = mutation({
     userAgent: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Validate ratings are within expected ranges if provided
+    // Basic validation
     if (
       args.uiuxRating !== undefined &&
       (args.uiuxRating < 1 || args.uiuxRating > 5)
@@ -46,11 +51,16 @@ export const submitFeedback = mutation({
       }
     }
 
+    // Get current version for the survey type
+    const surveyType = args.surveyType || DEFAULT_SURVEY_TYPE;
+    const currentVersion =
+      SURVEY_VERSIONS[surveyType as keyof typeof SURVEY_VERSIONS] || "1.0";
+
     // Create the feedback response
     const feedbackId = await ctx.db.insert("feedbackResponses", {
       userId: args.userId,
-      surveyType: args.surveyType || DEFAULT_SURVEY_TYPE,
-      surveyVersion: args.surveyVersion || CURRENT_SURVEY_VERSION,
+      surveyType: surveyType,
+      surveyVersion: args.surveyVersion || currentVersion,
       uiuxRating: args.uiuxRating,
       featureRatings: args.featureRatings,
       mostUsefulFeature: args.mostUsefulFeature?.trim(),
@@ -66,7 +76,7 @@ export const submitFeedback = mutation({
   },
 });
 
-// Check if user has already submitted feedback recently (within specified days)
+// Check if user has submitted feedback recently (e.g. in the last 30 days) for a specific survey type
 export const hasRecentFeedback = query({
   args: {
     userId: v.optional(v.id("users")),
@@ -96,6 +106,68 @@ export const hasRecentFeedback = query({
   },
 });
 
+// Check if user needs to see a survey for a new version
+// This is useful when adding new features to an existing survey
+export const needsSurveyForVersion = query({
+  args: {
+    userId: v.optional(v.id("users")),
+    surveyType: v.string(),
+    currentVersion: v.string(), // The current version of the survey
+  },
+  handler: async (ctx, args) => {
+    if (!args.userId) {
+      return false;
+    }
+
+    // Get the user's most recent submission for this survey type
+    const lastSubmission = await ctx.db
+      .query("feedbackResponses")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("surveyType"), args.surveyType))
+      .order("desc")
+      .first();
+
+    // If no submission, they need to see it
+    if (!lastSubmission) {
+      return true;
+    }
+
+    // Compare versions
+    const parseVersion = (v: string) => v.split(".").map(Number);
+    const current = parseVersion(args.currentVersion);
+    const last = parseVersion(lastSubmission.surveyVersion || "1.0");
+
+    // Check if current version is higher than last submitted version
+    if (current[0] > last[0]) return true;
+    if (current[0] === last[0] && (current[1] || 0) > (last[1] || 0))
+      return true;
+
+    return false;
+  },
+});
+
+// Get the last submitted version for a user and survey type
+export const getLastSubmittedVersion = query({
+  args: {
+    userId: v.optional(v.id("users")),
+    surveyType: v.string(),
+  },
+  handler: async (ctx, args) => {
+    if (!args.userId) {
+      return null;
+    }
+
+    const lastSubmission = await ctx.db
+      .query("feedbackResponses")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("surveyType"), args.surveyType))
+      .order("desc")
+      .first();
+
+    return lastSubmission?.surveyVersion || null;
+  },
+});
+
 // Get all feedback responses (admin) with filtering options
 export const getAllFeedback = query({
   args: {
@@ -119,7 +191,7 @@ export const getAllFeedback = query({
     // Filter by survey version if specified
     if (args.surveyVersion) {
       responses = responses.filter(
-        (r) => r.surveyVersion === args.surveyVersion
+        (r) => r.surveyVersion === args.surveyVersion,
       );
     }
 
@@ -148,7 +220,7 @@ export const getFeedbackStats = query({
     // Filter by survey version if specified
     if (args.surveyVersion) {
       responses = responses.filter(
-        (r) => r.surveyVersion === args.surveyVersion
+        (r) => r.surveyVersion === args.surveyVersion,
       );
     }
 
@@ -174,34 +246,34 @@ export const getFeedbackStats = query({
 
     // Calculate recommend score average (only from responses that have it)
     const recommendResponses = responses.filter(
-      (r) => r.recommendScore !== undefined
+      (r) => r.recommendScore !== undefined,
     );
     const avgRecommend =
       recommendResponses.length > 0
         ? recommendResponses.reduce(
             (sum, r) => sum + (r.recommendScore || 0),
-            0
+            0,
           ) / recommendResponses.length
         : 0;
 
     // Calculate NPS score
     const promoters = recommendResponses.filter(
-      (r) => (r.recommendScore || 0) >= 9
+      (r) => (r.recommendScore || 0) >= 9,
     ).length;
     const detractors = recommendResponses.filter(
-      (r) => (r.recommendScore || 0) <= 6
+      (r) => (r.recommendScore || 0) <= 6,
     ).length;
     const npsScore =
       recommendResponses.length > 0
         ? Math.round(
-            ((promoters - detractors) / recommendResponses.length) * 100
+            ((promoters - detractors) / recommendResponses.length) * 100,
           )
         : 0;
 
     // Calculate feature averages dynamically
     const featureAverages: Record<string, number> = {};
     const featureResponses = responses.filter(
-      (r) => r.featureRatings && typeof r.featureRatings === "object"
+      (r) => r.featureRatings && typeof r.featureRatings === "object",
     );
 
     if (featureResponses.length > 0) {
@@ -210,7 +282,7 @@ export const getFeedbackStats = query({
       featureResponses.forEach((r) => {
         if (r.featureRatings) {
           Object.keys(r.featureRatings).forEach((key) =>
-            allFeatureKeys.add(key)
+            allFeatureKeys.add(key),
           );
         }
       });
@@ -218,12 +290,12 @@ export const getFeedbackStats = query({
       // Calculate average for each feature
       allFeatureKeys.forEach((key) => {
         const validResponses = featureResponses.filter(
-          (r) => r.featureRatings && typeof r.featureRatings[key] === "number"
+          (r) => r.featureRatings && typeof r.featureRatings[key] === "number",
         );
         if (validResponses.length > 0) {
           const sum = validResponses.reduce(
             (acc, r) => acc + (r.featureRatings[key] || 0),
-            0
+            0,
           );
           featureAverages[key] =
             Math.round((sum / validResponses.length) * 10) / 10;

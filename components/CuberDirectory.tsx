@@ -43,7 +43,7 @@ export default function CuberDirectory() {
       (user: CubeDevUser) =>
         user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.wcaId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.countryIso2.toLowerCase().includes(searchTerm.toLowerCase())
+        user.countryIso2.toLowerCase().includes(searchTerm.toLowerCase()),
     ) || [];
 
   // Pagination logic
@@ -72,20 +72,24 @@ export default function CuberDirectory() {
 
     if (user.avatar && !imageError) {
       return (
-        <Image
-          src={user.avatar}
-          alt={`${user.name}'s avatar`}
-          width={size}
-          height={size}
-          className={`rounded-full object-cover border-2 border-[var(--border)] ${className}`}
-          onError={() => setImageError(true)}
-        />
+        <div
+          className={`relative rounded-full overflow-hidden border-2 border-[var(--border)] shrink-0 ${className}`}
+          style={{ width: size, height: size }}
+        >
+          <Image
+            src={user.avatar}
+            alt={`${user.name}'s avatar`}
+            fill
+            className="object-cover"
+            onError={() => setImageError(true)}
+          />
+        </div>
       );
     }
 
     return (
       <div
-        className={`rounded-full flex items-center justify-center bg-[var(--primary)]/10 border-2 border-[var(--border)] ${className}`}
+        className={`rounded-full flex items-center justify-center bg-[var(--primary)]/10 border-2 border-[var(--border)] shrink-0 ${className}`}
         style={{ width: size, height: size }}
       >
         {user.avatar && imageError ? (

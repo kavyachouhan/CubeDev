@@ -243,10 +243,10 @@ export default function AlgorithmTrainerTour({
         <button
           onClick={startTour}
           className="fixed bottom-4 right-4 z-50 flex items-center gap-2 px-3 py-2 text-sm font-medium bg-[var(--surface)] hover:bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-lg transition-all shadow-lg"
-          title="Restart product tour"
+          title="How to use"
         >
           <HelpCircle className="w-4 h-4" />
-          <span className="hidden sm:inline">Tour</span>
+          <span className="hidden sm:inline">Help</span>
         </button>
       )}
     </>

@@ -6,6 +6,7 @@ import {
   ChevronRight,
   ChevronLeft,
   Target,
+  Gauge,
   Calendar,
   Clock,
   CheckCircle2,
@@ -15,7 +16,6 @@ import {
   AlertCircle,
   Info,
   Trophy,
-  Medal,
   Timer,
 } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
@@ -42,7 +42,6 @@ export type OnboardingData = {
     | "sub-12"
     | "sub-10"
     | "sub-8"
-    | "competition-ready"
     | "custom";
   customGoalTime?: number;
   targetDate: number;
@@ -54,7 +53,7 @@ const STEPS = [
   {
     id: 1,
     title: "Current Level",
-    icon: Target,
+    icon: Gauge,
     description: "Select a session to analyze",
   },
   {
@@ -97,7 +96,12 @@ const GOALS = [
     time: 60000,
     description: "Great starting goal for beginners",
   },
-  { id: "sub-45", label: "Sub 45", time: 45000, description: "Building consistency" },
+  {
+    id: "sub-45",
+    label: "Sub 45",
+    time: 45000,
+    description: "Building consistency",
+  },
   {
     id: "sub-30",
     label: "Sub 30",
@@ -122,7 +126,12 @@ const GOALS = [
     time: 12000,
     description: "Competition-ready speed",
   },
-  { id: "sub-10", label: "Sub 10", time: 10000, description: "Elite level cubing" },
+  {
+    id: "sub-10",
+    label: "Sub 10",
+    time: 10000,
+    description: "Elite level cubing",
+  },
   {
     id: "sub-8",
     label: "Sub 8",
@@ -158,7 +167,7 @@ function formatTimeSimple(ms: number): string {
 }
 
 function determineSkillLevel(
-  avgMs: number
+  avgMs: number,
 ): "beginner" | "intermediate" | "advanced" | "expert" {
   if (avgMs > 30000) return "beginner";
   if (avgMs > 20000) return "intermediate";
@@ -202,7 +211,7 @@ export default function CoachOnboardingModal({
   const sessions = useQuery(api.coach.getUserSessions, { userId });
   const selectedSessionStats = useQuery(
     api.coach.getSessionStats,
-    data.selectedSessionId ? { sessionId: data.selectedSessionId } : "skip"
+    data.selectedSessionId ? { sessionId: data.selectedSessionId } : "skip",
   );
 
   const saveProfile = useMutation(api.coach.saveCoachProfile);
@@ -315,7 +324,9 @@ export default function CoachOnboardingModal({
 
   if (!mounted || !isOpen) return null;
 
-  const recommendedGoals = getRecommendedGoals(data.skillLevel || "intermediate");
+  const recommendedGoals = getRecommendedGoals(
+    data.skillLevel || "intermediate",
+  );
 
   return createPortal(
     <div
@@ -379,7 +390,9 @@ export default function CoachOnboardingModal({
                   {index < STEPS.length - 1 && (
                     <div
                       className={`w-6 sm:w-10 lg:w-14 h-0.5 mx-1 sm:mx-2 rounded ${
-                        isCompleted ? "bg-[var(--success)]" : "bg-[var(--border)]"
+                        isCompleted
+                          ? "bg-[var(--success)]"
+                          : "bg-[var(--border)]"
                       }`}
                     />
                   )}
@@ -399,7 +412,11 @@ export default function CoachOnboardingModal({
                   What's Your Current Level?
                 </h3>
                 <p className="text-sm text-[var(--text-secondary)]">
-                  Select a recent 3x3 session so we can analyze your skill level.
+                  Select a recent 3x3 session so we can analyze your skill
+                  level.
+                </p>
+                <p className="text-xs text-[var(--text-muted)] mt-1.5 italic">
+                  More events coming soon!
                 </p>
               </div>
 
@@ -409,7 +426,9 @@ export default function CoachOnboardingModal({
                   <h4 className="text-sm font-medium text-[var(--text-primary)]">
                     Select a 3x3 Session
                   </h4>
-                  <span className="text-xs text-[var(--text-muted)]">Optional</span>
+                  <span className="text-xs text-[var(--text-muted)]">
+                    Optional
+                  </span>
                 </div>
 
                 <div className="flex items-start gap-2 p-2 bg-[var(--info)]/10 border border-[var(--info)]/20 rounded-lg mb-3">
@@ -431,7 +450,8 @@ export default function CoachOnboardingModal({
                   <div className="flex flex-col items-center justify-center py-6 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
                     <AlertCircle className="w-6 h-6 text-[var(--text-muted)] mb-2" />
                     <p className="text-[var(--text-muted)] text-xs text-center px-2">
-                      No 3x3 sessions found. Select your skill level manually below.
+                      No 3x3 sessions found. Select your skill level manually
+                      below.
                     </p>
                   </div>
                 ) : (
@@ -649,7 +669,7 @@ export default function CoachOnboardingModal({
                           {formatTimeSimple(goal.time)}
                         </span>
                       </button>
-                    )
+                    ),
                   )}
                 </div>
               </div>
@@ -683,47 +703,10 @@ export default function CoachOnboardingModal({
                           {formatTimeSimple(goal.time)}
                         </span>
                       </button>
-                    )
+                    ),
                   )}
                 </div>
               </div>
-
-              {/* Competition Ready */}
-              <button
-                onClick={() =>
-                  updateData({
-                    goalType: "competition-ready",
-                    customGoalTime: undefined,
-                  })
-                }
-                className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all ${
-                  data.goalType === "competition-ready"
-                    ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                    : "bg-[var(--surface-elevated)] border-[var(--border)] hover:border-[var(--border-hover)]"
-                }`}
-              >
-                <Medal
-                  className={`w-5 h-5 ${
-                    data.goalType === "competition-ready"
-                      ? "text-[var(--primary)]"
-                      : "text-[var(--text-muted)]"
-                  }`}
-                />
-                <div className="text-left">
-                  <span
-                    className={`text-sm font-medium block ${
-                      data.goalType === "competition-ready"
-                        ? "text-[var(--primary)]"
-                        : "text-[var(--text-primary)]"
-                    }`}
-                  >
-                    Competition Ready
-                  </span>
-                  <span className="text-xs text-[var(--text-muted)]">
-                    Prepare for your next competition
-                  </span>
-                </div>
-              </button>
             </div>
           )}
 
@@ -794,7 +777,9 @@ export default function CoachOnboardingModal({
                   }
                   min={new Date().toISOString().split("T")[0]}
                   onChange={(e) =>
-                    updateData({ targetDate: new Date(e.target.value).getTime() })
+                    updateData({
+                      targetDate: new Date(e.target.value).getTime(),
+                    })
                   }
                   className="w-full px-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
                 />
@@ -942,8 +927,8 @@ export default function CoachOnboardingModal({
                 <div className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
                   <span className="text-sm text-[var(--text-muted)]">Goal</span>
                   <span className="text-sm font-medium text-[var(--primary)]">
-                    {data.goalType === "competition-ready"
-                      ? "Competition Ready"
+                    {data.goalType === "custom"
+                      ? `Custom: ${data.customGoalTime ? (data.customGoalTime / 1000).toFixed(0) + "s" : "Set"}`
                       : data.goalType?.replace("-", " ").replace("sub", "Sub ")}
                   </span>
                 </div>
@@ -1045,6 +1030,6 @@ export default function CoachOnboardingModal({
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }

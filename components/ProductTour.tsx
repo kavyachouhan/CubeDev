@@ -116,11 +116,11 @@ export default function ProductTour({
     // Ensure tooltip is within viewport
     left = Math.max(
       padding,
-      Math.min(left, window.innerWidth - tooltipWidth - padding)
+      Math.min(left, window.innerWidth - tooltipWidth - padding),
     );
     top = Math.max(
       padding,
-      Math.min(top, window.innerHeight - tooltipHeight - padding)
+      Math.min(top, window.innerHeight - tooltipHeight - padding),
     );
 
     setTooltipPosition({ top, left, placement });
@@ -175,6 +175,34 @@ export default function ProductTour({
     setCurrentStep(0);
     onClose();
   };
+
+  // 
+  useEffect(() => {
+    if (!isOpen || steps.length === 0) return;
+
+    const step = steps[currentStep];
+    const targetElement = document.querySelector(step.target);
+
+    if (!targetElement) return;
+
+    const handleTargetClick = () => {
+      // Delay advancing to allow any click handlers on the target element to execute first
+      setTimeout(() => {
+        if (currentStep < steps.length - 1) {
+          setCurrentStep((prev) => prev + 1);
+        } else {
+          localStorage.setItem(`tour-completed-${tourId}`, "true");
+          setCurrentStep(0);
+          onComplete();
+        }
+      }, 100);
+    };
+
+    targetElement.addEventListener("click", handleTargetClick);
+    return () => {
+      targetElement.removeEventListener("click", handleTargetClick);
+    };
+  }, [isOpen, currentStep, steps, tourId, onComplete]);
 
   if (!mounted || !isOpen || steps.length === 0) return null;
 
@@ -236,16 +264,20 @@ export default function ProductTour({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999]" role="dialog" aria-modal="true">
+    <div
+      className="fixed inset-0 z-[9999] pointer-events-none"
+      role="dialog"
+      aria-modal="true"
+    >
       {/* Overlay with spotlight */}
       <div className="absolute inset-0">
         {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/60 transition-opacity duration-300" />
 
-        {/* Spotlight cutout */}
+        {/* */}
         {highlightRect && !isCenterPlacement && (
           <div
-            className="absolute border-2 border-[var(--primary)] rounded-lg transition-all duration-300 pointer-events-none"
+            className="absolute border-2 border-[var(--primary)] rounded-lg transition-all duration-300 pointer-events-auto cursor-pointer"
             style={{
               top: highlightRect.top - 8,
               left: highlightRect.left - 8,
@@ -255,6 +287,31 @@ export default function ProductTour({
                 0 0 0 9999px rgba(0, 0, 0, 0.6),
                 0 0 20px rgba(var(--primary-rgb, 59, 130, 246), 0.3)
               `,
+              // Make the highlight area clickable to advance the tour
+              background: "transparent",
+            }}
+            onClick={(e) => {
+              // Check if the click is within the target element bounds before advancing
+              const targetElement = document.querySelector(
+                steps[currentStep].target,
+              );
+              if (targetElement) {
+                // Get bounding rect of the target element
+                const rect = targetElement.getBoundingClientRect();
+                const clickX = e.clientX;
+                const clickY = e.clientY;
+
+                // Check if click is within the target element's bounding box
+                if (
+                  clickX >= rect.left &&
+                  clickX <= rect.right &&
+                  clickY >= rect.top &&
+                  clickY <= rect.bottom
+                ) {
+                  // Simulate click on target element
+                  (targetElement as HTMLElement).click();
+                }
+              }
             }}
           />
         )}
@@ -264,7 +321,7 @@ export default function ProductTour({
       {tooltipPosition && (
         <div
           ref={tooltipRef}
-          className={`absolute z-10 w-[340px] transition-all duration-300 ${
+          className={`absolute z-10 w-[340px] transition-all duration-300 pointer-events-auto ${
             isCenterPlacement ? "-translate-x-1/2 -translate-y-1/2" : ""
           }`}
           style={{
@@ -301,6 +358,13 @@ export default function ProductTour({
             <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
               {step.content}
             </p>
+
+            {/* Hint to click element */}
+            {!isCenterPlacement && (
+              <p className="text-xs text-[var(--text-muted)] mb-3 italic">
+                Click the highlighted element to interact and continue
+              </p>
+            )}
 
             {/* Progress indicator */}
             <div className="flex items-center gap-1.5 mb-4">
@@ -363,7 +427,7 @@ export default function ProductTour({
         </div>
       )}
     </div>,
-    document.body
+    document.body,
   );
 }
 

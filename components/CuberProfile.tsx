@@ -11,6 +11,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import ProfileSidebar from "./profile/ProfileSidebar";
 import CubeDevStats from "./profile/CubeDevStats";
 import WCAStats from "./profile/WCAStats";
+import ProfileTrainingTab from "./profile/ProfileTrainingTab";
 import { ProfileSidebarSkeleton } from "./SkeletonLoaders";
 
 // Import cache utilities
@@ -159,10 +160,10 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
 
         // Try to get profile from cache first
         const cachedProfile = getFromCache<WCAProfileData>(
-          WCA_CACHE_KEYS.profile(wcaId)
+          WCA_CACHE_KEYS.profile(wcaId),
         );
         const cachedResults = getFromCache<WCACompetitionResult[]>(
-          WCA_CACHE_KEYS.results(wcaId)
+          WCA_CACHE_KEYS.results(wcaId),
         );
 
         if (cachedProfile) {
@@ -170,7 +171,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
           // Extract personal records from cached profile
           if (cachedProfile.person.personal_records) {
             const records: WCAPersonalRecord[] = Object.entries(
-              cachedProfile.person.personal_records
+              cachedProfile.person.personal_records,
             )
               .map(([eventId, record]: [string, any]) => ({
                 event_id: eventId,
@@ -207,7 +208,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
               Accept: "application/json",
               "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
             },
-          }
+          },
         );
 
         if (!profileResponse.ok) {
@@ -226,7 +227,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
         // Extract personal records
         if (profileData.person.personal_records) {
           const records: WCAPersonalRecord[] = Object.entries(
-            profileData.person.personal_records
+            profileData.person.personal_records,
           )
             .map(([eventId, record]: [string, any]) => ({
               event_id: eventId,
@@ -255,7 +256,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
                 Accept: "application/json",
                 "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
               },
-            }
+            },
           );
 
           if (resultsResponse.ok) {
@@ -316,9 +317,9 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
         const uniqueCompetitionIds = Array.from(
           new Set(
             (competitionResults || []).map(
-              (r: WCACompetitionResult) => r.competition_id
-            )
-          )
+              (r: WCACompetitionResult) => r.competition_id,
+            ),
+          ),
         );
 
         const competitionDetailsMap = new Map<string, CompetitionInfo>();
@@ -327,7 +328,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
         const uncachedCompIds: string[] = [];
         uniqueCompetitionIds.forEach((compId) => {
           const cached = getFromCache<CompetitionInfo>(
-            WCA_CACHE_KEYS.competition(compId)
+            WCA_CACHE_KEYS.competition(compId),
           );
           if (cached) {
             competitionDetailsMap.set(compId, cached);
@@ -363,7 +364,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
                     Accept: "application/json",
                     "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
                   },
-                }
+                },
               );
 
               if (response.ok) {
@@ -371,13 +372,13 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
                 return { compId, data };
               } else {
                 console.warn(
-                  `Failed to fetch competition ${compId}: ${response.status}`
+                  `Failed to fetch competition ${compId}: ${response.status}`,
                 );
               }
             } catch (error) {
               console.warn(
                 `Failed to fetch details for competition ${compId}:`,
-                error
+                error,
               );
             }
             return null;
@@ -554,6 +555,16 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
                   CubeDev Stats
                 </button>
                 <button
+                  onClick={() => handleTabChange("training")}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                    currentTab === "training"
+                      ? "border-[var(--primary)] text-[var(--primary)]"
+                      : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                  }`}
+                >
+                  Training
+                </button>
+                <button
                   onClick={() => handleTabChange("wca")}
                   className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                     currentTab === "wca"
@@ -570,6 +581,9 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
             <div className="tab-content">
               {currentTab === "cubedev" && (
                 <CubeDevStats wcaId={wcaId} cubeDevUserId={cubeDevUser?._id} />
+              )}
+              {currentTab === "training" && (
+                <ProfileTrainingTab wcaId={wcaId} />
               )}
               {currentTab === "wca" && (
                 <WCAStats

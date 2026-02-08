@@ -10,11 +10,16 @@ import {
   Clock,
   ChevronRight,
   CheckCircle2,
+  Trophy,
+  Flame,
+  Target,
+  Bell,
 } from "lucide-react";
 import Link from "next/link";
 import {
   useNotificationPermission,
   shouldShowPermissionPrompt,
+  useInAppNotifications,
 } from "@/lib/notification-utils";
 import type { Id } from "@/convex/_generated/dataModel";
 
@@ -36,7 +41,7 @@ export default function NotificationsModal({
   // Mutations
   const dismissNotification = useMutation(api.users.dismissNotification);
   const clearAllDismissed = useMutation(
-    api.users.clearAllDismissedNotifications
+    api.users.clearAllDismissedNotifications,
   );
 
   // Show permission prompt if needed
@@ -54,7 +59,20 @@ export default function NotificationsModal({
   // Fetch due reviews for notifications
   const dueReviews = useQuery(
     api.algorithms.getReviewsForNotifications,
-    user?.convexId ? { userId: user.convexId as any } : "skip"
+    user?.convexId ? { userId: user.convexId as any } : "skip",
+  );
+
+  // Get in-app notifications (coaching notifications only - exclude algorithm-due)
+  const {
+    notifications: allInAppNotifications,
+    dismiss: dismissInApp,
+    dismissAll: dismissAllInApp,
+  } = useInAppNotifications();
+
+  // Filter out algorithm-due notifications since they are already shown
+  // in the Overdue/Due Today/Due Soon sections from the Convex query
+  const inAppNotifications = allInAppNotifications.filter(
+    (n) => n.type !== "algorithm-due",
   );
 
   if (!isOpen) return null;
@@ -70,13 +88,13 @@ export default function NotificationsModal({
     dueReviews?.filter(
       (r) =>
         r.progress.nextReviewDate >= oneDayAgo &&
-        r.progress.nextReviewDate <= now
+        r.progress.nextReviewDate <= now,
     ) || [];
   const dueSoon =
     dueReviews?.filter(
       (r) =>
         r.progress.nextReviewDate > now &&
-        r.progress.nextReviewDate < now + 24 * 60 * 60 * 1000
+        r.progress.nextReviewDate < now + 24 * 60 * 60 * 1000,
     ) || [];
 
   const formatTimeAgo = (timestamp: number) => {
@@ -103,7 +121,38 @@ export default function NotificationsModal({
     return new Date(timestamp).toLocaleDateString();
   };
 
-  const totalNotifications = dueReviews?.length || 0;
+  const totalNotifications =
+    (dueReviews?.length || 0) + inAppNotifications.length;
+
+  // Get icon for in-app notification type
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case "daily-practice-reminder":
+        return <Bell className="w-4 h-4" />;
+      case "streak-at-risk":
+        return <Flame className="w-4 h-4" />;
+      case "weekly-summary":
+        return <Trophy className="w-4 h-4" />;
+      case "goal-progress":
+        return <Target className="w-4 h-4" />;
+      default:
+        return <Bell className="w-4 h-4" />;
+    }
+  };
+
+  // Get color for in-app notification type
+  const getNotificationColor = (type: string) => {
+    switch (type) {
+      case "streak-at-risk":
+        return "var(--warning)";
+      case "weekly-summary":
+        return "var(--primary)";
+      case "goal-progress":
+        return "var(--success)";
+      default:
+        return "var(--primary)";
+    }
+  };
 
   const handleEnableNotifications = async () => {
     setIsRequestingPermission(true);
@@ -122,7 +171,7 @@ export default function NotificationsModal({
 
   const handleDismissNotification = async (
     e: React.MouseEvent,
-    progressId: Id<"userAlgorithmProgress">
+    progressId: Id<"userAlgorithmProgress">,
   ) => {
     e.preventDefault();
     e.stopPropagation();
@@ -135,6 +184,7 @@ export default function NotificationsModal({
   };
 
   const handleDismissAll = async () => {
+    // Dismiss algorithm notifications
     if (user?.convexId && dueReviews) {
       // Dismiss all notifications
       for (const review of dueReviews) {
@@ -144,6 +194,12 @@ export default function NotificationsModal({
         });
       }
     }
+    // Dismiss all in-app notifications
+    dismissAllInApp();
+  };
+
+  const handleDismissInAppNotification = (id: string) => {
+    dismissInApp(id);
   };
 
   return (
@@ -177,8 +233,8 @@ export default function NotificationsModal({
                   Enable Desktop Notifications
                 </h3>
                 <p className="text-xs text-[var(--text-muted)] mb-3 font-inter">
-                  Get notified when algorithms are due for review, even when
-                  you're not on CubeDev. Stay on track with your learning!
+                  Get notified even when you're not on CubeDev. Stay on track
+                  with your learning!
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <button
@@ -232,6 +288,79 @@ export default function NotificationsModal({
             </div>
           ) : (
             <>
+              {/* Coaching Notifications Section */}
+              {inAppNotifications.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-[var(--primary)] mb-3 font-statement flex items-center gap-2">
+                    <Bell className="w-4 h-4" />
+                    Coaching ({inAppNotifications.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {inAppNotifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className="relative timer-card bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--primary)]/40 transition-all p-4 group"
+                        style={{
+                          borderColor: `color-mix(in srgb, ${getNotificationColor(notification.type)} 20%, transparent)`,
+                        }}
+                      >
+                        <Link
+                          href={notification.url}
+                          onClick={onClose}
+                          className="block pr-8"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span
+                                  className="text-xs font-medium font-inter px-2 py-0.5 rounded flex items-center gap-1"
+                                  style={{
+                                    color: getNotificationColor(
+                                      notification.type,
+                                    ),
+                                    backgroundColor: `color-mix(in srgb, ${getNotificationColor(notification.type)} 10%, transparent)`,
+                                  }}
+                                >
+                                  {getNotificationIcon(notification.type)}
+                                  {notification.type
+                                    .split("-")
+                                    .map(
+                                      (word) =>
+                                        word.charAt(0).toUpperCase() +
+                                        word.slice(1),
+                                    )
+                                    .join(" ")}
+                                </span>
+                              </div>
+                              <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                                {notification.title}
+                              </h4>
+                              <p className="text-xs text-[var(--text-muted)] font-inter mb-1">
+                                {notification.body}
+                              </p>
+                              <span className="text-xs text-[var(--text-muted)] font-inter flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {formatTimeAgo(notification.timestamp)}
+                              </span>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
+                          </div>
+                        </Link>
+                        <button
+                          onClick={() =>
+                            handleDismissInAppNotification(notification.id)
+                          }
+                          className="absolute top-3 right-3 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] rounded transition-colors z-10"
+                          title="Dismiss notification"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Overdue Section */}
               {overdue.length > 0 && (
                 <div>
@@ -264,7 +393,7 @@ export default function NotificationsModal({
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   {formatTimeAgo(
-                                    review.progress.nextReviewDate
+                                    review.progress.nextReviewDate,
                                   )}
                                 </span>
                                 <span>
@@ -322,7 +451,7 @@ export default function NotificationsModal({
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   {formatTimeAgo(
-                                    review.progress.nextReviewDate
+                                    review.progress.nextReviewDate,
                                   )}
                                 </span>
                                 <span>
@@ -380,7 +509,7 @@ export default function NotificationsModal({
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   {formatDueTime(
-                                    review.progress.nextReviewDate
+                                    review.progress.nextReviewDate,
                                   )}
                                 </span>
                                 <span>
@@ -413,13 +542,23 @@ export default function NotificationsModal({
         {totalNotifications > 0 && (
           <div className="flex flex-col gap-3 pt-6 mt-6 border-t border-[var(--border)]">
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/cube-lab/algorithm-trainer/practice"
-                onClick={onClose}
-                className="flex-1 btn-primary text-center py-3 sm:py-3"
-              >
-                Practice Now
-              </Link>
+              {(dueReviews?.length || 0) > 0 ? (
+                <Link
+                  href="/cube-lab/algorithm-trainer/practice"
+                  onClick={onClose}
+                  className="flex-1 btn-primary text-center py-3 sm:py-3"
+                >
+                  Practice Algorithms
+                </Link>
+              ) : (
+                <Link
+                  href="/cube-lab/coach"
+                  onClick={onClose}
+                  className="flex-1 btn-primary text-center py-3 sm:py-3"
+                >
+                  Open Coach
+                </Link>
+              )}
               <button
                 onClick={onClose}
                 className="flex-1 btn-secondary py-3 sm:py-3"

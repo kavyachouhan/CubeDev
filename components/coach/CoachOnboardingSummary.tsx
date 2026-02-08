@@ -31,7 +31,6 @@ const goalLabels: Record<string, string> = {
   "sub-12": "Sub 12 seconds",
   "sub-10": "Sub 10 seconds",
   "sub-8": "Sub 8 seconds",
-  "competition-ready": "Competition Ready",
   custom: "Custom Goal",
 };
 
@@ -68,7 +67,8 @@ export default function CoachOnboardingSummary({
 }: CoachOnboardingSummaryProps) {
   const daysUntilTarget = getDaysUntil(data.targetDate);
   const weeksUntilTarget = Math.floor(daysUntilTarget / 7);
-  const totalWeeklyMinutes = data.dailyPracticeMinutes * data.practiceSchedule.length;
+  const totalWeeklyMinutes =
+    data.dailyPracticeMinutes * data.practiceSchedule.length;
   const totalWeeklyHours = totalWeeklyMinutes / 60;
 
   return (
@@ -79,7 +79,8 @@ export default function CoachOnboardingSummary({
           Ready to Start Your Training!
         </h2>
         <p className="text-[var(--text-secondary)]">
-          Review your training plan before we generate your personalized weekly schedule.
+          Review your training plan before we generate your personalized weekly
+          schedule.
         </p>
       </div>
 
@@ -92,7 +93,9 @@ export default function CoachOnboardingSummary({
               <BarChart3 className="w-5 h-5 text-[var(--primary)]" />
             </div>
             <div>
-              <span className="text-xs text-[var(--text-muted)]">Current Level</span>
+              <span className="text-xs text-[var(--text-muted)]">
+                Current Level
+              </span>
               <span className="font-bold text-[var(--text-primary)] block">
                 {skillLabels[data.skillLevel]}
               </span>
@@ -101,7 +104,9 @@ export default function CoachOnboardingSummary({
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm p-2 bg-[var(--surface-elevated)] rounded">
               <span className="text-[var(--text-muted)]">Event</span>
-              <span className="font-medium text-[var(--text-primary)]">3x3 Cube</span>
+              <span className="font-medium text-[var(--text-primary)]">
+                3x3 Cube
+              </span>
             </div>
             {data.currentAverage && (
               <div className="flex items-center justify-between text-sm p-2 bg-[var(--surface-elevated)] rounded">
@@ -121,7 +126,9 @@ export default function CoachOnboardingSummary({
               <Target className="w-5 h-5 text-[var(--success)]" />
             </div>
             <div>
-              <span className="text-xs text-[var(--text-muted)]">Your Goal</span>
+              <span className="text-xs text-[var(--text-muted)]">
+                Your Goal
+              </span>
               <span className="font-bold text-[var(--text-primary)] block">
                 {goalLabels[data.goalType]}
               </span>
@@ -144,7 +151,9 @@ export default function CoachOnboardingSummary({
               <Calendar className="w-5 h-5 text-[var(--warning)]" />
             </div>
             <div>
-              <span className="text-xs text-[var(--text-muted)]">Target Date</span>
+              <span className="text-xs text-[var(--text-muted)]">
+                Target Date
+              </span>
               <span className="font-bold text-[var(--text-primary)] block">
                 {formatDate(data.targetDate)}
               </span>
@@ -165,7 +174,9 @@ export default function CoachOnboardingSummary({
               <Clock className="w-5 h-5 text-[var(--info)]" />
             </div>
             <div>
-              <span className="text-xs text-[var(--text-muted)]">Weekly Commitment</span>
+              <span className="text-xs text-[var(--text-muted)]">
+                Weekly Commitment
+              </span>
               <span className="font-bold text-[var(--text-primary)] block">
                 {totalWeeklyHours.toFixed(1)} hours/week
               </span>
@@ -192,16 +203,23 @@ export default function CoachOnboardingSummary({
       <div className="timer-card !bg-[var(--primary)]/5 !border-[var(--primary)]/20">
         <div className="flex items-center gap-2 mb-4">
           <CheckCircle className="w-5 h-5 text-[var(--primary)]" />
-          <h3 className="font-semibold text-[var(--text-primary)]">What to Expect</h3>
+          <h3 className="font-semibold text-[var(--text-primary)]">
+            What to Expect
+          </h3>
         </div>
         <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
           <li className="flex items-start gap-2">
             <span className="text-[var(--primary)] font-bold">1.</span>
-            <span>Personalized weekly training plans based on your schedule and goals</span>
+            <span>
+              Personalized weekly training plans based on your schedule and
+              goals
+            </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-[var(--primary)] font-bold">2.</span>
-            <span>Daily activities focused on different aspects of solving</span>
+            <span>
+              Daily activities focused on different aspects of solving
+            </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-[var(--primary)] font-bold">3.</span>
@@ -209,7 +227,9 @@ export default function CoachOnboardingSummary({
           </li>
           <li className="flex items-start gap-2">
             <span className="text-[var(--primary)] font-bold">4.</span>
-            <span>Adaptive plans that adjust based on your actual progress</span>
+            <span>
+              Adaptive plans that adjust based on your actual progress
+            </span>
           </li>
         </ul>
       </div>

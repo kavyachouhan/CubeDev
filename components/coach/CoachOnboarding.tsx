@@ -1,8 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight, ChevronLeft, Target, Calendar, Clock, CheckCircle2 } from "lucide-react";
-import { useQuery, useMutation } from "convex/react";
+import {
+  ChevronRight,
+  ChevronLeft,
+  Target,
+  Calendar,
+  Clock,
+  CheckCircle2,
+} from "lucide-react";
+import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import CoachSessionSelector from "./CoachSessionSelector";
@@ -21,7 +28,16 @@ export type OnboardingData = {
   currentAverage?: number;
   skillLevel: "beginner" | "intermediate" | "advanced" | "expert";
   primaryEvent: string;
-  goalType: "sub-60" | "sub-45" | "sub-30" | "sub-20" | "sub-15" | "sub-12" | "sub-10" | "sub-8" | "competition-ready" | "custom";
+  goalType:
+    | "sub-60"
+    | "sub-45"
+    | "sub-30"
+    | "sub-20"
+    | "sub-15"
+    | "sub-12"
+    | "sub-10"
+    | "sub-8"
+    | "custom";
   customGoalTime?: number;
   targetDate: number;
   dailyPracticeMinutes: number;
@@ -29,17 +45,45 @@ export type OnboardingData = {
 };
 
 const STEPS = [
-  { id: 1, title: "Current Level", icon: Target, description: "Select a session to analyze" },
-  { id: 2, title: "Your Goal", icon: Target, description: "What do you want to achieve?" },
-  { id: 3, title: "Timeline", icon: Calendar, description: "When do you want to reach it?" },
-  { id: 4, title: "Commitment", icon: Clock, description: "How much time can you practice?" },
-  { id: 5, title: "Review", icon: CheckCircle2, description: "Confirm your training plan" },
+  {
+    id: 1,
+    title: "Current Level",
+    icon: Target,
+    description: "Select a session to analyze",
+  },
+  {
+    id: 2,
+    title: "Your Goal",
+    icon: Target,
+    description: "What do you want to achieve?",
+  },
+  {
+    id: 3,
+    title: "Timeline",
+    icon: Calendar,
+    description: "When do you want to reach it?",
+  },
+  {
+    id: 4,
+    title: "Commitment",
+    icon: Clock,
+    description: "How much time can you practice?",
+  },
+  {
+    id: 5,
+    title: "Review",
+    icon: CheckCircle2,
+    description: "Confirm your training plan",
+  },
 ];
 
-export default function CoachOnboarding({ userId, onComplete }: CoachOnboardingProps) {
+export default function CoachOnboarding({
+  userId,
+  onComplete,
+}: CoachOnboardingProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const [data, setData] = useState<Partial<OnboardingData>>({
     skillLevel: "intermediate",
     primaryEvent: "333",
@@ -53,7 +97,7 @@ export default function CoachOnboarding({ userId, onComplete }: CoachOnboardingP
   const generatePlan = useMutation(api.coach.generateTrainingPlan);
 
   const updateData = (updates: Partial<OnboardingData>) => {
-    setData(prev => ({ ...prev, ...updates }));
+    setData((prev) => ({ ...prev, ...updates }));
   };
 
   const handleNext = () => {
@@ -69,7 +113,12 @@ export default function CoachOnboarding({ userId, onComplete }: CoachOnboardingP
   };
 
   const handleComplete = async () => {
-    if (!data.skillLevel || !data.goalType || !data.targetDate || !data.dailyPracticeMinutes) {
+    if (
+      !data.skillLevel ||
+      !data.goalType ||
+      !data.targetDate ||
+      !data.dailyPracticeMinutes
+    ) {
       return;
     }
 
@@ -112,7 +161,11 @@ export default function CoachOnboarding({ userId, onComplete }: CoachOnboardingP
       case 3:
         return !!data.targetDate;
       case 4:
-        return !!data.dailyPracticeMinutes && data.practiceSchedule && data.practiceSchedule.length > 0;
+        return (
+          !!data.dailyPracticeMinutes &&
+          data.practiceSchedule &&
+          data.practiceSchedule.length > 0
+        );
       case 5:
         return true;
       default:
@@ -130,7 +183,7 @@ export default function CoachOnboarding({ userId, onComplete }: CoachOnboardingP
               const Icon = step.icon;
               const isActive = currentStep === step.id;
               const isCompleted = currentStep > step.id;
-              
+
               return (
                 <div key={step.id} className="flex items-center">
                   <div className="flex flex-col items-center">
@@ -139,8 +192,8 @@ export default function CoachOnboarding({ userId, onComplete }: CoachOnboardingP
                         isActive
                           ? "bg-[var(--primary)] text-white"
                           : isCompleted
-                          ? "bg-[var(--success)] text-white"
-                          : "bg-[var(--surface-elevated)] text-[var(--text-muted)]"
+                            ? "bg-[var(--success)] text-white"
+                            : "bg-[var(--surface-elevated)] text-[var(--text-muted)]"
                       }`}
                     >
                       {isCompleted ? (
@@ -151,7 +204,9 @@ export default function CoachOnboarding({ userId, onComplete }: CoachOnboardingP
                     </div>
                     <span
                       className={`mt-2 text-xs font-medium hidden sm:block ${
-                        isActive ? "text-[var(--primary)]" : "text-[var(--text-muted)]"
+                        isActive
+                          ? "text-[var(--primary)]"
+                          : "text-[var(--text-muted)]"
                       }`}
                     >
                       {step.title}
@@ -160,7 +215,9 @@ export default function CoachOnboarding({ userId, onComplete }: CoachOnboardingP
                   {index < STEPS.length - 1 && (
                     <div
                       className={`w-8 sm:w-16 lg:w-24 h-1 mx-2 rounded ${
-                        isCompleted ? "bg-[var(--success)]" : "bg-[var(--border)]"
+                        isCompleted
+                          ? "bg-[var(--success)]"
+                          : "bg-[var(--border)]"
                       }`}
                     />
                   )}
@@ -182,27 +239,16 @@ export default function CoachOnboarding({ userId, onComplete }: CoachOnboardingP
             />
           )}
           {currentStep === 2 && (
-            <CoachGoalSelector
-              data={data}
-              onUpdate={updateData}
-            />
+            <CoachGoalSelector data={data} onUpdate={updateData} />
           )}
           {currentStep === 3 && (
-            <CoachTimelineSelector
-              data={data}
-              onUpdate={updateData}
-            />
+            <CoachTimelineSelector data={data} onUpdate={updateData} />
           )}
           {currentStep === 4 && (
-            <CoachScheduleSelector
-              data={data}
-              onUpdate={updateData}
-            />
+            <CoachScheduleSelector data={data} onUpdate={updateData} />
           )}
           {currentStep === 5 && (
-            <CoachOnboardingSummary
-              data={data as OnboardingData}
-            />
+            <CoachOnboardingSummary data={data as OnboardingData} />
           )}
         </div>
       </div>

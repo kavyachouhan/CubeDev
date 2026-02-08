@@ -1,4 +1,6 @@
 export { default as CoachDashboard } from "./CoachDashboard";
+export { default as CoachTour } from "./CoachTour";
+export { default as CoachWalkthrough } from "./CoachWalkthrough";
 export { default as CoachOnboarding } from "./CoachOnboarding";
 export { default as CoachOnboardingModal } from "./CoachOnboardingModal";
 export { default as CoachSessionSelector } from "./CoachSessionSelector";
@@ -9,5 +11,7 @@ export { default as CoachOnboardingSummary } from "./CoachOnboardingSummary";
 export { default as CoachTrainingPlan } from "./CoachTrainingPlan";
 export { default as CoachJournalEntry } from "./CoachJournalEntry";
 export { default as CoachJournalList } from "./CoachJournalList";
+export { default as CoachJournalCalendar } from "./CoachJournalCalendar";
 export { default as CoachProgress } from "./CoachProgress";
 export { default as DailyJournalModal } from "./DailyJournalModal";
+export { default as JournalEntryViewModal } from "./JournalEntryViewModal";

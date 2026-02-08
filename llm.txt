@@ -55,6 +55,14 @@ CubeDev is a comprehensive speedcubing platform that provides tools and resource
 - Multiple event support matching official WCA events
 - Realistic round progression (first round, finals, etc.)
 
+### Personal Coach & Goal Tracking
+- Personalized coaching with training plan recommendations
+- Goal setting and progress tracking towards specific solve time targets (e.g., sub-15, sub-20)
+- Structured weekly training schedules tailored to your skill level and weaknesses
+- Daily practice journal for logging training sessions and insights
+- Actionable improvement recommendations to break through performance plateaus
+- Weekly goal check-ins and performance reviews
+
 ## Target Audience
 
 - **Beginner Cubers**: Learning to solve and improve basic techniques
@@ -106,7 +114,7 @@ Currently not accepting public contributions, but users can:
 
 ## SEO Keywords
 
-speedcubing, rubiks cube timer, cube timer, speedcubing timer, WCA, world cube association, cubing statistics, solve analysis, speedcuber, puzzle cube, cubing community, cube practice, speedcubing training, competition timer, cubing leaderboard
+speedcubing, rubiks cube timer, cube timer, speedcubing timer, WCA, world cube association, cubing statistics, solve analysis, speedcuber, puzzle cube, cubing community, cube practice, speedcubing training, competition timer, cubing leaderboard, speedcubing coach, cubing goals, goal tracking, personalized training plans, speedcubing improvement, cubing analytics, solve time goals, sub-20 cubing, sub-15 cubing, training schedule
 
 ---
 

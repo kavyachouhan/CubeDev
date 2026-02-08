@@ -1,0 +1,324 @@
+"use client";
+
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import {
+  Target,
+  CheckCircle2,
+  XCircle,
+  ArrowRightLeft,
+  History,
+} from "lucide-react";
+import { CollapsibleSection, formatTime } from "./utils";
+import { CoachProfile, GOAL_TIMES } from "./types";
+import type { Id } from "@/convex/_generated/dataModel";
+
+interface GoalTimelineCardProps {
+  profile: CoachProfile;
+  currentAverage: number;
+}
+
+type GoalStatus = "achieved" | "expired" | "active";
+
+// Event name mapping
+const EVENT_NAMES: Record<string, string> = {
+  "222": "2x2",
+  "333": "3x3",
+  "444": "4x4",
+  "555": "5x5",
+  "666": "6x6",
+  "777": "7x7",
+  "333bf": "3x3 BLD",
+  "333oh": "3x3 OH",
+  pyram: "Pyraminx",
+  skewb: "Skewb",
+  sq1: "Square-1",
+  clock: "Clock",
+  minx: "Megaminx",
+};
+
+function formatDate(timestamp: number): string {
+  return new Date(timestamp).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function getGoalDisplay(goalType: string, customGoalTime?: number): string {
+  if (goalType === "custom" && customGoalTime) {
+    return `Sub ${(customGoalTime / 1000).toFixed(0)}`;
+  }
+  return goalType.replace("-", " ").replace("sub", "Sub ");
+}
+
+function getGoalStatus(
+  profile: CoachProfile,
+  currentAverage: number,
+): GoalStatus {
+  const targetTime =
+    profile.customGoalTime || GOAL_TIMES[profile.goalType] || 20000;
+  const daysRemaining = Math.ceil(
+    (profile.targetDate - Date.now()) / (24 * 60 * 60 * 1000),
+  );
+
+  if (currentAverage <= targetTime) {
+    return "achieved";
+  }
+  if (daysRemaining <= 0) {
+    return "expired";
+  }
+  return "active";
+}
+
+function getProgressPercentage(
+  profile: CoachProfile,
+  currentAverage: number,
+  startingAverage: number,
+): number {
+  const targetTime =
+    profile.customGoalTime || GOAL_TIMES[profile.goalType] || 20000;
+  if (currentAverage <= targetTime) return 100;
+  if (currentAverage >= startingAverage) return 0;
+
+  const totalImprovement = startingAverage - targetTime;
+  const actualImprovement = startingAverage - currentAverage;
+
+  return Math.min(
+    100,
+    Math.max(0, (actualImprovement / totalImprovement) * 100),
+  );
+}
+
+// Timeline Item Component
+interface TimelineItemProps {
+  status: "achieved" | "expired" | "active" | "replaced";
+  title: string;
+  event: string;
+  startDate: number;
+  targetDate: number;
+  endDate?: number;
+  progress: number;
+  isCurrent?: boolean;
+}
+
+function TimelineItem({
+  status,
+  title,
+  event,
+  startDate,
+  targetDate,
+  endDate,
+  progress,
+  isCurrent,
+}: TimelineItemProps) {
+  const getStatusConfig = () => {
+    switch (status) {
+      case "achieved":
+        return {
+          Icon: CheckCircle2,
+          color: "text-[var(--success)]",
+          bg: "bg-[var(--success)]",
+          label: "Achieved",
+        };
+      case "expired":
+        return {
+          Icon: XCircle,
+          color: "text-[var(--warning)]",
+          bg: "bg-[var(--warning)]",
+          label: "Expired",
+        };
+      case "replaced":
+        return {
+          Icon: ArrowRightLeft,
+          color: "text-[var(--text-muted)]",
+          bg: "bg-[var(--text-muted)]",
+          label: "Replaced",
+        };
+      default:
+        return {
+          Icon: Target,
+          color: "text-[var(--primary)]",
+          bg: "bg-[var(--primary)]",
+          label: "In Progress",
+        };
+    }
+  };
+
+  const { Icon, color, bg, label } = getStatusConfig();
+
+  return (
+    <div className="relative flex gap-3 sm:gap-4 pb-4">
+      {/* Timeline dot */}
+      <div
+        className={`relative z-10 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${bg}/20`}
+      >
+        <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${color}`} />
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0 bg-[var(--surface-elevated)] rounded-lg p-3 sm:p-4 border border-[var(--border)]">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-2">
+          <div className="min-w-0">
+            <span className="font-semibold text-sm sm:text-base text-[var(--text-primary)] truncate block">
+              {title}
+            </span>
+            <div className="flex items-center justify-between sm:justify-start gap-2">
+              <span className="text-xs sm:text-sm text-[var(--text-muted)]">
+                {event}
+              </span>
+              {isCurrent && (
+                <span className="sm:hidden text-[10px] text-[var(--primary)] bg-[var(--primary)]/10 px-2 py-0.5 rounded-full border border-[var(--primary)]/20 flex-shrink-0">
+                  Current
+                </span>
+              )}
+              {!isCurrent && (
+                <span
+                  className={`sm:hidden text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${
+                    status === "achieved"
+                      ? "text-[var(--success)] bg-[var(--success)]/10 border border-[var(--success)]/20"
+                      : status === "expired"
+                        ? "text-[var(--warning)] bg-[var(--warning)]/10 border border-[var(--warning)]/20"
+                        : "text-[var(--text-muted)] bg-[var(--surface)] border border-[var(--border)]"
+                  }`}
+                >
+                  {label}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="hidden sm:flex items-center gap-2">
+            {isCurrent ? (
+              <span className="text-xs text-[var(--primary)] bg-[var(--primary)]/10 px-2 py-0.5 rounded-full border border-[var(--primary)]/20 flex-shrink-0">
+                Current
+              </span>
+            ) : (
+              <span
+                className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${
+                  status === "achieved"
+                    ? "text-[var(--success)] bg-[var(--success)]/10 border border-[var(--success)]/20"
+                    : status === "expired"
+                      ? "text-[var(--warning)] bg-[var(--warning)]/10 border border-[var(--warning)]/20"
+                      : "text-[var(--text-muted)] bg-[var(--surface)] border border-[var(--border)]"
+                }`}
+              >
+                {label}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 text-[10px] sm:text-xs text-[var(--text-muted)]">
+          <span>Started: {formatDate(startDate)}</span>
+          <span>Target: {formatDate(targetDate)}</span>
+          {endDate && !isCurrent && <span>Ended: {formatDate(endDate)}</span>}
+          <span
+            className={status === "achieved" ? "text-[var(--success)]" : ""}
+          >
+            Progress: {progress.toFixed(0)}%
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Skeleton Loader
+function GoalTimelineSkeleton() {
+  return (
+    <div className="timer-card animate-pulse">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="h-5 w-32 bg-[var(--surface-elevated)] rounded" />
+      </div>
+      <div className="relative">
+        <div className="absolute left-3 sm:left-4 top-0 bottom-0 w-0.5 bg-[var(--border)]" />
+        {[1, 2].map((i) => (
+          <div key={i} className="relative flex gap-3 sm:gap-4 pb-4">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[var(--surface-elevated)]" />
+            <div className="flex-1 bg-[var(--surface-elevated)] rounded-lg p-3 sm:p-4 border border-[var(--border)]">
+              <div className="h-4 w-24 bg-[var(--surface)] rounded mb-2" />
+              <div className="h-3 w-48 bg-[var(--surface)] rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function GoalTimelineCard({
+  profile,
+  currentAverage,
+}: GoalTimelineCardProps) {
+  // Fetch goal history
+  const goalHistory = useQuery(api.coach.getGoalHistory, {
+    userId: profile.userId,
+  });
+
+  const isLoading = goalHistory === undefined;
+
+  if (isLoading) {
+    return <GoalTimelineSkeleton />;
+  }
+
+  const status = getGoalStatus(profile, currentAverage);
+  const startingAverage = profile.currentAverage || currentAverage * 1.5;
+  const progressPercentage = getProgressPercentage(
+    profile,
+    currentAverage,
+    startingAverage,
+  );
+
+  // No history and only current goal
+  const hasHistory = goalHistory && goalHistory.length > 0;
+
+  return (
+    <CollapsibleSection
+      title="Goal Timeline"
+      storageKey="coach-progress-goal-timeline"
+      defaultExpanded={true}
+    >
+      <div className="relative">
+        {/* Timeline line */}
+        <div className="absolute left-3 sm:left-4 top-0 bottom-0 w-0.5 bg-[var(--border)]" />
+
+        {/* Current Goal */}
+        <TimelineItem
+          status={status}
+          title={getGoalDisplay(profile.goalType, profile.customGoalTime)}
+          event={EVENT_NAMES[profile.primaryEvent] || profile.primaryEvent}
+          startDate={profile.createdAt || Date.now()}
+          targetDate={profile.targetDate}
+          progress={progressPercentage}
+          isCurrent
+        />
+
+        {/* Goal History */}
+        {hasHistory &&
+          goalHistory.map((goal) => (
+            <TimelineItem
+              key={goal._id}
+              status={goal.status}
+              title={getGoalDisplay(goal.goalType, goal.customGoalTime)}
+              event={EVENT_NAMES[goal.primaryEvent] || goal.primaryEvent}
+              startDate={goal.startDate}
+              targetDate={goal.targetDate}
+              endDate={goal.endDate}
+              progress={goal.progressPercentage}
+            />
+          ))}
+
+        {/* Empty state for no history */}
+        {!hasHistory && (
+          <div className="ml-10 sm:ml-12 mt-2 p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+            <div className="flex items-center gap-2 text-[var(--text-muted)]">
+              <History className="w-4 h-4" />
+              <span className="text-xs sm:text-sm">
+                Your past goals will appear here as you complete them
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    </CollapsibleSection>
+  );
+}

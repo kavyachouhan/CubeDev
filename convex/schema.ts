@@ -48,8 +48,8 @@ export default defineSchema({
         v.object({
           progressId: v.id("userAlgorithmProgress"), // Reference to dismissed progress record
           dismissedAt: v.number(), // When notification was dismissed
-        })
-      )
+        }),
+      ),
     ), // Array of dismissed algorithm review notifications
   })
     .index("by_wca_id", ["wcaId"]) // Index for fast lookup by WCA ID
@@ -89,7 +89,7 @@ export default defineSchema({
 
     // Timer Mode
     timerMode: v.optional(
-      v.union(v.literal("normal"), v.literal("manual"), v.literal("stackmat"))
+      v.union(v.literal("normal"), v.literal("manual"), v.literal("stackmat")),
     ), // Timer mode used
 
     // Solve Details
@@ -101,8 +101,8 @@ export default defineSchema({
         v.object({
           phase: v.string(), // Phase name (e.g., "cross", "f2l", "oll", "pll")
           time: v.number(), // Time at which this phase was completed (milliseconds from start)
-        })
-      )
+        }),
+      ),
     ), // Phase splits marked during solve
     splitMethod: v.optional(v.string()), // Split method used (e.g., "cfop", "2ll", "4ll")
     microPausesMs: v.optional(v.array(v.number())), // Micro-pauses detected during solve for consistency analysis
@@ -161,7 +161,7 @@ export default defineSchema({
     status: v.union(
       v.literal("active"),
       v.literal("expired"),
-      v.literal("archived")
+      v.literal("archived"),
     ), // Room status
 
     // Scrambles (fixed set for all participants)
@@ -266,7 +266,7 @@ export default defineSchema({
       v.literal("new"),
       v.literal("read"),
       v.literal("replied"),
-      v.literal("resolved")
+      v.literal("resolved"),
     ), // Message status
   })
     .index("by_email", ["email"]) // Index for sender lookup
@@ -284,7 +284,7 @@ export default defineSchema({
     difficulty: v.union(
       v.literal("beginner"),
       v.literal("intermediate"),
-      v.literal("advanced")
+      v.literal("advanced"),
     ),
     puzzleType: v.optional(v.string()), // "3x3x3", "2x2x2", "4x4x4", etc. - defaults to "3x3x3" if not specified
     iconUrl: v.optional(v.string()), // Icon/badge URL
@@ -345,7 +345,7 @@ export default defineSchema({
       v.literal("new"),
       v.literal("learning"),
       v.literal("reviewing"),
-      v.literal("mastered")
+      v.literal("mastered"),
     ),
     easeFactor: v.number(), // SRS ease factor (default 2.5)
     interval: v.number(), // Days until next review
@@ -390,7 +390,7 @@ export default defineSchema({
       v.literal("recognition"),
       v.literal("execution"),
       v.literal("drill"),
-      v.literal("mixed")
+      v.literal("mixed"),
     ),
     casesReviewed: v.number(), // Number of cases practiced
     averageRecognitionTime: v.optional(v.number()), // Average time (ms)
@@ -434,7 +434,7 @@ export default defineSchema({
       v.literal("pending"),
       v.literal("sent"),
       v.literal("failed"),
-      v.literal("clicked")
+      v.literal("clicked"),
     ),
     error: v.optional(v.string()), // Error message if failed
     sentAt: v.number(), // When notification was sent
@@ -513,7 +513,7 @@ export default defineSchema({
     status: v.union(
       v.literal("in-progress"),
       v.literal("completed"),
-      v.literal("abandoned")
+      v.literal("abandoned"),
     ),
 
     // Progress tracking
@@ -548,10 +548,10 @@ export default defineSchema({
         scramble: v.string(), // Scramble used
         penalty: v.union(v.literal("none"), v.literal("+2"), v.literal("DNF")),
         inspectionViolation: v.optional(
-          v.union(v.literal("+2"), v.literal("DNF"), v.null())
+          v.union(v.literal("+2"), v.literal("DNF"), v.null()),
         ),
         solvedAt: v.number(), // When this solve was completed
-      })
+      }),
     ),
 
     // Calculated results
@@ -570,17 +570,17 @@ export default defineSchema({
   // Coach Profiles - user coaching setup and goals
   coachProfiles: defineTable({
     userId: v.id("users"), // Reference to user
-    
+
     // Current skill level (from session analysis)
     currentAverage: v.optional(v.number()), // Current average time in ms
     skillLevel: v.union(
       v.literal("beginner"),
       v.literal("intermediate"),
       v.literal("advanced"),
-      v.literal("expert")
+      v.literal("expert"),
     ),
     primaryEvent: v.string(), // Main event user wants to improve (333, 222, etc.)
-    
+
     // Goals
     goalType: v.union(
       v.literal("sub-60"),
@@ -591,23 +591,22 @@ export default defineSchema({
       v.literal("sub-12"),
       v.literal("sub-10"),
       v.literal("sub-8"),
-      v.literal("competition-ready"),
-      v.literal("custom")
+      v.literal("custom"),
     ),
     customGoalTime: v.optional(v.number()), // For custom goals, time in ms
     targetDate: v.number(), // Target date to achieve goal
-    
+
     // Time commitment
     dailyPracticeMinutes: v.number(), // Daily practice time commitment
     practiceSchedule: v.optional(v.array(v.string())), // Days of week available
-    
+
     // Session reference for baseline
     baselineSessionId: v.optional(v.id("sessions")), // Session used to determine current level
-    
+
     // Onboarding status
     onboardingCompleted: v.boolean(),
     onboardingCompletedAt: v.optional(v.number()),
-    
+
     // Timestamps
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -620,19 +619,19 @@ export default defineSchema({
   coachTrainingPlans: defineTable({
     userId: v.id("users"), // Reference to user
     profileId: v.id("coachProfiles"), // Reference to coach profile
-    
+
     // Plan period
     weekNumber: v.number(), // Week number in the program
     weekStartDate: v.number(), // Start date of this week
     weekEndDate: v.number(), // End date of this week
-    
+
     // Plan status
     status: v.union(
       v.literal("active"),
       v.literal("completed"),
-      v.literal("skipped")
+      v.literal("skipped"),
     ),
-    
+
     // Daily training activities
     dailyPlans: v.array(
       v.object({
@@ -651,7 +650,7 @@ export default defineSchema({
               v.literal("f2l-practice"),
               v.literal("lookahead-training"),
               v.literal("competition-sim"),
-              v.literal("rest")
+              v.literal("rest"),
             ),
             title: v.string(), // Display title
             description: v.string(), // Detailed description
@@ -659,17 +658,17 @@ export default defineSchema({
             targetSolves: v.optional(v.number()), // Number of solves to complete
             completed: v.boolean(),
             completedAt: v.optional(v.number()),
-          })
+          }),
         ),
         isCompleted: v.boolean(),
         isRestDay: v.boolean(),
-      })
+      }),
     ),
-    
+
     // Progress tracking
     completedDays: v.number(),
     totalDays: v.number(),
-    
+
     // Timestamps
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -684,37 +683,47 @@ export default defineSchema({
     userId: v.id("users"), // Reference to user
     profileId: v.id("coachProfiles"), // Reference to coach profile
     planId: v.optional(v.id("coachTrainingPlans")), // Reference to training plan
-    
+
     // Entry date
     entryDate: v.number(), // Date of the journal entry
-    
+
     // Session reference (optional)
     linkedSessionId: v.optional(v.id("sessions")), // Link to a timer session
-    
+
     // Session stats (computed from linked session or manual entry)
-    solveCount: v.optional(v.number()),
+    solveCount: v.optional(v.number()), // 3x3 solves only
     sessionAverage: v.optional(v.number()), // Average time in ms
     bestSingle: v.optional(v.number()), // Best single in ms
     practiceMinutes: v.optional(v.number()), // Total practice time
-    
+    customAverage: v.optional(v.number()), // Custom average time in ms (user entered)
+    customSolveCount: v.optional(v.number()), // Custom solve count (user entered)
+
     // Reflection
     mood: v.union(
       v.literal("great"),
       v.literal("good"),
       v.literal("okay"),
       v.literal("frustrated"),
-      v.literal("tired")
+      v.literal("tired"),
     ),
     wentWell: v.optional(v.string()), // What went well
     challenges: v.optional(v.string()), // What was challenging
     notes: v.optional(v.string()), // Additional notes
-    
+
     // Focus areas practiced
     focusAreas: v.optional(v.array(v.string())), // e.g., ["cross", "f2l", "lookahead"]
-    
+
     // Activities completed (from training plan)
     completedActivities: v.optional(v.array(v.string())), // Activity titles completed
-    
+
+    // Completed task indices (from training plan for that day)
+    completedTaskIndices: v.optional(v.array(v.number())), // Indices of completed tasks
+
+    // Media attachments (stored in Appwrite)
+    mediaUrls: v.optional(v.array(v.string())), // URLs to images/videos stored in Appwrite
+    mediaFileIds: v.optional(v.array(v.string())), // Appwrite file IDs for cleanup
+    mediaTypes: v.optional(v.array(v.string())), // MIME types of media files (e.g., "image/jpeg", "video/mp4")
+
     // Timestamps
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -729,29 +738,29 @@ export default defineSchema({
   coachProgressSnapshots: defineTable({
     userId: v.id("users"), // Reference to user
     profileId: v.id("coachProfiles"), // Reference to coach profile
-    
+
     // Snapshot date
     snapshotDate: v.number(),
     weekNumber: v.number(), // Week number in the program
-    
+
     // Performance metrics
     averageTime: v.number(), // Current average in ms
     bestSingle: v.optional(v.number()), // Best single in ms
     bestAo5: v.optional(v.number()), // Best Ao5 in ms
     bestAo12: v.optional(v.number()), // Best Ao12 in ms
-    
+
     // Practice stats
     totalSolves: v.number(),
     totalPracticeMinutes: v.number(),
     journalEntries: v.number(),
-    
+
     // Progress towards goal
     progressPercentage: v.number(), // 0-100
     onTrack: v.boolean(), // Whether user is on track to meet goal
-    
+
     // Notes
     aiInsights: v.optional(v.string()), // AI-generated insights
-    
+
     // Timestamps
     createdAt: v.number(),
   })
@@ -759,4 +768,49 @@ export default defineSchema({
     .index("by_profile", ["profileId"])
     .index("by_user_week", ["userId", "weekNumber"])
     .index("by_snapshot_date", ["snapshotDate"]),
+
+  // Coach Goal History - archived goals for timeline display
+  coachGoalHistory: defineTable({
+    userId: v.id("users"), // Reference to user
+    profileId: v.id("coachProfiles"), // Reference to coach profile
+
+    // Goal details (copied from profile when archived)
+    goalType: v.union(
+      v.literal("sub-60"),
+      v.literal("sub-45"),
+      v.literal("sub-30"),
+      v.literal("sub-20"),
+      v.literal("sub-15"),
+      v.literal("sub-12"),
+      v.literal("sub-10"),
+      v.literal("sub-8"),
+      v.literal("custom"),
+    ),
+    customGoalTime: v.optional(v.number()), // For custom goals, time in ms
+    primaryEvent: v.string(), // Event this goal was for
+
+    // Timeline
+    startDate: v.number(), // When the goal was set
+    targetDate: v.number(), // Target date to achieve goal
+    endDate: v.number(), // When the goal was completed/expired/replaced
+
+    // Progress at end
+    startingAverage: v.optional(v.number()), // Average when goal was set
+    finalAverage: v.optional(v.number()), // Average when goal ended
+
+    // Status
+    status: v.union(
+      v.literal("achieved"),
+      v.literal("expired"),
+      v.literal("replaced"), // When user set a new goal before completion
+    ),
+    progressPercentage: v.number(), // Progress at the time of archiving
+
+    // Timestamps
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_profile", ["profileId"])
+    .index("by_user_status", ["userId", "status"])
+    .index("by_end_date", ["endDate"]),
 });

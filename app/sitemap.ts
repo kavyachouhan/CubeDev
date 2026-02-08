@@ -122,10 +122,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
+  // Coach pages
+  const coachPages = [
+    {
+      url: `${baseUrl}/cube-lab/coach`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.85,
+    },
+  ];
+
   return [
     ...staticPages,
     ...cubeLabPages,
     ...algorithmTrainerPages,
+    ...coachPages,
     ...cuberPages,
   ];
 }

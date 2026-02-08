@@ -23,6 +23,7 @@ interface FeedbackDismissalData {
   dismissedAt: number;
   submittedAt?: number;
   surveyType?: string;
+  surveyVersion?: string; // Track which version user submitted/dismissed
 }
 
 interface FeedbackContextType {
@@ -31,7 +32,7 @@ interface FeedbackContextType {
 }
 
 const FeedbackContext = createContext<FeedbackContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export function useFeedback() {
@@ -63,7 +64,7 @@ export function FeedbackProvider({
   const [showBanner, setShowBanner] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [activeConfig, setActiveConfig] = useState<SurveyConfig | undefined>(
-    defaultConfig
+    defaultConfig,
   );
 
   // Check if user has recently submitted feedback
@@ -74,7 +75,20 @@ export function FeedbackProvider({
           userId: user.convexId as Id<"users">,
           surveyType: defaultConfig?.surveyType,
         }
-      : "skip"
+      : "skip",
+  );
+
+  // Check if user needs to see the survey for a new version
+  // This is useful when adding new features to an existing survey
+  const needsNewVersion = useQuery(
+    api.feedbackResponses.needsSurveyForVersion,
+    user?.convexId && defaultConfig?.surveyVersion
+      ? {
+          userId: user.convexId as Id<"users">,
+          surveyType: defaultConfig?.surveyType || "general",
+          currentVersion: defaultConfig.surveyVersion,
+        }
+      : "skip",
   );
 
   // Determine if we should show the feedback prompt
@@ -83,6 +97,7 @@ export function FeedbackProvider({
 
     try {
       const surveyType = defaultConfig?.surveyType || "general";
+      const surveyVersion = defaultConfig?.surveyVersion || "1.0";
       const storageKey = `${FEEDBACK_STORAGE_KEY}-${surveyType}`;
       const stored = localStorage.getItem(storageKey);
       if (!stored) return true;
@@ -90,6 +105,21 @@ export function FeedbackProvider({
       const data: FeedbackDismissalData = JSON.parse(stored);
       const cooldownMs = FEEDBACK_COOLDOWN_DAYS * 24 * 60 * 60 * 1000;
       const now = Date.now();
+
+      // If a new version is available, show the prompt regardless of cooldown
+      // This allows us to re-survey users when new features are added
+      if (data.surveyVersion && data.surveyVersion !== surveyVersion) {
+        // Compare versions to see if current is newer
+        const parseVersion = (v: string) => v.split(".").map(Number);
+        const current = parseVersion(surveyVersion);
+        const last = parseVersion(data.surveyVersion);
+        if (
+          current[0] > last[0] ||
+          (current[0] === last[0] && (current[1] || 0) > (last[1] || 0))
+        ) {
+          return true;
+        }
+      }
 
       // If submitted, use a longer cooldown
       if (data.submittedAt) {
@@ -106,7 +136,7 @@ export function FeedbackProvider({
     } catch {
       return true;
     }
-  }, [defaultConfig?.surveyType]);
+  }, [defaultConfig?.surveyType, defaultConfig?.surveyVersion]);
 
   useEffect(() => {
     setMounted(true);
@@ -115,8 +145,11 @@ export function FeedbackProvider({
   useEffect(() => {
     if (!mounted || disableAutoBanner) return;
 
-    // Don't show banner
-    if (hasRecentFeedback || !shouldShowPrompt() || isModalOpen) {
+    // Show banner if user needs to see new version OR hasn't submitted recently
+    const shouldShow =
+      needsNewVersion === true || (!hasRecentFeedback && shouldShowPrompt());
+
+    if (!shouldShow || isModalOpen) {
       setShowBanner(false);
       return;
     }
@@ -137,7 +170,7 @@ export function FeedbackProvider({
       setActiveConfig(config || defaultConfig);
       setIsModalOpen(true);
     },
-    [defaultConfig]
+    [defaultConfig],
   );
 
   const closeFeedbackModal = useCallback(() => {
@@ -147,36 +180,46 @@ export function FeedbackProvider({
   const handleBannerDismiss = useCallback(() => {
     setShowBanner(false);
 
-    // Store dismissal in localStorage
+    // Store dismissal in localStorage with version info
     try {
       const surveyType = defaultConfig?.surveyType || "general";
+      const surveyVersion = defaultConfig?.surveyVersion || "1.0";
       const storageKey = `${FEEDBACK_STORAGE_KEY}-${surveyType}`;
       const data: FeedbackDismissalData = {
         dismissedAt: Date.now(),
         surveyType,
+        surveyVersion,
       };
       localStorage.setItem(storageKey, JSON.stringify(data));
     } catch {
       // Ignore localStorage errors
     }
-  }, [defaultConfig?.surveyType]);
+  }, [defaultConfig?.surveyType, defaultConfig?.surveyVersion]);
 
   const handleSubmitSuccess = useCallback(() => {
-    // Store submission in localStorage
+    // Store submission in localStorage with version info
     try {
       const surveyType =
         activeConfig?.surveyType || defaultConfig?.surveyType || "general";
+      const surveyVersion =
+        activeConfig?.surveyVersion || defaultConfig?.surveyVersion || "1.0";
       const storageKey = `${FEEDBACK_STORAGE_KEY}-${surveyType}`;
       const data: FeedbackDismissalData = {
         dismissedAt: Date.now(),
         submittedAt: Date.now(),
         surveyType,
+        surveyVersion,
       };
       localStorage.setItem(storageKey, JSON.stringify(data));
     } catch {
       // Ignore localStorage errors
     }
-  }, [activeConfig?.surveyType, defaultConfig?.surveyType]);
+  }, [
+    activeConfig?.surveyType,
+    activeConfig?.surveyVersion,
+    defaultConfig?.surveyType,
+    defaultConfig?.surveyVersion,
+  ]);
 
   const handleOpenSurveyFromBanner = useCallback(() => {
     setShowBanner(false);
