@@ -127,4 +127,4 @@ export default function WhyCubeDev() {
       </div>
     </section>
   );
-}w
+}
