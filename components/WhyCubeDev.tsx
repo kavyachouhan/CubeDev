@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Timer, BarChart3, Users, Trophy, Download, Zap } from "lucide-react";
+import { Timer, BarChart3, Users, Medal, Download, Target } from "lucide-react";
 
 export default function WhyCubeDev() {
   const [visibleItems, setVisibleItems] = useState<number[]>([]);
@@ -52,10 +52,10 @@ export default function WhyCubeDev() {
         "Complete cuber directory with WCA integration, competition history, and community features to connect with fellow cubers.",
     },
     {
-      icon: Trophy,
-      title: "Challenge Rooms",
+      icon: Medal,
+      title: "Competition Simulation",
       description:
-        "Create and join timed challenge rooms with friends, compete on same scrambles, and track real-time leaderboards.",
+        "Simulate real competition conditions with competition nerves, virtual judges, and official WCA rules enforcement for practice and fun.",
     },
     {
       icon: Download,
@@ -64,10 +64,10 @@ export default function WhyCubeDev() {
         "Import from popular timers, export your data for backup, and maintain full control over your solving history.",
     },
     {
-      icon: Zap,
-      title: "Lightning Fast",
+      icon: Target,
+      title: "Coaching Tools",
       description:
-        "Optimized for speed with instant response times and seamless performance across all devices and platforms.",
+        "Personalized coaching tools to help you improve your skills, track progress, and achieve your cubing goals.",
     },
   ];
 
@@ -127,4 +127,4 @@ export default function WhyCubeDev() {
       </div>
     </section>
   );
-}
+}w

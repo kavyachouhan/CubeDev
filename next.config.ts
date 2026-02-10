@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "avatars.worldcubeassociation.org",
         port: "",
-        pathname: "/uploads/user/avatar/**",
+        pathname: "/**",
       },
       {
         protocol: "https",

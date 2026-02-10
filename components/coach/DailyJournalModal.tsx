@@ -17,7 +17,6 @@ import {
   ChevronDown,
   ChevronUp,
   Image,
-  Video,
   Trash2,
   Upload,
   AlertCircle,
@@ -35,7 +34,6 @@ import {
   isVideoFile,
   validateFileSize,
   ACCEPTED_MEDIA_TYPES,
-  getFilePreviewUrl,
   getFileDownloadUrl,
 } from "@/lib/appwrite-storage";
 
@@ -119,8 +117,6 @@ function formatTime(ms: number): string {
   const secs = (seconds % 60).toFixed(2);
   return mins > 0 ? `${mins}:${secs.padStart(5, "0")}` : secs;
 }
-
-// Component to preview existing media with option to remove
 interface MediaPreviewItemProps {
   url: string;
   fileId?: string;
@@ -139,7 +135,7 @@ function MediaPreviewItem({
   const [imageError, setImageError] = useState(false);
   const [videoError, setVideoError] = useState(false);
 
-  // For videos, we need to get the download URL from Appwrite to play in the video tag
+  // For videos, we use the fileId to get the download URL to ensure proper streaming. For images, we can use the URL directly.
   const videoUrl = fileId ? getFileDownloadUrl(fileId) : url;
 
   return (
@@ -365,9 +361,6 @@ export default function DailyJournalModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSessionSelector, setShowSessionSelector] = useState(false);
   const [showTasks, setShowTasks] = useState(true);
-  const [completedTaskIndices, setCompletedTaskIndices] = useState<number[]>(
-    [],
-  );
 
   // State for media uploads
   interface UploadingMedia {
@@ -407,7 +400,7 @@ export default function DailyJournalModal({
     api.coach.getSessionStats,
     selectedSessionId ? { sessionId: selectedSessionId, event: "333" } : "skip",
   );
-  // Only fetch existing entry when we're editing (editingEntryId is provided)
+  // Only fetch existing entry when editing an existing entry. This avoids unnecessary data fetching and state updates when creating a new entry.
   const existingEntry = useQuery(
     api.coach.getJournalEntryById,
     editingEntryId ? { entryId: editingEntryId } : "skip",
@@ -462,9 +455,7 @@ export default function DailyJournalModal({
         setCustomSolveCount("");
         setUseSessionSolveCount(true);
       }
-      // Load completed task indices
-      setCompletedTaskIndices(existingEntry.completedTaskIndices || []);
-      // Load existing media
+      // Media fields
       setExistingMediaUrls(existingEntry.mediaUrls || []);
       setExistingMediaFileIds(existingEntry.mediaFileIds || []);
       setExistingMediaTypes(existingEntry.mediaTypes || []);
@@ -474,7 +465,7 @@ export default function DailyJournalModal({
       setUploadingMedia([]);
       setUploadError(null);
     }
-  }, [editingEntryId, existingEntry]);
+  }, [editingEntryId, existingEntry, tasksForDate]);
 
   // Reset form when modal opens for a NEW entry (not editing)
   useEffect(() => {
@@ -491,7 +482,7 @@ export default function DailyJournalModal({
       setUseSessionAverage(true);
       setCustomSolveCount("");
       setUseSessionSolveCount(true);
-      setCompletedTaskIndices([]);
+      // Reset media states
       setUploadingMedia([]);
       setExistingMediaUrls([]);
       setExistingMediaFileIds([]);
@@ -500,7 +491,7 @@ export default function DailyJournalModal({
       setUrlsToRemove([]);
       setUploadError(null);
     }
-  }, [isOpen, editingEntryId]);
+  }, [isOpen, editingEntryId, tasksForDate]);
 
   // Keep ref in sync with uploadingMedia state
   useEffect(() => {
@@ -588,32 +579,27 @@ export default function DailyJournalModal({
     );
   };
 
-  // Toggle task completion for journal (local state)
-  const toggleTaskCompletion = (activityIndex: number) => {
-    setCompletedTaskIndices((prev) =>
-      prev.includes(activityIndex)
-        ? prev.filter((i) => i !== activityIndex)
-        : [...prev, activityIndex],
-    );
-  };
+  // Toggle task completion and sync with training plan
+  const toggleTaskCompletion = async (activityIndex: number) => {
+    if (!dateTasks?.planId || dateTasks.dayIndex < 0) return;
 
-  const handleActivityToggle = async (
-    dayIndex: number,
-    activityIndex: number,
-    completed: boolean,
-  ) => {
-    if (!dateTasks?.planId) return;
+    const activity = dateTasks.plan.activities[activityIndex];
+    const newCompletedState = !activity.completed;
+
     try {
       await updateActivity({
         planId: dateTasks.planId,
-        dayIndex,
+        dayIndex: dateTasks.dayIndex,
         activityIndex,
-        completed,
+        completed: newCompletedState,
       });
-      // Also update local state
-      toggleTaskCompletion(activityIndex);
+      // Invalidate training plan cache to ensure consistency across components
+      if (typeof window !== "undefined") {
+        const { invalidateTrainingPlan } = await import("@/lib/coach-cache");
+        invalidateTrainingPlan(userId);
+      }
     } catch (error) {
-      console.error("Failed to update activity:", error);
+      console.error("Failed to update task completion:", error);
     }
   };
 
@@ -837,11 +823,16 @@ export default function DailyJournalModal({
 
   if (!isOpen) return null;
 
+  // Compute completed activities count for progress display
   const completedActivitiesCount =
-    dateTasks?.plan.activities.filter((_, i) =>
-      completedTaskIndices.includes(i),
-    ).length || 0;
+    dateTasks?.plan.activities.filter((a) => a.completed).length || 0;
   const totalActivities = dateTasks?.plan.activities.length || 0;
+
+  // Get indices of completed tasks for easier access when saving
+  const completedTaskIndices =
+    dateTasks?.plan.activities
+      .map((activity, index) => (activity.completed ? index : -1))
+      .filter((index) => index !== -1) || [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden">
@@ -1172,8 +1163,7 @@ export default function DailyJournalModal({
               {showTasks && (
                 <div className="px-4 pb-4 space-y-2">
                   {dateTasks.plan.activities.map((activity, activityIndex) => {
-                    const isCompleted =
-                      completedTaskIndices.includes(activityIndex);
+                    const isCompleted = activity.completed;
                     return (
                       <div
                         key={activityIndex}

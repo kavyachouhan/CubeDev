@@ -541,8 +541,11 @@ export default function JournalEntryViewModal({
                         Training Tasks
                       </span>
                       <span className="text-xs text-[var(--text-muted)]">
-                        {entry.completedTaskIndices?.length || 0}/
-                        {dateTasks.plan.activities.length} completed
+                        {
+                          dateTasks.plan.activities.filter((a) => a.completed)
+                            .length
+                        }
+                        /{dateTasks.plan.activities.length} completed
                       </span>
                     </div>
                   </div>
@@ -553,7 +556,9 @@ export default function JournalEntryViewModal({
                         style={{
                           width: `${
                             dateTasks.plan.activities.length > 0
-                              ? ((entry.completedTaskIndices?.length || 0) /
+                              ? (dateTasks.plan.activities.filter(
+                                  (a) => a.completed,
+                                ).length /
                                   dateTasks.plan.activities.length) *
                                 100
                               : 0
@@ -573,9 +578,7 @@ export default function JournalEntryViewModal({
                   <div className="px-4 pb-4 space-y-2">
                     {dateTasks.plan.activities.map(
                       (activity, activityIndex) => {
-                        const isCompleted =
-                          entry.completedTaskIndices?.includes(activityIndex) ||
-                          false;
+                        const isCompleted = activity.completed;
                         return (
                           <div
                             key={activityIndex}
