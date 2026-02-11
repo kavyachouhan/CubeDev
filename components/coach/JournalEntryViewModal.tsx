@@ -216,10 +216,18 @@ export default function JournalEntryViewModal({
     }
   }, [isOpen]);
 
+  // Calculate day of week for the entry date (0 = Sunday, 6 = Saturday)
+  const entryDayOfWeek = useMemo(() => {
+    if (!entry) return undefined;
+    const date = new Date(entry.entryDate);
+    date.setHours(0, 0, 0, 0); // Normalize to start of day
+    return date.getDay();
+  }, [entry]);
+
   // Fetch tasks for the entry date
   const tasksForDate = useQuery(
     api.coach.getTasksForDate,
-    entry ? { userId: entry.userId, date: entry.entryDate } : "skip",
+    entry ? { userId: entry.userId, date: entry.entryDate, dayOfWeek: entryDayOfWeek } : "skip",
   );
 
   // Get tasks from the fetched data

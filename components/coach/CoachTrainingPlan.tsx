@@ -15,6 +15,7 @@ import {
   Eye,
   Pause,
   SkipForward,
+  Plus,
 } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -57,6 +58,7 @@ interface TrainingPlan {
 interface CoachTrainingPlanProps {
   plan: TrainingPlan;
   onActivityComplete?: (dayIndex: number, activityIndex: number) => void;
+  onOpenJournal?: (dayDate: number) => void;
 }
 
 const DAYS_OF_WEEK = [
@@ -109,6 +111,7 @@ function isPast(timestamp: number): boolean {
 export default function CoachTrainingPlan({
   plan,
   onActivityComplete,
+  onOpenJournal,
 }: CoachTrainingPlanProps) {
   const [expandedDay, setExpandedDay] = useState<number | null>(() => {
     // Auto-expand today's plan
@@ -231,11 +234,11 @@ export default function CoachTrainingPlan({
               }`}
             >
               {/* Day Header */}
-              <button
-                onClick={() => toggleDay(dayIndex)}
-                className="w-full flex items-center justify-between p-4 text-left"
-              >
-                <div className="flex items-center gap-3">
+              <div className="w-full flex items-center justify-between p-4">
+                <button
+                  onClick={() => toggleDay(dayIndex)}
+                  className="flex items-center gap-3 flex-1 text-left"
+                >
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center ${
                       day.isCompleted
@@ -272,20 +275,36 @@ export default function CoachTrainingPlan({
                       {day.isRestDay ? "Rest Day" : day.focus}
                     </span>
                   </div>
-                </div>
-                <div className="flex items-center gap-3">
+                </button>
+                <div className="flex items-center gap-2 sm:gap-3">
+                  {/* Add Journal Entry Button */}
+                  {!day.isRestDay && onOpenJournal && (
+                    <button
+                      onClick={() => onOpenJournal(day.date)}
+                      className="p-1.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-medium transition-colors bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--primary)]/10 hover:text-[var(--primary)] border border-[var(--border)] flex items-center gap-1"
+                      title="Add journal entry"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Add</span>
+                    </button>
+                  )}
                   {!day.isRestDay && (
                     <span className="text-sm text-[var(--text-muted)]">
                       {completedActivities}/{totalActivities}
                     </span>
                   )}
-                  {isExpanded ? (
-                    <ChevronDown className="w-5 h-5 text-[var(--text-muted)]" />
-                  ) : (
-                    <ChevronRight className="w-5 h-5 text-[var(--text-muted)]" />
-                  )}
+                  <button
+                    onClick={() => toggleDay(dayIndex)}
+                    className="p-1"
+                  >
+                    {isExpanded ? (
+                      <ChevronDown className="w-5 h-5 text-[var(--text-muted)]" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5 text-[var(--text-muted)]" />
+                    )}
+                  </button>
                 </div>
-              </button>
+              </div>
 
               {/* Activities */}
               {isExpanded && (

@@ -524,7 +524,13 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                 {activePlan === undefined ? (
                   <CoachTrainingPlanSkeleton />
                 ) : activePlan ? (
-                  <MemoizedCoachTrainingPlan plan={activePlan} />
+                  <MemoizedCoachTrainingPlan 
+                    plan={activePlan} 
+                    onOpenJournal={(dayDate) => {
+                      setSelectedJournalDate(dayDate);
+                      setShowJournalModal(true);
+                    }}
+                  />
                 ) : (
                   <div className="timer-card text-center py-12">
                     <Calendar className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />

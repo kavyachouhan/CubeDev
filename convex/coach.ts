@@ -710,6 +710,7 @@ export const getTasksForDate = query({
   args: {
     userId: v.id("users"),
     date: v.number(),
+    dayOfWeek: v.optional(v.number()), // Allow client to specify day of week (0-6) to handle timezone differences, otherwise calculate from date
   },
   handler: async (ctx, args) => {
     // Get active training plan for this user
@@ -722,20 +723,30 @@ export const getTasksForDate = query({
     if (plans.length === 0) return null;
 
     const activePlan = plans[0];
-    const targetDate = getStartOfDay(args.date);
+    
+    // Determine the target day of week (use provided value or calculate from date)
+    const targetDayOfWeek = args.dayOfWeek !== undefined 
+      ? args.dayOfWeek 
+      : new Date(args.date).getUTCDay();
+    
+    // Check if the date is within the plan's week range (allowing for timezone differences)
+    const dayMs = 24 * 60 * 60 * 1000;
+    const isWithinWeekRange = 
+      args.date >= (activePlan.weekStartDate - dayMs) && 
+      args.date <= (activePlan.weekEndDate + dayMs);
+    
+    if (!isWithinWeekRange) return null;
 
-    // Find the daily plan that matches this date
+    // Find the daily plan for the target day of week
     const dailyPlan = activePlan.dailyPlans?.find((d) => {
-      const planDate = getStartOfDay(d.date);
-      return planDate === targetDate;
+      return d.dayOfWeek === targetDayOfWeek;
     });
 
     if (!dailyPlan) return null;
 
     // Find the index of this day in the plan
     const dayIndex = activePlan.dailyPlans?.findIndex((d) => {
-      const planDate = getStartOfDay(d.date);
-      return planDate === targetDate;
+      return d.dayOfWeek === targetDayOfWeek;
     });
 
     return {

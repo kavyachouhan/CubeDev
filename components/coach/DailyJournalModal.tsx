@@ -330,9 +330,19 @@ export default function DailyJournalModal({
   editingEntryId,
   onSave,
 }: DailyJournalModalProps) {
-  const stableDate = useMemo(() => dateProp ?? Date.now(), [dateProp]);
+  // Compute a stable date at the start of the day in local timezone, along with the local day of week. This ensures that all date-based logic is consistent and timezone-aware.
+  const { stableDate, dayOfWeek } = useMemo(() => {
+    const timestamp = dateProp ?? Date.now();
+    const date = new Date(timestamp);
+    // Set to start of the day in local timezone for consistent date-based queries and comparisons
+    date.setHours(0, 0, 0, 0);
+    return {
+      stableDate: date.getTime(),
+      dayOfWeek: date.getDay(), // 0 (Sunday) to 6 (Saturday), local day of week for accurate matching with training plan tasks
+    };
+  }, [dateProp]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const didSaveRef = useRef(false); // Track if entry was saved
+  const didSaveRef = useRef(false); // Track if the entry was saved to prevent cleanup of uploaded media on unmount
   const uploadingMediaRef = useRef<
     Array<{
       id: string;
@@ -408,6 +418,7 @@ export default function DailyJournalModal({
   const tasksForDate = useQuery(api.coach.getTasksForDate, {
     userId,
     date: stableDate,
+    dayOfWeek, // Send local day of week for accurate timezone-aware matching
   });
   const saveEntry = useMutation(api.coach.saveJournalEntry);
   const updateActivity = useMutation(api.coach.updateActivityCompletion);
