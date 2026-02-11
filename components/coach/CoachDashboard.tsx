@@ -1,21 +1,10 @@
 "use client";
 
-import {
-  useState,
-  useEffect,
-  useMemo,
-  memo,
-} from "react";
+import { useState, useEffect, useMemo, memo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import {
-  Calendar,
-  BookOpen,
-  TrendingUp,
-  Heart,
-  X,
-} from "lucide-react";
+import { Calendar, BookOpen, TrendingUp, Heart, X } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -260,11 +249,19 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
     }
   }, [progressSnapshotsQuery, userId]);
 
-  // Use cached data while loading fresh data to prevent UI flicker, but prefer fresh data when available
+  // For profile: Always use fresh data when available, but fall back to cache while loading
   const profile = profileQuery ?? (cachedProfile as typeof profileQuery);
-  const activePlan = activePlanQuery ?? (cachedPlan as typeof activePlanQuery);
+
+  // Determine loading state for active plan query
+  const isActivePlanLoading = activePlanQuery === undefined;
+
+  // For active plan: Use fresh data when available. If query is still loading, use cache if available to prevent empty state flashing. Once query returns, it will overwrite cache with fresh data.
+  const activePlan: typeof activePlanQuery = isActivePlanLoading
+    ? (cachedPlan as unknown as typeof activePlanQuery)
+    : activePlanQuery;
+
   const progressStats = progressStatsQuery ?? cachedStats;
-  // Only use cached snapshots if query hasn't returned yet (undefined means loading)
+  // For progress snapshots: Use fresh data when available, but fall back to cache while loading. This prevents flashing empty state in progress tab while data is loading.
   const progressSnapshots =
     progressSnapshotsQuery !== undefined
       ? progressSnapshotsQuery
@@ -285,11 +282,14 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
   const [hasAttemptedAutoGenerate, setHasAttemptedAutoGenerate] =
     useState(false);
 
-  // Auto-generate new week when current plan expires or when onboarding is completed and no plan exists
+  // Automatically generate new week when current plan expires or when onboarding is completed and no plan exists. This effect runs whenever the profile or active plan changes to ensure the dashboard always shows an active plan if possible.
   useEffect(() => {
     const checkAndGenerateNewWeek = async () => {
       // Prevent multiple simultaneous generation attempts
       if (!profile || isGeneratingPlan || hasAttemptedAutoGenerate) return;
+
+      // Don't attempt auto-generation until we know the loading state of the active plan query to avoid generating multiple plans due to multiple re-renders while loading
+      if (isActivePlanLoading) return;
 
       const now = Date.now();
 
@@ -345,11 +345,13 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
     generatePlan,
     isGeneratingPlan,
     hasAttemptedAutoGenerate,
+    isActivePlanLoading,
   ]);
 
-  // Reset auto-generate flag when active plan changes (new plan received from server)
+  // Reset auto-generation attempt flag whenever a new valid plan is loaded to allow future auto-generations when that plan expires. This ensures the dashboard can continue to auto-generate new weeks indefinitely as long as the user keeps their plan up to date.
   useEffect(() => {
-    if (activePlanQuery !== undefined) {
+    // If we have a valid active plan, reset the auto-generation attempt flag to allow future auto-generations when the plan expires
+    if (activePlanQuery && activePlanQuery._id) {
       setHasAttemptedAutoGenerate(false);
     }
   }, [activePlanQuery]);
@@ -521,33 +523,37 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
           <div className="min-h-[400px]">
             {activeTab === "plan" && (
               <div>
-                {activePlan === undefined ? (
+                {/* Show skeleton while query is loading AND no cached plan available */}
+                {(isActivePlanLoading && !cachedPlan) || isGeneratingPlan ? (
                   <CoachTrainingPlanSkeleton />
                 ) : activePlan ? (
-                  <MemoizedCoachTrainingPlan 
-                    plan={activePlan} 
+                  <MemoizedCoachTrainingPlan
+                    plan={activePlan}
                     onOpenJournal={(dayDate) => {
                       setSelectedJournalDate(dayDate);
                       setShowJournalModal(true);
                     }}
                   />
                 ) : (
-                  <div className="timer-card text-center py-12">
-                    <Calendar className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
-                    <h3 className="font-semibold text-[var(--text-primary)] mb-2">
-                      No Active Training Plan
-                    </h3>
-                    <p className="text-sm text-[var(--text-muted)] mb-4">
-                      Generate your first weekly training plan to get started.
-                    </p>
-                    <button
-                      onClick={handleGenerateNewWeek}
-                      disabled={isGeneratingPlan}
-                      className="px-6 py-2.5 bg-[var(--primary)] text-white rounded-lg font-medium hover:bg-[var(--primary-hover)] transition-colors disabled:opacity-50"
-                    >
-                      {isGeneratingPlan ? "Generating..." : "Generate Plan"}
-                    </button>
-                  </div>
+                  /* Only show "Generate Plan" when query has completed AND returned no plan */
+                  !isActivePlanLoading && (
+                    <div className="timer-card text-center py-12">
+                      <Calendar className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
+                      <h3 className="font-semibold text-[var(--text-primary)] mb-2">
+                        No Active Training Plan
+                      </h3>
+                      <p className="text-sm text-[var(--text-muted)] mb-4">
+                        Generate your first weekly training plan to get started.
+                      </p>
+                      <button
+                        onClick={handleGenerateNewWeek}
+                        disabled={isGeneratingPlan}
+                        className="px-6 py-2.5 bg-[var(--primary)] text-white rounded-lg font-medium hover:bg-[var(--primary-hover)] transition-colors disabled:opacity-50"
+                      >
+                        {isGeneratingPlan ? "Generating..." : "Generate Plan"}
+                      </button>
+                    </div>
+                  )
                 )}
               </div>
             )}
