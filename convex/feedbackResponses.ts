@@ -313,6 +313,246 @@ export const getFeedbackStats = query({
   },
 });
 
+// Get detailed feedback analytics for admin dashboard
+export const getDetailedFeedbackStats = query({
+  args: {
+    surveyType: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
+    const oneMonthAgo = now - 30 * 24 * 60 * 60 * 1000;
+    const threeMonthsAgo = now - 90 * 24 * 60 * 60 * 1000;
+
+    let responses = await ctx.db.query("feedbackResponses").collect();
+
+    // Filter by survey type if specified
+    if (args.surveyType) {
+      responses = responses.filter((r) => r.surveyType === args.surveyType);
+    }
+
+    if (responses.length === 0) {
+      return {
+        totalResponses: 0,
+        responsesThisWeek: 0,
+        responsesThisMonth: 0,
+        responseRate: { weekly: 0, monthly: 0 },
+        uiuxRatingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+        recommendScoreDistribution: {},
+        npsBreakdown: { promoters: 0, passives: 0, detractors: 0 },
+        surveyTypeBreakdown: {},
+        surveyVersionBreakdown: {},
+        weeklyTrend: [],
+        mostUsefulFeatures: [],
+        commonFeatureRequests: [],
+        responsesWithComments: 0,
+        avgResponsesPerUser: 0,
+      };
+    }
+
+    // Response counts
+    const responsesThisWeek = responses.filter(
+      (r) => r.createdAt >= oneWeekAgo,
+    ).length;
+    const responsesThisMonth = responses.filter(
+      (r) => r.createdAt >= oneMonthAgo,
+    ).length;
+    const responsesLastWeek = responses.filter(
+      (r) =>
+        r.createdAt >= oneWeekAgo - 7 * 24 * 60 * 60 * 1000 &&
+        r.createdAt < oneWeekAgo,
+    ).length;
+    const responsesLastMonth = responses.filter(
+      (r) =>
+        r.createdAt >= oneMonthAgo - 30 * 24 * 60 * 60 * 1000 &&
+        r.createdAt < oneMonthAgo,
+    ).length;
+
+    // UI/UX rating distribution
+    const uiuxRatingDistribution: Record<number, number> = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+    };
+    responses.forEach((r) => {
+      if (
+        r.uiuxRating !== undefined &&
+        r.uiuxRating >= 1 &&
+        r.uiuxRating <= 5
+      ) {
+        uiuxRatingDistribution[r.uiuxRating] =
+          (uiuxRatingDistribution[r.uiuxRating] || 0) + 1;
+      }
+    });
+
+    // Recommend score distribution (1-10)
+    const recommendScoreDistribution: Record<number, number> = {};
+    for (let i = 1; i <= 10; i++) {
+      recommendScoreDistribution[i] = 0;
+    }
+    responses.forEach((r) => {
+      if (
+        r.recommendScore !== undefined &&
+        r.recommendScore >= 1 &&
+        r.recommendScore <= 10
+      ) {
+        recommendScoreDistribution[r.recommendScore] =
+          (recommendScoreDistribution[r.recommendScore] || 0) + 1;
+      }
+    });
+
+    // NPS breakdown
+    const recommendResponses = responses.filter(
+      (r) => r.recommendScore !== undefined,
+    );
+    const promoters = recommendResponses.filter(
+      (r) => (r.recommendScore || 0) >= 9,
+    ).length;
+    const passives = recommendResponses.filter(
+      (r) => (r.recommendScore || 0) >= 7 && (r.recommendScore || 0) <= 8,
+    ).length;
+    const detractors = recommendResponses.filter(
+      (r) => (r.recommendScore || 0) <= 6,
+    ).length;
+
+    // Survey type breakdown
+    const surveyTypeBreakdown: Record<string, number> = {};
+    responses.forEach((r) => {
+      const type = r.surveyType || "general";
+      surveyTypeBreakdown[type] = (surveyTypeBreakdown[type] || 0) + 1;
+    });
+
+    // Survey version breakdown
+    const surveyVersionBreakdown: Record<string, number> = {};
+    responses.forEach((r) => {
+      const version = r.surveyVersion || "1.0";
+      surveyVersionBreakdown[version] =
+        (surveyVersionBreakdown[version] || 0) + 1;
+    });
+
+    // Weekly trend - last 12 weeks
+    const weeklyTrend: Array<{
+      week: string;
+      count: number;
+      avgRating: number;
+    }> = [];
+    for (let i = 11; i >= 0; i--) {
+      const weekStart = now - (i + 1) * 7 * 24 * 60 * 60 * 1000;
+      const weekEnd = now - i * 7 * 24 * 60 * 60 * 1000;
+      const weekResponses = responses.filter(
+        (r) => r.createdAt >= weekStart && r.createdAt < weekEnd,
+      );
+      const avgRating =
+        weekResponses.length > 0
+          ? weekResponses.reduce((sum, r) => sum + (r.uiuxRating || 0), 0) /
+            weekResponses.length
+          : 0;
+      const date = new Date(weekEnd);
+      weeklyTrend.push({
+        week: `${date.getMonth() + 1}/${date.getDate()}`,
+        count: weekResponses.length,
+        avgRating: Math.round(avgRating * 10) / 10,
+      });
+    }
+
+    // Most useful features mentioned
+    const featureCounts: Record<string, number> = {};
+    responses.forEach((r) => {
+      if (r.mostUsefulFeature) {
+        const feature = r.mostUsefulFeature.toLowerCase().trim();
+        featureCounts[feature] = (featureCounts[feature] || 0) + 1;
+      }
+    });
+    const mostUsefulFeatures = Object.entries(featureCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([feature, count]) => ({ feature, count }));
+
+    // Common feature requests (word frequency)
+    const requestWords: Record<string, number> = {};
+    responses.forEach((r) => {
+      if (r.featureRequests) {
+        const words = r.featureRequests
+          .toLowerCase()
+          .split(/\s+/)
+          .filter((w) => w.length > 4);
+        words.forEach((word) => {
+          requestWords[word] = (requestWords[word] || 0) + 1;
+        });
+      }
+    });
+    const commonFeatureRequests = Object.entries(requestWords)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 15)
+      .map(([word, count]) => ({ word, count }));
+
+    // Responses with comments
+    const responsesWithComments = responses.filter(
+      (r) => r.additionalComments || r.featureRequests,
+    ).length;
+
+    // Average responses per user (for logged-in users)
+    const userResponseCounts: Record<string, number> = {};
+    responses.forEach((r) => {
+      if (r.userId) {
+        userResponseCounts[r.userId] = (userResponseCounts[r.userId] || 0) + 1;
+      }
+    });
+    const uniqueUsers = Object.keys(userResponseCounts).length;
+    const avgResponsesPerUser =
+      uniqueUsers > 0
+        ? Math.round(
+            (responses.filter((r) => r.userId).length / uniqueUsers) * 10,
+          ) / 10
+        : 0;
+
+    // Logged in vs anonymous responses
+    const loggedInResponses = responses.filter((r) => r.userId).length;
+    const anonymousResponses = responses.filter((r) => !r.userId).length;
+
+    return {
+      totalResponses: responses.length,
+      responsesThisWeek,
+      responsesThisMonth,
+      responseRate: {
+        weekly:
+          responsesLastWeek > 0
+            ? Math.round(
+                ((responsesThisWeek - responsesLastWeek) / responsesLastWeek) *
+                  100,
+              )
+            : responsesThisWeek > 0
+              ? 100
+              : 0,
+        monthly:
+          responsesLastMonth > 0
+            ? Math.round(
+                ((responsesThisMonth - responsesLastMonth) /
+                  responsesLastMonth) *
+                  100,
+              )
+            : responsesThisMonth > 0
+              ? 100
+              : 0,
+      },
+      uiuxRatingDistribution,
+      recommendScoreDistribution,
+      npsBreakdown: { promoters, passives, detractors },
+      surveyTypeBreakdown,
+      surveyVersionBreakdown,
+      weeklyTrend,
+      mostUsefulFeatures,
+      commonFeatureRequests,
+      responsesWithComments,
+      avgResponsesPerUser,
+      loggedInResponses,
+      anonymousResponses,
+    };
+  },
+});
+
 // Get list of all survey types that have been used
 export const getSurveyTypes = query({
   args: {},

@@ -1,6 +1,6 @@
 "use client";
 
-import { Target, Calendar, Clock, CheckCircle, BarChart3 } from "lucide-react";
+import { Target, Calendar, Clock, CheckCircle2, BarChart3 } from "lucide-react";
 import { OnboardingData } from "./CoachOnboarding";
 
 interface CoachOnboardingSummaryProps {
@@ -202,7 +202,7 @@ export default function CoachOnboardingSummary({
       {/* What to Expect Card */}
       <div className="timer-card !bg-[var(--primary)]/5 !border-[var(--primary)]/20">
         <div className="flex items-center gap-2 mb-4">
-          <CheckCircle className="w-5 h-5 text-[var(--primary)]" />
+          <CheckCircle2 className="w-5 h-5 text-[var(--primary)]" />
           <h3 className="font-semibold text-[var(--text-primary)]">
             What to Expect
           </h3>
