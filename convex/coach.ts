@@ -1334,9 +1334,7 @@ function getStartOfDay(timestamp: number): number {
   return date.getTime();
 }
 
-// =====================================================
 // INTELLIGENT TRAINING PLAN ALGORITHM
-// =====================================================
 
 // Types for the training algorithm
 interface UserAnalysis {
@@ -2505,9 +2503,7 @@ function selectDayTraining(
   };
 }
 
-// =====================================================
 // LEGACY FUNCTIONS (kept for backward compatibility)
-// =====================================================
 
 function generateDailyPlans(
   skillLevel: string,

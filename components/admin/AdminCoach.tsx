@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useCachedQuery } from "@/lib/hooks/useAdminCache";
+import { ADMIN_CACHE_KEYS, ADMIN_CACHE_TTLS } from "@/lib/admin-cache";
 import {
   GraduationCap,
   Target,
@@ -31,6 +33,73 @@ import {
   Trophy,
   X,
 } from "lucide-react";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+);
+
+// Theme detection hook
+function useEffectiveTheme() {
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
+
+  useEffect(() => {
+    const updateTheme = () => {
+      const root = document.documentElement;
+      const dataTheme = root.getAttribute("data-theme");
+      setTheme(dataTheme === "light" ? "light" : "dark");
+    };
+
+    updateTheme();
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  return theme;
+}
+
+// Primary color hook
+function usePrimaryColor() {
+  const [primaryColor, setPrimaryColor] = useState("#FA6900");
+
+  useEffect(() => {
+    const updateColor = () => {
+      const color = getComputedStyle(document.documentElement)
+        .getPropertyValue("--primary")
+        .trim();
+      if (color) setPrimaryColor(color);
+    };
+
+    updateColor();
+    const observer = new MutationObserver(updateColor);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "style"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  return primaryColor;
+}
 
 // Export helper functions
 function exportToCSV(data: Record<string, unknown>[], filename: string) {
@@ -197,29 +266,75 @@ function StatCard({
   );
 }
 
-// BarChart Component
+// BarChart Component using Chart.js
 function BarChart({
   data,
-  maxValue,
 }: {
   data: Array<{ label: string; value: number }>;
-  maxValue: number;
+  maxValue?: number;
 }) {
+  const effectiveTheme = useEffectiveTheme();
+  const primaryColor = usePrimaryColor();
+  const isLight = effectiveTheme === "light";
+  const textColor = isLight
+    ? "rgba(17, 24, 39, 0.8)"
+    : "rgba(255, 255, 255, 0.8)";
+  const gridColor = isLight ? "rgba(0, 0, 0, 0.1)" : "rgba(255, 255, 255, 0.1)";
+
+  const chartData = useMemo(
+    () => ({
+      labels: data.map((d) => d.label),
+      datasets: [
+        {
+          label: "Journal Entries",
+          data: data.map((d) => d.value),
+          backgroundColor: primaryColor,
+          borderRadius: 4,
+          barThickness: 20,
+        },
+      ],
+    }),
+    [data, primaryColor],
+  );
+
+  const chartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: isLight
+            ? "rgba(255, 255, 255, 0.95)"
+            : "rgba(0, 0, 0, 0.8)",
+          titleColor: textColor,
+          bodyColor: textColor,
+          borderColor: gridColor,
+          borderWidth: 1,
+          padding: 8,
+          cornerRadius: 6,
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: textColor, font: { size: 10 } },
+          grid: { display: false },
+          border: { display: false },
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { color: textColor, font: { size: 10 }, stepSize: 1 },
+          grid: { color: gridColor },
+          border: { display: false },
+        },
+      },
+    }),
+    [isLight, textColor, gridColor],
+  );
+
   return (
-    <div className="flex items-end gap-1 h-24 sm:h-32">
-      {data.map((item, idx) => (
-        <div key={idx} className="flex-1 flex flex-col items-center gap-1">
-          <div
-            className="w-full bg-[var(--primary)] rounded-t transition-all duration-500 min-h-[4px]"
-            style={{
-              height: `${maxValue > 0 ? (item.value / maxValue) * 100 : 0}%`,
-            }}
-          />
-          <span className="text-[10px] text-[var(--text-muted)] font-inter truncate max-w-full">
-            {item.label}
-          </span>
-        </div>
-      ))}
+    <div className="h-40">
+      <Bar data={chartData} options={chartOptions} />
     </div>
   );
 }
@@ -659,11 +774,6 @@ function CoachAnalyticsOverview() {
     );
   }
 
-  const maxJournalValue = Math.max(
-    ...detailedStats.weeklyJournalTrend.map((w) => w.count),
-    1,
-  );
-
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Export Button Row */}
@@ -833,7 +943,6 @@ function CoachAnalyticsOverview() {
                 label: w.week,
                 value: w.count,
               }))}
-              maxValue={maxJournalValue}
             />
           </div>
         </CollapsibleCard>
@@ -938,8 +1047,26 @@ function CoachAnalyticsOverview() {
 }
 
 export default function AdminCoach() {
-  const coachStats = useQuery(api.admin.getCoachStats);
-  const allProfiles = useQuery(api.admin.getAllCoachProfiles);
+  const {
+    data: coachStats,
+    isFetching: statsFetching,
+    refetch: refetchStats,
+  } = useCachedQuery(
+    api.admin.getCoachStats,
+    {},
+    {
+      cacheKey: ADMIN_CACHE_KEYS.coachStats,
+      ttl: ADMIN_CACHE_TTLS.coach,
+    },
+  );
+  const { data: allProfiles, isFetching: profilesFetching } = useCachedQuery(
+    api.admin.getAllCoachProfiles,
+    {},
+    {
+      cacheKey: ADMIN_CACHE_KEYS.coachProfiles,
+      ttl: ADMIN_CACHE_TTLS.coach,
+    },
+  );
   const [selectedProfile, setSelectedProfile] = useState<
     (typeof allProfiles extends (infer T)[] | undefined ? T : never) | null
   >(null);

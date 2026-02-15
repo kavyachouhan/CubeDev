@@ -14,7 +14,7 @@ export default function TermsPage() {
                   Terms of <span className="text-blue">Service</span>
                 </h1>
                 <p className="text-muted-foreground">
-                  Last updated: October 25, 2025
+                  Last updated: February 16, 2026
                 </p>
               </div>
 
@@ -155,6 +155,17 @@ export default function TermsPage() {
                     consent to the processing of your data as described in our
                     Privacy Policy, including storage in Convex databases and
                     analytics collection through Vercel Analytics.
+                  </p>
+                  <p className="text-foreground leading-relaxed mb-4">
+                    <strong>Research and Product Improvement:</strong> By using
+                    CubeDev, you consent to the use of your data (including
+                    solve times, patterns, and usage behavior) for research
+                    purposes and product improvement. This includes analyzing
+                    aggregated and anonymized data to improve our services,
+                    develop new features, train AI models like Cubie AI, and
+                    generate insights that benefit the speedcubing community.
+                    Your individual data will not be shared publicly without
+                    your explicit consent.
                   </p>
                   <p className="text-foreground leading-relaxed">
                     <a href="/privacy" className="text-primary underline">

@@ -960,9 +960,7 @@ export const clearAllDismissedNotifications = mutation({
   },
 });
 
-// ============================================
 // PRE-COMPUTED STATISTICS MANAGEMENT
-// ============================================
 
 // Helper: Truncate to centiseconds (for singles)
 const truncToCentisMs = (ms: number) => Math.floor(ms / 10) * 10;

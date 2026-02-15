@@ -2,8 +2,8 @@
 
 import { useUser } from "@/components/UserProvider";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Loader2, ShieldOff, ShieldCheck } from "lucide-react";
+import { Loader2, ShieldOff } from "lucide-react";
+import { useAdmin } from "./AdminContext";
 
 interface AdminProtectedRouteProps {
   children: React.ReactNode;
@@ -12,43 +12,12 @@ interface AdminProtectedRouteProps {
 export default function AdminProtectedRoute({
   children,
 }: AdminProtectedRouteProps) {
-  const { user, isLoading: userLoading } = useUser();
+  const { user } = useUser();
+  const { isAdmin, isVerifying } = useAdmin();
   const router = useRouter();
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [isVerifying, setIsVerifying] = useState(true);
-
-  useEffect(() => {
-    const verifyAdmin = async () => {
-      if (userLoading) return;
-
-      if (!user) {
-        setIsAdmin(false);
-        setIsVerifying(false);
-        return;
-      }
-
-      try {
-        const response = await fetch("/api/admin/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: user.email }),
-        });
-
-        const data = await response.json();
-        setIsAdmin(data.isAdmin);
-      } catch (error) {
-        console.error("Admin verification failed:", error);
-        setIsAdmin(false);
-      } finally {
-        setIsVerifying(false);
-      }
-    };
-
-    verifyAdmin();
-  }, [user, userLoading]);
 
   // Loading state
-  if (userLoading || isVerifying) {
+  if (isVerifying) {
     return (
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -61,7 +30,7 @@ export default function AdminProtectedRoute({
     );
   }
 
-  // Not authenticated
+  // Not signed in
   if (!user) {
     return (
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-4">

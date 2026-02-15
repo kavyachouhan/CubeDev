@@ -1,5 +1,6 @@
 import { v } from "convex/values";
-import { query } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
 
 // Get system-wide statistics for admin dashboard
 export const getSystemStats = query({
@@ -1062,5 +1063,978 @@ export const getRecentActivity = query({
 
     // Sort all activities by timestamp and return top N
     return activities.sort((a, b) => b.timestamp - a.timestamp).slice(0, limit);
+  },
+});
+
+// ALGORITHM ADMIN FUNCTIONS
+
+// Helper function to calculate move count from notation
+function calculateMoveCount(notation: string): number {
+  if (!notation || notation.trim() === "") return 0;
+
+  // Normalize the notation
+  const cleaned = notation
+    .replace(/\([^)]*\)/g, "") // Remove parentheses content
+    .replace(/\[[^\]]*\]/g, "") // Remove bracket content
+    .trim();
+
+  if (!cleaned) return 0;
+
+  // Split by spaces and count moves
+  const moves = cleaned.split(/\s+/).filter((move) => {
+    // Filter out empty strings and comments
+    return move.length > 0 && !move.startsWith("//");
+  });
+
+  return moves.length;
+}
+
+// Get detailed algorithm analytics for admin
+export const getAlgorithmAnalytics = query({
+  args: {},
+  handler: async (ctx) => {
+    const now = Date.now();
+    const oneDayAgo = now - 24 * 60 * 60 * 1000;
+    const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
+    const oneMonthAgo = now - 30 * 24 * 60 * 60 * 1000;
+
+    const sets = await ctx.db.query("algorithmSets").collect();
+    const cases = await ctx.db.query("algorithmCases").collect();
+    const algorithms = await ctx.db.query("algorithms").collect();
+    const progress = await ctx.db.query("userAlgorithmProgress").collect();
+    const sessions = await ctx.db.query("algorithmPracticeSessions").collect();
+
+    // Category distribution
+    const categoryDistribution: Record<string, number> = {};
+    sets.forEach((s) => {
+      categoryDistribution[s.category] =
+        (categoryDistribution[s.category] || 0) + 1;
+    });
+
+    // Difficulty distribution
+    const difficultyDistribution = {
+      beginner: sets.filter((s) => s.difficulty === "beginner").length,
+      intermediate: sets.filter((s) => s.difficulty === "intermediate").length,
+      advanced: sets.filter((s) => s.difficulty === "advanced").length,
+    };
+
+    // Learning stage distribution
+    const stageDistribution = {
+      new: progress.filter((p) => p.learningStage === "new").length,
+      learning: progress.filter((p) => p.learningStage === "learning").length,
+      reviewing: progress.filter((p) => p.learningStage === "reviewing").length,
+      mastered: progress.filter((p) => p.learningStage === "mastered").length,
+    };
+
+    // Practice sessions stats
+    const sessionsToday = sessions.filter(
+      (s) => s.createdAt >= oneDayAgo,
+    ).length;
+    const sessionsThisWeek = sessions.filter(
+      (s) => s.createdAt >= oneWeekAgo,
+    ).length;
+    const sessionsThisMonth = sessions.filter(
+      (s) => s.createdAt >= oneMonthAgo,
+    ).length;
+
+    // Session type distribution
+    const sessionTypeDistribution: Record<string, number> = {};
+    sessions.forEach((s) => {
+      sessionTypeDistribution[s.sessionType] =
+        (sessionTypeDistribution[s.sessionType] || 0) + 1;
+    });
+
+    // Average accuracy across all progress
+    const progressWithAccuracy = progress.filter((p) => p.accuracyRate > 0);
+    const avgAccuracy =
+      progressWithAccuracy.length > 0
+        ? progressWithAccuracy.reduce((sum, p) => sum + p.accuracyRate, 0) /
+          progressWithAccuracy.length
+        : 0;
+
+    // Average recognition time across all progress
+    const progressWithRecognition = progress.filter(
+      (p) => p.recognitionTimes.length > 0,
+    );
+    const avgRecognitionTime =
+      progressWithRecognition.length > 0
+        ? progressWithRecognition.reduce((sum, p) => {
+            const avg =
+              p.recognitionTimes.reduce((a, b) => a + b, 0) /
+              p.recognitionTimes.length;
+            return sum + avg;
+          }, 0) / progressWithRecognition.length
+        : 0;
+
+    // Most popular sets (by learning count)
+    const setPopularity: Record<string, { name: string; count: number }> = {};
+    for (const p of progress) {
+      const caseItem = cases.find((c) => c._id === p.caseId);
+      if (caseItem) {
+        const set = sets.find((s) => s._id === caseItem.setId);
+        if (set) {
+          if (!setPopularity[set._id]) {
+            setPopularity[set._id] = { name: set.name, count: 0 };
+          }
+          setPopularity[set._id].count++;
+        }
+      }
+    }
+    const topSets = Object.entries(setPopularity)
+      .sort((a, b) => b[1].count - a[1].count)
+      .slice(0, 5)
+      .map(([id, data]) => ({ setId: id, ...data }));
+
+    // Weekly learning trend (last 12 weeks)
+    const weeklyLearningTrend: Array<{ week: string; count: number }> = [];
+    for (let i = 11; i >= 0; i--) {
+      const weekStart = now - (i + 1) * 7 * 24 * 60 * 60 * 1000;
+      const weekEnd = now - i * 7 * 24 * 60 * 60 * 1000;
+      const count = progress.filter(
+        (p) => p.firstLearnedAt >= weekStart && p.firstLearnedAt < weekEnd,
+      ).length;
+      const date = new Date(weekEnd);
+      weeklyLearningTrend.push({
+        week: `${date.getMonth() + 1}/${date.getDate()}`,
+        count,
+      });
+    }
+
+    // Unique learners
+    const uniqueLearners = new Set(progress.map((p) => p.userId)).size;
+
+    return {
+      // Overview
+      totalSets: sets.length,
+      publishedSets: sets.filter((s) => s.isPublished).length,
+      draftSets: sets.filter((s) => !s.isPublished).length,
+      totalCases: cases.length,
+      totalAlgorithms: algorithms.length,
+      totalProgressRecords: progress.length,
+
+      // Learning stats
+      uniqueLearners,
+      stageDistribution,
+      avgAccuracy: Math.round(avgAccuracy * 100) / 100,
+      avgRecognitionTime: Math.round(avgRecognitionTime),
+
+      // Distributions
+      categoryDistribution,
+      difficultyDistribution,
+      sessionTypeDistribution,
+
+      // Session stats
+      totalSessions: sessions.length,
+      sessionsToday,
+      sessionsThisWeek,
+      sessionsThisMonth,
+
+      // Trends
+      weeklyLearningTrend,
+      topSets,
+    };
+  },
+});
+
+// Get all algorithm sets for admin (including drafts)
+export const getAllSetsForAdmin = query({
+  args: {},
+  handler: async (ctx) => {
+    const sets = await ctx.db.query("algorithmSets").collect();
+
+    // Get case counts and progress stats for each set
+    const setsWithStats = await Promise.all(
+      sets.map(async (set) => {
+        const cases = await ctx.db
+          .query("algorithmCases")
+          .withIndex("by_set", (q) => q.eq("setId", set._id))
+          .collect();
+
+        let totalProgressCount = 0;
+        let masteredCount = 0;
+        let learningCount = 0;
+
+        for (const caseItem of cases) {
+          const progress = await ctx.db
+            .query("userAlgorithmProgress")
+            .withIndex("by_case", (q) => q.eq("caseId", caseItem._id))
+            .collect();
+
+          totalProgressCount += progress.length;
+          masteredCount += progress.filter(
+            (p) => p.learningStage === "mastered",
+          ).length;
+          learningCount += progress.filter(
+            (p) =>
+              p.learningStage === "learning" || p.learningStage === "reviewing",
+          ).length;
+        }
+
+        return {
+          ...set,
+          actualCaseCount: cases.length,
+          totalProgressCount,
+          masteredCount,
+          learningCount,
+        };
+      }),
+    );
+
+    return setsWithStats.sort((a, b) => a.order - b.order);
+  },
+});
+
+// Get all cases for a specific set (admin)
+export const getCasesForSetAdmin = query({
+  args: { setId: v.id("algorithmSets") },
+  handler: async (ctx, { setId }) => {
+    const cases = await ctx.db
+      .query("algorithmCases")
+      .withIndex("by_set_order", (q) => q.eq("setId", setId))
+      .collect();
+
+    // Get algorithm counts and progress for each case
+    const casesWithStats = await Promise.all(
+      cases.map(async (caseItem) => {
+        const algorithms = await ctx.db
+          .query("algorithms")
+          .withIndex("by_case", (q) => q.eq("caseId", caseItem._id))
+          .collect();
+
+        const progress = await ctx.db
+          .query("userAlgorithmProgress")
+          .withIndex("by_case", (q) => q.eq("caseId", caseItem._id))
+          .collect();
+
+        return {
+          ...caseItem,
+          algorithmCount: algorithms.length,
+          learnerCount: progress.length,
+          masteredCount: progress.filter((p) => p.learningStage === "mastered")
+            .length,
+        };
+      }),
+    );
+
+    return casesWithStats;
+  },
+});
+
+// Get all algorithms for a specific case (admin)
+export const getAlgorithmsForCaseAdmin = query({
+  args: { caseId: v.id("algorithmCases") },
+  handler: async (ctx, { caseId }) => {
+    const algorithms = await ctx.db
+      .query("algorithms")
+      .withIndex("by_case", (q) => q.eq("caseId", caseId))
+      .collect();
+
+    // Get usage count for each algorithm
+    const algorithmsWithStats = await Promise.all(
+      algorithms.map(async (alg) => {
+        const usageCount = (
+          await ctx.db
+            .query("userAlgorithmProgress")
+            .filter((q) => q.eq(q.field("preferredAlgId"), alg._id))
+            .collect()
+        ).length;
+
+        return {
+          ...alg,
+          usageCount,
+        };
+      }),
+    );
+
+    return algorithmsWithStats.sort((a, b) => {
+      if (a.isDefault && !b.isDefault) return -1;
+      if (!a.isDefault && b.isDefault) return 1;
+      return b.popularity - a.popularity;
+    });
+  },
+});
+
+// Create a new algorithm set
+export const createAlgorithmSet = mutation({
+  args: {
+    name: v.string(),
+    slug: v.string(),
+    category: v.string(),
+    description: v.string(),
+    difficulty: v.union(
+      v.literal("beginner"),
+      v.literal("intermediate"),
+      v.literal("advanced"),
+    ),
+    puzzleType: v.optional(v.string()),
+    iconUrl: v.optional(v.string()),
+    order: v.number(),
+    isPublished: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const setId = await ctx.db.insert("algorithmSets", {
+      ...args,
+      caseCount: 0,
+      createdAt: Date.now(),
+    });
+    return setId;
+  },
+});
+
+// Update an algorithm set
+export const updateAlgorithmSet = mutation({
+  args: {
+    setId: v.id("algorithmSets"),
+    name: v.optional(v.string()),
+    slug: v.optional(v.string()),
+    category: v.optional(v.string()),
+    description: v.optional(v.string()),
+    difficulty: v.optional(
+      v.union(
+        v.literal("beginner"),
+        v.literal("intermediate"),
+        v.literal("advanced"),
+      ),
+    ),
+    puzzleType: v.optional(v.string()),
+    iconUrl: v.optional(v.string()),
+    order: v.optional(v.number()),
+    isPublished: v.optional(v.boolean()),
+  },
+  handler: async (ctx, { setId, ...updates }) => {
+    const filteredUpdates: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) {
+        filteredUpdates[key] = value;
+      }
+    }
+    await ctx.db.patch(setId, filteredUpdates);
+  },
+});
+
+// Delete an algorithm set (with cascading delete)
+export const deleteAlgorithmSet = mutation({
+  args: { setId: v.id("algorithmSets") },
+  handler: async (ctx, { setId }) => {
+    // Get all cases in this set
+    const cases = await ctx.db
+      .query("algorithmCases")
+      .withIndex("by_set", (q) => q.eq("setId", setId))
+      .collect();
+
+    // Delete all algorithms and progress for each case
+    for (const caseItem of cases) {
+      // Delete algorithms
+      const algorithms = await ctx.db
+        .query("algorithms")
+        .withIndex("by_case", (q) => q.eq("caseId", caseItem._id))
+        .collect();
+      for (const alg of algorithms) {
+        await ctx.db.delete(alg._id);
+      }
+
+      // Delete user progress
+      const progress = await ctx.db
+        .query("userAlgorithmProgress")
+        .withIndex("by_case", (q) => q.eq("caseId", caseItem._id))
+        .collect();
+      for (const p of progress) {
+        await ctx.db.delete(p._id);
+      }
+
+      // Delete the case
+      await ctx.db.delete(caseItem._id);
+    }
+
+    // Delete the set
+    await ctx.db.delete(setId);
+  },
+});
+
+// Create a new algorithm case
+export const createAlgorithmCase = mutation({
+  args: {
+    setId: v.id("algorithmSets"),
+    caseName: v.string(),
+    slug: v.string(),
+    caseImage: v.optional(v.string()),
+    setupMoves: v.string(),
+    recognition: v.array(v.string()),
+    difficulty: v.number(),
+    frequency: v.number(),
+    order: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const caseId = await ctx.db.insert("algorithmCases", {
+      ...args,
+      createdAt: Date.now(),
+    });
+
+    // Update set case count
+    const set = await ctx.db.get(args.setId);
+    if (set) {
+      await ctx.db.patch(args.setId, {
+        caseCount: set.caseCount + 1,
+      });
+    }
+
+    return caseId;
+  },
+});
+
+// Update an algorithm case
+export const updateAlgorithmCase = mutation({
+  args: {
+    caseId: v.id("algorithmCases"),
+    caseName: v.optional(v.string()),
+    slug: v.optional(v.string()),
+    caseImage: v.optional(v.string()),
+    setupMoves: v.optional(v.string()),
+    recognition: v.optional(v.array(v.string())),
+    difficulty: v.optional(v.number()),
+    frequency: v.optional(v.number()),
+    order: v.optional(v.number()),
+  },
+  handler: async (ctx, { caseId, ...updates }) => {
+    const filteredUpdates: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) {
+        filteredUpdates[key] = value;
+      }
+    }
+    await ctx.db.patch(caseId, filteredUpdates);
+  },
+});
+
+// Delete an algorithm case (with cleanup)
+export const deleteAlgorithmCase = mutation({
+  args: { caseId: v.id("algorithmCases") },
+  handler: async (ctx, { caseId }) => {
+    const caseItem = await ctx.db.get(caseId);
+    if (!caseItem) return;
+
+    // Delete all algorithms for this case
+    const algorithms = await ctx.db
+      .query("algorithms")
+      .withIndex("by_case", (q) => q.eq("caseId", caseId))
+      .collect();
+    for (const alg of algorithms) {
+      await ctx.db.delete(alg._id);
+    }
+
+    // Delete all user progress for this case
+    const progress = await ctx.db
+      .query("userAlgorithmProgress")
+      .withIndex("by_case", (q) => q.eq("caseId", caseId))
+      .collect();
+    for (const p of progress) {
+      await ctx.db.delete(p._id);
+    }
+
+    // Update set case count
+    const set = await ctx.db.get(caseItem.setId);
+    if (set) {
+      await ctx.db.patch(caseItem.setId, {
+        caseCount: Math.max(0, set.caseCount - 1),
+      });
+    }
+
+    // Delete the case
+    await ctx.db.delete(caseId);
+  },
+});
+
+// Create a new algorithm
+export const createAlgorithm = mutation({
+  args: {
+    caseId: v.id("algorithmCases"),
+    notation: v.string(),
+    moveCount: v.optional(v.number()),
+    fingerTricks: v.optional(v.string()),
+    averageSpeed: v.optional(v.number()),
+    popularity: v.optional(v.number()),
+    isDefault: v.boolean(),
+    createdBy: v.optional(v.string()),
+    videoUrl: v.optional(v.string()),
+    notes: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Auto-calculate move count if not provided
+    const moveCount = args.moveCount ?? calculateMoveCount(args.notation);
+
+    // If this is set as default, unset other defaults
+    if (args.isDefault) {
+      const existingAlgorithms = await ctx.db
+        .query("algorithms")
+        .withIndex("by_case", (q) => q.eq("caseId", args.caseId))
+        .collect();
+      for (const alg of existingAlgorithms) {
+        if (alg.isDefault) {
+          await ctx.db.patch(alg._id, { isDefault: false });
+        }
+      }
+    }
+
+    const algId = await ctx.db.insert("algorithms", {
+      caseId: args.caseId,
+      notation: args.notation,
+      moveCount,
+      fingerTricks: args.fingerTricks,
+      averageSpeed: args.averageSpeed,
+      popularity: args.popularity ?? 50,
+      isDefault: args.isDefault,
+      createdBy: args.createdBy,
+      videoUrl: args.videoUrl,
+      notes: args.notes,
+      createdAt: Date.now(),
+    });
+    return algId;
+  },
+});
+
+// Update an algorithm
+export const updateAlgorithm = mutation({
+  args: {
+    algId: v.id("algorithms"),
+    notation: v.optional(v.string()),
+    moveCount: v.optional(v.number()),
+    fingerTricks: v.optional(v.string()),
+    averageSpeed: v.optional(v.number()),
+    popularity: v.optional(v.number()),
+    isDefault: v.optional(v.boolean()),
+    createdBy: v.optional(v.string()),
+    videoUrl: v.optional(v.string()),
+    notes: v.optional(v.string()),
+  },
+  handler: async (ctx, { algId, moveCount: providedMoveCount, ...updates }) => {
+    const alg = await ctx.db.get(algId);
+    if (!alg) return;
+
+    const filteredUpdates: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) {
+        filteredUpdates[key] = value;
+      }
+    }
+
+    // Handle move count - use provided or calculate from notation
+    if (providedMoveCount !== undefined) {
+      filteredUpdates.moveCount = providedMoveCount;
+    } else if (updates.notation !== undefined) {
+      filteredUpdates.moveCount = calculateMoveCount(updates.notation);
+    }
+
+    // If setting as default, unset other defaults
+    if (updates.isDefault === true) {
+      const existingAlgorithms = await ctx.db
+        .query("algorithms")
+        .withIndex("by_case", (q) => q.eq("caseId", alg.caseId))
+        .collect();
+      for (const otherAlg of existingAlgorithms) {
+        if (otherAlg._id !== algId && otherAlg.isDefault) {
+          await ctx.db.patch(otherAlg._id, { isDefault: false });
+        }
+      }
+    }
+
+    await ctx.db.patch(algId, filteredUpdates);
+  },
+});
+
+// Delete an algorithm
+export const deleteAlgorithm = mutation({
+  args: { algId: v.id("algorithms") },
+  handler: async (ctx, { algId }) => {
+    const alg = await ctx.db.get(algId);
+    if (!alg) return;
+
+    // Update any user progress that references this algorithm
+    const progress = await ctx.db
+      .query("userAlgorithmProgress")
+      .filter((q) => q.eq(q.field("preferredAlgId"), algId))
+      .collect();
+
+    // Find another algorithm for this case to use as replacement
+    const otherAlgorithms = await ctx.db
+      .query("algorithms")
+      .withIndex("by_case", (q) => q.eq("caseId", alg.caseId))
+      .filter((q) => q.neq(q.field("_id"), algId))
+      .collect();
+
+    if (otherAlgorithms.length > 0) {
+      const replacement =
+        otherAlgorithms.find((a) => a.isDefault) || otherAlgorithms[0];
+      for (const p of progress) {
+        await ctx.db.patch(p._id, { preferredAlgId: replacement._id });
+      }
+    } else {
+      // No replacement available, delete the progress records
+      for (const p of progress) {
+        await ctx.db.delete(p._id);
+      }
+    }
+
+    // Delete the algorithm
+    await ctx.db.delete(algId);
+  },
+});
+
+// Export algorithms data
+export const exportAlgorithmsData = query({
+  args: {},
+  handler: async (ctx) => {
+    const sets = await ctx.db.query("algorithmSets").collect();
+    const cases = await ctx.db.query("algorithmCases").collect();
+    const algorithms = await ctx.db.query("algorithms").collect();
+
+    return {
+      sets: sets.map((s) => ({
+        id: s._id,
+        name: s.name,
+        slug: s.slug,
+        category: s.category,
+        description: s.description,
+        difficulty: s.difficulty,
+        puzzleType: s.puzzleType,
+        caseCount: s.caseCount,
+        isPublished: s.isPublished,
+        order: s.order,
+        createdAt: s.createdAt,
+      })),
+      cases: cases.map((c) => ({
+        id: c._id,
+        setId: c.setId,
+        caseName: c.caseName,
+        slug: c.slug,
+        setupMoves: c.setupMoves,
+        recognition: c.recognition,
+        difficulty: c.difficulty,
+        frequency: c.frequency,
+        order: c.order,
+        createdAt: c.createdAt,
+      })),
+      algorithms: algorithms.map((a) => ({
+        id: a._id,
+        caseId: a.caseId,
+        notation: a.notation,
+        moveCount: a.moveCount,
+        fingerTricks: a.fingerTricks,
+        popularity: a.popularity,
+        isDefault: a.isDefault,
+        createdBy: a.createdBy,
+        videoUrl: a.videoUrl,
+        notes: a.notes,
+        createdAt: a.createdAt,
+      })),
+    };
+  },
+});
+
+// Import algorithm data (sets, cases, algorithms) with upsert logic
+export const importAlgorithmData = mutation({
+  args: {
+    sets: v.array(
+      v.object({
+        name: v.string(),
+        slug: v.optional(v.string()),
+        category: v.string(),
+        description: v.optional(v.string()),
+        difficulty: v.optional(
+          v.union(
+            v.literal("beginner"),
+            v.literal("intermediate"),
+            v.literal("advanced"),
+          ),
+        ),
+        puzzleType: v.optional(v.string()),
+        order: v.optional(v.number()),
+        isPublished: v.optional(v.boolean()),
+        caseCount: v.optional(v.number()),
+      }),
+    ),
+    cases: v.array(
+      v.object({
+        setSlug: v.optional(v.string()),
+        setName: v.optional(v.string()),
+        caseName: v.string(),
+        setupMoves: v.string(),
+        difficulty: v.optional(v.number()),
+        frequency: v.optional(v.number()),
+      }),
+    ),
+    algorithms: v.array(
+      v.object({
+        caseSlug: v.optional(v.string()),
+        caseName: v.optional(v.string()),
+        setSlug: v.optional(v.string()),
+        setName: v.optional(v.string()),
+        notation: v.string(),
+        moveCount: v.optional(v.number()),
+        fingerTricks: v.optional(v.string()),
+        isDefault: v.optional(v.boolean()),
+      }),
+    ),
+  },
+  handler: async (ctx, { sets, cases, algorithms }) => {
+    const result = {
+      setsCreated: 0,
+      setsUpdated: 0,
+      casesCreated: 0,
+      casesUpdated: 0,
+      algorithmsCreated: 0,
+      algorithmsUpdated: 0,
+      errors: [] as string[],
+    };
+
+    // Helper function to generate slug
+    const generateSlug = (name: string) =>
+      name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+
+    // Map to track set slugs to IDs
+    const setSlugToId = new Map<string, string>();
+
+    // Process sets
+    for (const setData of sets) {
+      try {
+        const slug = setData.slug || generateSlug(setData.name);
+
+        // Check if set exists by slug or name
+        let existingSet = await ctx.db
+          .query("algorithmSets")
+          .withIndex("by_slug", (q) => q.eq("slug", slug))
+          .first();
+
+        if (!existingSet) {
+          existingSet = await ctx.db
+            .query("algorithmSets")
+            .filter((q) => q.eq(q.field("name"), setData.name))
+            .first();
+        }
+
+        if (existingSet) {
+          // Update existing set
+          await ctx.db.patch(existingSet._id, {
+            name: setData.name,
+            slug,
+            category: setData.category,
+            description: setData.description || existingSet.description,
+            difficulty: setData.difficulty || existingSet.difficulty,
+            puzzleType: setData.puzzleType || existingSet.puzzleType,
+            order: setData.order ?? existingSet.order,
+            isPublished: setData.isPublished ?? existingSet.isPublished,
+          });
+          setSlugToId.set(slug, existingSet._id);
+          setSlugToId.set(setData.name.toLowerCase(), existingSet._id);
+          result.setsUpdated++;
+        } else {
+          // Create new set
+          const setId = await ctx.db.insert("algorithmSets", {
+            name: setData.name,
+            slug,
+            category: setData.category,
+            description: setData.description || "",
+            difficulty: setData.difficulty || "intermediate",
+            puzzleType: setData.puzzleType || "3x3x3",
+            caseCount: setData.caseCount || 0,
+            order: setData.order ?? 0,
+            isPublished: setData.isPublished ?? false,
+            createdAt: Date.now(),
+          });
+          setSlugToId.set(slug, setId);
+          setSlugToId.set(setData.name.toLowerCase(), setId);
+          result.setsCreated++;
+        }
+      } catch (error) {
+        result.errors.push(
+          `Set "${setData.name}": ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
+      }
+    }
+
+    // Map to track case identifiers to IDs
+    const caseNameToId = new Map<string, string>();
+
+    // Process cases
+    for (const caseData of cases) {
+      try {
+        // Find parent set
+        let setId: string | undefined;
+        if (caseData.setSlug) {
+          setId = setSlugToId.get(caseData.setSlug);
+          if (!setId) {
+            const existingSet = await ctx.db
+              .query("algorithmSets")
+              .withIndex("by_slug", (q) => q.eq("slug", caseData.setSlug!))
+              .first();
+            if (existingSet) setId = existingSet._id;
+          }
+        }
+        if (!setId && caseData.setName) {
+          setId = setSlugToId.get(caseData.setName.toLowerCase());
+          if (!setId) {
+            const existingSet = await ctx.db
+              .query("algorithmSets")
+              .filter((q) => q.eq(q.field("name"), caseData.setName))
+              .first();
+            if (existingSet) setId = existingSet._id;
+          }
+        }
+
+        if (!setId) {
+          result.errors.push(
+            `Case "${caseData.caseName}": Could not find parent set (setSlug: ${caseData.setSlug}, setName: ${caseData.setName})`,
+          );
+          continue;
+        }
+
+        // Check if case exists in this set
+        const existingCase = await ctx.db
+          .query("algorithmCases")
+          .withIndex("by_set", (q) => q.eq("setId", setId as any))
+          .filter((q) => q.eq(q.field("caseName"), caseData.caseName))
+          .first();
+
+        if (existingCase) {
+          // Update existing case
+          await ctx.db.patch(existingCase._id, {
+            setupMoves: caseData.setupMoves,
+            difficulty: caseData.difficulty ?? existingCase.difficulty,
+            frequency: caseData.frequency ?? existingCase.frequency,
+          });
+          caseNameToId.set(`${setId}:${caseData.caseName}`, existingCase._id);
+          result.casesUpdated++;
+        } else {
+          // Create new case
+          const caseId = await ctx.db.insert("algorithmCases", {
+            setId: setId as Id<"algorithmSets">,
+            caseName: caseData.caseName,
+            slug: generateSlug(caseData.caseName),
+            setupMoves: caseData.setupMoves,
+            recognition: [],
+            difficulty: caseData.difficulty ?? 5,
+            frequency: caseData.frequency ?? 3,
+            order: 0,
+            createdAt: Date.now(),
+          });
+          caseNameToId.set(`${setId}:${caseData.caseName}`, caseId);
+
+          // Update set case count
+          const parentSet = await ctx.db.get(setId as Id<"algorithmSets">);
+          if (parentSet) {
+            await ctx.db.patch(setId as Id<"algorithmSets">, {
+              caseCount: (parentSet.caseCount || 0) + 1,
+            });
+          }
+          result.casesCreated++;
+        }
+      } catch (error) {
+        result.errors.push(
+          `Case "${caseData.caseName}": ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
+      }
+    }
+
+    // Process algorithms
+    for (const algData of algorithms) {
+      try {
+        // Find parent case
+        let caseId: string | undefined;
+
+        // Try finding by setSlug/setName + caseName
+        if (algData.caseName && (algData.setSlug || algData.setName)) {
+          let setId: string | undefined;
+          if (algData.setSlug) {
+            setId = setSlugToId.get(algData.setSlug);
+            if (!setId) {
+              const existingSet = await ctx.db
+                .query("algorithmSets")
+                .withIndex("by_slug", (q) => q.eq("slug", algData.setSlug!))
+                .first();
+              if (existingSet) setId = existingSet._id;
+            }
+          }
+          if (!setId && algData.setName) {
+            setId = setSlugToId.get(algData.setName.toLowerCase());
+            if (!setId) {
+              const existingSet = await ctx.db
+                .query("algorithmSets")
+                .filter((q) => q.eq(q.field("name"), algData.setName))
+                .first();
+              if (existingSet) setId = existingSet._id;
+            }
+          }
+
+          if (setId) {
+            caseId = caseNameToId.get(`${setId}:${algData.caseName}`);
+            if (!caseId) {
+              const existingCase = await ctx.db
+                .query("algorithmCases")
+                .withIndex("by_set", (q) => q.eq("setId", setId as any))
+                .filter((q) => q.eq(q.field("caseName"), algData.caseName))
+                .first();
+              if (existingCase) caseId = existingCase._id;
+            }
+          }
+        }
+
+        // Try finding by caseSlug
+        if (!caseId && algData.caseSlug) {
+          const existingCase = await ctx.db
+            .query("algorithmCases")
+            .filter((q) => q.eq(q.field("slug"), algData.caseSlug))
+            .first();
+          if (existingCase) caseId = existingCase._id;
+        }
+
+        if (!caseId) {
+          result.errors.push(
+            `Algorithm "${algData.notation.substring(0, 30)}...": Could not find parent case`,
+          );
+          continue;
+        }
+
+        // Check if algorithm exists in this case
+        const existingAlg = await ctx.db
+          .query("algorithms")
+          .withIndex("by_case", (q) => q.eq("caseId", caseId as any))
+          .filter((q) => q.eq(q.field("notation"), algData.notation))
+          .first();
+
+        const moveCount =
+          algData.moveCount ?? calculateMoveCount(algData.notation);
+
+        if (existingAlg) {
+          // Update existing algorithm
+          await ctx.db.patch(existingAlg._id, {
+            notation: algData.notation,
+            moveCount,
+            fingerTricks: algData.fingerTricks ?? existingAlg.fingerTricks,
+            isDefault: algData.isDefault ?? existingAlg.isDefault,
+          });
+          result.algorithmsUpdated++;
+        } else {
+          // Create new algorithm
+          await ctx.db.insert("algorithms", {
+            caseId: caseId as any,
+            notation: algData.notation,
+            moveCount,
+            fingerTricks: algData.fingerTricks,
+            popularity: 50,
+            isDefault: algData.isDefault ?? false,
+            createdAt: Date.now(),
+          });
+          result.algorithmsCreated++;
+        }
+      } catch (error) {
+        result.errors.push(
+          `Algorithm "${algData.notation.substring(0, 30)}...": ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
+      }
+    }
+
+    return result;
   },
 });

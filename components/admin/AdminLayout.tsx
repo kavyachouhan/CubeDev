@@ -16,9 +16,10 @@ import {
   ChevronRight,
   Shield,
   Trophy,
-  BookOpen,
+  Compass,
   GraduationCap,
   Medal,
+  Timer,
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import SidebarUserDropdown from "@/components/SidebarUserDropdown";
@@ -43,7 +44,7 @@ export default function AdminLayout({
   const currentYear = new Date().getFullYear();
   const logoSrc = useLogo();
 
-  // Initialize sidebar state from localStorage after hydration
+  // Hydration and sidebar state initialization
   useEffect(() => {
     setIsHydrated(true);
 
@@ -53,7 +54,7 @@ export default function AdminLayout({
     }
   }, []);
 
-  // Save sidebar state to localStorage
+  // Close sidebar on route change (mobile)
   const toggleSidebarCollapse = () => {
     const newState = !sidebarCollapsed;
     setSidebarCollapsed(newState);
@@ -99,23 +100,23 @@ export default function AdminLayout({
       href: "/admin/notifications",
     },
     {
-      id: "challenges",
-      name: "Challenges",
-      icon: Trophy,
-      description: "Challenge room stats",
-      href: "/admin/challenges",
+      id: "timer-analytics",
+      name: "Timer Analytics",
+      icon: Timer,
+      description: "Timer usage statistics",
+      href: "/admin/timer-analytics",
     },
     {
       id: "algorithms",
       name: "Algorithms",
-      icon: BookOpen,
+      icon: GraduationCap,
       description: "Algorithm sets & stats",
       href: "/admin/algorithms",
     },
     {
       id: "coach",
       name: "Coach",
-      icon: GraduationCap,
+      icon: Compass,
       description: "Coaching activity",
       href: "/admin/coach",
     },
@@ -125,6 +126,13 @@ export default function AdminLayout({
       icon: Medal,
       description: "Competition simulations",
       href: "/admin/competitions",
+    },
+    {
+      id: "challenges",
+      name: "Challenges",
+      icon: Trophy,
+      description: "Challenge room stats",
+      href: "/admin/challenges",
     },
   ];
 
@@ -204,7 +212,7 @@ export default function AdminLayout({
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[var(--error)]/10 border border-[var(--error)]/20 rounded-full">
                 <Shield className="w-3 h-3 text-[var(--error)]" />
                 <span className="text-xs font-medium text-[var(--error)] font-inter">
-                  Admin Access
+                  Admin
                 </span>
               </div>
             </div>

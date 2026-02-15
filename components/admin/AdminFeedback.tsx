@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "convex/react";
+import { useState, useMemo, useEffect } from "react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useCachedQuery } from "@/lib/hooks/useAdminCache";
+import { ADMIN_CACHE_KEYS, ADMIN_CACHE_TTLS } from "@/lib/admin-cache";
 import {
   MessageSquare,
   Star,
@@ -23,7 +25,78 @@ import {
   Percent,
   Clock,
   FileText,
+  Plus,
+  X,
+  Settings,
+  Trash2,
 } from "lucide-react";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+);
+
+// Theme detection hook
+function useEffectiveTheme() {
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
+
+  useEffect(() => {
+    const updateTheme = () => {
+      const root = document.documentElement;
+      const dataTheme = root.getAttribute("data-theme");
+      setTheme(dataTheme === "light" ? "light" : "dark");
+    };
+
+    updateTheme();
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  return theme;
+}
+
+// Primary color hook
+function usePrimaryColor() {
+  const [primaryColor, setPrimaryColor] = useState("#FA6900");
+
+  useEffect(() => {
+    const updateColor = () => {
+      const color = getComputedStyle(document.documentElement)
+        .getPropertyValue("--primary")
+        .trim();
+      if (color) setPrimaryColor(color);
+    };
+
+    updateColor();
+    const observer = new MutationObserver(updateColor);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "style"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  return primaryColor;
+}
 
 // Export helper function
 function exportToCSV(data: Record<string, unknown>[], filename: string) {
@@ -467,28 +540,74 @@ function FeedbackItem({
   );
 }
 
-// Bar Chart Component for response trends
+// Bar Chart Component for response trends using Chart.js
 function ResponseBarChart({
   data,
 }: {
   data: Array<{ label: string; value: number; avgRating?: number }>;
 }) {
-  const maxValue = Math.max(...data.map((d) => d.value), 1);
+  const effectiveTheme = useEffectiveTheme();
+  const primaryColor = usePrimaryColor();
+  const isLight = effectiveTheme === "light";
+  const textColor = isLight
+    ? "rgba(17, 24, 39, 0.8)"
+    : "rgba(255, 255, 255, 0.8)";
+  const gridColor = isLight ? "rgba(0, 0, 0, 0.1)" : "rgba(255, 255, 255, 0.1)";
+
+  const chartData = useMemo(
+    () => ({
+      labels: data.map((d) => d.label),
+      datasets: [
+        {
+          label: "Responses",
+          data: data.map((d) => d.value),
+          backgroundColor: primaryColor,
+          borderRadius: 4,
+          barThickness: 20,
+        },
+      ],
+    }),
+    [data, primaryColor],
+  );
+
+  const chartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: isLight
+            ? "rgba(255, 255, 255, 0.95)"
+            : "rgba(0, 0, 0, 0.8)",
+          titleColor: textColor,
+          bodyColor: textColor,
+          borderColor: gridColor,
+          borderWidth: 1,
+          padding: 8,
+          cornerRadius: 6,
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: textColor, font: { size: 10 } },
+          grid: { display: false },
+          border: { display: false },
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { color: textColor, font: { size: 10 }, stepSize: 1 },
+          grid: { color: gridColor },
+          border: { display: false },
+        },
+      },
+    }),
+    [isLight, textColor, gridColor],
+  );
+
   return (
-    <div className="flex items-end gap-1 h-24 sm:h-32">
-      {data.map((item, idx) => (
-        <div key={idx} className="flex-1 flex flex-col items-center gap-1">
-          <div
-            className="w-full bg-[var(--primary)] rounded-t transition-all duration-500 min-h-[4px]"
-            style={{
-              height: `${maxValue > 0 ? (item.value / maxValue) * 100 : 0}%`,
-            }}
-          />
-          <span className="text-[10px] text-[var(--text-muted)] font-inter truncate max-w-full">
-            {item.label}
-          </span>
-        </div>
-      ))}
+    <div className="h-40">
+      <Bar data={chartData} options={chartOptions} />
     </div>
   );
 }
@@ -594,9 +713,605 @@ function NPSBreakdown({
   );
 }
 
+// Feedback Form Modal Component
+const DEFAULT_FEATURES = [
+  { key: "timer", label: "Timer" },
+  { key: "algorithmTrainer", label: "Algorithm Trainer" },
+  { key: "challenges", label: "Challenge Rooms" },
+  { key: "statistics", label: "Statistics" },
+  { key: "competitions", label: "Competition Simulator" },
+  { key: "coach", label: "Coach" },
+] as const;
+
+// Available survey types
+const SURVEY_TYPES = [
+  { value: "general", label: "General Feedback" },
+  { value: "beta", label: "Beta Testing" },
+  { value: "feature", label: "Feature Specific" },
+  { value: "nps", label: "NPS Survey" },
+  { value: "onboarding", label: "Onboarding" },
+  { value: "exit", label: "Exit Survey" },
+] as const;
+
+// Form section toggle component
+function FormSectionToggle({
+  label,
+  enabled,
+  onToggle,
+}: {
+  label: string;
+  enabled: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all text-sm font-inter ${
+        enabled
+          ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
+          : "bg-[var(--surface-elevated)] border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--text-muted)]"
+      }`}
+    >
+      <div
+        className={`w-3 h-3 rounded-sm border transition-all ${
+          enabled
+            ? "bg-[var(--primary)] border-[var(--primary)]"
+            : "border-[var(--text-muted)]"
+        }`}
+      >
+        {enabled && (
+          <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+            <path
+              d="M3 6L5 8L9 4"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
+      </div>
+      {label}
+    </button>
+  );
+}
+
+interface FeedbackFormModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Form configuration - which sections are enabled
+  const [enabledSections, setEnabledSections] = useState({
+    uiuxRating: true,
+    featureRatings: true,
+    recommendScore: true,
+    mostUsefulFeature: true,
+    featureRequests: true,
+    additionalComments: true,
+  });
+
+  // Form data
+  const [surveyType, setSurveyType] = useState("general");
+  const [surveyVersion, setSurveyVersion] = useState("2.0");
+  const [uiuxRating, setUiuxRating] = useState(0);
+  const [featureRatings, setFeatureRatings] = useState<Record<string, number>>(
+    () => {
+      const initial: Record<string, number> = {};
+      DEFAULT_FEATURES.forEach((f) => {
+        initial[f.key] = 0;
+      });
+      return initial;
+    },
+  );
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>(
+    DEFAULT_FEATURES.map((f) => f.key),
+  );
+  const [mostUsefulFeature, setMostUsefulFeature] = useState("");
+  const [featureRequests, setFeatureRequests] = useState("");
+  const [recommendScore, setRecommendScore] = useState(0);
+  const [additionalComments, setAdditionalComments] = useState("");
+
+  // Custom fields
+  const [customFields, setCustomFields] = useState<
+    Array<{ key: string; value: string }>
+  >([]);
+
+  const submitFeedback = useMutation(api.feedbackResponses.submitFeedback);
+
+  const toggleSection = (section: keyof typeof enabledSections) => {
+    setEnabledSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  const toggleFeature = (featureKey: string) => {
+    setSelectedFeatures((prev) =>
+      prev.includes(featureKey)
+        ? prev.filter((f) => f !== featureKey)
+        : [...prev, featureKey],
+    );
+  };
+
+  const addCustomField = () => {
+    setCustomFields((prev) => [...prev, { key: "", value: "" }]);
+  };
+
+  const removeCustomField = (index: number) => {
+    setCustomFields((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateCustomField = (
+    index: number,
+    field: "key" | "value",
+    value: string,
+  ) => {
+    setCustomFields((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
+    );
+  };
+
+  const resetForm = () => {
+    setSurveyType("general");
+    setSurveyVersion("2.0");
+    setUiuxRating(0);
+    setFeatureRatings(() => {
+      const initial: Record<string, number> = {};
+      DEFAULT_FEATURES.forEach((f) => {
+        initial[f.key] = 0;
+      });
+      return initial;
+    });
+    setSelectedFeatures(DEFAULT_FEATURES.map((f) => f.key));
+    setMostUsefulFeature("");
+    setFeatureRequests("");
+    setRecommendScore(0);
+    setAdditionalComments("");
+    setCustomFields([]);
+    setEnabledSections({
+      uiuxRating: true,
+      featureRatings: true,
+      recommendScore: true,
+      mostUsefulFeature: true,
+      featureRequests: true,
+      additionalComments: true,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      // Filter out zero ratings and only include enabled features
+      const validFeatureRatings = Object.fromEntries(
+        Object.entries(featureRatings).filter(
+          ([key, v]) => v > 0 && selectedFeatures.includes(key),
+        ),
+      );
+
+      // Build custom responses object
+      const customResponses = customFields.reduce(
+        (acc, field) => {
+          if (field.key.trim() && field.value.trim()) {
+            acc[field.key.trim()] = field.value.trim();
+          }
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
+
+      await submitFeedback({
+        surveyType,
+        surveyVersion,
+        uiuxRating:
+          enabledSections.uiuxRating && uiuxRating > 0 ? uiuxRating : undefined,
+        featureRatings:
+          enabledSections.featureRatings &&
+          Object.keys(validFeatureRatings).length > 0
+            ? validFeatureRatings
+            : undefined,
+        mostUsefulFeature:
+          enabledSections.mostUsefulFeature && mostUsefulFeature.trim()
+            ? mostUsefulFeature.trim()
+            : undefined,
+        featureRequests:
+          enabledSections.featureRequests && featureRequests.trim()
+            ? featureRequests.trim()
+            : undefined,
+        recommendScore:
+          enabledSections.recommendScore && recommendScore > 0
+            ? recommendScore
+            : undefined,
+        additionalComments:
+          enabledSections.additionalComments && additionalComments.trim()
+            ? additionalComments.trim()
+            : undefined,
+        customResponses:
+          Object.keys(customResponses).length > 0 ? customResponses : undefined,
+        userAgent:
+          typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+      });
+      resetForm();
+      onClose();
+    } catch (error) {
+      console.error("Failed to submit feedback:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="timer-card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+              Create Feedback Form
+            </h2>
+            <p className="text-sm text-[var(--text-muted)] font-inter mt-1">
+              Configure form fields and submit feedback entry
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Form Configuration */}
+          <div className="bg-[var(--surface-elevated)] rounded-xl p-4 border border-[var(--border)]">
+            <div className="flex items-center gap-2 mb-3">
+              <Settings className="w-4 h-4 text-[var(--text-muted)]" />
+              <h3 className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                Form Configuration
+              </h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <FormSectionToggle
+                label="UI/UX Rating"
+                enabled={enabledSections.uiuxRating}
+                onToggle={() => toggleSection("uiuxRating")}
+              />
+              <FormSectionToggle
+                label="Feature Ratings"
+                enabled={enabledSections.featureRatings}
+                onToggle={() => toggleSection("featureRatings")}
+              />
+              <FormSectionToggle
+                label="NPS Score"
+                enabled={enabledSections.recommendScore}
+                onToggle={() => toggleSection("recommendScore")}
+              />
+              <FormSectionToggle
+                label="Best Feature"
+                enabled={enabledSections.mostUsefulFeature}
+                onToggle={() => toggleSection("mostUsefulFeature")}
+              />
+              <FormSectionToggle
+                label="Feature Requests"
+                enabled={enabledSections.featureRequests}
+                onToggle={() => toggleSection("featureRequests")}
+              />
+              <FormSectionToggle
+                label="Comments"
+                enabled={enabledSections.additionalComments}
+                onToggle={() => toggleSection("additionalComments")}
+              />
+            </div>
+          </div>
+
+          {/* Survey Type & Version */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+                Survey Type
+              </label>
+              <select
+                value={surveyType}
+                onChange={(e) => setSurveyType(e.target.value)}
+                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-inter focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              >
+                {SURVEY_TYPES.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+                Version
+              </label>
+              <input
+                type="text"
+                value={surveyVersion}
+                onChange={(e) => setSurveyVersion(e.target.value)}
+                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                placeholder="2.0"
+              />
+            </div>
+          </div>
+
+          {/* UI/UX Rating */}
+          {enabledSections.uiuxRating && (
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+                UI/UX Rating (1-5)
+              </label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <button
+                    key={rating}
+                    type="button"
+                    onClick={() =>
+                      setUiuxRating(uiuxRating === rating ? 0 : rating)
+                    }
+                    className="p-2 rounded-lg transition-colors hover:bg-[var(--surface-elevated)]"
+                  >
+                    <Star
+                      className={`w-6 h-6 ${
+                        rating <= uiuxRating
+                          ? "text-amber-500 fill-amber-500"
+                          : "text-[var(--text-muted)]"
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Feature Ratings */}
+          {enabledSections.featureRatings && (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-sm font-medium text-[var(--text-primary)] font-inter">
+                  Feature Ratings
+                </label>
+                <span className="text-xs text-[var(--text-muted)] font-inter">
+                  {selectedFeatures.length} selected
+                </span>
+              </div>
+
+              {/* Feature Selection */}
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {DEFAULT_FEATURES.map((feature) => (
+                  <button
+                    key={feature.key}
+                    type="button"
+                    onClick={() => toggleFeature(feature.key)}
+                    className={`px-2.5 py-1 rounded-md text-xs font-inter transition-colors ${
+                      selectedFeatures.includes(feature.key)
+                        ? "bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/30"
+                        : "bg-[var(--surface-elevated)] text-[var(--text-muted)] border border-[var(--border)]"
+                    }`}
+                  >
+                    {feature.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Ratings */}
+              <div className="space-y-3 bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+                {DEFAULT_FEATURES.filter((f) =>
+                  selectedFeatures.includes(f.key),
+                ).map((feature) => (
+                  <div
+                    key={feature.key}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="text-sm text-[var(--text-secondary)] font-inter">
+                      {feature.label}
+                    </span>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((rating) => (
+                        <button
+                          key={rating}
+                          type="button"
+                          onClick={() =>
+                            setFeatureRatings({
+                              ...featureRatings,
+                              [feature.key]:
+                                featureRatings[feature.key] === rating
+                                  ? 0
+                                  : rating,
+                            })
+                          }
+                          className="p-1 rounded transition-colors"
+                        >
+                          <Star
+                            className={`w-4 h-4 ${
+                              rating <= featureRatings[feature.key]
+                                ? "text-amber-500 fill-amber-500"
+                                : "text-[var(--text-muted)]"
+                            }`}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                {selectedFeatures.length === 0 && (
+                  <p className="text-sm text-[var(--text-muted)] text-center py-2 font-inter">
+                    Select features above to rate
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Recommend Score (NPS) */}
+          {enabledSections.recommendScore && (
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+                Would Recommend (1-10 NPS)
+              </label>
+              <div className="flex gap-1 flex-wrap">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => (
+                  <button
+                    key={score}
+                    type="button"
+                    onClick={() =>
+                      setRecommendScore(recommendScore === score ? 0 : score)
+                    }
+                    className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                      score === recommendScore
+                        ? "bg-[var(--primary)] text-white"
+                        : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
+                    }`}
+                  >
+                    {score}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Most Useful Feature */}
+          {enabledSections.mostUsefulFeature && (
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+                Most Useful Feature
+              </label>
+              <select
+                value={mostUsefulFeature}
+                onChange={(e) => setMostUsefulFeature(e.target.value)}
+                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-inter focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              >
+                <option value="">Select a feature...</option>
+                {DEFAULT_FEATURES.map((feature) => (
+                  <option key={feature.key} value={feature.key}>
+                    {feature.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Feature Requests */}
+          {enabledSections.featureRequests && (
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+                Feature Requests
+              </label>
+              <textarea
+                value={featureRequests}
+                onChange={(e) => setFeatureRequests(e.target.value)}
+                rows={2}
+                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none font-inter"
+                placeholder="Enter feature requests..."
+              />
+            </div>
+          )}
+
+          {/* Additional Comments */}
+          {enabledSections.additionalComments && (
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+                Additional Comments
+              </label>
+              <textarea
+                value={additionalComments}
+                onChange={(e) => setAdditionalComments(e.target.value)}
+                rows={3}
+                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none font-inter"
+                placeholder="Enter additional comments..."
+              />
+            </div>
+          )}
+
+          {/* Custom Fields */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-sm font-medium text-[var(--text-primary)] font-inter">
+                Custom Fields
+              </label>
+              <button
+                type="button"
+                onClick={addCustomField}
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-md text-[var(--text-secondary)] transition-colors font-inter"
+              >
+                <Plus className="w-3 h-3" />
+                Add Field
+              </button>
+            </div>
+            {customFields.length > 0 && (
+              <div className="space-y-2">
+                {customFields.map((field, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={field.key}
+                      onChange={(e) =>
+                        updateCustomField(index, "key", e.target.value)
+                      }
+                      className="flex-1 px-3 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                      placeholder="Field name..."
+                    />
+                    <input
+                      type="text"
+                      value={field.value}
+                      onChange={(e) =>
+                        updateCustomField(index, "value", e.target.value)
+                      }
+                      className="flex-1 px-3 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                      placeholder="Value..."
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeCustomField(index)}
+                      className="p-2 text-[var(--text-muted)] hover:text-[var(--error)] hover:bg-[var(--error)]/10 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {customFields.length === 0 && (
+              <p className="text-xs text-[var(--text-muted)] font-inter">
+                Add custom question/answer pairs for flexible data collection
+              </p>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4 border-t border-[var(--border)]">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 btn-secondary"
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Submitting..." : "Submit Feedback"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminFeedback() {
   const [surveyTypeFilter, setSurveyTypeFilter] = useState<string>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
   const feedbackStats = useQuery(api.feedbackResponses.getFeedbackStats, {
     surveyType: surveyTypeFilter !== "all" ? surveyTypeFilter : undefined,
@@ -614,7 +1329,14 @@ export default function AdminFeedback() {
     limit: 50,
   });
 
-  const surveyTypes = useQuery(api.feedbackResponses.getSurveyTypes);
+  const { data: surveyTypes } = useCachedQuery(
+    api.feedbackResponses.getSurveyTypes,
+    {},
+    {
+      cacheKey: ADMIN_CACHE_KEYS.surveyTypes,
+      ttl: ADMIN_CACHE_TTLS.feedback,
+    },
+  );
 
   const isLoading = feedbackStats === undefined || feedbackList === undefined;
 
@@ -665,14 +1387,25 @@ export default function AdminFeedback() {
               ))}
             </select>
           </div>
-          <button
-            onClick={handleExportStats}
-            disabled={!detailedStats}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Download className="w-4 h-4" />
-            Export Analytics
-          </button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={() => setIsFeedbackModalOpen(true)}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-[var(--primary)] hover:bg-[var(--primary-hover)] rounded-lg text-white transition-colors font-inter"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden xs:inline">Create Form</span>
+              <span className="xs:hidden">Form</span>
+            </button>
+            <button
+              onClick={handleExportStats}
+              disabled={!detailedStats}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Download className="w-4 h-4" />
+              <span className="hidden sm:inline">Export Analytics</span>
+              <span className="sm:hidden">Export</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -951,6 +1684,12 @@ export default function AdminFeedback() {
           )}
         </CollapsibleCard>
       </div>
+
+      {/* Feedback Form Modal */}
+      <FeedbackFormModal
+        isOpen={isFeedbackModalOpen}
+        onClose={() => setIsFeedbackModalOpen(false)}
+      />
     </div>
   );
 }

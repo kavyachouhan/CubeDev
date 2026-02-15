@@ -2,13 +2,13 @@
 
 import AdminProtectedRoute from "@/components/admin/AdminProtectedRoute";
 import AdminLayout from "@/components/admin/AdminLayout";
-import AdminChallenges from "@/components/admin/AdminChallenges";
+import AdminTimerStats from "@/components/admin/AdminTimerStats";
 
-export default function AdminChallengesPage() {
+export default function AdminTimerAnalyticsPage() {
   return (
     <AdminProtectedRoute>
-      <AdminLayout activeSection="challenges">
-        <AdminChallenges />
+      <AdminLayout activeSection="timer-analytics">
+        <AdminTimerStats />
       </AdminLayout>
     </AdminProtectedRoute>
   );

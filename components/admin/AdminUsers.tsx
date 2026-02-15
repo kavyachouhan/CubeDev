@@ -1,9 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { useCachedQuery } from "@/lib/hooks/useAdminCache";
+import { ADMIN_CACHE_KEYS, ADMIN_CACHE_TTLS } from "@/lib/admin-cache";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar, Doughnut } from "react-chartjs-2";
 import {
   Search,
   User,
@@ -34,6 +47,70 @@ import {
   Clock,
 } from "lucide-react";
 import Image from "next/image";
+
+// Register ChartJS components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+);
+
+// Hook to detect current theme
+function useEffectiveTheme() {
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
+
+  useEffect(() => {
+    const checkTheme = () => {
+      const dataTheme = document.documentElement.getAttribute("data-theme");
+      setTheme((dataTheme as "light" | "dark") || "dark");
+    };
+
+    checkTheme();
+
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return theme;
+}
+
+// Hook to get computed primary color for charts
+function usePrimaryColor() {
+  const [primaryColor, setPrimaryColor] = useState("rgba(168, 85, 247, 1)");
+
+  useEffect(() => {
+    const getColor = () => {
+      if (typeof window === "undefined") return;
+      const computed = getComputedStyle(document.documentElement)
+        .getPropertyValue("--primary")
+        .trim();
+      if (computed) {
+        setPrimaryColor(computed);
+      }
+    };
+
+    getColor();
+
+    const observer = new MutationObserver(getColor);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme", "data-color-scheme"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return primaryColor;
+}
 
 // Collapsible Card Component
 function CollapsibleCard({
@@ -203,10 +280,7 @@ function BarChart({
   return (
     <div className="flex items-end gap-1 h-24 sm:h-32">
       {data.map((item, idx) => (
-        <div
-          key={idx}
-          className="flex-1 flex flex-col items-center gap-1"
-        >
+        <div key={idx} className="flex-1 flex flex-col items-center gap-1">
           <div
             className="w-full bg-[var(--primary)] rounded-t transition-all duration-500 min-h-[4px]"
             style={{
@@ -241,7 +315,9 @@ function ColorSchemeChart({
     <div className="space-y-2">
       {Object.entries(distribution).map(([scheme, count]) => (
         <div key={scheme} className="flex items-center gap-3">
-          <div className={`w-3 h-3 rounded-full ${colors[scheme] || "bg-gray-500"}`} />
+          <div
+            className={`w-3 h-3 rounded-full ${colors[scheme] || "bg-gray-500"}`}
+          />
           <span className="text-sm text-[var(--text-secondary)] font-inter capitalize flex-1">
             {scheme}
           </span>
@@ -535,18 +611,20 @@ function UserDetailsModal({
 // Export helper function
 function exportToCSV(data: Record<string, unknown>[], filename: string) {
   if (data.length === 0) return;
-  
+
   const headers = Object.keys(data[0]);
   const csvContent = [
     headers.join(","),
     ...data.map((row) =>
-      headers.map((header) => {
-        const value = row[header];
-        if (typeof value === "string" && value.includes(",")) {
-          return `"${value}"`;
-        }
-        return String(value ?? "");
-      }).join(",")
+      headers
+        .map((header) => {
+          const value = row[header];
+          if (typeof value === "string" && value.includes(",")) {
+            return `"${value}"`;
+          }
+          return String(value ?? "");
+        })
+        .join(","),
     ),
   ].join("\n");
 
@@ -557,7 +635,10 @@ function exportToCSV(data: Record<string, unknown>[], filename: string) {
   link.click();
 }
 
-function exportAnalyticsToJSON(analytics: Record<string, unknown>, filename: string) {
+function exportAnalyticsToJSON(
+  analytics: Record<string, unknown>,
+  filename: string,
+) {
   const jsonContent = JSON.stringify(analytics, null, 2);
   const blob = new Blob([jsonContent], { type: "application/json" });
   const link = document.createElement("a");
@@ -581,7 +662,9 @@ function DistributionBar({
           <div
             key={idx}
             className={`${item.color} transition-all duration-500`}
-            style={{ width: total > 0 ? `${(item.value / total) * 100}%` : "0%" }}
+            style={{
+              width: total > 0 ? `${(item.value / total) * 100}%` : "0%",
+            }}
           />
         ))}
       </div>
@@ -590,7 +673,8 @@ function DistributionBar({
           <div key={idx} className="flex items-center gap-1.5">
             <div className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
             <span className="text-xs text-[var(--text-secondary)] font-inter">
-              {item.label}: {item.value} ({total > 0 ? ((item.value / total) * 100).toFixed(0) : 0}%)
+              {item.label}: {item.value} (
+              {total > 0 ? ((item.value / total) * 100).toFixed(0) : 0}%)
             </span>
           </div>
         ))}
@@ -602,23 +686,38 @@ function DistributionBar({
 // Compact Stat Row Component
 function CompactStatRow({
   items,
+  gridCols = 4,
 }: {
-  items: Array<{ label: string; value: string | number; icon?: React.ElementType }>;
+  items: Array<{
+    label: string;
+    value: string | number;
+    icon?: React.ElementType;
+  }>;
+  gridCols?: 3 | 4;
 }) {
+  const gridClass =
+    gridCols === 3
+      ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+      : "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3";
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+    <div className={gridClass}>
       {items.map((item, idx) => (
         <div
           key={idx}
           className="flex items-center gap-2 bg-[var(--surface-elevated)] rounded-lg p-2.5 border border-[var(--border)]"
         >
-          {item.icon && <item.icon className="w-3.5 h-3.5 text-[var(--text-muted)]" />}
+          {item.icon && (
+            <item.icon className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+          )}
           <div className="min-w-0 flex-1">
             <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide truncate font-inter">
               {item.label}
             </div>
             <div className="text-sm font-semibold text-[var(--text-primary)] font-statement">
-              {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
+              {typeof item.value === "number"
+                ? item.value.toLocaleString()
+                : item.value}
             </div>
           </div>
         </div>
@@ -628,13 +727,194 @@ function CompactStatRow({
 }
 
 function UserAnalyticsOverview() {
-  const analytics = useQuery(api.admin.getUserAnalytics);
+  const {
+    data: analytics,
+    isFetching,
+    refetch,
+  } = useCachedQuery(
+    api.admin.getUserAnalytics,
+    {},
+    {
+      cacheKey: ADMIN_CACHE_KEYS.userAnalytics,
+      ttl: ADMIN_CACHE_TTLS.analytics,
+    },
+  );
+  const effectiveTheme = useEffectiveTheme();
+  const primaryColor = usePrimaryColor();
+  const isLight = effectiveTheme === "light";
+  const textColor = isLight
+    ? "rgba(17, 24, 39, 0.8)"
+    : "rgba(255, 255, 255, 0.8)";
+  const gridColor = isLight ? "rgba(0, 0, 0, 0.1)" : "rgba(255, 255, 255, 0.1)";
 
   const handleExportAnalytics = () => {
     if (analytics) {
-      exportAnalyticsToJSON(analytics as unknown as Record<string, unknown>, "user_analytics");
+      exportAnalyticsToJSON(
+        analytics as unknown as Record<string, unknown>,
+        "user_analytics",
+      );
     }
   };
+
+  // Weekly Registration Bar Chart Data
+  const weeklyChartData = useMemo(() => {
+    if (!analytics?.registration?.weeklyTrend) return null;
+
+    return {
+      labels: analytics.registration.weeklyTrend.map((w) => w.week),
+      datasets: [
+        {
+          label: "Registrations",
+          data: analytics.registration.weeklyTrend.map((w) => w.count),
+          backgroundColor: primaryColor,
+          borderColor: primaryColor,
+          borderWidth: 1,
+          borderRadius: 4,
+        },
+      ],
+    };
+  }, [analytics, primaryColor]);
+
+  // Monthly Registration Bar Chart Data (last 6 months)
+  const monthlyChartData = useMemo(() => {
+    if (!analytics?.registration?.monthlyTrend) return null;
+
+    return {
+      labels: analytics.registration.monthlyTrend.map((m) => m.month),
+      datasets: [
+        {
+          label: "Registrations",
+          data: analytics.registration.monthlyTrend.map((m) => m.count),
+          backgroundColor: primaryColor,
+          borderColor: primaryColor,
+          borderWidth: 1,
+          borderRadius: 4,
+        },
+      ],
+    };
+  }, [analytics, primaryColor]);
+
+  const barChartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: isLight
+            ? "rgba(255,255,255,0.95)"
+            : "rgba(30,30,30,0.95)",
+          titleColor: textColor,
+          bodyColor: textColor,
+          borderColor: gridColor,
+          borderWidth: 1,
+        },
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: textColor, font: { size: 10 } },
+        },
+        y: {
+          grid: { color: gridColor },
+          ticks: { color: textColor, font: { size: 10 } },
+          beginAtZero: true,
+        },
+      },
+    }),
+    [isLight, textColor, gridColor],
+  );
+
+  // Gender Distribution Doughnut Data
+  const genderDoughnutData = useMemo(() => {
+    if (!analytics?.demographics?.genderDistribution) return null;
+
+    const { male, female, other, unspecified } =
+      analytics.demographics.genderDistribution;
+    const total =
+      (male || 0) + (female || 0) + (other || 0) + (unspecified || 0);
+    if (total === 0) return null;
+
+    return {
+      labels: ["Male", "Female", "Other", "Unspecified"],
+      datasets: [
+        {
+          data: [male || 0, female || 0, other || 0, unspecified || 0],
+          backgroundColor: [
+            "rgba(59, 130, 246, 0.8)", // blue
+            "rgba(236, 72, 153, 0.8)", // pink
+            "rgba(168, 85, 247, 0.8)", // purple
+            "rgba(107, 114, 128, 0.8)", // gray
+          ],
+          borderColor: isLight ? "rgba(255,255,255,1)" : "rgba(30,30,30,1)",
+          borderWidth: 2,
+        },
+      ],
+    };
+  }, [analytics, isLight]);
+
+  // Color Scheme Doughnut Data
+  const colorSchemeDoughnutData = useMemo(() => {
+    if (!analytics?.preferences?.colorSchemeDistribution) return null;
+
+    const distribution = analytics.preferences.colorSchemeDistribution;
+    const entries = Object.entries(distribution);
+    if (entries.length === 0) return null;
+
+    const colorMap: Record<string, string> = {
+      blue: "rgba(59, 130, 246, 0.8)",
+      purple: "rgba(168, 85, 247, 0.8)",
+      green: "rgba(34, 197, 94, 0.8)",
+      orange: "rgba(249, 115, 22, 0.8)",
+      cyan: "rgba(14, 165, 233, 0.8)",
+    };
+
+    return {
+      labels: entries.map(
+        ([scheme]) => scheme.charAt(0).toUpperCase() + scheme.slice(1),
+      ),
+      datasets: [
+        {
+          data: entries.map(([, count]) => count),
+          backgroundColor: entries.map(
+            ([scheme]) => colorMap[scheme] || "rgba(107, 114, 128, 0.8)",
+          ),
+          borderColor: isLight ? "rgba(255,255,255,1)" : "rgba(30,30,30,1)",
+          borderWidth: 2,
+        },
+      ],
+    };
+  }, [analytics, isLight]);
+
+  const doughnutOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom" as const,
+          labels: {
+            color: textColor,
+            usePointStyle: true,
+            pointStyle: "circle" as const,
+            padding: 12,
+            font: { size: 11 },
+          },
+        },
+        tooltip: {
+          backgroundColor: isLight
+            ? "rgba(255,255,255,0.95)"
+            : "rgba(30,30,30,0.95)",
+          titleColor: textColor,
+          bodyColor: textColor,
+          borderColor: gridColor,
+          borderWidth: 1,
+        },
+      },
+      cutout: "60%",
+    }),
+    [isLight, textColor, gridColor],
+  );
 
   if (!analytics) {
     return (
@@ -650,18 +930,6 @@ function UserAnalyticsOverview() {
       </div>
     );
   }
-
-  const maxWeeklyValue = Math.max(...analytics.registration.weeklyTrend.map((w) => w.count), 1);
-
-  // Prepare gender distribution items
-  const genderItems = analytics.demographics?.genderDistribution
-    ? [
-        { label: "Male", value: analytics.demographics.genderDistribution.male || 0, color: "bg-blue-500" },
-        { label: "Female", value: analytics.demographics.genderDistribution.female || 0, color: "bg-pink-500" },
-        { label: "Other", value: analytics.demographics.genderDistribution.other || 0, color: "bg-purple-500" },
-        { label: "Unspecified", value: analytics.demographics.genderDistribution.unspecified || 0, color: "bg-gray-500" },
-      ]
-    : [];
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -793,81 +1061,134 @@ function UserAnalyticsOverview() {
           storageKey="admin-users-weekly-trend"
           defaultOpen={true}
         >
-          <div className="mt-2">
-            <BarChart
-              data={analytics.registration.weeklyTrend.map((w) => ({
-                label: w.week,
-                value: w.count,
-              }))}
-              maxValue={maxWeeklyValue}
-            />
+          <div className="h-48 sm:h-56 mt-4">
+            {weeklyChartData ? (
+              <Bar data={weeklyChartData} options={barChartOptions} />
+            ) : (
+              <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-sm">
+                No registration data
+              </div>
+            )}
           </div>
         </CollapsibleCard>
 
-        {/* Top Countries */}
+        {/* Monthly Registration Trend */}
         <CollapsibleCard
-          title="Top Countries"
-          storageKey="admin-users-countries"
+          title="Monthly Registrations"
+          storageKey="admin-users-monthly-trend"
           defaultOpen={true}
         >
-          <div className="space-y-2 mt-2">
-            {analytics.geography.topCountries.slice(0, 8).map((c, idx) => (
-              <div key={c.country} className="flex items-center gap-3">
-                <span className="text-xs text-[var(--text-muted)] font-inter w-4">
-                  {idx + 1}
-                </span>
-                <span className="text-sm font-medium text-[var(--text-primary)] font-inter w-8">
-                  {c.country}
-                </span>
-                <div className="flex-1 h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[var(--primary)] rounded-full"
-                    style={{
-                      width: `${analytics.totalUsers > 0 ? (c.count / analytics.totalUsers) * 100 : 0}%`,
-                    }}
-                  />
-                </div>
-                <span className="text-sm text-[var(--text-secondary)] font-inter w-12 text-right">
-                  {c.count}
-                </span>
+          <div className="h-48 sm:h-56 mt-4">
+            {monthlyChartData ? (
+              <Bar data={monthlyChartData} options={barChartOptions} />
+            ) : (
+              <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-sm">
+                No monthly data
               </div>
-            ))}
+            )}
           </div>
         </CollapsibleCard>
       </div>
 
-      {/* Demographics & Preferences - Row 5 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-        {/* Gender Distribution */}
-        {genderItems.length > 0 && (
-          <CollapsibleCard
-            title="Gender Distribution"
-            storageKey="admin-users-gender"
-            defaultOpen={true}
-          >
-            <DistributionBar items={genderItems} total={analytics.totalUsers} />
-          </CollapsibleCard>
-        )}
+      {/* Top Countries - Row 5 */}
+      <CollapsibleCard
+        title="Top Countries"
+        storageKey="admin-users-countries"
+        defaultOpen={true}
+      >
+        <div className="space-y-2 mt-2">
+          {analytics.geography.topCountries.slice(0, 8).map((c, idx) => (
+            <div key={c.country} className="flex items-center gap-3">
+              <span className="text-xs text-[var(--text-muted)] font-inter w-4">
+                {idx + 1}
+              </span>
+              <span className="text-sm font-medium text-[var(--text-primary)] font-inter w-8">
+                {c.country}
+              </span>
+              <div className="flex-1 h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[var(--primary)] rounded-full"
+                  style={{
+                    width: `${analytics.totalUsers > 0 ? (c.count / analytics.totalUsers) * 100 : 0}%`,
+                  }}
+                />
+              </div>
+              <span className="text-sm text-[var(--text-secondary)] font-inter w-12 text-right">
+                {c.count}
+              </span>
+            </div>
+          ))}
+        </div>
+      </CollapsibleCard>
 
-        {/* Privacy Settings */}
+      {/* Demographics & Preferences - Row 6 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        {/* Gender Distribution - Doughnut Chart */}
+        <CollapsibleCard
+          title="Gender Distribution"
+          storageKey="admin-users-gender"
+          defaultOpen={true}
+        >
+          <div className="h-56 sm:h-64 mt-4">
+            {genderDoughnutData ? (
+              <Doughnut data={genderDoughnutData} options={doughnutOptions} />
+            ) : (
+              <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-sm">
+                No gender data
+              </div>
+            )}
+          </div>
+        </CollapsibleCard>
+
+        {/* Privacy Settings - Grid 3 */}
         {analytics.demographics?.privacySettings && (
           <CollapsibleCard
             title="Privacy Settings"
             storageKey="admin-users-privacy"
             defaultOpen={true}
           >
-            <CompactStatRow
-              items={[
-                { label: "Profile Public", value: analytics.demographics.privacySettings.profilePublic, icon: Eye },
-                { label: "Profile Hidden", value: analytics.demographics.privacySettings.profileHidden, icon: EyeOff },
-                { label: "Stats Hidden", value: analytics.demographics.privacySettings.challengeStatsHidden, icon: Shield },
-              ]}
-            />
+            <div className="grid grid-cols-3 gap-3 mt-2">
+              {[
+                {
+                  label: "Profile Public",
+                  value: analytics.demographics.privacySettings.profilePublic,
+                  icon: Eye,
+                },
+                {
+                  label: "Profile Hidden",
+                  value: analytics.demographics.privacySettings.profileHidden,
+                  icon: EyeOff,
+                },
+                {
+                  label: "Stats Hidden",
+                  value:
+                    analytics.demographics.privacySettings.challengeStatsHidden,
+                  icon: Shield,
+                },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex flex-col items-center gap-2 bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)] text-center"
+                >
+                  {item.icon && (
+                    <item.icon className="w-4 h-4 text-[var(--text-muted)]" />
+                  )}
+                  <div className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                    {typeof item.value === "number"
+                      ? item.value.toLocaleString()
+                      : item.value}
+                  </div>
+                  <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide font-inter leading-tight">
+                    {item.label}
+                  </div>
+                </div>
+              ))}
+            </div>
           </CollapsibleCard>
         )}
       </div>
 
-      {/* Preferences Grid - Row 6 */}
+      {/* Preferences Grid - Row 7 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
         {/* Theme Distribution */}
         <CollapsibleCard
@@ -880,15 +1201,24 @@ function UserAnalyticsOverview() {
           />
         </CollapsibleCard>
 
-        {/* Color Scheme Distribution */}
+        {/* Color Scheme Distribution - Doughnut Chart */}
         <CollapsibleCard
           title="Color Schemes"
           storageKey="admin-users-colors"
           defaultOpen={true}
         >
-          <ColorSchemeChart
-            distribution={analytics.preferences.colorSchemeDistribution}
-          />
+          <div className="h-56 sm:h-64 mt-4">
+            {colorSchemeDoughnutData ? (
+              <Doughnut
+                data={colorSchemeDoughnutData}
+                options={doughnutOptions}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-sm">
+                No color scheme data
+              </div>
+            )}
+          </div>
         </CollapsibleCard>
       </div>
 
@@ -901,7 +1231,9 @@ function UserAnalyticsOverview() {
             defaultOpen={true}
           >
             <CompactStatRow
-              items={Object.entries(analytics.timerSettings.fontSizeDistribution).map(([size, count]) => ({
+              items={Object.entries(
+                analytics.timerSettings.fontSizeDistribution,
+              ).map(([size, count]) => ({
                 label: size.toUpperCase(),
                 value: count as number,
               }))}
@@ -914,7 +1246,10 @@ function UserAnalyticsOverview() {
             defaultOpen={true}
           >
             <CompactStatRow
-              items={Object.entries(analytics.timerSettings.fontFamilyDistribution).map(([family, count]) => ({
+              gridCols={3}
+              items={Object.entries(
+                analytics.timerSettings.fontFamilyDistribution,
+              ).map(([family, count]) => ({
                 label: family.charAt(0).toUpperCase() + family.slice(1),
                 value: count as number,
               }))}
@@ -927,7 +1262,10 @@ function UserAnalyticsOverview() {
             defaultOpen={true}
           >
             <CompactStatRow
-              items={Object.entries(analytics.timerSettings.updateModeDistribution).map(([mode, count]) => ({
+              gridCols={3}
+              items={Object.entries(
+                analytics.timerSettings.updateModeDistribution,
+              ).map(([mode, count]) => ({
                 label: mode.charAt(0).toUpperCase() + mode.slice(1),
                 value: count as number,
               }))}
@@ -944,10 +1282,20 @@ function UserAnalyticsOverview() {
           defaultOpen={true}
         >
           <CompactStatRow
+            gridCols={3}
             items={[
-              { label: "Reduce Motion", value: analytics.accessibility.reduceMotion },
-              { label: "Disable Glow", value: analytics.accessibility.disableGlow },
-              { label: "High Contrast", value: analytics.accessibility.highContrast },
+              {
+                label: "Reduce Motion",
+                value: analytics.accessibility.reduceMotion,
+              },
+              {
+                label: "Disable Glow",
+                value: analytics.accessibility.disableGlow,
+              },
+              {
+                label: "High Contrast",
+                value: analytics.accessibility.highContrast,
+              },
             ]}
           />
         </CollapsibleCard>
@@ -960,7 +1308,7 @@ export default function AdminUsers() {
   const [searchQuery, setSearchQuery] = useState("");
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<Id<"users"> | null>(
-    null
+    null,
   );
 
   const users = useQuery(api.admin.getAllUsersAdmin, {
@@ -988,7 +1336,7 @@ export default function AdminUsers() {
 
   const handleExportUsers = () => {
     if (!users || users.length === 0) return;
-    
+
     const exportData = users.map((user) => ({
       name: user.name,
       wcaId: user.wcaId,
@@ -1000,7 +1348,7 @@ export default function AdminUsers() {
       colorScheme: user.colorScheme || "blue",
       isDeleted: user.isDeleted ? "Yes" : "No",
     }));
-    
+
     exportToCSV(exportData, "cubedev_users");
   };
 

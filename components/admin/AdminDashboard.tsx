@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useCachedQuery } from "@/lib/hooks/useAdminCache";
+import { ADMIN_CACHE_KEYS, ADMIN_CACHE_TTLS } from "@/lib/admin-cache";
 import {
   Users,
   Timer,
@@ -21,7 +22,9 @@ import {
   ChevronRight,
   Eye,
   EyeOff,
+  RefreshCw,
 } from "lucide-react";
+import { StatCardSkeleton, ListItemSkeleton } from "./AdminSkeletons";
 
 // Stat Card Component
 function StatCard({
@@ -168,31 +171,64 @@ function ActivityItem({
   );
 }
 
-// Loading Skeleton for stat cards
-function StatCardSkeleton() {
-  return (
-    <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)] animate-pulse">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className="p-1.5 sm:p-2 bg-[var(--surface)] rounded-lg">
-          <div className="w-3 h-3 sm:w-4 sm:h-4" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="h-3 w-20 bg-[var(--surface)] rounded mb-1" />
-          <div className="h-5 w-12 bg-[var(--surface)] rounded" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function AdminDashboard() {
-  const systemStats = useQuery(api.admin.getSystemStats);
-  const recentActivity = useQuery(api.admin.getRecentActivity, { limit: 15 });
+  const {
+    data: systemStats,
+    isLoading: statsLoading,
+    isFetching: statsFetching,
+    isFromCache: statsFromCache,
+    refetch: refetchStats,
+  } = useCachedQuery(
+    api.admin.getSystemStats,
+    {},
+    {
+      cacheKey: ADMIN_CACHE_KEYS.systemStats,
+      ttl: ADMIN_CACHE_TTLS.dashboard,
+    },
+  );
 
-  const isLoading = systemStats === undefined;
+  const {
+    data: recentActivity,
+    isFetching: activityFetching,
+    refetch: refetchActivity,
+  } = useCachedQuery(
+    api.admin.getRecentActivity,
+    { limit: 15 },
+    {
+      cacheKey: ADMIN_CACHE_KEYS.recentActivity(15),
+      ttl: ADMIN_CACHE_TTLS.activity,
+    },
+  );
+
+  const isLoading = statsLoading;
+  const isFetching = statsFetching || activityFetching;
+
+  const handleRefresh = () => {
+    refetchStats();
+    refetchActivity();
+  };
 
   return (
     <div className="min-h-full p-4 sm:p-6 lg:p-8">
+      {/* Refresh Button */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={handleRefresh}
+          disabled={isFetching}
+          className="flex items-center gap-2 px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors disabled:opacity-50"
+          title={
+            statsFromCache
+              ? "Data loaded from cache - Click to refresh"
+              : "Refresh data"
+          }
+        >
+          <RefreshCw
+            className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`}
+          />
+          {isFetching ? "Refreshing..." : statsFromCache ? "Cached" : "Refresh"}
+        </button>
+      </div>
+
       {/* Primary Stats */}
       <CollapsibleCard
         title="System Overview"

@@ -9,6 +9,11 @@
  */
 
 import type * as admin from "../admin.js";
+import type * as adminChallenges from "../adminChallenges.js";
+import type * as adminCompetitions from "../adminCompetitions.js";
+import type * as adminContact from "../adminContact.js";
+import type * as adminNotifications from "../adminNotifications.js";
+import type * as adminTimers from "../adminTimers.js";
 import type * as algorithms from "../algorithms.js";
 import type * as challengeRooms from "../challengeRooms.js";
 import type * as challengeStats from "../challengeStats.js";
@@ -38,6 +43,11 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
+  adminChallenges: typeof adminChallenges;
+  adminCompetitions: typeof adminCompetitions;
+  adminContact: typeof adminContact;
+  adminNotifications: typeof adminNotifications;
+  adminTimers: typeof adminTimers;
   algorithms: typeof algorithms;
   challengeRooms: typeof challengeRooms;
   challengeStats: typeof challengeStats;

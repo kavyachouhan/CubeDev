@@ -20,7 +20,7 @@ export default function FeedbackBanner({
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsAnimating(true);
-      // Show banner in next animation frame for smooth transition
+      // Use requestAnimationFrame to ensure the animation classes are applied after the component is rendered
       requestAnimationFrame(() => {
         setIsVisible(true);
       });
@@ -31,7 +31,7 @@ export default function FeedbackBanner({
 
   const handleDismiss = () => {
     setIsVisible(false);
-    // Wait for animation to complete before calling onDismiss
+    // Wait for the animation to finish before calling onDismiss
     setTimeout(() => {
       setIsAnimating(false);
       onDismiss();
@@ -50,7 +50,7 @@ export default function FeedbackBanner({
 
   return (
     <div
-      className={`fixed top-20 left-4 right-4 sm:left-auto sm:top-6 sm:right-4 sm:max-w-sm z-40 transition-all duration-300 ease-out ${
+      className={`fixed top-20 left-4 right-4 sm:left-auto sm:top-20 sm:right-4 sm:max-w-sm z-[60] transition-all duration-300 ease-out ${
         isVisible
           ? "opacity-100 translate-y-0"
           : "opacity-0 -translate-y-4 pointer-events-none"

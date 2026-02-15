@@ -14,7 +14,7 @@ export default function PrivacyPage() {
                   Privacy <span className="text-blue">Policy</span>
                 </h1>
                 <p className="text-muted-foreground">
-                  Last updated: October 25, 2025
+                  Last updated: February 16, 2026
                 </p>
               </div>
 
@@ -106,7 +106,64 @@ export default function PrivacyPage() {
                     </li>
                     <li>Ensure the security and integrity of our platform</li>
                     <li>Respond to your support requests and inquiries</li>
+                    <li>
+                      Conduct research and analysis to improve our products,
+                      services, and the overall speedcubing experience
+                    </li>
+                    <li>
+                      Develop new features and tools based on aggregated user
+                      behavior patterns and solving data insights
+                    </li>
                   </ul>
+                </section>
+
+                <section>
+                  <h2 className="text-xl font-semibold text-primary mb-3">
+                    Research and Product Improvement
+                  </h2>
+                  <p className="text-foreground leading-relaxed mb-4">
+                    CubeDev is committed to advancing the speedcubing community
+                    and continuously improving our platform. To achieve this, we
+                    analyze user data for research and product development
+                    purposes:
+                  </p>
+                  <ul className="space-y-2 text-foreground ml-4">
+                    <li>
+                      <strong>Performance Analysis:</strong> We analyze solving
+                      times, patterns, and progression data to understand how
+                      cubers improve and to develop better training tools and
+                      recommendations.
+                    </li>
+                    <li>
+                      <strong>Feature Development:</strong> Usage patterns and
+                      behavior data help us identify which features are most
+                      valuable and inform the development of new capabilities.
+                    </li>
+                    <li>
+                      <strong>Algorithm Insights:</strong> We study which
+                      algorithms and techniques are most commonly used to
+                      improve our algorithm database and learning resources.
+                    </li>
+                    <li>
+                      <strong>Community Research:</strong> Aggregated and
+                      anonymized data may be used to generate insights about
+                      speedcubing trends, improvement patterns, and community
+                      statistics that benefit all users.
+                    </li>
+                    <li>
+                      <strong>AI and Machine Learning:</strong> We may use
+                      anonymized data to train and improve AI features like
+                      Cubie AI, our coaching assistant, to provide better
+                      personalized recommendations and insights.
+                    </li>
+                  </ul>
+                  <p className="text-foreground leading-relaxed mt-4">
+                    <strong>Important:</strong> All research and analysis is
+                    conducted with user privacy in mind. Where possible, we use
+                    aggregated or anonymized data. Individual user data is never
+                    shared publicly or with third parties for research without
+                    explicit consent.
+                  </p>
                 </section>
 
                 <section>
