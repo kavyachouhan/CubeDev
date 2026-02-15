@@ -995,7 +995,7 @@ export default function AdminTimerStats() {
         </div>
 
         {/* Charts Row 1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           <CollapsibleCard
             title="Daily Solve Activity"
             storageKey="admin-timer-daily"
@@ -1034,7 +1034,7 @@ export default function AdminTimerStats() {
         </div>
 
         {/* Charts Row 2 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           <CollapsibleCard
             title="Event Distribution"
             storageKey="admin-timer-events"
@@ -1084,7 +1084,7 @@ export default function AdminTimerStats() {
         </div>
 
         {/* Penalty & Timer Mode Stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           <CollapsibleCard
             title="Penalty Distribution"
             storageKey="admin-timer-penalties"
@@ -1232,7 +1232,7 @@ export default function AdminTimerStats() {
         </CollapsibleCard>
 
         {/* Leaderboards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           <CollapsibleCard
             title={`Top Performers (${filteredAnalytics?.eventName || selectedFilterEvent})`}
             storageKey="admin-timer-top"
