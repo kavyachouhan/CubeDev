@@ -236,7 +236,7 @@ export default function AdminDashboard() {
         storageKey="admin-dashboard-overview"
       >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          {isLoading ? (
+          {isLoading || !systemStats ? (
             <>
               <StatCardSkeleton />
               <StatCardSkeleton />
@@ -286,7 +286,7 @@ export default function AdminDashboard() {
           storageKey="admin-dashboard-features"
         >
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-            {isLoading ? (
+            {isLoading || !systemStats ? (
               <>
                 <StatCardSkeleton />
                 <StatCardSkeleton />
@@ -337,7 +337,7 @@ export default function AdminDashboard() {
 
           {/* Additional Stats Row */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mt-3 sm:mt-4">
-            {isLoading ? (
+            {isLoading || !systemStats ? (
               <>
                 <StatCardSkeleton />
                 <StatCardSkeleton />
@@ -419,7 +419,7 @@ export default function AdminDashboard() {
           defaultOpen={true}
           storageKey="admin-dashboard-breakdown"
         >
-          {isLoading ? (
+          {isLoading || !systemStats ? (
             <div className="space-y-4 animate-pulse">
               {[...Array(4)].map((_, i) => (
                 <div key={i}>
