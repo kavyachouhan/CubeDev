@@ -476,9 +476,10 @@ export default function DailyJournalModal({
       setUploadingMedia([]);
       setUploadError(null);
     }
-  }, [editingEntryId, existingEntry, tasksForDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingEntryId, existingEntry]);
 
-  // Reset form when modal opens for a NEW entry (not editing)
+  // Reset form fields when opening modal for new entry (but not when editing, to avoid overwriting loaded data)
   useEffect(() => {
     if (isOpen && !editingEntryId) {
       // Reset all form fields for a new entry
@@ -502,7 +503,8 @@ export default function DailyJournalModal({
       setUrlsToRemove([]);
       setUploadError(null);
     }
-  }, [isOpen, editingEntryId, tasksForDate]);
+    // Don't include tasksForDate in dependencies - it changes when tasks are toggled and would cause unwanted form resets
+  }, [isOpen, editingEntryId]);
 
   // Keep ref in sync with uploadingMedia state
   useEffect(() => {
