@@ -228,9 +228,6 @@ export default function KeyboardShortcutsSettings() {
     <div className="timer-card">
       {/* Header */}
       <div className="flex items-start gap-3 mb-6">
-        <div className="p-2 rounded-lg bg-[var(--primary)]/10 flex-shrink-0">
-          <Keyboard className="w-5 h-5 text-[var(--primary)]" />
-        </div>
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
             Keyboard Shortcuts
