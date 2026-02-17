@@ -12,6 +12,7 @@ import StatsFilters from "./stats/StatsFilters";
 import TimeProgressChart from "./stats/TimeProgressChart";
 import TimeDistributionChart from "./stats/TimeDistributionChart";
 import PersonalBestsCard from "./stats/PersonalBestsCard";
+import StatsEmptyState from "./stats/StatsEmptyState";
 import { StatsPageSkeleton } from "./stats/StatsSkeletons";
 import { getCachedStats, cacheStats } from "@/lib/stats-cache";
 
@@ -62,7 +63,7 @@ export default function CubeLabStats() {
   // Precomputed event stats from the database
   const eventStats = useQuery(
     api.users.getUserEventStats,
-    user?.convexId ? { userId: user.convexId as any } : "skip"
+    user?.convexId ? { userId: user.convexId as any } : "skip",
   );
 
   const [filters, setFilters] = useState<FilterState>({
@@ -161,7 +162,7 @@ export default function CubeLabStats() {
       endDate.setHours(23, 59, 59, 999); // Include entire end date
 
       filtered = filtered.filter(
-        (solve) => solve.timestamp >= startDate && solve.timestamp <= endDate
+        (solve) => solve.timestamp >= startDate && solve.timestamp <= endDate,
       );
     } else if (filters.timeFilter !== "all") {
       const now = new Date();
@@ -191,26 +192,26 @@ export default function CubeLabStats() {
     // Session filter (primary)
     if (filters.sessionFilter !== "all") {
       filtered = filtered.filter(
-        (solve) => solve.sessionId === filters.sessionFilter
+        (solve) => solve.sessionId === filters.sessionFilter,
       );
 
       // Secondary event filter (only applies when a specific session is selected)
       if (filters.secondaryEventFilter) {
         filtered = filtered.filter(
-          (solve) => solve.event === filters.secondaryEventFilter
+          (solve) => solve.event === filters.secondaryEventFilter,
         );
       }
     } else {
       // Event filter (only applies when all sessions are selected)
       if (filters.eventFilter !== "all") {
         filtered = filtered.filter(
-          (solve) => solve.event === filters.eventFilter
+          (solve) => solve.event === filters.eventFilter,
         );
       }
     }
 
     return filtered.sort(
-      (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
+      (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
     );
   }, [solves, filters]);
 
@@ -223,7 +224,7 @@ export default function CubeLabStats() {
   // Get available sessions
   const availableSessions = useMemo(() => {
     return sessions.filter((session) =>
-      solves.some((solve) => solve.sessionId === session.id)
+      solves.some((solve) => solve.sessionId === session.id),
     );
   }, [sessions, solves]);
 
@@ -271,37 +272,7 @@ export default function CubeLabStats() {
   }
 
   if (solves.length === 0) {
-    return (
-      <div className="p-8 text-center">
-        <div className="timer-card max-w-md mx-auto">
-          <div className="w-16 h-16 mx-auto mb-4 bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-[var(--text-muted)]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
-            No Statistics Yet
-          </h3>
-          <p className="text-[var(--text-secondary)] mb-4">
-            Start solving cubes to see your progress and analytics here!
-          </p>
-          <div className="text-sm text-[var(--text-muted)]">
-            Your solving data, personal bests, and improvement trends will
-            appear once you complete some solves.
-          </div>
-        </div>
-      </div>
-    );
+    return <StatsEmptyState />;
   }
 
   return (

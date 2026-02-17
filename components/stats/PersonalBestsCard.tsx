@@ -103,7 +103,7 @@ const calculateAverage = (times: number[], count: number): number | null => {
 
 const findBestAverage = (
   times: number[],
-  count: number
+  count: number,
 ): { value: number; index: number } | null => {
   let bestAvg = null;
   let bestIndex = -1;
@@ -128,7 +128,7 @@ export default function PersonalBestsCard({
 }: PersonalBestsCardProps) {
   const [showPersonalBests, setShowPersonalBests] = usePersistentBool(
     "cubelab-personal-bests-expanded",
-    true
+    true,
   );
 
   // Get aggregated stats from precomputed data if available
@@ -146,11 +146,11 @@ export default function PersonalBestsCard({
     // Aggregate across all relevant events
     const totalSolves = relevantStats.reduce(
       (sum, s) => sum + s.totalSolves,
-      0
+      0,
     );
     const totalNonDnfSolves = relevantStats.reduce(
       (sum, s) => sum + s.totalNonDnfSolves,
-      0
+      0,
     );
 
     // Find best values across all events
@@ -182,7 +182,7 @@ export default function PersonalBestsCard({
     if (solves.length === 0) return null;
 
     const sortedSolves = [...solves].sort(
-      (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+      (a, b) => a.timestamp.getTime() - b.timestamp.getTime(),
     );
     const times = sortedSolves.map((solve) => solve.finalTime);
     const validTimes = times.filter((time) => time !== Infinity);
@@ -193,7 +193,7 @@ export default function PersonalBestsCard({
         ? {
             value: Math.min(...validTimes),
             solve: sortedSolves.find(
-              (s) => s.finalTime === Math.min(...validTimes)
+              (s) => s.finalTime === Math.min(...validTimes),
             )!,
           }
         : null;
@@ -345,7 +345,7 @@ export default function PersonalBestsCard({
     {
       label: "Best Single",
       value: displayBestSingle,
-      date: personalBests?.bestSingle?.solve.timestamp,
+      date: personalBests?.bestSingle?.solve?.timestamp,
       icon: Trophy,
       color: "text-[var(--warning)]",
       bgColor: "bg-[var(--warning)]/10",
@@ -353,7 +353,7 @@ export default function PersonalBestsCard({
     {
       label: "Best Ao5",
       value: displayBestAo5,
-      date: personalBests?.bestAo5?.solve.timestamp,
+      date: personalBests?.bestAo5?.solve?.timestamp,
       icon: Target,
       color: "text-[var(--primary)]",
       bgColor: "bg-[var(--primary)]/10",
@@ -361,7 +361,7 @@ export default function PersonalBestsCard({
     {
       label: "Best Ao12",
       value: displayBestAo12,
-      date: personalBests?.bestAo12?.solve.timestamp,
+      date: personalBests?.bestAo12?.solve?.timestamp,
       icon: TrendingUp,
       color: "text-[var(--accent)]",
       bgColor: "bg-[var(--accent)]/10",
