@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import {
@@ -9,11 +10,16 @@ import {
   Calendar,
   Clock,
   TrendingUp,
+  TrendingDown,
   CheckCircle2,
   XCircle,
+  ArrowRightLeft,
   Flame,
+  Eye,
+  History,
 } from "lucide-react";
 import GoalShareMenu from "../coach/GoalShareMenu";
+import GoalDetailModal from "../coach/progress/GoalDetailModal";
 
 interface ProfileTrainingTabProps {
   wcaId: string;
@@ -127,6 +133,20 @@ function formatPracticeTime(minutes: number): string {
 }
 
 export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
+  const [selectedGoal, setSelectedGoal] = useState<{
+    goalType: string;
+    customGoalTime?: number;
+    primaryEvent: string;
+    startDate: number;
+    targetDate: number;
+    endDate?: number;
+    startingAverage?: number;
+    finalAverage?: number;
+    status: "achieved" | "expired" | "replaced" | "active";
+    progressPercentage: number;
+    isCurrent?: boolean;
+  } | null>(null);
+
   // Fetch coach profile and training history
   const coachData = useQuery(api.coach.getCoachProfileByWcaId, { wcaId });
   const progressStats = useQuery(
@@ -205,7 +225,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
         return (
           <span className="flex items-center gap-1.5 text-xs sm:text-sm text-[var(--success)] px-2 sm:px-3 py-1 sm:py-1.5 bg-[var(--success)]/10 rounded-full border border-[var(--success)]/20">
             <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span className="hidden xs:inline">Goal </span>Achieved
+            <span className="hidden sm:inline">Goal </span>Achieved
           </span>
         );
       case "expired":
@@ -219,7 +239,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
         return (
           <span className="flex items-center gap-1.5 text-xs sm:text-sm text-[var(--primary)] px-2 sm:px-3 py-1 sm:py-1.5 bg-[var(--primary)]/10 rounded-full border border-[var(--primary)]/20">
             <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span className="hidden xs:inline">In </span>Progress
+            <span className="hidden sm:inline">In </span>Progress
           </span>
         );
     }
@@ -502,7 +522,23 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
             startDate={coachData.createdAt || Date.now()}
             targetDate={coachData.targetDate}
             progress={progressPercentage}
+            startingAverage={coachData.currentAverage}
+            finalAverage={currentAverage}
             isCurrent
+            onClick={() =>
+              setSelectedGoal({
+                goalType: coachData.goalType,
+                customGoalTime: coachData.customGoalTime,
+                primaryEvent: coachData.primaryEvent,
+                startDate: coachData.createdAt || Date.now(),
+                targetDate: coachData.targetDate,
+                startingAverage: coachData.currentAverage,
+                finalAverage: currentAverage,
+                status,
+                progressPercentage,
+                isCurrent: true,
+              })
+            }
           />
 
           {/* Past Goals from History */}
@@ -530,11 +566,40 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
                     event={EVENT_NAMES[goal.primaryEvent] || goal.primaryEvent}
                     startDate={goal.startDate}
                     targetDate={goal.targetDate}
+                    endDate={goal.endDate}
                     progress={goalProgress}
+                    startingAverage={goal.startingAverage}
+                    finalAverage={goal.finalAverage}
+                    onClick={() =>
+                      setSelectedGoal({
+                        goalType: goal.goalType,
+                        customGoalTime: goal.customGoalTime,
+                        primaryEvent: goal.primaryEvent,
+                        startDate: goal.startDate,
+                        targetDate: goal.targetDate,
+                        endDate: goal.endDate,
+                        startingAverage: goal.startingAverage,
+                        finalAverage: goal.finalAverage,
+                        status: goal.status as "achieved" | "expired" | "replaced" | "active",
+                        progressPercentage: goalProgress,
+                      })
+                    }
                   />
                 );
               })}
             </>
+          )}
+
+          {/* Empty state */}
+          {(!goalHistory || goalHistory.length === 0) && (
+            <div className="ml-10 sm:ml-12 mt-2 p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+              <div className="flex items-center gap-2 text-[var(--text-muted)]">
+                <History className="w-4 h-4" />
+                <span className="text-xs sm:text-sm">
+                  Past goals will appear here as they are completed
+                </span>
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -553,6 +618,14 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
           </p>
         </div>
       </div>
+
+      {selectedGoal && (
+        <GoalDetailModal
+          isOpen={!!selectedGoal}
+          onClose={() => setSelectedGoal(null)}
+          goal={selectedGoal}
+        />
+      )}
     </div>
   );
 }
@@ -605,8 +678,12 @@ interface TimelineItemProps {
   event: string;
   startDate: number;
   targetDate: number;
+  endDate?: number;
   progress: number;
   isCurrent?: boolean;
+  startingAverage?: number;
+  finalAverage?: number;
+  onClick?: () => void;
 }
 
 function TimelineItem({
@@ -615,8 +692,12 @@ function TimelineItem({
   event,
   startDate,
   targetDate,
+  endDate,
   progress,
   isCurrent,
+  startingAverage,
+  finalAverage,
+  onClick,
 }: TimelineItemProps) {
   const StatusIcon =
     status === "achieved"
@@ -631,6 +712,16 @@ function TimelineItem({
         ? "text-[var(--warning)] bg-[var(--warning)]"
         : "text-[var(--primary)] bg-[var(--primary)]";
 
+  // Calculate duration
+  const durationMs = (endDate || Date.now()) - startDate;
+  const durationDays = Math.max(1, Math.ceil(durationMs / (24 * 60 * 60 * 1000)));
+
+  // Improvement
+  const improvement =
+    startingAverage && finalAverage
+      ? startingAverage - finalAverage
+      : undefined;
+
   return (
     <div className="relative flex gap-3 sm:gap-4 pb-4">
       {/* Timeline dot */}
@@ -643,7 +734,11 @@ function TimelineItem({
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0 bg-[var(--surface-elevated)] rounded-lg p-3 sm:p-4 border border-[var(--border)]">
+      <button
+        type="button"
+        onClick={onClick}
+        className="flex-1 min-w-0 bg-[var(--surface-elevated)] rounded-lg p-3 sm:p-4 border border-[var(--border)] text-left hover:border-[var(--primary)]/40 hover:bg-[var(--surface-elevated)]/80 transition-all cursor-pointer group"
+      >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-2">
           <div className="min-w-0">
             <span className="font-semibold text-sm sm:text-base text-[var(--text-primary)] truncate block">
@@ -660,22 +755,55 @@ function TimelineItem({
               )}
             </div>
           </div>
-          {isCurrent && (
-            <span className="hidden sm:inline-block text-xs text-[var(--primary)] bg-[var(--primary)]/10 px-2 py-0.5 rounded-full border border-[var(--primary)]/20 flex-shrink-0">
-              Current
-            </span>
-          )}
+          <div className="hidden sm:flex items-center gap-2">
+            {isCurrent && (
+              <span className="text-xs text-[var(--primary)] bg-[var(--primary)]/10 px-2 py-0.5 rounded-full border border-[var(--primary)]/20 flex-shrink-0">
+                Current
+              </span>
+            )}
+            <Eye className="w-3.5 h-3.5 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
         </div>
+
+        {/* Dates row */}
         <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 text-[10px] sm:text-xs text-[var(--text-muted)]">
           <span>Started: {formatDate(startDate)}</span>
           <span>Target: {formatDate(targetDate)}</span>
+          {endDate && !isCurrent && <span>Ended: {formatDate(endDate)}</span>}
+        </div>
+
+        {/* Stats row */}
+        <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 mt-1.5 text-[10px] sm:text-xs text-[var(--text-muted)]">
+          <span className="flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {durationDays}d
+          </span>
           <span
             className={status === "achieved" ? "text-[var(--success)]" : ""}
           >
             Progress: {progress.toFixed(0)}%
           </span>
+          {improvement !== undefined && improvement !== 0 && (
+            <span
+              className={`flex items-center gap-1 ${
+                improvement > 0
+                  ? "text-[var(--success)]"
+                  : "text-[var(--error)]"
+              }`}
+            >
+              <TrendingDown className="w-3 h-3" />
+              {improvement > 0 ? "-" : "+"}
+              {formatTime(Math.abs(improvement))}
+            </span>
+          )}
+          {startingAverage && (
+            <span className="hidden sm:inline">
+              {formatTime(startingAverage)}
+              {finalAverage ? ` → ${formatTime(finalAverage)}` : ""}
+            </span>
+          )}
         </div>
-      </div>
+      </button>
     </div>
   );
 }

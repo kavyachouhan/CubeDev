@@ -28,6 +28,7 @@ export interface CoachProfile {
   customGoalTime?: number;
   targetDate: number;
   dailyPracticeMinutes: number;
+  practiceSchedule?: string[];
   createdAt?: number;
 }
 

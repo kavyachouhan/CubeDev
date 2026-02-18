@@ -16,8 +16,15 @@ interface TimerRecord {
   tags?: string[];
 }
 
+interface HeatmapDataPoint {
+  date: string;
+  count: number;
+  events?: string[];
+}
+
 interface SolveHeatmapProps {
-  solves: TimerRecord[];
+  solves?: TimerRecord[];
+  heatmapData?: HeatmapDataPoint[];
 }
 
 interface DayData {
@@ -81,7 +88,7 @@ function usePersistentBool(key: string, defaultValue: boolean) {
   return [state, setState] as const;
 }
 
-export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
+export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps) {
   const [hoveredDay, setHoveredDay] = useState<DayData | null>(null);
   const [clickedDay, setClickedDay] = useState<DayData | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<"3m" | "6m" | "1y">(
@@ -115,7 +122,7 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
   }, [clickedDay]);
 
   // Generate heatmap data based on solves and selected period
-  const heatmapData = useMemo(() => {
+  const dayGridData = useMemo(() => {
     const today = new Date();
     today.setHours(23, 59, 59, 999); // Set to end of today
 
@@ -135,21 +142,26 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     const data: DayData[] = [];
     const solveCounts = new Map<string, number>();
 
-    // Count solves per day
-    solves.forEach((solve) => {
-      const solveDate = new Date(solve.timestamp);
-      // Ensure solveDate is valid
-      if (isNaN(solveDate.getTime())) {
-        console.warn("Invalid solve timestamp:", solve.timestamp);
-        return;
-      }
-
-      // Check if solve is within our date range
-      if (solveDate >= startDate && solveDate <= today) {
-        const dateKey = solveDate.toISOString().split("T")[0];
-        solveCounts.set(dateKey, (solveCounts.get(dateKey) || 0) + 1);
-      }
-    });
+    // Count solves per day — use lightweight heatmapData if provided, else fall back to solves
+    if (heatmapData) {
+      heatmapData!.forEach((point) => {
+        const pointDate = new Date(point.date + "T12:00:00");
+        if (pointDate >= startDate && pointDate <= today) {
+          solveCounts.set(point.date, point.count);
+        }
+      });
+    } else if (solves) {
+      solves.forEach((solve) => {
+        const solveDate = new Date(solve.timestamp);
+        if (isNaN(solveDate.getTime())) {
+          return;
+        }
+        if (solveDate >= startDate && solveDate <= today) {
+          const dateKey = solveDate.toISOString().split("T")[0];
+          solveCounts.set(dateKey, (solveCounts.get(dateKey) || 0) + 1);
+        }
+      });
+    }
 
     // Calculate percentiles for intensity levels
     const counts = Array.from(solveCounts.values()).sort((a, b) => a - b);
@@ -211,7 +223,7 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     }
 
     return data;
-  }, [solves, selectedPeriod]);
+  }, [solves, heatmapData, selectedPeriod]);
 
   // Group days into weeks for rendering
   const weeks = useMemo(() => {
@@ -219,11 +231,11 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     let currentWeek: DayData[] = [];
     let weekNumber = 0;
 
-    heatmapData.forEach((day, index) => {
+    dayGridData.forEach((day, index) => {
       currentWeek.push(day);
 
       // If Saturday or last day, push the week
-      if (day.dayOfWeek === 6 || index === heatmapData.length - 1) {
+      if (day.dayOfWeek === 6 || index === dayGridData.length - 1) {
         // Determine if this week starts a new month
         const firstDayOfWeek = currentWeek[0];
         const monthStart =
@@ -241,7 +253,7 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     });
 
     return weekGroups;
-  }, [heatmapData]);
+  }, [dayGridData]);
 
   // Calculate overall stats
   const stats = useMemo(() => {
@@ -256,18 +268,18 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     cutoff.setDate(today.getDate() - daysBack + 1); // +1 to include start date
     cutoff.setHours(0, 0, 0, 0);
 
-    const filteredSolves = solves.filter((solve) => {
-      const solveDate = new Date(solve.timestamp);
-      return solveDate >= cutoff && solveDate <= today;
-    });
+    const filteredSolvesCount = dayGridData.reduce((sum, day) => {
+      // Only count solves within the selected period
+      return sum + day.count;
+    }, 0);
 
     const activeDays = new Set(
-      heatmapData.filter((day) => day.count > 0).map((day) => day.formattedDate)
+      dayGridData.filter((day) => day.count > 0).map((day) => day.formattedDate)
     ).size;
 
     // Use actual days back for total days calculation
     const totalDays = daysBack;
-    const averagePerDay = totalDays > 0 ? filteredSolves.length / totalDays : 0;
+    const averagePerDay = totalDays > 0 ? filteredSolvesCount / totalDays : 0;
 
     // Calculate streaks (current and longest)
     let currentStreak = 0;
@@ -283,15 +295,13 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     const todayKey = todayDate.toISOString().split("T")[0];
     const yesterdayKey = yesterdayDate.toISOString().split("T")[0];
 
-    const hasSolvedToday = filteredSolves.some((solve) => {
-      const solveDate = new Date(solve.timestamp);
-      return solveDate.toISOString().split("T")[0] === todayKey;
-    });
+    const hasSolvedToday = dayGridData.some(
+      (day) => day.formattedDate === todayKey && day.count > 0,
+    );
 
-    const hasSolvedYesterday = filteredSolves.some((solve) => {
-      const solveDate = new Date(solve.timestamp);
-      return solveDate.toISOString().split("T")[0] === yesterdayKey;
-    });
+    const hasSolvedYesterday = dayGridData.some(
+      (day) => day.formattedDate === yesterdayKey && day.count > 0,
+    );
 
     // Determine starting point for current streak check
     let checkDate = new Date(todayDate);
@@ -304,7 +314,7 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     if (hasSolvedToday || hasSolvedYesterday) {
       while (checkDate >= cutoff) {
         const dateKey = checkDate.toISOString().split("T")[0];
-        const dayData = heatmapData.find(
+        const dayData = dayGridData.find(
           (day) => day.formattedDate === dateKey
         );
 
@@ -318,7 +328,7 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     }
 
     // Calculate longest streak
-    heatmapData.forEach((day) => {
+    dayGridData.forEach((day) => {
       if (day.count > 0) {
         tempStreak++;
         longestStreak = Math.max(longestStreak, tempStreak);
@@ -328,13 +338,13 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
     });
 
     // Find best day
-    const bestDay = heatmapData.reduce(
+    const bestDay = dayGridData.reduce(
       (best, current) => (current.count > best.count ? current : best),
-      heatmapData[0] || { count: 0, date: new Date(), formattedDate: "" }
+      dayGridData[0] || { count: 0, date: new Date(), formattedDate: "" }
     );
 
     return {
-      totalSolves: filteredSolves.length,
+      totalSolves: filteredSolvesCount,
       activeDays,
       totalDays,
       currentStreak,
@@ -343,7 +353,7 @@ export default function SolveHeatmap({ solves }: SolveHeatmapProps) {
       bestDay,
       completionRate: totalDays > 0 ? (activeDays / totalDays) * 100 : 0,
     };
-  }, [heatmapData, solves, selectedPeriod]);
+  }, [dayGridData, selectedPeriod]);
 
   const getIntensityColor = (level: number, isHovered: boolean = false) => {
     const baseColors = {

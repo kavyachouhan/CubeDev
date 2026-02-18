@@ -1,6 +1,7 @@
 export { default as GoalProgressCard } from "./GoalProgressCard";
 export { default as GoalCompletionCard } from "./GoalCompletionCard";
 export { default as GoalTimelineCard } from "./GoalTimelineCard";
+export { default as GoalDetailModal } from "./GoalDetailModal";
 export { default as PracticeStreakCard } from "./PracticeStreakCard";
 export { default as WeeklySummaryCard } from "./WeeklySummaryCard";
 export { default as LearningMetricsCard } from "./LearningMetricsCard";

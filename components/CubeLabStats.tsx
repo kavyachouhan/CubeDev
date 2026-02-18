@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useUser } from "@/components/UserProvider";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { useSessionState } from "./timer/hooks/useSessionState";
 import { useDatabaseSync } from "./timer/hooks/useDatabaseSync";
 import { useLocalStorageManager } from "./timer/hooks/useLocalStorageManager";
@@ -65,6 +66,21 @@ export default function CubeLabStats() {
     api.users.getUserEventStats,
     user?.convexId ? { userId: user.convexId as any } : "skip",
   );
+
+  // Lightweight heatmap data (date and count only) for the SolveHeatmap component, fetched separately for performance
+  const heatmapRawData = useQuery(
+    api.users.getSolveHeatmapData,
+    user?.convexId ? { userId: user.convexId as Id<"users"> } : "skip",
+  );
+
+  const heatmapData = useMemo(() => {
+    if (!heatmapRawData) return undefined;
+    return heatmapRawData.map((d) => ({
+      date: d.date,
+      count: d.count,
+      events: d.events,
+    }));
+  }, [heatmapRawData]);
 
   const [filters, setFilters] = useState<FilterState>({
     timeFilter: "30d",
@@ -310,7 +326,7 @@ export default function CubeLabStats() {
 
       {/* Solve Heatmap */}
       <div className="timer-card">
-        <SolveHeatmap solves={filteredSolves} />
+        <SolveHeatmap heatmapData={heatmapData} />
       </div>
     </div>
   );

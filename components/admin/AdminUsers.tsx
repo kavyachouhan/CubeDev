@@ -1312,7 +1312,6 @@ export default function AdminUsers() {
   );
 
   const users = useQuery(api.admin.getAllUsersAdmin, {
-    limit: 100,
     includeDeleted,
     searchQuery: searchQuery.trim() || undefined,
   });

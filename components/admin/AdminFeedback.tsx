@@ -339,8 +339,8 @@ function FeatureRatingBar({
   };
 
   return (
-    <div className="flex items-center gap-3">
-      <span className="w-32 text-sm text-[var(--text-secondary)] font-inter truncate">
+    <div className="flex items-center gap-2 sm:gap-3">
+      <span className="w-20 sm:w-32 text-xs sm:text-sm text-[var(--text-secondary)] font-inter truncate shrink-0">
         {formatFeatureName(feature)}
       </span>
       <div className="flex-1 h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
@@ -394,21 +394,23 @@ function FeedbackItem({
       {/* Header - Always Visible */}
       <button
         onClick={onToggle}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-[var(--surface-elevated)] transition-colors"
+        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2 hover:bg-[var(--surface-elevated)] transition-colors"
       >
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-xs px-2 py-0.5 bg-[var(--primary)]/10 text-[var(--primary)] rounded-full font-inter">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <span className="text-xs px-1.5 sm:px-2 py-0.5 bg-[var(--primary)]/10 text-[var(--primary)] rounded-full font-inter truncate max-w-[80px] sm:max-w-none">
               {feedback.surveyType || "general"}
             </span>
-            <span className="text-xs text-[var(--text-muted)] font-inter">
+            <span className="text-xs text-[var(--text-muted)] font-inter hidden xs:inline">
               v{feedback.surveyVersion || "1.0"}
             </span>
           </div>
-          {feedback.uiuxRating && renderStars(feedback.uiuxRating)}
+          <div className="hidden sm:block">
+            {feedback.uiuxRating && renderStars(feedback.uiuxRating)}
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-[var(--text-muted)] font-inter hidden sm:inline">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <span className="text-xs sm:text-sm text-[var(--text-muted)] font-inter hidden sm:inline">
             {formatDate(feedback.createdAt)}
           </span>
           {isExpanded ? (
@@ -421,9 +423,13 @@ function FeedbackItem({
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="px-4 pb-4 pt-2 border-t border-[var(--border)] space-y-4">
+        <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-2 border-t border-[var(--border)] space-y-3 sm:space-y-4">
+          {/* Mobile date */}
+          <p className="text-xs text-[var(--text-muted)] font-inter sm:hidden">
+            {formatDate(feedback.createdAt)}
+          </p>
           {/* Ratings Row */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             {feedback.uiuxRating && (
               <div className="bg-[var(--surface-elevated)] rounded-lg p-3">
                 <p className="text-xs text-[var(--text-muted)] font-inter mb-1">
@@ -465,14 +471,21 @@ function FeedbackItem({
             )}
           </div>
 
+          {/* Mobile Stars */}
+          {feedback.uiuxRating && (
+            <div className="sm:hidden">
+              {renderStars(feedback.uiuxRating)}
+            </div>
+          )}
+
           {/* Feature Ratings */}
           {feedback.featureRatings &&
             Object.keys(feedback.featureRatings).length > 0 && (
               <div>
-                <p className="text-sm font-medium text-[var(--text-secondary)] font-inter mb-2">
+                <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] font-inter mb-2">
                   Feature Ratings
                 </p>
-                <div className="bg-[var(--surface-elevated)] rounded-lg p-3 space-y-2">
+                <div className="bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 space-y-2">
                   {Object.entries(feedback.featureRatings).map(
                     ([feature, rating]) => (
                       <FeatureRatingBar
@@ -489,10 +502,10 @@ function FeedbackItem({
           {/* Most Useful Feature */}
           {feedback.mostUsefulFeature && (
             <div>
-              <p className="text-sm font-medium text-[var(--text-secondary)] font-inter mb-1">
+              <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] font-inter mb-1">
                 Most Useful Feature
               </p>
-              <p className="text-sm text-[var(--text-primary)] font-inter bg-[var(--surface-elevated)] rounded-lg p-3">
+              <p className="text-xs sm:text-sm text-[var(--text-primary)] font-inter bg-[var(--surface-elevated)] rounded-lg p-2.5 sm:p-3">
                 {feedback.mostUsefulFeature}
               </p>
             </div>
@@ -501,10 +514,10 @@ function FeedbackItem({
           {/* Feature Requests */}
           {feedback.featureRequests && (
             <div>
-              <p className="text-sm font-medium text-[var(--text-secondary)] font-inter mb-1">
+              <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] font-inter mb-1">
                 Feature Requests
               </p>
-              <p className="text-sm text-[var(--text-primary)] font-inter bg-[var(--surface-elevated)] rounded-lg p-3 whitespace-pre-wrap">
+              <p className="text-xs sm:text-sm text-[var(--text-primary)] font-inter bg-[var(--surface-elevated)] rounded-lg p-2.5 sm:p-3 whitespace-pre-wrap break-words">
                 {feedback.featureRequests}
               </p>
             </div>
@@ -513,23 +526,78 @@ function FeedbackItem({
           {/* Additional Comments */}
           {feedback.additionalComments && (
             <div>
-              <p className="text-sm font-medium text-[var(--text-secondary)] font-inter mb-1">
+              <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] font-inter mb-1">
                 Additional Comments
               </p>
-              <p className="text-sm text-[var(--text-primary)] font-inter bg-[var(--surface-elevated)] rounded-lg p-3 whitespace-pre-wrap">
+              <p className="text-xs sm:text-sm text-[var(--text-primary)] font-inter bg-[var(--surface-elevated)] rounded-lg p-2.5 sm:p-3 whitespace-pre-wrap break-words">
                 {feedback.additionalComments}
               </p>
             </div>
           )}
 
+          {/* Custom Responses */}
+          {feedback.customResponses &&
+            typeof feedback.customResponses === "object" &&
+            Object.keys(feedback.customResponses).length > 0 && (
+              <div>
+                <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] font-inter mb-2">
+                  Custom Responses
+                </p>
+                <div className="bg-[var(--surface-elevated)] rounded-lg p-2.5 sm:p-3 space-y-3">
+                  {Object.entries(feedback.customResponses).map(
+                    ([key, value]) => (
+                      <div key={key}>
+                        <p className="text-xs text-[var(--text-muted)] font-inter mb-0.5 capitalize">
+                          {key
+                            .replace(/([A-Z])/g, " $1")
+                            .replace(/_/g, " ")
+                            .trim()}
+                        </p>
+                        {typeof value === "number" ? (
+                          <div className="flex items-center gap-2">
+                            {value <= 5 ? (
+                              <>
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <Star
+                                    key={star}
+                                    className={`w-4 h-4 ${
+                                      star <= (value as number)
+                                        ? "text-[var(--warning)] fill-[var(--warning)]"
+                                        : "text-[var(--text-muted)]"
+                                    }`}
+                                  />
+                                ))}
+                                <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                                  {value as number}/5
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                                {value as number}
+                                {(value as number) <= 10 ? "/10" : ""}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-[var(--text-primary)] font-inter whitespace-pre-wrap">
+                            {String(value)}
+                          </p>
+                        )}
+                      </div>
+                    ),
+                  )}
+                </div>
+              </div>
+            )}
+
           {/* Metadata */}
-          <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter pt-2 border-t border-[var(--border)]">
-            <span className="flex items-center gap-1">
+          <div className="flex items-center gap-2 sm:gap-4 text-xs text-[var(--text-muted)] font-inter pt-2 border-t border-[var(--border)] flex-wrap">
+            <span className="flex items-center gap-1 shrink-0">
               <Calendar className="w-3 h-3" />
               {formatDate(feedback.createdAt)}
             </span>
             {feedback.userAgent && (
-              <span className="truncate max-w-xs hidden sm:inline">
+              <span className="truncate max-w-[200px] sm:max-w-xs hidden sm:inline">
                 {feedback.userAgent}
               </span>
             )}
@@ -714,24 +782,59 @@ function NPSBreakdown({
 }
 
 // Feedback Form Modal Component
-const DEFAULT_FEATURES = [
-  { key: "timer", label: "Timer" },
-  { key: "algorithmTrainer", label: "Algorithm Trainer" },
-  { key: "challenges", label: "Challenge Rooms" },
-  { key: "statistics", label: "Statistics" },
-  { key: "competitions", label: "Competition Simulator" },
-  { key: "coach", label: "Coach" },
-] as const;
 
 // Available survey types
 const SURVEY_TYPES = [
   { value: "general", label: "General Feedback" },
+  { value: "coach", label: "Coach / Volunteer" },
+  { value: "cubie", label: "Cubie AI" },
   { value: "beta", label: "Beta Testing" },
   { value: "feature", label: "Feature Specific" },
   { value: "nps", label: "NPS Survey" },
   { value: "onboarding", label: "Onboarding" },
   { value: "exit", label: "Exit Survey" },
 ] as const;
+
+// Dynamic features per survey type
+const FEATURES_BY_TYPE: Record<string, Array<{ key: string; label: string }>> = {
+  general: [
+    { key: "timer", label: "Timer" },
+    { key: "algorithmTrainer", label: "Algorithm Trainer" },
+    { key: "challenges", label: "Challenge Rooms" },
+    { key: "statistics", label: "Statistics" },
+    { key: "competitions", label: "Competition Simulator" },
+    { key: "coach", label: "Coach" },
+  ],
+  coach: [
+    { key: "goalTracking", label: "Goal Tracking" },
+    { key: "trainingPlan", label: "Training Plan" },
+    { key: "progressAnalytics", label: "Progress Analytics" },
+    { key: "journaling", label: "Practice Journal" },
+  ],
+  cubie: [
+    { key: "chat", label: "Chat Experience" },
+    { key: "accuracy", label: "Response Accuracy" },
+    { key: "helpfulness", label: "Helpfulness" },
+  ],
+};
+
+type CustomQuestionType = "text" | "textarea" | "rating" | "scale" | "select";
+
+interface CustomQuestion {
+  id: string;
+  label: string;
+  type: CustomQuestionType;
+  options: string;
+  required: boolean;
+}
+
+const QUESTION_TYPES: Array<{ value: CustomQuestionType; label: string }> = [
+  { value: "text", label: "Short Text" },
+  { value: "textarea", label: "Long Text" },
+  { value: "rating", label: "Rating (1-5)" },
+  { value: "scale", label: "Scale (1-10)" },
+  { value: "select", label: "Dropdown" },
+];
 
 // Form section toggle component
 function FormSectionToggle({
@@ -797,29 +900,47 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
 
   // Form data
   const [surveyType, setSurveyType] = useState("general");
+  const [customSurveyType, setCustomSurveyType] = useState("");
   const [surveyVersion, setSurveyVersion] = useState("2.0");
   const [uiuxRating, setUiuxRating] = useState(0);
-  const [featureRatings, setFeatureRatings] = useState<Record<string, number>>(
-    () => {
-      const initial: Record<string, number> = {};
-      DEFAULT_FEATURES.forEach((f) => {
-        initial[f.key] = 0;
-      });
-      return initial;
-    },
+
+  // Dynamic features based on survey type
+  const activeFeatures = useMemo(() => {
+    const effectiveType = surveyType === "__custom" ? customSurveyType : surveyType;
+    return FEATURES_BY_TYPE[effectiveType] || FEATURES_BY_TYPE.general;
+  }, [surveyType, customSurveyType]);
+
+  const [featureRatings, setFeatureRatings] = useState<Record<string, number>>({});
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+
+  // Sync features when survey type changes
+  useEffect(() => {
+    const initial: Record<string, number> = {};
+    activeFeatures.forEach((f) => {
+      initial[f.key] = 0;
+    });
+    setFeatureRatings(initial);
+    setSelectedFeatures(activeFeatures.map((f) => f.key));
+  }, [activeFeatures]);
+
+  // Custom feature entries (admin can add new features beyond the presets)
+  const [extraFeatures, setExtraFeatures] = useState<
+    Array<{ key: string; label: string }>
+  >([]);
+
+  const allFeatures = useMemo(
+    () => [...activeFeatures, ...extraFeatures.filter((f) => f.key.trim() && f.label.trim())],
+    [activeFeatures, extraFeatures],
   );
-  const [selectedFeatures, setSelectedFeatures] = useState<string[]>(
-    DEFAULT_FEATURES.map((f) => f.key),
-  );
+
   const [mostUsefulFeature, setMostUsefulFeature] = useState("");
   const [featureRequests, setFeatureRequests] = useState("");
   const [recommendScore, setRecommendScore] = useState(0);
   const [additionalComments, setAdditionalComments] = useState("");
 
-  // Custom fields
-  const [customFields, setCustomFields] = useState<
-    Array<{ key: string; value: string }>
-  >([]);
+  // Custom questions builder
+  const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
+  const [customAnswers, setCustomAnswers] = useState<Record<string, string | number>>({});
 
   const submitFeedback = useMutation(api.feedbackResponses.submitFeedback);
 
@@ -835,41 +956,87 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
     );
   };
 
-  const addCustomField = () => {
-    setCustomFields((prev) => [...prev, { key: "", value: "" }]);
+  // Extra feature management
+  const addExtraFeature = () => {
+    setExtraFeatures((prev) => [...prev, { key: "", label: "" }]);
   };
 
-  const removeCustomField = (index: number) => {
-    setCustomFields((prev) => prev.filter((_, i) => i !== index));
+  const removeExtraFeature = (index: number) => {
+    const removed = extraFeatures[index];
+    setExtraFeatures((prev) => prev.filter((_, i) => i !== index));
+    if (removed?.key) {
+      setSelectedFeatures((prev) => prev.filter((f) => f !== removed.key));
+      setFeatureRatings((prev) => {
+        const next = { ...prev };
+        delete next[removed.key];
+        return next;
+      });
+    }
   };
 
-  const updateCustomField = (
+  const updateExtraFeature = (
     index: number,
-    field: "key" | "value",
+    field: "key" | "label",
     value: string,
   ) => {
-    setCustomFields((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
+    setExtraFeatures((prev) =>
+      prev.map((item, i) => {
+        if (i !== index) return item;
+        const updated = { ...item, [field]: value };
+        // Auto-generate key from label
+        if (field === "label") {
+          updated.key = value
+            .toLowerCase()
+            .replace(/\s+/g, "")
+            .replace(/[^a-zA-Z0-9]/g, "");
+        }
+        return updated;
+      }),
     );
+  };
+
+  // Custom question management
+  const addCustomQuestion = () => {
+    const id = `q_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    setCustomQuestions((prev) => [
+      ...prev,
+      { id, label: "", type: "text" as CustomQuestionType, options: "", required: false },
+    ]);
+  };
+
+  const removeCustomQuestion = (id: string) => {
+    setCustomQuestions((prev) => prev.filter((q) => q.id !== id));
+    setCustomAnswers((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  };
+
+  const updateCustomQuestion = (id: string, updates: Partial<CustomQuestion>) => {
+    setCustomQuestions((prev) =>
+      prev.map((q) => (q.id === id ? { ...q, ...updates } : q)),
+    );
+  };
+
+  const updateCustomAnswer = (id: string, value: string | number) => {
+    setCustomAnswers((prev) => ({ ...prev, [id]: value }));
   };
 
   const resetForm = () => {
     setSurveyType("general");
+    setCustomSurveyType("");
     setSurveyVersion("2.0");
     setUiuxRating(0);
-    setFeatureRatings(() => {
-      const initial: Record<string, number> = {};
-      DEFAULT_FEATURES.forEach((f) => {
-        initial[f.key] = 0;
-      });
-      return initial;
-    });
-    setSelectedFeatures(DEFAULT_FEATURES.map((f) => f.key));
+    setFeatureRatings({});
+    setSelectedFeatures([]);
+    setExtraFeatures([]);
     setMostUsefulFeature("");
     setFeatureRequests("");
     setRecommendScore(0);
     setAdditionalComments("");
-    setCustomFields([]);
+    setCustomQuestions([]);
+    setCustomAnswers({});
     setEnabledSections({
       uiuxRating: true,
       featureRatings: true,
@@ -886,26 +1053,26 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
 
     setIsSubmitting(true);
     try {
-      // Filter out zero ratings and only include enabled features
+      const effectiveType = surveyType === "__custom" ? customSurveyType.trim() : surveyType;
+
+      // Filter out zero ratings and only include enabled/selected features
       const validFeatureRatings = Object.fromEntries(
         Object.entries(featureRatings).filter(
           ([key, v]) => v > 0 && selectedFeatures.includes(key),
         ),
       );
 
-      // Build custom responses object
-      const customResponses = customFields.reduce(
-        (acc, field) => {
-          if (field.key.trim() && field.value.trim()) {
-            acc[field.key.trim()] = field.value.trim();
-          }
-          return acc;
-        },
-        {} as Record<string, string>,
-      );
+      // Build custom responses from custom questions + answers
+      const customResponses: Record<string, string | number> = {};
+      customQuestions.forEach((q) => {
+        if (q.label.trim() && customAnswers[q.id] !== undefined && customAnswers[q.id] !== "") {
+          const safeKey = q.label.trim().replace(/\s+/g, "_").toLowerCase();
+          customResponses[safeKey] = customAnswers[q.id];
+        }
+      });
 
       await submitFeedback({
-        surveyType,
+        surveyType: effectiveType || "general",
         surveyVersion,
         uiuxRating:
           enabledSections.uiuxRating && uiuxRating > 0 ? uiuxRating : undefined,
@@ -947,14 +1114,14 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="timer-card max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] font-statement">
               Create Feedback Form
             </h2>
-            <p className="text-sm text-[var(--text-muted)] font-inter mt-1">
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] font-inter mt-1">
               Configure form fields and submit feedback entry
             </p>
           </div>
@@ -966,9 +1133,9 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Form Configuration */}
-          <div className="bg-[var(--surface-elevated)] rounded-xl p-4 border border-[var(--border)]">
+          <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
             <div className="flex items-center gap-2 mb-3">
               <Settings className="w-4 h-4 text-[var(--text-muted)]" />
               <h3 className="text-sm font-medium text-[var(--text-primary)] font-inter">
@@ -1025,7 +1192,17 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     {type.label}
                   </option>
                 ))}
+                <option value="__custom">Custom Type...</option>
               </select>
+              {surveyType === "__custom" && (
+                <input
+                  type="text"
+                  value={customSurveyType}
+                  onChange={(e) => setCustomSurveyType(e.target.value)}
+                  className="w-full mt-2 px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                  placeholder="Enter custom survey type..."
+                />
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
@@ -1084,7 +1261,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
 
               {/* Feature Selection */}
               <div className="flex flex-wrap gap-1.5 mb-4">
-                {DEFAULT_FEATURES.map((feature) => (
+                {allFeatures.map((feature) => (
                   <button
                     key={feature.key}
                     type="button"
@@ -1100,46 +1277,78 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                 ))}
               </div>
 
-              {/* Ratings */}
-              <div className="space-y-3 bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
-                {DEFAULT_FEATURES.filter((f) =>
-                  selectedFeatures.includes(f.key),
-                ).map((feature) => (
-                  <div
-                    key={feature.key}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="text-sm text-[var(--text-secondary)] font-inter">
-                      {feature.label}
-                    </span>
-                    <div className="flex gap-1">
-                      {[1, 2, 3, 4, 5].map((rating) => (
-                        <button
-                          key={rating}
-                          type="button"
-                          onClick={() =>
-                            setFeatureRatings({
-                              ...featureRatings,
-                              [feature.key]:
-                                featureRatings[feature.key] === rating
-                                  ? 0
-                                  : rating,
-                            })
-                          }
-                          className="p-1 rounded transition-colors"
-                        >
-                          <Star
-                            className={`w-4 h-4 ${
-                              rating <= featureRatings[feature.key]
-                                ? "text-amber-500 fill-amber-500"
-                                : "text-[var(--text-muted)]"
-                            }`}
-                          />
-                        </button>
-                      ))}
-                    </div>
+              {/* Add Extra Feature */}
+              <div className="mb-3">
+                {extraFeatures.map((ef, index) => (
+                  <div key={index} className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={ef.label}
+                      onChange={(e) =>
+                        updateExtraFeature(index, "label", e.target.value)
+                      }
+                      className="flex-1 px-3 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                      placeholder="Feature name..."
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeExtraFeature(index)}
+                      className="p-2 text-[var(--text-muted)] hover:text-[var(--error)] hover:bg-[var(--error)]/10 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 ))}
+                <button
+                  type="button"
+                  onClick={addExtraFeature}
+                  className="flex items-center gap-1 px-2 py-1 text-xs bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-md text-[var(--text-secondary)] transition-colors font-inter"
+                >
+                  <Plus className="w-3 h-3" />
+                  Add Feature
+                </button>
+              </div>
+
+              {/* Ratings */}
+              <div className="space-y-3 bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 border border-[var(--border)]">
+                {allFeatures
+                  .filter((f) => selectedFeatures.includes(f.key))
+                  .map((feature) => (
+                    <div
+                      key={feature.key}
+                      className="flex items-center justify-between gap-2"
+                    >
+                      <span className="text-xs sm:text-sm text-[var(--text-secondary)] font-inter truncate min-w-0">
+                        {feature.label}
+                      </span>
+                      <div className="flex gap-0.5 sm:gap-1 shrink-0">
+                        {[1, 2, 3, 4, 5].map((rating) => (
+                          <button
+                            key={rating}
+                            type="button"
+                            onClick={() =>
+                              setFeatureRatings({
+                                ...featureRatings,
+                                [feature.key]:
+                                  featureRatings[feature.key] === rating
+                                    ? 0
+                                    : rating,
+                              })
+                            }
+                            className="p-0.5 sm:p-1 rounded transition-colors"
+                          >
+                            <Star
+                              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
+                                rating <= (featureRatings[feature.key] || 0)
+                                  ? "text-amber-500 fill-amber-500"
+                                  : "text-[var(--text-muted)]"
+                              }`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 {selectedFeatures.length === 0 && (
                   <p className="text-sm text-[var(--text-muted)] text-center py-2 font-inter">
                     Select features above to rate
@@ -1188,7 +1397,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                 className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-inter focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               >
                 <option value="">Select a feature...</option>
-                {DEFAULT_FEATURES.map((feature) => (
+                {allFeatures.map((feature) => (
                   <option key={feature.key} value={feature.key}>
                     {feature.label}
                   </option>
@@ -1229,57 +1438,205 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
             </div>
           )}
 
-          {/* Custom Fields */}
+          {/* Custom Questions Builder */}
           <div>
             <div className="flex items-center justify-between mb-3">
               <label className="block text-sm font-medium text-[var(--text-primary)] font-inter">
-                Custom Fields
+                Custom Questions
               </label>
               <button
                 type="button"
-                onClick={addCustomField}
+                onClick={addCustomQuestion}
                 className="flex items-center gap-1 px-2 py-1 text-xs bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-md text-[var(--text-secondary)] transition-colors font-inter"
               >
                 <Plus className="w-3 h-3" />
-                Add Field
+                Add Question
               </button>
             </div>
-            {customFields.length > 0 && (
-              <div className="space-y-2">
-                {customFields.map((field, index) => (
-                  <div key={index} className="flex gap-2">
+            {customQuestions.length > 0 ? (
+              <div className="space-y-4">
+                {customQuestions.map((question, idx) => (
+                  <div
+                    key={question.id}
+                    className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)] space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-[var(--text-muted)] font-inter">
+                        Question {idx + 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeCustomQuestion(question.id)}
+                        className="p-1 text-[var(--text-muted)] hover:text-[var(--error)] hover:bg-[var(--error)]/10 rounded transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    {/* Question Label */}
                     <input
                       type="text"
-                      value={field.key}
+                      value={question.label}
                       onChange={(e) =>
-                        updateCustomField(index, "key", e.target.value)
+                        updateCustomQuestion(question.id, { label: e.target.value })
                       }
-                      className="flex-1 px-3 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
-                      placeholder="Field name..."
+                      className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                      placeholder="Enter question..."
                     />
-                    <input
-                      type="text"
-                      value={field.value}
-                      onChange={(e) =>
-                        updateCustomField(index, "value", e.target.value)
-                      }
-                      className="flex-1 px-3 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
-                      placeholder="Value..."
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeCustomField(index)}
-                      className="p-2 text-[var(--text-muted)] hover:text-[var(--error)] hover:bg-[var(--error)]/10 rounded-lg transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+
+                    {/* Question Type & Required */}
+                    <div className="flex flex-col xs:flex-row gap-2 items-stretch xs:items-center">
+                      <select
+                        value={question.type}
+                        onChange={(e) =>
+                          updateCustomQuestion(question.id, {
+                            type: e.target.value as CustomQuestionType,
+                          })
+                        }
+                        className="flex-1 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] font-inter focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                      >
+                        {QUESTION_TYPES.map((t) => (
+                          <option key={t.value} value={t.value}>
+                            {t.label}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateCustomQuestion(question.id, {
+                            required: !question.required,
+                          })
+                        }
+                        className={`px-2.5 py-2 rounded-lg text-xs font-inter border transition-colors text-center ${
+                          question.required
+                            ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
+                            : "bg-[var(--surface)] border-[var(--border)] text-[var(--text-muted)]"
+                        }`}
+                      >
+                        {question.required ? "Required" : "Optional"}
+                      </button>
+                    </div>
+
+                    {/* Options for select type */}
+                    {question.type === "select" && (
+                      <input
+                        type="text"
+                        value={question.options}
+                        onChange={(e) =>
+                          updateCustomQuestion(question.id, {
+                            options: e.target.value,
+                          })
+                        }
+                        className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                        placeholder="Comma-separated options (e.g. Option A, Option B, Option C)"
+                      />
+                    )}
+
+                    {/* Answer Input */}
+                    {question.label.trim() && (
+                      <div className="pt-2 border-t border-[var(--border)]">
+                        <p className="text-xs text-[var(--text-muted)] font-inter mb-1.5">
+                          Answer:
+                        </p>
+                        {question.type === "text" && (
+                          <input
+                            type="text"
+                            value={(customAnswers[question.id] as string) || ""}
+                            onChange={(e) =>
+                              updateCustomAnswer(question.id, e.target.value)
+                            }
+                            className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                            placeholder="Enter answer..."
+                          />
+                        )}
+                        {question.type === "textarea" && (
+                          <textarea
+                            value={(customAnswers[question.id] as string) || ""}
+                            onChange={(e) =>
+                              updateCustomAnswer(question.id, e.target.value)
+                            }
+                            rows={2}
+                            className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none font-inter"
+                            placeholder="Enter answer..."
+                          />
+                        )}
+                        {question.type === "rating" && (
+                          <div className="flex gap-1">
+                            {[1, 2, 3, 4, 5].map((r) => (
+                              <button
+                                key={r}
+                                type="button"
+                                onClick={() =>
+                                  updateCustomAnswer(
+                                    question.id,
+                                    customAnswers[question.id] === r ? 0 : r,
+                                  )
+                                }
+                                className="p-1 rounded transition-colors"
+                              >
+                                <Star
+                                  className={`w-5 h-5 ${
+                                    r <= ((customAnswers[question.id] as number) || 0)
+                                      ? "text-amber-500 fill-amber-500"
+                                      : "text-[var(--text-muted)]"
+                                  }`}
+                                />
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        {question.type === "scale" && (
+                          <div className="flex gap-1 flex-wrap">
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((s) => (
+                              <button
+                                key={s}
+                                type="button"
+                                onClick={() =>
+                                  updateCustomAnswer(
+                                    question.id,
+                                    customAnswers[question.id] === s ? 0 : s,
+                                  )
+                                }
+                                className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                                  s === customAnswers[question.id]
+                                    ? "bg-[var(--primary)] text-white"
+                                    : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
+                                }`}
+                              >
+                                {s}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        {question.type === "select" && (
+                          <select
+                            value={(customAnswers[question.id] as string) || ""}
+                            onChange={(e) =>
+                              updateCustomAnswer(question.id, e.target.value)
+                            }
+                            className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] font-inter focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                          >
+                            <option value="">Select...</option>
+                            {question.options
+                              .split(",")
+                              .map((opt) => opt.trim())
+                              .filter(Boolean)
+                              .map((opt) => (
+                                <option key={opt} value={opt}>
+                                  {opt}
+                                </option>
+                              ))}
+                          </select>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
-            )}
-            {customFields.length === 0 && (
+            ) : (
               <p className="text-xs text-[var(--text-muted)] font-inter">
-                Add custom question/answer pairs for flexible data collection
+                Add custom questions with different field types (text, rating, scale, dropdown)
               </p>
             )}
           </div>
@@ -1340,6 +1697,15 @@ export default function AdminFeedback() {
 
   const isLoading = feedbackStats === undefined || feedbackList === undefined;
 
+  // Merge known survey types with those found in DB
+  const allSurveyTypes = useMemo(() => {
+    const known = new Set(["general", "coach", "cubie"]);
+    if (surveyTypes) {
+      surveyTypes.forEach((t) => known.add(t));
+    }
+    return Array.from(known);
+  }, [surveyTypes]);
+
   const handleExportStats = () => {
     if (detailedStats) {
       exportToJSON(detailedStats, "feedback_analytics");
@@ -1357,6 +1723,12 @@ export default function AdminFeedback() {
       mostUsefulFeature: f.mostUsefulFeature || "",
       featureRequests: f.featureRequests || "",
       additionalComments: f.additionalComments || "",
+      customResponses: f.customResponses
+        ? JSON.stringify(f.customResponses)
+        : "",
+      featureRatings: f.featureRatings
+        ? JSON.stringify(f.featureRatings)
+        : "",
       createdAt: new Date(f.createdAt).toISOString(),
       hasUser: f.userId ? "Yes" : "No",
     }));
@@ -1380,7 +1752,7 @@ export default function AdminFeedback() {
               className="px-3 py-1.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] font-inter focus:outline-none focus:border-[var(--primary)]"
             >
               <option value="all">All Types</option>
-              {surveyTypes?.map((type) => (
+              {allSurveyTypes.map((type) => (
                 <option key={type} value={type}>
                   {type.charAt(0).toUpperCase() + type.slice(1)}
                 </option>

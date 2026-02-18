@@ -279,6 +279,17 @@ export const updateGoal = mutation({
     currentAverage: v.optional(v.number()),
     // New flag to indicate whether to archive the current goal
     archiveCurrentGoal: v.optional(v.boolean()),
+    // Additional profile fields that can be updated alongside goal
+    skillLevel: v.optional(
+      v.union(
+        v.literal("beginner"),
+        v.literal("intermediate"),
+        v.literal("advanced"),
+        v.literal("expert"),
+      ),
+    ),
+    dailyPracticeMinutes: v.optional(v.number()),
+    practiceSchedule: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -360,14 +371,27 @@ export const updateGoal = mutation({
       });
     }
 
-    await ctx.db.patch(existing._id, {
+    // Build patch object with goal fields + optional profile fields
+    const patch: Record<string, unknown> = {
       goalType: args.goalType,
       customGoalTime: args.customGoalTime,
       targetDate: args.targetDate,
       currentAverage: args.currentAverage ?? existing.currentAverage,
-      createdAt: isGoalChange ? now : existing.createdAt, // Reset start date for new goals
+      createdAt: isGoalChange ? now : existing.createdAt,
       updatedAt: now,
-    });
+    };
+
+    if (args.skillLevel !== undefined) {
+      patch.skillLevel = args.skillLevel;
+    }
+    if (args.dailyPracticeMinutes !== undefined) {
+      patch.dailyPracticeMinutes = args.dailyPracticeMinutes;
+    }
+    if (args.practiceSchedule !== undefined) {
+      patch.practiceSchedule = args.practiceSchedule;
+    }
+
+    await ctx.db.patch(existing._id, patch);
 
     return existing._id;
   },

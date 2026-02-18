@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
@@ -24,19 +24,6 @@ interface CubeDevStatsProps {
   cubeDevUserId?: string;
 }
 
-interface TimerRecord {
-  id: string;
-  time: number;
-  timestamp: Date;
-  scramble: string;
-  penalty: "none" | "+2" | "DNF";
-  finalTime: number;
-  event: string;
-  sessionId: string;
-  notes?: string;
-  tags?: string[];
-}
-
 const EVENT_NAMES = {
   "333": "3×3",
   "222": "2×2",
@@ -54,10 +41,6 @@ const EVENT_NAMES = {
   sq1: "Square-1",
 };
 
-// Helpers to truncate/round to nearest centisecond (10 ms)
-const truncToCentisMs = (ms: number) => Math.floor(ms / 10) * 10; // singles: truncate
-const roundToCentisMs = (ms: number) => Math.round(ms / 10) * 10; // averages: round
-
 // Format milliseconds to string (M:SS.ss or SS.ss)
 const formatMs = (ms: number) => {
   if (!isFinite(ms)) return "DNF";
@@ -65,160 +48,6 @@ const formatMs = (ms: number) => {
   const m = Math.floor(total / 60);
   const s = (total % 60).toFixed(2);
   return m > 0 ? `${m}:${s.padStart(5, "0")}` : s;
-};
-
-// Calculate WCA Average of N
-const wcaAverageN = (solves: TimerRecord[], n: number): number | null => {
-  if (solves.length < n) return null;
-
-  // Last N consecutive results (DNFs included)
-  const lastN = solves.slice(-n);
-
-  // Use truncated singles for calculation
-  const values = lastN.map((r) =>
-    isFinite(r.finalTime) ? truncToCentisMs(r.finalTime) : Infinity,
-  );
-
-  const dnfs = values.filter((v) => !isFinite(v)).length;
-  if (dnfs >= 2) return Infinity; // average is DNF if 2 or more DNFs
-
-  // Sort values to drop best and worst
-  const sorted = [...values].sort((a, b) => a - b);
-
-  // Drop best and worst
-  sorted.shift(); // drop best
-  sorted.pop(); // drop worst
-
-  // Calculate average of remaining
-  const sum = sorted.reduce((acc, v) => acc + (isFinite(v) ? v : 0), 0);
-  const avg = sum / (n - 2);
-
-  // Average of N is rounded to 0.01 s
-  return roundToCentisMs(avg);
-};
-
-// Calculate statistics for an event
-const calculateEventStats = (solves: TimerRecord[]) => {
-  if (solves.length === 0) {
-    return {
-      totalSolves: 0,
-      bestSingle: null,
-      ao5: null,
-      overallAverage: null,
-    };
-  }
-
-  // Order by timestamp ascending
-  const ordered = [...solves].sort(
-    (a, b) => a.timestamp.getTime() - b.timestamp.getTime(),
-  );
-
-  // Extract truncated singles (ignore DNFs) for calculations
-  const truncatedSingles = ordered
-    .filter((r) => isFinite(r.finalTime))
-    .map((r) => truncToCentisMs(r.finalTime));
-
-  const bestSingle = truncatedSingles.length
-    ? Math.min(...truncatedSingles)
-    : null;
-
-  const ao5 = wcaAverageN(ordered, 5);
-
-  // Overall average (session mean)
-  const overallAverage = truncatedSingles.length
-    ? roundToCentisMs(
-        truncatedSingles.reduce((a, b) => a + b, 0) / truncatedSingles.length,
-      )
-    : null;
-
-  return {
-    totalSolves: solves.length,
-    bestSingle,
-    ao5,
-    overallAverage,
-  };
-};
-
-// Calculate activity statistics
-const calculateActivityStats = (solves: TimerRecord[]) => {
-  if (solves.length === 0) {
-    return { activeDays: 0, longestStreak: 0, currentStreak: 0 };
-  }
-
-  // Get unique days with solves
-  const solveDays = new Set<string>();
-  const solveDaysList: string[] = [];
-
-  solves.forEach((solve) => {
-    const date = new Date(solve.timestamp);
-    // Format as YYYY-MM-DD for consistent comparison
-    const dateKey = date.toISOString().split("T")[0];
-    if (!solveDays.has(dateKey)) {
-      solveDays.add(dateKey);
-      solveDaysList.push(dateKey);
-    }
-  });
-
-  // Sort days chronologically
-  const sortedDays = solveDaysList.sort();
-
-  // Calculate longest streak
-  let longestStreak = 0;
-  let tempStreak = 0;
-
-  for (let i = 0; i < sortedDays.length; i++) {
-    if (i === 0) {
-      tempStreak = 1;
-    } else {
-      const prevDate = new Date(sortedDays[i - 1]);
-      const currDate = new Date(sortedDays[i]);
-      const dayDiff = Math.floor(
-        (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24),
-      );
-
-      if (dayDiff === 1) {
-        tempStreak++;
-      } else {
-        tempStreak = 1;
-      }
-    }
-    longestStreak = Math.max(longestStreak, tempStreak);
-  }
-
-  // Calculate current streak (count backwards from today)
-  let currentStreak = 0;
-  const today = new Date();
-  today.setHours(23, 59, 59, 999);
-  const todayKey = today.toISOString().split("T")[0];
-  const yesterdayKey = new Date(today.getTime() - 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split("T")[0];
-
-  // Start checking from today if solved today, otherwise from yesterday
-  let checkDate = new Date(today);
-  if (!solveDays.has(todayKey) && solveDays.has(yesterdayKey)) {
-    checkDate = new Date(today.getTime() - 24 * 60 * 60 * 1000);
-  } else if (!solveDays.has(todayKey) && !solveDays.has(yesterdayKey)) {
-    currentStreak = 0;
-  }
-
-  if (solveDays.has(todayKey) || solveDays.has(yesterdayKey)) {
-    while (checkDate >= new Date(sortedDays[0])) {
-      const dateKey = checkDate.toISOString().split("T")[0];
-      if (solveDays.has(dateKey)) {
-        currentStreak++;
-        checkDate.setDate(checkDate.getDate() - 1);
-      } else {
-        break;
-      }
-    }
-  }
-
-  return {
-    activeDays: solveDays.size,
-    longestStreak: solveDays.size === 0 ? 0 : longestStreak,
-    currentStreak: currentStreak,
-  };
 };
 
 export default function CubeDevStats({
@@ -256,21 +85,21 @@ export default function CubeDevStats({
   const recalculateAllStats = useMutation(api.users.recalculateAllUserStats);
   const hasTriggeredRecalc = useRef(false);
 
-  // Query user's recent solves only for activity heatmap (limited subset)
-  const recentSolves = useQuery(
-    api.users.getUserRecentSolves,
-    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id, limit: 1000 },
+  // Query lightweight heatmap data (only dates and counts, not full solve objects)
+  const heatmapData = useQuery(
+    api.users.getSolveHeatmapData,
+    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id, daysBack: 365 },
   );
 
-  // If user has solves but no cached stats, trigger a recalculation
+  // If user has heatmap data (solves exist) but no cached stats, trigger a recalculation
   useEffect(() => {
     if (
       !shouldSkipDataQueries &&
       cubeDevUser?._id &&
       eventStats !== undefined &&
       eventStats.length === 0 &&
-      recentSolves !== undefined &&
-      recentSolves.length > 0 &&
+      heatmapData !== undefined &&
+      heatmapData.length > 0 &&
       !hasTriggeredRecalc.current
     ) {
       hasTriggeredRecalc.current = true;
@@ -280,7 +109,7 @@ export default function CubeDevStats({
     shouldSkipDataQueries,
     cubeDevUser?._id,
     eventStats,
-    recentSolves,
+    heatmapData,
     recalculateAllStats,
   ]);
 
@@ -322,31 +151,88 @@ export default function CubeDevStats({
     );
   }
 
-  // Convert recent solves for activity heatmap only
-  const timerSolves: TimerRecord[] =
-    recentSolves?.map((solve) => ({
-      id: solve._id,
-      time: solve.time,
-      timestamp: new Date(solve.solveDate),
-      scramble: solve.scramble,
-      penalty: solve.penalty,
-      finalTime: solve.finalTime,
-      event: solve.event,
-      sessionId: solve.sessionId,
-      notes: solve.comment,
-      tags: solve.tags,
-    })) || [];
+  // Prepare heatmap data for SolveHeatmap component (only date and count)
+  const heatmapDataForComponent = heatmapData?.map((point) => ({
+    date: point.date,
+    count: point.count,
+    events: point.events,
+  })) || [];
 
   // Get unique events from pre-computed stats (more accurate than recent solves)
   const attemptedEvents = eventStats
     ? eventStats.map((stat) => stat.event).sort()
     : [];
 
+  // Compute overall activity stats (active days, longest streak, current streak) using heatmap data for accuracy
+  const activityStats = useMemo(() => {
+    if (!eventStats || eventStats.length === 0) {
+      return { activeDays: 0, longestStreak: 0, currentStreak: 0 };
+    }
+
+    // Use heatmap data for accurate streak and active day calculations
+    if (heatmapData && heatmapData.length > 0) {
+      // Get all unique active days from heatmap data
+      const activeDaysSet = new Set(heatmapData.map((d) => d.date));
+      const activeDays = activeDaysSet.size;
+
+      // Sort dates for streak calculation
+      const sortedDays = Array.from(activeDaysSet).sort();
+
+      // Calculate longest streak
+      let longestStreak = 0;
+      let tempStreak = 0;
+      for (let i = 0; i < sortedDays.length; i++) {
+        if (i === 0) {
+          tempStreak = 1;
+        } else {
+          const prevDate = new Date(sortedDays[i - 1]);
+          const currDate = new Date(sortedDays[i]);
+          const dayDiff = Math.floor(
+            (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24),
+          );
+          tempStreak = dayDiff === 1 ? tempStreak + 1 : 1;
+        }
+        longestStreak = Math.max(longestStreak, tempStreak);
+      }
+
+      // Calculate current streak
+      let currentStreak = 0;
+      const today = new Date();
+      const todayKey = today.toISOString().split("T")[0];
+      const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+      const yesterdayKey = yesterday.toISOString().split("T")[0];
+
+      let checkDate = new Date(today);
+      if (!activeDaysSet.has(todayKey) && activeDaysSet.has(yesterdayKey)) {
+        checkDate = new Date(yesterday);
+      } else if (!activeDaysSet.has(todayKey) && !activeDaysSet.has(yesterdayKey)) {
+        currentStreak = 0;
+      }
+
+      if (activeDaysSet.has(todayKey) || activeDaysSet.has(yesterdayKey)) {
+        while (true) {
+          const dateKey = checkDate.toISOString().split("T")[0];
+          if (activeDaysSet.has(dateKey)) {
+            currentStreak++;
+            checkDate.setDate(checkDate.getDate() - 1);
+          } else {
+            break;
+          }
+        }
+      }
+
+      return { activeDays, longestStreak, currentStreak };
+    }
+
+    // Fallback to using eventStats if heatmap data isn't available for some reason (less accurate)
+    const totalActiveDays = eventStats.reduce((sum, s) => sum + (s.activeDays || 0), 0);
+    return { activeDays: totalActiveDays, longestStreak: 0, currentStreak: 0 };
+  }, [eventStats, heatmapData]);
+
   // Ensure selected event is valid
   useEffect(() => {
     if (attemptedEvents.length > 0) {
       if (!attemptedEvents.includes(selectedEvent)) {
-        // Default to 3x3 if attempted, else first attempted event
         const defaultEvent = attemptedEvents.includes("333")
           ? "333"
           : attemptedEvents[0];
@@ -359,9 +245,6 @@ export default function CubeDevStats({
   const selectedEventStats = eventStats?.find(
     (stat) => stat.event === selectedEvent,
   );
-
-  // Calculate activity stats from recent solves (for heatmap)
-  const activityStats = calculateActivityStats(timerSolves);
 
   // Show skeleton loaders while data is loading
   const isLoadingData = !eventStats || !challengeStats || !roomParticipations;
@@ -790,7 +673,7 @@ export default function CubeDevStats({
         </div>
       ) : (
         <div className="timer-card">
-          <SolveHeatmap solves={timerSolves} />
+          <SolveHeatmap heatmapData={heatmapDataForComponent} />
         </div>
       )}
     </div>

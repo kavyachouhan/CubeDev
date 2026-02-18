@@ -453,12 +453,12 @@ export const getUserRecentRooms = query({
       return [];
     }
 
-    // Get user's recent room participations
+    // Get recent participations for the user (limit to 20 for performance, we'll filter to 5 valid rooms later)
     const participations = await ctx.db
       .query("roomParticipants")
       .filter((q) => q.eq(q.field("userId"), user._id))
       .order("desc")
-      .take(10);
+      .take(20);
 
     // Get room details for each participation
     const roomsWithDetails = await Promise.all(
@@ -471,7 +471,7 @@ export const getUserRecentRooms = query({
       })
     );
 
-    // Filter out expired rooms and return only recent active ones
+    // Filter out any participations where the room no longer exists (should be rare) and return the most recent 5 valid rooms
     return roomsWithDetails.filter(({ room }) => room !== null).slice(0, 5);
   },
 });

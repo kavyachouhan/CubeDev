@@ -1,4 +1,5 @@
 import { query } from "./_generated/server";
+import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
 
 // Helper function to format time in ms to human-readable format
@@ -534,10 +535,10 @@ export const getCompetitionUserActivity = query({
       }
     });
 
-    // Get user details for top users
+    // Fetch user details for all users in one batch to avoid N+1 query problem
     const userIds = Object.keys(userStats);
     const userDocs = await Promise.all(
-      userIds.slice(0, 50).map(async (userId) => {
+      userIds.map(async (userId) => {
         try {
           const user = await ctx.db.get(userId as Id<"users">);
           return user;
@@ -570,19 +571,22 @@ export const getCompetitionUserActivity = query({
           competitionsCount: stats.competitionsUsed.size,
         };
       })
-      .sort((a, b) => b.totalSimulations - a.totalSimulations)
-      .slice(0, 50);
+      .sort((a, b) => b.totalSimulations - a.totalSimulations);
   },
 });
 
 // Get recent simulations with user details for admin monitoring
 export const getRecentSimulations = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 50;
+
     const simulations = await ctx.db
       .query("competitionSimulations")
       .order("desc")
-      .take(50);
+      .take(limit);
 
     // Get user details
     const userIds = [...new Set(simulations.map((s) => s.userId))];

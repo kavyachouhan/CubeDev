@@ -193,7 +193,7 @@ export const getAllUsers = query({
       .query("users")
       .filter((q) => q.neq(q.field("isDeleted"), true))
       .order("desc")
-      .take(100); // Limit to 100 for performance
+      .collect();
   },
 });
 
@@ -661,7 +661,7 @@ export const getUserRecentSolves = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const limit = args.limit ?? 500; // Default to 500 recent solves for stats
+    const limit = args.limit ?? 200; // Default to 200 recent solves for display
 
     return await ctx.db
       .query("solves")
@@ -797,8 +797,7 @@ export const updateSolve = mutation({
   },
 });
 
-// Get user statistics (DEPRECATED - use getUserEventStats instead for better performance)
-// This function may timeout for sessions with many solves
+// Get user statistics (uses pre-computed event stats for accuracy)
 export const getUserStats = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
@@ -808,35 +807,28 @@ export const getUserStats = query({
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .collect();
 
-    // Get solve count for each session (limited to prevent timeout)
-    const stats = await Promise.all(
-      sessions.map(async (session) => {
-        // Only fetch first 1000 solves to prevent timeout
-        const solves = await ctx.db
-          .query("solves")
-          .withIndex("by_session", (q) => q.eq("sessionId", session._id))
-          .take(1000);
+    // Use pre-computed event stats for accurate data
+    const eventStats = await ctx.db
+      .query("userEventStats")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
 
-        const validSolves = solves.filter((solve) => solve.penalty !== "DNF");
-        const times = validSolves.map((solve) => solve.finalTime);
-
-        let average = 0;
-        let best = 0;
-        if (times.length > 0) {
-          average = times.reduce((sum, time) => sum + time, 0) / times.length;
-          best = Math.min(...times);
-        }
-
-        return {
-          sessionId: session._id,
-          sessionName: session.name,
-          event: session.event,
-          solveCount: solves.length, // May be inaccurate if > 1000 solves
-          average: average,
-          best: best,
-        };
-      })
+    const eventStatsMap = new Map(
+      eventStats.map((s) => [s.event, s])
     );
+
+    // Map sessions to stats using pre-computed data
+    const stats = sessions.map((session) => {
+      const eventStat = eventStatsMap.get(session.event);
+      return {
+        sessionId: session._id,
+        sessionName: session.name,
+        event: session.event,
+        solveCount: session.solveCount,
+        average: eventStat?.overallAverage ?? 0,
+        best: eventStat?.bestSingle ?? 0,
+      };
+    });
 
     return stats;
   },
@@ -855,16 +847,18 @@ export const getUserAccountStatus = query({
       return { exists: false };
     }
 
-    // Count sessions and solves
+    // Count sessions
     const sessions = await ctx.db
       .query("sessions")
       .withIndex("by_user", (q) => q.eq("userId", user._id))
       .collect();
 
-    const solves = await ctx.db
-      .query("solves")
+    // Use pre-computed event stats for solve count instead of loading all solves
+    const eventStats = await ctx.db
+      .query("userEventStats")
       .withIndex("by_user", (q) => q.eq("userId", user._id))
       .collect();
+    const solveCount = eventStats.reduce((total, stat) => total + stat.totalSolves, 0);
 
     // Count challenge room participations
     const roomParticipations = await ctx.db
@@ -880,7 +874,7 @@ export const getUserAccountStatus = query({
       email: user.email,
       hasAvatar: !!user.avatar,
       sessionCount: sessions.length,
-      solveCount: solves.length,
+      solveCount,
       challengeRoomCount: roomParticipations.length,
       lastLoginAt: user.lastLoginAt,
     };
@@ -1235,5 +1229,43 @@ export const recalculateAllUserStats = mutation({
     }
 
     return { recalculatedEvents: results.length, events: results };
+  },
+});
+
+// Lightweight query for solve heatmap data
+// Only returns date and count per day, avoiding loading full solve objects
+export const getSolveHeatmapData = query({
+  args: {
+    userId: v.id("users"),
+    daysBack: v.optional(v.number()), // How many days of history (default 365)
+  },
+  handler: async (ctx, args) => {
+    const daysBack = args.daysBack ?? 365;
+    const cutoffDate = Date.now() - daysBack * 24 * 60 * 60 * 1000;
+
+    // Fetch only solves within the date range
+    const solves = await ctx.db
+      .query("solves")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .filter((q) => q.gte(q.field("solveDate"), cutoffDate))
+      .collect();
+
+    // Aggregate by date — only return date keys and counts
+    const dateCounts: Record<string, { count: number; events: Set<string> }> = {};
+    for (const solve of solves) {
+      const dateKey = new Date(solve.solveDate).toISOString().split("T")[0];
+      if (!dateCounts[dateKey]) {
+        dateCounts[dateKey] = { count: 0, events: new Set() };
+      }
+      dateCounts[dateKey].count++;
+      dateCounts[dateKey].events.add(solve.event);
+    }
+
+    // Return lightweight data (just dates, counts, and event list)
+    return Object.entries(dateCounts).map(([date, data]) => ({
+      date,
+      count: data.count,
+      events: Array.from(data.events),
+    }));
   },
 });

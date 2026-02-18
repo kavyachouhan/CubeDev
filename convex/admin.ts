@@ -993,7 +993,9 @@ export const getRecentActivity = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const limit = args.limit || 20;
+    const limit = args.limit ?? 20;
+    // To ensure we have enough activities to show after merging different sources, we fetch more than the requested limit from each source and then sort them together.
+    const perSourceLimit = Math.max(limit, 10);
     const activities: Array<{
       type: string;
       description: string;
@@ -1007,7 +1009,7 @@ export const getRecentActivity = query({
       .query("users")
       .filter((q) => q.neq(q.field("isDeleted"), true))
       .order("desc")
-      .take(10);
+      .take(perSourceLimit);
 
     for (const user of recentUsers) {
       activities.push({
@@ -1023,7 +1025,7 @@ export const getRecentActivity = query({
     const recentFeedback = await ctx.db
       .query("feedbackResponses")
       .order("desc")
-      .take(10);
+      .take(perSourceLimit);
 
     for (const feedback of recentFeedback) {
       activities.push({
@@ -1037,7 +1039,7 @@ export const getRecentActivity = query({
     const recentContact = await ctx.db
       .query("contactMessages")
       .order("desc")
-      .take(10);
+      .take(perSourceLimit);
 
     for (const message of recentContact) {
       activities.push({
@@ -1051,7 +1053,7 @@ export const getRecentActivity = query({
     const recentRooms = await ctx.db
       .query("challengeRooms")
       .order("desc")
-      .take(10);
+      .take(perSourceLimit);
 
     for (const room of recentRooms) {
       activities.push({

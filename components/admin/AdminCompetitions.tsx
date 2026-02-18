@@ -1154,6 +1154,7 @@ export default function AdminCompetitions() {
   );
   const recentSimulations = useQuery(
     api.adminCompetitions.getRecentSimulations,
+    {},
   );
 
   const isLoading = analytics === undefined;

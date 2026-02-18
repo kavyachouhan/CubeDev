@@ -1,7 +1,9 @@
 "use client";
 
-import { Target, Trophy, AlertTriangle } from "lucide-react";
+import { useState } from "react";
+import { Target, Trophy, AlertTriangle, Pencil, Plus } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
+import GoalSetupModal from "./GoalSetupModal";
 
 interface CoachProfile {
   _id: Id<"coachProfiles">;
@@ -13,6 +15,7 @@ interface CoachProfile {
   customGoalTime?: number;
   targetDate: number;
   dailyPracticeMinutes: number;
+  practiceSchedule?: string[];
 }
 
 const GOAL_TIMES: Record<string, number> = {
@@ -62,6 +65,8 @@ export default function GoalSummaryCard({
   profile,
   currentAverage,
 }: GoalSummaryCardProps) {
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showNewGoalModal, setShowNewGoalModal] = useState(false);
   const status = getGoalStatus(profile, currentAverage);
   const daysRemaining = getDaysRemaining(profile.targetDate);
 
@@ -139,42 +144,78 @@ export default function GoalSummaryCard({
         : Target;
 
   return (
-    <div
-      className={`timer-card ${status === "achieved" ? "border-[var(--success)]" : status === "expired" ? "border-[var(--warning)]" : ""}`}
-      data-tour="goal-summary"
-    >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-        <div className="flex items-center gap-3">
-          <div
-            className={`w-10 h-10 rounded-full ${iconStyles.bg} flex items-center justify-center shrink-0`}
-          >
-            <StatusIcon className={`w-5 h-5 ${iconStyles.icon}`} />
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-[var(--text-muted)]">
-                Your Goal
-              </span>
-              {getStatusBadge()}
+    <>
+      <div
+        className={`timer-card ${status === "achieved" ? "border-[var(--success)]" : status === "expired" ? "border-[var(--warning)]" : ""}`}
+        data-tour="goal-summary"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-10 h-10 rounded-full ${iconStyles.bg} flex items-center justify-center shrink-0`}
+            >
+              <StatusIcon className={`w-5 h-5 ${iconStyles.icon}`} />
             </div>
-            <span className="font-bold text-[var(--text-primary)] block truncate">
-              {profile.goalType === "custom"
-                ? `CUSTOM (${profile.customGoalTime ? (profile.customGoalTime / 1000).toFixed(2) + "s" : "Set"})`
-                : profile.goalType.replace("-", " ").toUpperCase()}
-            </span>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-[var(--text-muted)]">
+                  Your Goal
+                </span>
+                {getStatusBadge()}
+              </div>
+              <span className="font-bold text-[var(--text-primary)] block truncate">
+                {profile.goalType === "custom"
+                  ? `CUSTOM (${profile.customGoalTime ? (profile.customGoalTime / 1000).toFixed(2) + "s" : "Set"})`
+                  : profile.goalType.replace("-", " ").toUpperCase()}
+              </span>
+            </div>
           </div>
-        </div>
-        <div className="pl-13 sm:pl-0">
-          <span className="text-xs text-[var(--text-muted)] block">
-            {status === "expired"
-              ? "Status"
-              : status === "achieved"
-                ? "Status"
-                : "Target Date"}
-          </span>
-          {getTargetDateDisplay()}
+          <div className="flex items-center gap-3 pl-13 sm:pl-0">
+            <div>
+              <span className="text-xs text-[var(--text-muted)] block">
+                {status === "expired"
+                  ? "Status"
+                  : status === "achieved"
+                    ? "Status"
+                    : "Target Date"}
+              </span>
+              {getTargetDateDisplay()}
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setShowEditModal(true)}
+                className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+                title="Edit goal"
+              >
+                <Pencil className="w-4 h-4 text-[var(--text-muted)] hover:text-[var(--primary)]" />
+              </button>
+              <button
+                onClick={() => setShowNewGoalModal(true)}
+                className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+                title="Set new goal"
+              >
+                <Plus className="w-4 h-4 text-[var(--text-muted)] hover:text-[var(--primary)]" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+
+      <GoalSetupModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        profile={profile}
+        currentAverage={currentAverage}
+        mode="edit"
+      />
+
+      <GoalSetupModal
+        isOpen={showNewGoalModal}
+        onClose={() => setShowNewGoalModal(false)}
+        profile={profile}
+        currentAverage={currentAverage}
+        mode="new"
+      />
+    </>
   );
 }

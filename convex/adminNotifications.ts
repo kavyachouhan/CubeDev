@@ -173,7 +173,7 @@ export const getNotificationLogs = query({
     }
 
     // Apply limit
-    const limit = args.limit || 100;
+    const limit = args.limit ?? 100;
     logs = logs.slice(0, limit);
 
     return logs;

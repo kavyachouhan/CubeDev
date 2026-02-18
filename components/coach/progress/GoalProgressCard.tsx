@@ -11,6 +11,7 @@ import {
   Trophy,
   AlertTriangle,
   Pencil,
+  Plus,
 } from "lucide-react";
 import {
   CollapsibleSection,
@@ -20,7 +21,7 @@ import {
   getProgressPercentage,
 } from "./utils";
 import { CoachProfile, GOAL_TIMES } from "./types";
-import EditGoalModal from "./EditGoalModal";
+import GoalSetupModal from "../GoalSetupModal";
 import GoalShareMenu from "../GoalShareMenu";
 import { useUser } from "@/components/UserProvider";
 
@@ -55,6 +56,7 @@ export default function GoalProgressCard({
   startingAverage,
 }: GoalProgressCardProps) {
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showNewGoalModal, setShowNewGoalModal] = useState(false);
   const { user } = useUser();
 
   const targetTime =
@@ -69,7 +71,7 @@ export default function GoalProgressCard({
 
   const totalDays = Math.ceil(
     (profile.targetDate -
-      (profile.currentAverage ? Date.now() : profile.targetDate)) /
+      (profile.createdAt || profile.targetDate)) /
       (24 * 60 * 60 * 1000),
   );
   const daysPassed = Math.max(0, totalDays - daysRemaining);
@@ -83,7 +85,7 @@ export default function GoalProgressCard({
       return (
         <span className="flex items-center gap-1 text-xs sm:text-sm text-[var(--success)] px-1.5 sm:px-2 py-0.5 sm:py-1 bg-[var(--success)]/10 rounded-full whitespace-nowrap shrink-0">
           <Trophy className="w-3 h-3 sm:w-4 sm:h-4" />
-          <span className="hidden xs:inline">Goal </span>Achieved
+          <span className="hidden sm:inline">Goal </span>Achieved
         </span>
       );
     }
@@ -106,7 +108,7 @@ export default function GoalProgressCard({
     return (
       <span className="flex items-center gap-1 text-xs sm:text-sm text-[var(--warning)] px-1.5 sm:px-2 py-0.5 sm:py-1 bg-[var(--warning)]/10 rounded-full whitespace-nowrap shrink-0">
         <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-        <span className="hidden xs:inline">Needs </span>Focus
+        <span className="hidden sm:inline">Needs </span>Focus
       </span>
     );
   };
@@ -141,18 +143,26 @@ export default function GoalProgressCard({
                 wcaId: user?.wcaId,
               }}
             />
-            {status === "active" && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowEditModal(true);
-                }}
-                className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
-                title="Edit goal"
-              >
-                <Pencil className="w-4 h-4 text-[var(--text-muted)] hover:text-[var(--primary)]" />
-              </button>
-            )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowEditModal(true);
+              }}
+              className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+              title="Edit goal"
+            >
+              <Pencil className="w-4 h-4 text-[var(--text-muted)] hover:text-[var(--primary)]" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowNewGoalModal(true);
+              }}
+              className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+              title="Set new goal"
+            >
+              <Plus className="w-4 h-4 text-[var(--text-muted)] hover:text-[var(--primary)]" />
+            </button>
           </div>
         }
       >
@@ -261,11 +271,20 @@ export default function GoalProgressCard({
         </div>
       </CollapsibleSection>
 
-      {/* Edit Goal Modal */}
-      <EditGoalModal
-        profile={profile}
+      <GoalSetupModal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
+        profile={profile}
+        currentAverage={currentAverage}
+        mode="edit"
+      />
+
+      <GoalSetupModal
+        isOpen={showNewGoalModal}
+        onClose={() => setShowNewGoalModal(false)}
+        profile={profile}
+        currentAverage={currentAverage}
+        mode="new"
       />
     </>
   );
