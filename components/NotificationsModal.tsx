@@ -20,6 +20,8 @@ import {
   useNotificationPermission,
   shouldShowPermissionPrompt,
   useInAppNotifications,
+  markAllInAppAsRead,
+  markAlgorithmNotificationsSeen,
 } from "@/lib/notification-utils";
 import type { Id } from "@/convex/_generated/dataModel";
 
@@ -67,6 +69,7 @@ export default function NotificationsModal({
     notifications: allInAppNotifications,
     dismiss: dismissInApp,
     dismissAll: dismissAllInApp,
+    markAllRead: markAllInAppRead,
   } = useInAppNotifications();
 
   // Filter out algorithm-due notifications since they are already shown
@@ -74,6 +77,20 @@ export default function NotificationsModal({
   const inAppNotifications = allInAppNotifications.filter(
     (n) => n.type !== "algorithm-due",
   );
+
+  // When modal opens, mark all in-app notifications as read and mark algorithm notifications as seen
+  useEffect(() => {
+    if (isOpen) {
+      // Mark all in-app notifications as read
+      markAllInAppAsRead();
+
+      // Mark algorithm notifications as seen
+      if (dueReviews) {
+        const ids = dueReviews.map((r) => r.progress._id);
+        markAlgorithmNotificationsSeen(ids);
+      }
+    }
+  }, [isOpen, dueReviews]);
 
   if (!isOpen) return null;
 

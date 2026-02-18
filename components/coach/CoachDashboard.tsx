@@ -448,14 +448,11 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
 
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4 sm:pr-10">
                   <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
-                    <div className="p-2 bg-[var(--primary)]/10 rounded-lg shrink-0">
-                      <Heart className="w-5 h-5 text-[var(--primary)]" />
-                    </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 text-center sm:text-left">
                       <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-0.5 font-statement">
                         Want to help improve the Coach?
                       </h3>
-                      <p className="text-xs text-[var(--text-secondary)] line-clamp-2">
+                      <p className="text-xs text-[var(--text-secondary)]">
                         Join our contributor program and help make training
                         plans even better for the cubing community!
                       </p>

@@ -1,10 +1,14 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import { Bell } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useInAppNotifications } from "@/lib/notification-utils";
+import {
+  useInAppNotifications,
+  getSeenAlgorithmNotificationIds,
+} from "@/lib/notification-utils";
 
 interface NotificationBellProps {
   onClick: () => void;
@@ -23,15 +27,34 @@ export default function NotificationBell({
     user?.convexId ? { userId: user.convexId as any } : "skip",
   );
 
-  // Fetch in-app notifications
-  const { notifications: allInAppNotifications } = useInAppNotifications();
+  // In-app notifications
+  const {
+    notifications: allInAppNotifications,
+    unreadCount: inAppUnreadCount,
+  } = useInAppNotifications();
 
   // Filter out "algorithm-due" notifications since those are handled by the reviews query
   const inAppNotifications = allInAppNotifications.filter(
     (n) => n.type !== "algorithm-due",
   );
+  const unreadInAppCount = inAppNotifications.filter((n) => !n.read).length;
 
-  // Calculate notification count
+  // Track seen algorithm notification IDs to avoid counting them in the badge count
+  const [seenAlgoIds, setSeenAlgoIds] = useState<Set<string>>(new Set());
+
+  const refreshSeenIds = useCallback(() => {
+    setSeenAlgoIds(getSeenAlgorithmNotificationIds());
+  }, []);
+
+  useEffect(() => {
+    refreshSeenIds();
+    const handler = () => refreshSeenIds();
+    window.addEventListener("cubedev-notification-updated", handler);
+    return () =>
+      window.removeEventListener("cubedev-notification-updated", handler);
+  }, [refreshSeenIds]);
+
+  // Calculate notification counts
   const now = Date.now();
   const oneDayAgo = now - 24 * 60 * 60 * 1000;
 
@@ -50,10 +73,13 @@ export default function NotificationBell({
         r.progress.nextReviewDate < now + 24 * 60 * 60 * 1000,
     ) || [];
 
-  const algorithmNotificationCount =
-    overdue.length + dueToday.length + dueSoon.length;
-  const notificationCount =
-    algorithmNotificationCount + inAppNotifications.length;
+  // Combine all algorithm notifications and count how many are unseen (not in seenAlgoIds)
+  const allAlgoReviews = [...overdue, ...dueToday, ...dueSoon];
+  const unseenAlgorithmCount = allAlgoReviews.filter(
+    (r) => !seenAlgoIds.has(r.progress._id),
+  ).length;
+
+  const notificationCount = unseenAlgorithmCount + unreadInAppCount;
   const hasNotifications = notificationCount > 0;
 
   return (

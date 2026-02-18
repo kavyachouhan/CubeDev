@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
   ChevronRight,
   ChevronLeft,
   Target,
+  Gauge,
   Calendar,
   Clock,
   CheckCircle2,
@@ -13,8 +14,11 @@ import {
   Trophy,
   Timer,
   Info,
+  FolderOpen,
+  BarChart3,
+  AlertCircle,
 } from "lucide-react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import {
@@ -37,6 +41,7 @@ type GoalType =
 type SkillLevel = "beginner" | "intermediate" | "advanced" | "expert";
 
 interface GoalSetupData {
+  selectedSessionId?: Id<"sessions">;
   goalType: GoalType;
   customGoalTime?: number;
   targetDate: number;
@@ -64,7 +69,6 @@ interface GoalSetupModalProps {
   onClose: () => void;
   profile: CoachProfile;
   currentAverage?: number;
-  /** "edit" = update existing goal, "new" = create new goal (archives old) */
   mode: "edit" | "new";
 }
 
@@ -147,10 +151,36 @@ const PRACTICE_TIMES = [
 ];
 
 const STEPS = [
-  { id: 1, title: "Goal", icon: Target, description: "What do you want to achieve?" },
-  { id: 2, title: "Timeline", icon: Calendar, description: "When do you want to reach it?" },
-  { id: 3, title: "Commitment", icon: Clock, description: "How much can you practice?" },
-  { id: 4, title: "Review", icon: CheckCircle2, description: "Confirm your changes" },
+  {
+    id: 1,
+    title: "Current Level",
+    icon: Gauge,
+    description: "Select a session to analyze",
+  },
+  {
+    id: 2,
+    title: "Goal",
+    icon: Target,
+    description: "What do you want to achieve?",
+  },
+  {
+    id: 3,
+    title: "Timeline",
+    icon: Calendar,
+    description: "When do you want to reach it?",
+  },
+  {
+    id: 4,
+    title: "Commitment",
+    icon: Clock,
+    description: "How much can you practice?",
+  },
+  {
+    id: 5,
+    title: "Review",
+    icon: CheckCircle2,
+    description: "Confirm your changes",
+  },
 ];
 
 function formatTimeSimple(ms: number): string {
@@ -158,6 +188,21 @@ function formatTimeSimple(ms: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = (seconds % 60).toFixed(0);
   return mins > 0 ? `${mins}:${secs.padStart(2, "0")}` : `${secs}s`;
+}
+
+function formatTime(ms: number | null | undefined): string {
+  if (ms === null || ms === undefined) return "-";
+  const seconds = ms / 1000;
+  const mins = Math.floor(seconds / 60);
+  const secs = (seconds % 60).toFixed(2);
+  return mins > 0 ? `${mins}:${secs.padStart(5, "0")}` : secs;
+}
+
+function determineSkillLevel(avgMs: number): SkillLevel {
+  if (avgMs > 30000) return "beginner";
+  if (avgMs > 20000) return "intermediate";
+  if (avgMs > 12000) return "advanced";
+  return "expert";
 }
 
 function getRecommendedGoals(skillLevel: string): string[] {
@@ -187,15 +232,56 @@ export default function GoalSetupModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [data, setData] = useState<GoalSetupData>(() => ({
+    selectedSessionId: undefined,
     goalType: (profile.goalType as GoalType) || "sub-20",
     customGoalTime: profile.customGoalTime,
-    targetDate: mode === "new"
-      ? Date.now() + 90 * 24 * 60 * 60 * 1000
-      : profile.targetDate,
+    targetDate:
+      mode === "new"
+        ? Date.now() + 90 * 24 * 60 * 60 * 1000
+        : profile.targetDate,
     dailyPracticeMinutes: profile.dailyPracticeMinutes || 30,
-    practiceSchedule: profile.practiceSchedule || ["Mon", "Tue", "Wed", "Thu", "Fri"],
+    practiceSchedule: profile.practiceSchedule || [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+    ],
     skillLevel: (profile.skillLevel as SkillLevel) || "intermediate",
   }));
+
+  // Load user's sessions for session selection step
+  const sessions = useQuery(
+    api.coach.getUserSessionsWith3x3Stats,
+    isOpen ? { userId: profile.userId } : "skip",
+  );
+  const selectedSessionStats = useQuery(
+    api.coach.getSessionStats,
+    data.selectedSessionId
+      ? { sessionId: data.selectedSessionId, event: "333" }
+      : "skip",
+  );
+
+  const filteredSessions = sessions?.filter((s) => s.solveCount3x3 > 0) || [];
+
+  // Track the last processed session ID to avoid re-processing when user re-selects the same session
+  const lastProcessedRef = useRef<string | null>(null);
+
+  // Handle session stats update
+  useEffect(() => {
+    if (
+      selectedSessionStats?.average &&
+      data.selectedSessionId &&
+      lastProcessedRef.current !== data.selectedSessionId
+    ) {
+      lastProcessedRef.current = data.selectedSessionId;
+      const skillLevel = determineSkillLevel(selectedSessionStats.average);
+      setData((prev) => ({
+        ...prev,
+        skillLevel,
+      }));
+    }
+  }, [selectedSessionStats?.average, data.selectedSessionId]);
 
   const updateGoal = useMutation(api.coach.updateGoal);
   const generatePlan = useMutation(api.coach.generateTrainingPlan);
@@ -208,14 +294,23 @@ export default function GoalSetupModal({
     if (isOpen) {
       document.body.style.overflow = "hidden";
       setCurrentStep(1);
+      lastProcessedRef.current = null;
       setData({
+        selectedSessionId: undefined,
         goalType: (profile.goalType as GoalType) || "sub-20",
         customGoalTime: profile.customGoalTime,
-        targetDate: mode === "new"
-          ? Date.now() + 90 * 24 * 60 * 60 * 1000
-          : profile.targetDate,
+        targetDate:
+          mode === "new"
+            ? Date.now() + 90 * 24 * 60 * 60 * 1000
+            : profile.targetDate,
         dailyPracticeMinutes: profile.dailyPracticeMinutes || 30,
-        practiceSchedule: profile.practiceSchedule || ["Mon", "Tue", "Wed", "Thu", "Fri"],
+        practiceSchedule: profile.practiceSchedule || [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+        ],
         skillLevel: (profile.skillLevel as SkillLevel) || "intermediate",
       });
     } else {
@@ -260,7 +355,12 @@ export default function GoalSetupModal({
       data.goalType !== profile.goalType ||
       data.customGoalTime !== profile.customGoalTime
     );
-  }, [data.goalType, data.customGoalTime, profile.goalType, profile.customGoalTime]);
+  }, [
+    data.goalType,
+    data.customGoalTime,
+    profile.goalType,
+    profile.customGoalTime,
+  ]);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -277,7 +377,7 @@ export default function GoalSetupModal({
         practiceSchedule: data.practiceSchedule,
       });
 
-      // Regenerate training plan if goal or commitment changed
+      // Only regenerate plan if goal type/time changed or if creating new goal (archiving old one)
       if (isGoalChange || mode === "new") {
         try {
           await generatePlan({
@@ -286,7 +386,7 @@ export default function GoalSetupModal({
             weekNumber: 1,
           });
         } catch {
-          // Plan generation failure is non-critical
+          // If plan generation fails, we still want to show the updated goal. The user can manually regenerate the plan from the dashboard.
         }
       }
 
@@ -304,15 +404,14 @@ export default function GoalSetupModal({
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        return !!data.goalType;
+        return true; // Session selection and skill level are optional
       case 2:
-        return !!data.targetDate;
+        return !!data.goalType;
       case 3:
-        return (
-          !!data.dailyPracticeMinutes &&
-          data.practiceSchedule.length > 0
-        );
+        return !!data.targetDate;
       case 4:
+        return !!data.dailyPracticeMinutes && data.practiceSchedule.length > 0;
+      case 5:
         return true;
       default:
         return false;
@@ -337,11 +436,11 @@ export default function GoalSetupModal({
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-2xl timer-card border-[var(--border)] animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-2xl timer-card border-[var(--border)] animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex-shrink-0 flex items-center justify-between pb-4 border-b border-[var(--border)]">
+        <div className="flex-shrink-0 flex items-center justify-between pb-3 sm:pb-4 border-b border-[var(--border)]">
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] font-statement">
+            <h2 className="text-lg sm:text-2xl font-bold text-[var(--text-primary)] font-statement">
               {mode === "new" ? "Set New Goal" : "Edit Goal"}
             </h2>
             <p className="text-sm text-[var(--text-muted)] mt-0.5">
@@ -361,7 +460,7 @@ export default function GoalSetupModal({
 
         {/* Step Indicators */}
         <div className="flex-shrink-0 py-4 border-b border-[var(--border)]">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-center">
             {STEPS.map((step, index) => {
               const Icon = step.icon;
               const isActive = currentStep === step.id;
@@ -373,7 +472,7 @@ export default function GoalSetupModal({
                     <button
                       onClick={() => isCompleted && setCurrentStep(step.id)}
                       disabled={!isCompleted}
-                      className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors ${
+                      className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors shrink-0 ${
                         isActive
                           ? "bg-[var(--primary)] text-white"
                           : isCompleted
@@ -399,7 +498,7 @@ export default function GoalSetupModal({
                   </div>
                   {index < STEPS.length - 1 && (
                     <div
-                      className={`w-8 sm:w-12 lg:w-16 h-0.5 mx-1 sm:mx-2 rounded ${
+                      className={`w-4 sm:w-12 lg:w-16 h-0.5 mx-0.5 sm:mx-2 rounded shrink-0 ${
                         isCompleted
                           ? "bg-[var(--success)]"
                           : "bg-[var(--border)]"
@@ -413,51 +512,158 @@ export default function GoalSetupModal({
         </div>
 
         {/* Step Content */}
-        <div className="flex-1 overflow-y-auto py-4 min-h-0">
-          {/* Step 1: Goal Selection */}
+        <div className="flex-1 overflow-y-auto py-3 sm:py-4 min-h-0">
+          {/* Step 1: Current Level */}
           {currentStep === 1 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
                 <h3 className="text-lg font-semibold text-[var(--text-primary)]">
-                  {mode === "new" ? "Choose Your Next Goal" : "Update Your Goal"}
+                  What's Your Current Level?
                 </h3>
                 <p className="text-sm text-[var(--text-secondary)]">
-                  Select a target time to work towards
+                  Select a recent 3x3 session so we can analyze your skill
+                  level.
+                </p>
+                <p className="text-xs text-[var(--text-muted)] mt-1.5 italic">
+                  More events coming soon!
                 </p>
               </div>
 
-              {/* Current info banner */}
-              {currentAverage && (
-                <div className="flex items-center justify-center gap-3 p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                  <Timer className="w-4 h-4 text-[var(--primary)]" />
-                  <span className="text-sm text-[var(--text-secondary)]">
-                    Current average:
-                  </span>
-                  <span className="text-lg font-bold text-[var(--primary)]">
-                    {formatTimeSimple(currentAverage)}
+              {/* Session Selection */}
+              <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-medium text-[var(--text-primary)]">
+                    Select a 3x3 Session
+                  </h4>
+                  <span className="text-xs text-[var(--text-muted)]">
+                    Optional
                   </span>
                 </div>
-              )}
 
-              {mode === "edit" && (
-                <div className="flex items-start gap-2 p-2.5 bg-[var(--info)]/10 border border-[var(--info)]/20 rounded-lg">
+                <div className="flex items-start gap-2 p-2 bg-[var(--info)]/10 border border-[var(--info)]/20 rounded-lg mb-3">
                   <Info className="w-4 h-4 text-[var(--info)] flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-[var(--text-secondary)]">
-                    Current goal:{" "}
+                    For best accuracy, select a session with at least{" "}
                     <span className="font-semibold text-[var(--info)]">
-                      {profile.goalType === "custom"
-                        ? `Custom (${formatTimeSimple(currentGoalTime)})`
-                        : profile.goalType.replace("-", " ").replace("sub", "Sub ")}
+                      100 solves
                     </span>
-                    . Changing the goal type will archive your current progress.
+                    .
                   </p>
+                </div>
+
+                {!sessions ? (
+                  <div className="flex items-center justify-center py-6">
+                    <div className="animate-spin w-5 h-5 border-2 border-[var(--primary)] border-t-transparent rounded-full" />
+                  </div>
+                ) : filteredSessions.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-6 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
+                    <AlertCircle className="w-6 h-6 text-[var(--text-muted)] mb-2" />
+                    <p className="text-[var(--text-muted)] text-xs text-center px-2">
+                      No 3x3 sessions found. Select your skill level manually
+                      below.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-1.5 max-h-32 overflow-y-auto">
+                    {filteredSessions.slice(0, 10).map((session) => {
+                      const isSelected = data.selectedSessionId === session._id;
+                      const hasEnoughSolves = session.solveCount3x3 >= 100;
+
+                      return (
+                        <button
+                          key={session._id}
+                          onClick={() => {
+                            lastProcessedRef.current = null;
+                            updateData({
+                              selectedSessionId: session._id,
+                            });
+                          }}
+                          className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-all text-left ${
+                            isSelected
+                              ? "bg-[var(--primary)]/10 border-[var(--primary)]"
+                              : "bg-[var(--surface)] border-[var(--border)] hover:border-[var(--border-hover)]"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <FolderOpen
+                              className={`w-4 h-4 ${
+                                isSelected
+                                  ? "text-[var(--primary)]"
+                                  : "text-[var(--text-muted)]"
+                              }`}
+                            />
+                            <span
+                              className={`text-sm font-medium ${
+                                isSelected
+                                  ? "text-[var(--primary)]"
+                                  : "text-[var(--text-primary)]"
+                              }`}
+                            >
+                              {session.name}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`text-xs ${
+                                hasEnoughSolves
+                                  ? "text-[var(--success)]"
+                                  : "text-[var(--text-muted)]"
+                              }`}
+                            >
+                              {session.solveCount3x3} solves
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Session Stats */}
+              {data.selectedSessionId && selectedSessionStats && (
+                <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                  <div className="flex items-center gap-2 mb-3">
+                    <BarChart3 className="w-4 h-4 text-[var(--primary)]" />
+                    <h4 className="text-sm font-medium text-[var(--text-primary)]">
+                      Session Analysis
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center p-2 bg-[var(--surface)] rounded-lg">
+                      <span className="text-[10px] text-[var(--text-muted)] block">
+                        Solves
+                      </span>
+                      <span className="text-lg font-bold text-[var(--text-primary)]">
+                        {selectedSessionStats.solveCount}
+                      </span>
+                    </div>
+                    <div className="text-center p-2 bg-[var(--surface)] rounded-lg">
+                      <span className="text-[10px] text-[var(--text-muted)] block">
+                        Average
+                      </span>
+                      <span className="text-lg font-bold text-[var(--primary)]">
+                        {formatTime(selectedSessionStats.average)}
+                      </span>
+                    </div>
+                    <div className="text-center p-2 bg-[var(--surface)] rounded-lg">
+                      <span className="text-[10px] text-[var(--text-muted)] block">
+                        Best
+                      </span>
+                      <span className="text-lg font-bold text-[var(--success)]">
+                        {formatTime(selectedSessionStats.bestSingle)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* Skill Level */}
+              {/* Skill Level Selection */}
               <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
                 <h4 className="text-sm font-medium text-[var(--text-primary)] mb-3">
-                  Your Skill Level
+                  {data.selectedSessionId
+                    ? "Detected Skill Level"
+                    : "Select Your Skill Level"}
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
                   {SKILL_LEVELS.map((level) => (
@@ -486,6 +692,52 @@ export default function GoalSetupModal({
                   ))}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Step 2: Goal Selection */}
+          {currentStep === 2 && (
+            <div className="space-y-4">
+              <div className="text-center mb-4">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                  {mode === "new"
+                    ? "Choose Your Next Goal"
+                    : "Update Your Goal"}
+                </h3>
+                <p className="text-sm text-[var(--text-secondary)]">
+                  Select a target time to work towards
+                </p>
+              </div>
+
+              {/* Current info banner */}
+              {currentAverage && (
+                <div className="flex items-center justify-center gap-3 p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                  <Timer className="w-4 h-4 text-[var(--primary)]" />
+                  <span className="text-sm text-[var(--text-secondary)]">
+                    Current average:
+                  </span>
+                  <span className="text-lg font-bold text-[var(--primary)]">
+                    {formatTimeSimple(currentAverage)}
+                  </span>
+                </div>
+              )}
+
+              {mode === "edit" && (
+                <div className="flex items-start gap-2 p-2.5 bg-[var(--info)]/10 border border-[var(--info)]/20 rounded-lg">
+                  <Info className="w-4 h-4 text-[var(--info)] flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    Current goal:{" "}
+                    <span className="font-semibold text-[var(--info)]">
+                      {profile.goalType === "custom"
+                        ? `Custom (${formatTimeSimple(currentGoalTime)})`
+                        : profile.goalType
+                            .replace("-", " ")
+                            .replace("sub", "Sub ")}
+                    </span>
+                    . Changing the goal type will archive your current progress.
+                  </p>
+                </div>
+              )}
 
               {/* Recommended Goals */}
               <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
@@ -551,45 +803,46 @@ export default function GoalSetupModal({
               </div>
 
               {/* Other Goals */}
-              {GOALS.filter((g) => !recommendedGoals.includes(g.id)).length > 0 && (
-              <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                <h4 className="text-sm font-medium text-[var(--text-primary)] mb-3">
-                  Other goals
-                </h4>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {GOALS.filter((g) => !recommendedGoals.includes(g.id)).map(
-                    (goal) => (
-                      <button
-                        key={goal.id}
-                        onClick={() =>
-                          updateData({
-                            goalType: goal.id,
-                            customGoalTime: goal.time,
-                          })
-                        }
-                        className={`p-2 rounded-lg border text-center transition-all ${
-                          data.goalType === goal.id
-                            ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-                            : "bg-[var(--surface)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
-                        }`}
-                      >
-                        <span className="text-sm font-medium block">
-                          {goal.label}
-                        </span>
-                        <span className="text-xs text-[var(--text-muted)]">
-                          {formatTimeSimple(goal.time)}
-                        </span>
-                      </button>
-                    ),
-                  )}
+              {GOALS.filter((g) => !recommendedGoals.includes(g.id)).length >
+                0 && (
+                <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                  <h4 className="text-sm font-medium text-[var(--text-primary)] mb-3">
+                    Other goals
+                  </h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {GOALS.filter((g) => !recommendedGoals.includes(g.id)).map(
+                      (goal) => (
+                        <button
+                          key={goal.id}
+                          onClick={() =>
+                            updateData({
+                              goalType: goal.id,
+                              customGoalTime: goal.time,
+                            })
+                          }
+                          className={`p-2 rounded-lg border text-center transition-all ${
+                            data.goalType === goal.id
+                              ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
+                              : "bg-[var(--surface)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
+                          }`}
+                        >
+                          <span className="text-sm font-medium block">
+                            {goal.label}
+                          </span>
+                          <span className="text-xs text-[var(--text-muted)]">
+                            {formatTimeSimple(goal.time)}
+                          </span>
+                        </button>
+                      ),
+                    )}
+                  </div>
                 </div>
-              </div>
               )}
             </div>
           )}
 
-          {/* Step 2: Timeline */}
-          {currentStep === 2 && (
+          {/* Step 3: Timeline */}
+          {currentStep === 3 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
                 <h3 className="text-lg font-semibold text-[var(--text-primary)]">
@@ -681,8 +934,8 @@ export default function GoalSetupModal({
             </div>
           )}
 
-          {/* Step 3: Commitment */}
-          {currentStep === 3 && (
+          {/* Step 4: Commitment */}
+          {currentStep === 4 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
                 <h3 className="text-lg font-semibold text-[var(--text-primary)]">
@@ -768,8 +1021,8 @@ export default function GoalSetupModal({
             </div>
           )}
 
-          {/* Step 4: Review */}
-          {currentStep === 4 && (
+          {/* Step 5: Review */}
+          {currentStep === 5 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
                 <h3 className="text-lg font-semibold text-[var(--text-primary)]">
@@ -786,10 +1039,14 @@ export default function GoalSetupModal({
                 {/* Skill Level */}
                 <ReviewRow
                   label="Skill Level"
-                  newValue={data.skillLevel.charAt(0).toUpperCase() + data.skillLevel.slice(1)}
+                  newValue={
+                    data.skillLevel.charAt(0).toUpperCase() +
+                    data.skillLevel.slice(1)
+                  }
                   oldValue={
                     mode === "edit"
-                      ? profile.skillLevel.charAt(0).toUpperCase() + profile.skillLevel.slice(1)
+                      ? profile.skillLevel.charAt(0).toUpperCase() +
+                        profile.skillLevel.slice(1)
                       : undefined
                   }
                   changed={data.skillLevel !== profile.skillLevel}
@@ -807,7 +1064,9 @@ export default function GoalSetupModal({
                     mode === "edit"
                       ? profile.goalType === "custom"
                         ? `Custom: ${profile.customGoalTime ? formatTimeSimple(profile.customGoalTime) : "Set"}`
-                        : profile.goalType.replace("-", " ").replace("sub", "Sub ")
+                        : profile.goalType
+                            .replace("-", " ")
+                            .replace("sub", "Sub ")
                       : undefined
                   }
                   changed={isGoalChange}
@@ -870,7 +1129,10 @@ export default function GoalSetupModal({
                   <Info className="w-4 h-4 text-[var(--warning)] flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-[var(--text-secondary)]">
                     Your current goal progress will be archived in your goal
-                    history.{isGoalChange ? " A new training plan will be generated." : ""}
+                    history.
+                    {isGoalChange
+                      ? " A new training plan will be generated."
+                      : ""}
                   </p>
                 </div>
               )}
@@ -887,7 +1149,7 @@ export default function GoalSetupModal({
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 pt-4 border-t border-[var(--border)]">
+        <div className="flex-shrink-0 pt-3 sm:pt-4 border-t border-[var(--border)]">
           <div className="flex items-center justify-between">
             <span className="text-xs text-[var(--text-muted)]">
               Step {currentStep} of {STEPS.length}
@@ -941,7 +1203,7 @@ export default function GoalSetupModal({
   );
 }
 
-/** Review row showing old -> new value with change indicator */
+// Helper component for review rows in the final step
 function ReviewRow({
   label,
   newValue,
@@ -975,9 +1237,7 @@ function ReviewRow({
         )}
         <span
           className={`text-sm font-medium ${
-            changed
-              ? "text-[var(--primary)]"
-              : "text-[var(--text-primary)]"
+            changed ? "text-[var(--primary)]" : "text-[var(--text-primary)]"
           }`}
         >
           {newValue}

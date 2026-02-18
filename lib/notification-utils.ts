@@ -693,17 +693,53 @@ export function dismissAllInAppNotifications(): void {
   }
 }
 
-/**
- * Get unread notification count
- */
+// Mark all in-app notifications as read
+export function markAllInAppAsRead(): void {
+  try {
+    const notifications = getInAppNotifications();
+    const updated = notifications.map((n) => ({ ...n, read: true }));
+    localStorage.setItem(IN_APP_NOTIFICATIONS_KEY, JSON.stringify(updated));
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("cubedev-notification-updated"));
+    }
+  } catch (error) {
+    console.error("Failed to mark all notifications as read:", error);
+  }
+}
+
+const SEEN_ALGORITHM_IDS_KEY = "cubedev-seen-algorithm-notification-ids";
+
+// Mark specific algorithm notification IDs as seen
+export function markAlgorithmNotificationsSeen(ids: string[]): void {
+  try {
+    localStorage.setItem(SEEN_ALGORITHM_IDS_KEY, JSON.stringify(ids));
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("cubedev-notification-updated"));
+    }
+  } catch (error) {
+    console.error("Failed to mark algorithm notifications as seen:", error);
+  }
+}
+
+// Get the set of seen algorithm notification IDs
+export function getSeenAlgorithmNotificationIds(): Set<string> {
+  try {
+    const raw = localStorage.getItem(SEEN_ALGORITHM_IDS_KEY);
+    if (raw) {
+      return new Set(JSON.parse(raw));
+    }
+  } catch {}
+  return new Set();
+}
+
+// Get count of unread in-app notifications
 export function getUnreadNotificationCount(): number {
   const notifications = getInAppNotifications();
   return notifications.filter((n) => !n.read && !n.dismissed).length;
 }
 
-/**
- * Hook for real-time in-app notification updates
- */
+// Custom hook to manage in-app notifications
 export function useInAppNotifications() {
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
 
@@ -730,6 +766,7 @@ export function useInAppNotifications() {
     unreadCount: notifications.filter((n) => !n.read).length,
     refreshNotifications,
     markRead: markNotificationRead,
+    markAllRead: markAllInAppAsRead,
     dismiss: dismissInAppNotification,
     dismissAll: dismissAllInAppNotifications,
   };

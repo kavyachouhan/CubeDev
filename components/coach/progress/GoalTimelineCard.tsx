@@ -230,7 +230,8 @@ function TimelineItem({
                 {label}
               </span>
             )}
-            <Eye className="w-3.5 h-3.5 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Eye className="w-3.5 h-3.5 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label="View goal details" />
           </div>
         </div>
 
