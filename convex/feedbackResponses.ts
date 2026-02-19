@@ -196,10 +196,21 @@ export const getAllFeedback = query({
     }
 
     if (args.limit) {
-      return responses.slice(0, args.limit);
+      responses = responses.slice(0, args.limit);
     }
 
-    return responses;
+    // Fetch user names for responses that have userId (batching for efficiency)
+    const responsesWithNames = await Promise.all(
+      responses.map(async (r) => {
+        if (r.userId) {
+          const user = await ctx.db.get(r.userId);
+          return { ...r, userName: user?.name ?? "Deleted User" };
+        }
+        return { ...r, userName: undefined };
+      }),
+    );
+
+    return responsesWithNames;
   },
 });
 

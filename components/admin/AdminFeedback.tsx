@@ -356,6 +356,161 @@ function FeatureRatingBar({
   );
 }
 
+// Custom Response Value Renderer
+function CustomResponseValue({
+  value,
+  label,
+}: {
+  value: unknown;
+  label: string;
+}) {
+  // Handle null/undefined
+  if (value === null || value === undefined) {
+    return (
+      <div className="text-sm text-[var(--text-muted)] italic font-inter">
+        No response
+      </div>
+    );
+  }
+
+  // Handle boolean
+  if (typeof value === "boolean") {
+    return (
+      <div className="flex items-center gap-2">
+        <div
+          className={`w-2.5 h-2.5 rounded-full ${
+            value ? "bg-green-500" : "bg-red-500"
+          }`}
+        />
+        <span className="text-sm text-[var(--text-primary)] font-inter">
+          {value ? "Yes" : "No"}
+        </span>
+      </div>
+    );
+  }
+
+  // Handle number - check if it's a rating
+  if (typeof value === "number") {
+    // Check if it's a 1-5 rating
+    if (value <= 5 && value >= 1) {
+      return (
+        <div className="flex items-center gap-1.5">
+          <div className="flex gap-0.5">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                className={`w-3.5 h-3.5 ${
+                  star <= value
+                    ? "text-amber-500 fill-amber-500"
+                    : "text-[var(--text-muted)]"
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+            {value}/5
+          </span>
+        </div>
+      );
+    }
+    // Check if it's a 1-10 scale
+    if (value <= 10 && value >= 1) {
+      return (
+        <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+          {value}/10
+        </span>
+      );
+    }
+    // Regular number
+    return (
+      <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+        {typeof value === "number" ? value.toLocaleString() : value}
+      </span>
+    );
+  }
+
+  // Handle string
+  if (typeof value === "string") {
+    // Check if it looks like JSON
+    if (value.startsWith("{") || value.startsWith("[")) {
+      try {
+        const parsed = JSON.parse(value);
+        return <CustomResponseValue value={parsed} label={label} />;
+      } catch {
+        // If parsing fails, treat as plain string
+      }
+    }
+    return (
+      <p className="text-sm text-[var(--text-primary)] font-inter whitespace-pre-wrap break-words">
+        {value}
+      </p>
+    );
+  }
+
+  // Handle array
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return (
+        <div className="text-sm text-[var(--text-muted)] italic font-inter">
+          Empty list
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-1">
+        {value.map((item, idx) => (
+          <div
+            key={idx}
+            className="flex items-start gap-2 text-sm text-[var(--text-primary)] font-inter"
+          >
+            <span className="text-[var(--text-muted)]">•</span>
+            <span>
+              {typeof item === "object" ? JSON.stringify(item) : String(item)}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Handle object
+  if (typeof value === "object") {
+    const entries = Object.entries(value);
+    if (entries.length === 0) {
+      return (
+        <div className="text-sm text-[var(--text-muted)] italic font-inter">
+          Empty object
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-2">
+        {entries.map(([key, val]) => (
+          <div
+            key={key}
+            className="bg-[var(--surface)] rounded-lg p-2.5 border border-[var(--border)]"
+          >
+            <p className="text-xs text-[var(--text-muted)] font-inter mb-1 capitalize">
+              {key
+                .replace(/([A-Z])/g, " $1")
+                .toLowerCase()
+                .trim()}
+            </p>
+            <CustomResponseValue value={val} label={key} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Fallback
+  return (
+    <span className="text-sm text-[var(--text-primary)] font-inter">
+      {String(value)}
+    </span>
+  );
+}
+
 // Feedback Response Item
 function FeedbackItem({
   feedback,
@@ -464,7 +619,7 @@ function FeedbackItem({
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-[var(--primary)]" />
                   <span className="text-sm font-medium text-[var(--text-primary)] truncate">
-                    Registered User
+                    {feedback.userName ?? feedback.userId}
                   </span>
                 </div>
               </div>
@@ -473,9 +628,7 @@ function FeedbackItem({
 
           {/* Mobile Stars */}
           {feedback.uiuxRating && (
-            <div className="sm:hidden">
-              {renderStars(feedback.uiuxRating)}
-            </div>
+            <div className="sm:hidden">{renderStars(feedback.uiuxRating)}</div>
           )}
 
           {/* Feature Ratings */}
@@ -543,46 +696,20 @@ function FeedbackItem({
                 <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] font-inter mb-2">
                   Custom Responses
                 </p>
-                <div className="bg-[var(--surface-elevated)] rounded-lg p-2.5 sm:p-3 space-y-3">
+                <div className="space-y-2.5">
                   {Object.entries(feedback.customResponses).map(
                     ([key, value]) => (
-                      <div key={key}>
-                        <p className="text-xs text-[var(--text-muted)] font-inter mb-0.5 capitalize">
+                      <div
+                        key={key}
+                        className="bg-[var(--surface-elevated)] rounded-lg p-2.5 sm:p-3 border border-[var(--border)]"
+                      >
+                        <p className="text-xs text-[var(--text-muted)] font-inter mb-1.5 capitalize">
                           {key
                             .replace(/([A-Z])/g, " $1")
                             .replace(/_/g, " ")
                             .trim()}
                         </p>
-                        {typeof value === "number" ? (
-                          <div className="flex items-center gap-2">
-                            {value <= 5 ? (
-                              <>
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <Star
-                                    key={star}
-                                    className={`w-4 h-4 ${
-                                      star <= (value as number)
-                                        ? "text-[var(--warning)] fill-[var(--warning)]"
-                                        : "text-[var(--text-muted)]"
-                                    }`}
-                                  />
-                                ))}
-                                <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                                  {value as number}/5
-                                </span>
-                              </>
-                            ) : (
-                              <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
-                                {value as number}
-                                {(value as number) <= 10 ? "/10" : ""}
-                              </span>
-                            )}
-                          </div>
-                        ) : (
-                          <p className="text-sm text-[var(--text-primary)] font-inter whitespace-pre-wrap">
-                            {String(value)}
-                          </p>
-                        )}
+                        <CustomResponseValue value={value} label={key} />
                       </div>
                     ),
                   )}
@@ -597,9 +724,7 @@ function FeedbackItem({
               {formatDate(feedback.createdAt)}
             </span>
             {feedback.userAgent && (
-              <span className="truncate max-w-[200px] sm:max-w-xs hidden sm:inline">
-                {feedback.userAgent}
-              </span>
+              <span className="sm:inline">{feedback.userAgent}</span>
             )}
           </div>
         </div>
@@ -796,7 +921,10 @@ const SURVEY_TYPES = [
 ] as const;
 
 // Dynamic features per survey type
-const FEATURES_BY_TYPE: Record<string, Array<{ key: string; label: string }>> = {
+const FEATURES_BY_TYPE: Record<
+  string,
+  Array<{ key: string; label: string }>
+> = {
   general: [
     { key: "timer", label: "Timer" },
     { key: "algorithmTrainer", label: "Algorithm Trainer" },
@@ -906,11 +1034,14 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
 
   // Dynamic features based on survey type
   const activeFeatures = useMemo(() => {
-    const effectiveType = surveyType === "__custom" ? customSurveyType : surveyType;
+    const effectiveType =
+      surveyType === "__custom" ? customSurveyType : surveyType;
     return FEATURES_BY_TYPE[effectiveType] || FEATURES_BY_TYPE.general;
   }, [surveyType, customSurveyType]);
 
-  const [featureRatings, setFeatureRatings] = useState<Record<string, number>>({});
+  const [featureRatings, setFeatureRatings] = useState<Record<string, number>>(
+    {},
+  );
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
 
   // Sync features when survey type changes
@@ -929,7 +1060,10 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
   >([]);
 
   const allFeatures = useMemo(
-    () => [...activeFeatures, ...extraFeatures.filter((f) => f.key.trim() && f.label.trim())],
+    () => [
+      ...activeFeatures,
+      ...extraFeatures.filter((f) => f.key.trim() && f.label.trim()),
+    ],
     [activeFeatures, extraFeatures],
   );
 
@@ -940,7 +1074,9 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
 
   // Custom questions builder
   const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
-  const [customAnswers, setCustomAnswers] = useState<Record<string, string | number>>({});
+  const [customAnswers, setCustomAnswers] = useState<
+    Record<string, string | number>
+  >({});
 
   const submitFeedback = useMutation(api.feedbackResponses.submitFeedback);
 
@@ -1000,7 +1136,13 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
     const id = `q_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
     setCustomQuestions((prev) => [
       ...prev,
-      { id, label: "", type: "text" as CustomQuestionType, options: "", required: false },
+      {
+        id,
+        label: "",
+        type: "text" as CustomQuestionType,
+        options: "",
+        required: false,
+      },
     ]);
   };
 
@@ -1013,7 +1155,10 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
     });
   };
 
-  const updateCustomQuestion = (id: string, updates: Partial<CustomQuestion>) => {
+  const updateCustomQuestion = (
+    id: string,
+    updates: Partial<CustomQuestion>,
+  ) => {
     setCustomQuestions((prev) =>
       prev.map((q) => (q.id === id ? { ...q, ...updates } : q)),
     );
@@ -1053,7 +1198,8 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
 
     setIsSubmitting(true);
     try {
-      const effectiveType = surveyType === "__custom" ? customSurveyType.trim() : surveyType;
+      const effectiveType =
+        surveyType === "__custom" ? customSurveyType.trim() : surveyType;
 
       // Filter out zero ratings and only include enabled/selected features
       const validFeatureRatings = Object.fromEntries(
@@ -1065,7 +1211,11 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
       // Build custom responses from custom questions + answers
       const customResponses: Record<string, string | number> = {};
       customQuestions.forEach((q) => {
-        if (q.label.trim() && customAnswers[q.id] !== undefined && customAnswers[q.id] !== "") {
+        if (
+          q.label.trim() &&
+          customAnswers[q.id] !== undefined &&
+          customAnswers[q.id] !== ""
+        ) {
           const safeKey = q.label.trim().replace(/\s+/g, "_").toLowerCase();
           customResponses[safeKey] = customAnswers[q.id];
         }
@@ -1478,7 +1628,9 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                       type="text"
                       value={question.label}
                       onChange={(e) =>
-                        updateCustomQuestion(question.id, { label: e.target.value })
+                        updateCustomQuestion(question.id, {
+                          label: e.target.value,
+                        })
                       }
                       className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
                       placeholder="Enter question..."
@@ -1577,7 +1729,9 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                               >
                                 <Star
                                   className={`w-5 h-5 ${
-                                    r <= ((customAnswers[question.id] as number) || 0)
+                                    r <=
+                                    ((customAnswers[question.id] as number) ||
+                                      0)
                                       ? "text-amber-500 fill-amber-500"
                                       : "text-[var(--text-muted)]"
                                   }`}
@@ -1636,7 +1790,8 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
               </div>
             ) : (
               <p className="text-xs text-[var(--text-muted)] font-inter">
-                Add custom questions with different field types (text, rating, scale, dropdown)
+                Add custom questions with different field types (text, rating,
+                scale, dropdown)
               </p>
             )}
           </div>
@@ -1726,11 +1881,9 @@ export default function AdminFeedback() {
       customResponses: f.customResponses
         ? JSON.stringify(f.customResponses)
         : "",
-      featureRatings: f.featureRatings
-        ? JSON.stringify(f.featureRatings)
-        : "",
+      featureRatings: f.featureRatings ? JSON.stringify(f.featureRatings) : "",
       createdAt: new Date(f.createdAt).toISOString(),
-      hasUser: f.userId ? "Yes" : "No",
+      submittedBy: f.userName || (f.userId ? "Unknown User" : "Anonymous"),
     }));
 
     exportToCSV(exportData, "feedback_responses");
@@ -2005,7 +2158,7 @@ export default function AdminFeedback() {
       {/* Feedback List */}
       <div className="mt-6">
         <CollapsibleCard
-          title="Recent Submissions"
+          title={`Recent Submissions (${feedbackList?.length || 0})`}
           defaultOpen={true}
           storageKey="admin-feedback-submissions-open"
           headerExtra={

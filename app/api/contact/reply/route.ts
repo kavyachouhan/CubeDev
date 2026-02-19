@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
         
         <div style="margin-top: 20px; padding: 15px; background-color: #f1f1f1; border-radius: 8px;">
           <p style="margin: 0; color: #6c757d; font-size: 12px;">
-            This email was sent from CubeDev Support. If you have any questions, feel free to reply to this email or contact us at support@cubedev.xyz.
+            This email was sent from CubeDev Support. If you have any questions, feel free to reply to this email or contact us at hello.cubedev@gmail.com.
           </p>
         </div>
       </div>
@@ -62,11 +62,11 @@ export async function POST(req: NextRequest) {
 
     // Send reply email to user
     await transporter.sendMail({
-      from: `"CubeDev Support" <${process.env.SMTP_USER}>`,
+      from: `"CubeDev" <${process.env.SMTP_USER}>`,
       to: recipientEmail,
       subject: subject,
       html: replyEmailHtml,
-      replyTo: process.env.ADMIN_EMAIL || process.env.SMTP_USER,
+      replyTo: process.env.SMTP_USER,
     });
 
     return NextResponse.json(

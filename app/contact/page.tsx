@@ -108,7 +108,7 @@ export default function ContactPage() {
               Message Sent Successfully!
             </h1>
             <p className="text-[var(--text-secondary)] font-inter mb-6 leading-relaxed">
-              Thank you for reaching out! I've received your message and will
+              Thank you for reaching out! We&apos;ve received your message and will
               get back to you as soon as possible. You should also receive a
               confirmation email shortly.
             </p>

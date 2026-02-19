@@ -80,6 +80,11 @@ export default function TimerCore({
     return state === "running" && timerUpdateMode === "solving";
   };
 
+  // Check if we should show "Inspecting..." text
+  const shouldShowInspectingText = () => {
+    return state === "inspection" && timerUpdateMode === "solving";
+  };
+
   // Get timer color based on state
   const getTimerColor = () => {
     switch (state) {
@@ -143,13 +148,23 @@ export default function TimerCore({
         >
           Solving...
         </div>
+      ) : shouldShowInspectingText() ? (
+        <div
+          key="inspecting-text"
+          className={`font-bold text-3xl sm:text-4xl md:text-5xl ${getTimerColor()} font-inter cursor-pointer select-none py-4`}
+          style={{
+            animation: reduceMotion ? "none" : "fadeIn 0.3s ease-in",
+          }}
+        >
+          Inspecting...
+        </div>
       ) : (
         <div
           key="timer-display"
           className={`font-bold timer-text ${getTimerColor()} transition-all duration-300 font-mono cursor-pointer select-none py-4`}
         >
           {state === "inspection"
-            ? `${inspectionTime.toFixed(2)}`
+            ? `${inspectionTime.toFixed(0)}`
             : getDisplayTime()}
         </div>
       )}

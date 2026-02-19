@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
         <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <p>Hi ${name},</p>
           
-          <p>Thank you for reaching out to CubeDev! I've received your message and will get back to you as soon as possible.</p>
+          <p>Thank you for reaching out to CubeDev! We've received your message and will get back to you as soon as possible.</p>
           
           <p>Here's a copy of what you sent:</p>
           
@@ -73,8 +73,7 @@ export async function POST(req: NextRequest) {
           <p>Thanks for being part of the CubeDev community!</p>
           
           <p>Best regards,<br>
-          <strong>Kavya Chouhan</strong><br>
-          Creator of CubeDev<br>
+          <strong>CubeDev</strong><br>
           <a href="https://cubedev.xyz">https://cubedev.xyz</a></p>
         </div>
         
@@ -89,7 +88,7 @@ export async function POST(req: NextRequest) {
     // Send email to admin
     await transporter.sendMail({
       from: `"CubeDev Contact Form" <${process.env.SMTP_USER}>`,
-      to: process.env.ADMIN_EMAIL || process.env.SMTP_USER,
+      to: process.env.SMTP_USER,
       subject: `[CubeDev Contact] ${subject}`,
       html: adminEmailHtml,
       replyTo: email,
@@ -101,6 +100,7 @@ export async function POST(req: NextRequest) {
       to: email,
       subject: "Thank you for contacting CubeDev!",
       html: userEmailHtml,
+      replyTo: process.env.SMTP_USER,
     });
 
     return NextResponse.json(
