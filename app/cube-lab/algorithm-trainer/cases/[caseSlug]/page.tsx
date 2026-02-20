@@ -12,7 +12,15 @@ import {
   AlternativeAlgorithms,
 } from "@/components/algorithm";
 import { AlgorithmCaseDetailSkeleton } from "@/components/SkeletonLoaders";
-import { ArrowLeft, Brain, Star, PlayCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Brain,
+  Star,
+  PlayCircle,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+} from "lucide-react";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
 
@@ -35,13 +43,21 @@ export default function AlgorithmCasePage() {
       : "skip"
   );
 
+  // Get sibling case slugs for navigation
+  const caseSlugs = useQuery(
+    api.algorithms.getSetCaseSlugs,
+    caseData?.set?._id ? { setId: caseData.set._id } : "skip"
+  );
+
   // Mutations
   const startLearning = useMutation(api.algorithms.startLearning);
   const changePreferredAlgorithm = useMutation(
     api.algorithms.changePreferredAlgorithm
   );
+  const markAsLearned = useMutation(api.algorithms.markAsLearned);
 
   const [selectedAlgId, setSelectedAlgId] = useState<string | null>(null);
+  const [isMarkingLearned, setIsMarkingLearned] = useState(false);
 
   useEffect(() => {
     if (caseData) {
@@ -84,6 +100,34 @@ export default function AlgorithmCasePage() {
       }
     }
   };
+
+  const handleMarkAsLearned = async () => {
+    if (!user?.convexId || !caseData?.case || isMarkingLearned) return;
+    setIsMarkingLearned(true);
+    try {
+      await markAsLearned({
+        userId: user.convexId as Id<"users">,
+        caseId: caseData.case._id,
+        preferredAlgId: selectedAlgId
+          ? (selectedAlgId as Id<"algorithms">)
+          : undefined,
+      });
+    } catch (error) {
+      console.error("Failed to mark as learned:", error);
+    } finally {
+      setIsMarkingLearned(false);
+    }
+  };
+
+  // Navigation helpers
+  const currentIndex = caseSlugs?.findIndex(
+    (c: any) => c.slug === caseSlug
+  ) ?? -1;
+  const prevCase = currentIndex > 0 ? caseSlugs?.[currentIndex - 1] : null;
+  const nextCase =
+    caseSlugs && currentIndex < caseSlugs.length - 1
+      ? caseSlugs[currentIndex + 1]
+      : null;
 
   // Loading state
   if (!user) {
@@ -159,7 +203,7 @@ export default function AlgorithmCasePage() {
 
               {/* Progress Stats (if learning) */}
               {userProgress && userProgress.learningStage !== "new" && (
-                <div className="timer-card bg-gradient-to-r from-[var(--primary)]/10 to-transparent border-l-4 border-[var(--primary)] overflow-x-auto">
+                <div className="timer-card border-l-4 border-[var(--primary)] overflow-x-auto">
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 min-w-max lg:min-w-0">
                     <div>
                       <div className="text-xs text-[var(--text-muted)] mb-1">
@@ -417,13 +461,25 @@ export default function AlgorithmCasePage() {
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3">
                 {!userProgress || userProgress.learningStage === "new" ? (
-                  <button
-                    onClick={handleStartLearning}
-                    className="w-full sm:flex-1 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
-                  >
-                    <PlayCircle className="w-5 h-5 flex-shrink-0" />
-                    <span className="truncate">Start Learning This Case</span>
-                  </button>
+                  <>
+                    <button
+                      onClick={handleStartLearning}
+                      className="w-full sm:flex-1 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                    >
+                      <PlayCircle className="w-5 h-5 flex-shrink-0" />
+                      <span className="truncate">Start Learning This Case</span>
+                    </button>
+                    <button
+                      onClick={handleMarkAsLearned}
+                      disabled={isMarkingLearned}
+                      className="w-full sm:flex-1 py-3 border border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)]/10 rounded-lg transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                      <span className="truncate">
+                        {isMarkingLearned ? "Marking..." : "Already Know This"}
+                      </span>
+                    </button>
+                  </>
                 ) : (
                   <>
                     <Link
@@ -443,6 +499,41 @@ export default function AlgorithmCasePage() {
                   </>
                 )}
               </div>
+
+              {/* Prev / Next Case Navigation */}
+              {caseSlugs && caseSlugs.length > 1 && (
+                <div className="timer-card">
+                  <div className="flex items-center justify-between gap-4">
+                    {prevCase ? (
+                      <Link
+                        href={`/cube-lab/algorithm-trainer/cases/${prevCase.slug}`}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] bg-[var(--surface-elevated)] hover:bg-[var(--surface)] border border-[var(--border)] rounded-lg transition-colors min-w-0"
+                      >
+                        <ChevronLeft className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{prevCase.caseName}</span>
+                      </Link>
+                    ) : (
+                      <div />
+                    )}
+
+                    <span className="text-xs text-[var(--text-muted)] flex-shrink-0">
+                      {currentIndex + 1} / {caseSlugs.length}
+                    </span>
+
+                    {nextCase ? (
+                      <Link
+                        href={`/cube-lab/algorithm-trainer/cases/${nextCase.slug}`}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] bg-[var(--surface-elevated)] hover:bg-[var(--surface)] border border-[var(--border)] rounded-lg transition-colors min-w-0"
+                      >
+                        <span className="truncate">{nextCase.caseName}</span>
+                        <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                      </Link>
+                    ) : (
+                      <div />
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -3,19 +3,21 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useUser } from "@/components/UserProvider";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import CubeLabLayout from "@/components/CubeLabLayout";
 import { AlgorithmCaseCard } from "@/components/algorithm";
 import { AlgorithmSetDetailSkeleton } from "@/components/SkeletonLoaders";
-import { ArrowLeft, Filter, Search } from "lucide-react";
+import { ArrowLeft, Filter, Search, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { Id } from "@/convex/_generated/dataModel";
 
 export default function AlgorithmSetPage() {
   const params = useParams();
   const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStage, setFilterStage] = useState<string>("all");
+  const [isBulkMarking, setIsBulkMarking] = useState(false);
 
   const setSlug = params.setSlug as string;
 
@@ -32,6 +34,8 @@ export default function AlgorithmSetPage() {
       : "skip"
   );
 
+  const bulkMarkAsLearned = useMutation(api.algorithms.bulkMarkAsLearned);
+
   if (setData === undefined) {
     return (
       <CubeLabLayout activeSection="algorithm-trainer">
@@ -41,6 +45,26 @@ export default function AlgorithmSetPage() {
   }
 
   const { set, cases } = setData;
+
+  // Get unlearned case IDs for bulk marking
+  const unlearnedCaseIds = cases
+    .filter((c: any) => !userProgress?.progressMap?.[c._id])
+    .map((c: any) => c._id);
+
+  const handleBulkMarkAsLearned = async () => {
+    if (!user?.convexId || isBulkMarking || unlearnedCaseIds.length === 0) return;
+    setIsBulkMarking(true);
+    try {
+      await bulkMarkAsLearned({
+        userId: user.convexId as Id<"users">,
+        caseIds: unlearnedCaseIds as Id<"algorithmCases">[],
+      });
+    } catch (error) {
+      console.error("Failed to bulk mark as learned:", error);
+    } finally {
+      setIsBulkMarking(false);
+    }
+  };
 
   // Filter cases based on search and learning stage
   const filteredCases = cases.filter((c: any) => {
@@ -184,6 +208,20 @@ export default function AlgorithmSetPage() {
                 </select>
               </div>
             )}
+
+            {/* Bulk Mark as Known */}
+            {user && unlearnedCaseIds.length > 0 && (
+              <button
+                onClick={handleBulkMarkAsLearned}
+                disabled={isBulkMarking}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-[var(--primary)] bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 border border-[var(--primary)]/20 rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                {isBulkMarking
+                  ? "Marking..."
+                  : `Mark All as Known (${unlearnedCaseIds.length})`}
+              </button>
+            )}
           </div>
 
           {/* Cases Grid */}
@@ -215,6 +253,7 @@ export default function AlgorithmSetPage() {
                     nextReviewDate={progress?.nextReviewDate}
                     accuracyRate={progress?.accuracyRate}
                     reviewCount={progress?.reviewCount || 0}
+                    userId={user?.convexId}
                   />
                 );
               })}

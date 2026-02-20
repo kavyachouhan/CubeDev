@@ -122,6 +122,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
+  // WCA Stats pages
+  const wcaStatsPages = [
+    {
+      url: `${baseUrl}/wca-stats`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    },
+  ];
+
   // Coach pages
   const coachPages = [
     {
@@ -138,5 +148,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...algorithmTrainerPages,
     ...coachPages,
     ...cuberPages,
+    ...wcaStatsPages,
   ];
 }

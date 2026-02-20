@@ -1,7 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { Brain, Star, TrendingUp } from "lucide-react";
+import { Brain, Star, TrendingUp, CheckCircle2 } from "lucide-react";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
 interface AlgorithmCaseCardProps {
   caseId: string;
@@ -15,6 +19,7 @@ interface AlgorithmCaseCardProps {
   nextReviewDate?: number;
   accuracyRate?: number;
   reviewCount?: number;
+  userId?: string;
 }
 
 export default function AlgorithmCaseCard({
@@ -29,7 +34,11 @@ export default function AlgorithmCaseCard({
   nextReviewDate,
   accuracyRate,
   reviewCount = 0,
+  userId,
 }: AlgorithmCaseCardProps) {
+  const [isMarking, setIsMarking] = useState(false);
+  const markAsLearned = useMutation(api.algorithms.markAsLearned);
+
   const difficultyStars = Math.ceil(difficulty / 2); // Convert to 1-5 scale
   const isDue =
     nextReviewDate && learningStage !== "new" && learningStage !== "mastered"
@@ -63,6 +72,24 @@ export default function AlgorithmCaseCard({
     ),
   };
 
+  const handleMarkAsLearned = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!userId || isMarking) return;
+
+    setIsMarking(true);
+    try {
+      await markAsLearned({
+        userId: userId as Id<"users">,
+        caseId: caseId as Id<"algorithmCases">,
+      });
+    } catch (error) {
+      console.error("Failed to mark as learned:", error);
+    } finally {
+      setIsMarking(false);
+    }
+  };
+
   return (
     <Link href={`/cube-lab/algorithm-trainer/cases/${caseSlug}`}>
       <div
@@ -77,11 +104,13 @@ export default function AlgorithmCaseCard({
             {stageBadges[learningStage]}
           </div>
 
-          {isDue && (
-            <div className="px-2 py-1 bg-red-500/10 border border-red-500/20 rounded text-xs text-red-500 font-medium">
-              Due
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {isDue && (
+              <div className="px-2 py-1 bg-red-500/10 border border-red-500/20 rounded text-xs text-red-500 font-medium">
+                Due
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Stats */}
@@ -138,6 +167,20 @@ export default function AlgorithmCaseCard({
             </div>
           )}
         </div>
+
+        {/* Mark as Known Button — only for new cases */}
+        {learningStage === "new" && userId && (
+          <div className="mt-3 pt-3 border-t border-[var(--border)]">
+            <button
+              onClick={handleMarkAsLearned}
+              disabled={isMarking}
+              className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium text-[var(--primary)] bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 border border-[var(--primary)]/20 rounded-lg transition-colors disabled:opacity-50"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              {isMarking ? "Marking..." : "Already Know This"}
+            </button>
+          </div>
+        )}
 
         {/* Next Review */}
         {nextReviewDate &&
