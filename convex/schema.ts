@@ -375,7 +375,18 @@ export default defineSchema({
     userId: v.id("users"), // Reference to user
     name: v.string(), // Set name
     description: v.optional(v.string()),
-    caseIds: v.array(v.id("algorithmCases")), // Cases in this set
+    caseIds: v.array(v.id("algorithmCases")), // Cases in this set (predefined)
+    customAlgorithms: v.optional(
+      v.array(
+        v.object({
+          id: v.string(), // Unique ID for this custom algorithm
+          name: v.string(), // Algorithm name (e.g., "My T-Perm variant")
+          notation: v.string(), // Move notation (e.g., "R U R' U' R' F R2 U' R' U' R U R' F'")
+          notes: v.optional(v.string()), // Optional notes
+          createdAt: v.number(),
+        })
+      )
+    ),
     isPublic: v.boolean(), // Whether shared publicly
     createdAt: v.number(),
     updatedAt: v.number(),

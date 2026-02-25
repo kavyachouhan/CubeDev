@@ -1113,7 +1113,8 @@ export const updateCustomSet = mutation({
   handler: async (ctx, { setId, name, description }) => {
     const updates: any = { updatedAt: Date.now() };
     if (name !== undefined) updates.name = name;
-    if (description !== undefined) updates.description = description;
+    // Allow clearing description by passing empty string
+    if (description !== undefined) updates.description = description || undefined;
 
     await ctx.db.patch(setId, updates);
   },
@@ -1260,5 +1261,140 @@ export const getCustomSetCasesForPractice = query({
     );
 
     return casesWithDetails.filter((c) => c !== null);
+  },
+});
+
+// Add a custom (user-created) algorithm to a custom set
+export const addCustomAlgorithmToSet = mutation({
+  args: {
+    setId: v.id("customAlgorithmSets"),
+    name: v.string(),
+    notation: v.string(),
+    notes: v.optional(v.string()),
+  },
+  handler: async (ctx, { setId, name, notation, notes }) => {
+    const set = await ctx.db.get(setId);
+    if (!set) throw new Error("Custom set not found");
+
+    const newAlg = {
+      id: `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      name,
+      notation,
+      notes,
+      createdAt: Date.now(),
+    };
+
+    const existing = set.customAlgorithms || [];
+    await ctx.db.patch(setId, {
+      customAlgorithms: [...existing, newAlg],
+      updatedAt: Date.now(),
+    });
+
+    return newAlg.id;
+  },
+});
+
+// Update a custom algorithm in a custom set
+export const updateCustomAlgorithmInSet = mutation({
+  args: {
+    setId: v.id("customAlgorithmSets"),
+    algorithmId: v.string(),
+    name: v.optional(v.string()),
+    notation: v.optional(v.string()),
+    notes: v.optional(v.string()),
+  },
+  handler: async (ctx, { setId, algorithmId, name, notation, notes }) => {
+    const set = await ctx.db.get(setId);
+    if (!set) throw new Error("Custom set not found");
+
+    const algList = set.customAlgorithms || [];
+    const algExists = algList.some((alg) => alg.id === algorithmId);
+    if (!algExists) throw new Error("Algorithm not found in set");
+
+    const updated = algList.map((alg) => {
+      if (alg.id === algorithmId) {
+        return {
+          ...alg,
+          ...(name !== undefined && { name }),
+          ...(notation !== undefined && { notation }),
+          // Always update notes when provided (empty string clears notes)
+          ...(notes !== undefined && { notes: notes || undefined }),
+        };
+      }
+      return alg;
+    });
+
+    await ctx.db.patch(setId, {
+      customAlgorithms: updated,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// Remove a custom algorithm from a custom set
+export const removeCustomAlgorithmFromSet = mutation({
+  args: {
+    setId: v.id("customAlgorithmSets"),
+    algorithmId: v.string(),
+  },
+  handler: async (ctx, { setId, algorithmId }) => {
+    const set = await ctx.db.get(setId);
+    if (!set) throw new Error("Custom set not found");
+
+    const algList = set.customAlgorithms || [];
+    await ctx.db.patch(setId, {
+      customAlgorithms: algList.filter((alg) => alg.id !== algorithmId),
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// Get full details of a custom set with all algorithm data resolved
+export const getCustomSetWithDetails = query({
+  args: { setId: v.id("customAlgorithmSets") },
+  handler: async (ctx, { setId }) => {
+    const customSet = await ctx.db.get(setId);
+    if (!customSet) return null;
+
+    // Resolve predefined cases with their algorithms
+    const predefinedCases = await Promise.all(
+      customSet.caseIds.map(async (caseId) => {
+        const algorithmCase = await ctx.db.get(caseId);
+        if (!algorithmCase) return null;
+
+        const set = await ctx.db.get(algorithmCase.setId);
+
+        // Get the default algorithm for this case
+        const defaultAlg = await ctx.db
+          .query("algorithms")
+          .withIndex("by_case_default", (q) =>
+            q.eq("caseId", caseId).eq("isDefault", true)
+          )
+          .first();
+
+        // Get all algorithms for this case
+        const allAlgs = await ctx.db
+          .query("algorithms")
+          .withIndex("by_case", (q) => q.eq("caseId", caseId))
+          .collect();
+
+        return {
+          type: "predefined" as const,
+          caseId: algorithmCase._id,
+          caseName: algorithmCase.caseName,
+          setName: set?.name || "Unknown",
+          setupMoves: algorithmCase.setupMoves,
+          defaultAlgorithm: defaultAlg?.notation || "",
+          algorithmCount: allAlgs.length,
+          difficulty: algorithmCase.difficulty,
+        };
+      })
+    );
+
+    return {
+      ...customSet,
+      predefinedCases: predefinedCases.filter((c) => c !== null),
+      customAlgorithms: customSet.customAlgorithms || [],
+    };
   },
 });
