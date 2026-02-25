@@ -18,3 +18,5 @@ export { default as SessionHistory } from "./SessionHistory";
 export { default as SessionStats } from "./SessionStats";
 export { default as AlgorithmTrainerTour } from "./AlgorithmTrainerTour";
 export { default as AddCasesModal } from "./AddCasesModal";
+export { default as AddCustomAlgorithmModal } from "./AddCustomAlgorithmModal";
+export { default as CustomAlgorithmCard } from "./CustomAlgorithmCard";
