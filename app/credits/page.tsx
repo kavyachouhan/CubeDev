@@ -1,4 +1,4 @@
-import { ExternalLink, Heart, Code, Box, Grid3x3, Volume2 } from "lucide-react";
+import { ExternalLink, Heart, Code, Box, Grid3x3, Volume2, Lock } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -13,6 +13,15 @@ interface CreditItem {
 
 export default function CreditsPage() {
   const credits: CreditItem[] = [
+    {
+      name: "StoreMyAPI",
+      description:
+        "A secure platform to store and manage API keys and sensitive configuration data for web applications",
+      maintainer: "StoreMyAPI",
+      website: "https://storemyapi.dev/",
+      usage: "Secure API key management",
+      icon: <Lock className="w-6 h-6 text-[var(--primary)]" />,
+    },
     {
       name: "cubing/twisty",
       description:
