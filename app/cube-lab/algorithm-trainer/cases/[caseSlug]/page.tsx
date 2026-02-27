@@ -40,19 +40,19 @@ export default function AlgorithmCasePage() {
     api.algorithms.getUserCaseProgress,
     user?.convexId && caseData?.case?._id
       ? { userId: user.convexId, caseId: caseData.case._id }
-      : "skip"
+      : "skip",
   );
 
   // Get sibling case slugs for navigation
   const caseSlugs = useQuery(
     api.algorithms.getSetCaseSlugs,
-    caseData?.set?._id ? { setId: caseData.set._id } : "skip"
+    caseData?.set?._id ? { setId: caseData.set._id } : "skip",
   );
 
   // Mutations
   const startLearning = useMutation(api.algorithms.startLearning);
   const changePreferredAlgorithm = useMutation(
-    api.algorithms.changePreferredAlgorithm
+    api.algorithms.changePreferredAlgorithm,
   );
   const markAsLearned = useMutation(api.algorithms.markAsLearned);
 
@@ -120,9 +120,8 @@ export default function AlgorithmCasePage() {
   };
 
   // Navigation helpers
-  const currentIndex = caseSlugs?.findIndex(
-    (c: any) => c.slug === caseSlug
-  ) ?? -1;
+  const currentIndex =
+    caseSlugs?.findIndex((c: any) => c.slug === caseSlug) ?? -1;
   const prevCase = currentIndex > 0 ? caseSlugs?.[currentIndex - 1] : null;
   const nextCase =
     caseSlugs && currentIndex < caseSlugs.length - 1
@@ -146,7 +145,7 @@ export default function AlgorithmCasePage() {
 
   const { case: algorithmCase, algorithms, set } = caseData;
   const selectedAlgorithm = algorithms.find(
-    (a: any) => a._id === selectedAlgId
+    (a: any) => a._id === selectedAlgId,
   );
 
   if (!algorithmCase || !set) {
@@ -250,7 +249,7 @@ export default function AlgorithmCasePage() {
                           ? "Complete"
                           : userProgress.nextReviewDate
                             ? new Date(
-                                userProgress.nextReviewDate
+                                userProgress.nextReviewDate,
                               ).toLocaleDateString(undefined, {
                                 month: "short",
                                 day: "numeric",
@@ -299,7 +298,7 @@ export default function AlgorithmCasePage() {
                             </span>
                             <span>{tip}</span>
                           </li>
-                        )
+                        ),
                       )}
                     </ul>
                   </div>
@@ -503,34 +502,68 @@ export default function AlgorithmCasePage() {
               {/* Prev / Next Case Navigation */}
               {caseSlugs && caseSlugs.length > 1 && (
                 <div className="timer-card">
-                  <div className="flex items-center justify-between gap-4">
-                    {prevCase ? (
-                      <Link
-                        href={`/cube-lab/algorithm-trainer/cases/${prevCase.slug}`}
-                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] bg-[var(--surface-elevated)] hover:bg-[var(--surface)] border border-[var(--border)] rounded-lg transition-colors min-w-0"
-                      >
-                        <ChevronLeft className="w-4 h-4 flex-shrink-0" />
-                        <span className="truncate">{prevCase.caseName}</span>
-                      </Link>
-                    ) : (
-                      <div />
-                    )}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+                    {/* Mobile: Navigation row with icons only */}
+                    <div className="flex sm:hidden items-center justify-between w-full gap-2">
+                      {prevCase ? (
+                        <Link
+                          href={`/cube-lab/algorithm-trainer/cases/${prevCase.slug}`}
+                          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-[var(--text-primary)] bg-[var(--surface-elevated)] hover:bg-[var(--surface)] border border-[var(--border)] rounded-lg transition-colors flex-1 min-w-0 max-w-[40%]"
+                        >
+                          <ChevronLeft className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">{prevCase.caseName}</span>
+                        </Link>
+                      ) : (
+                        <div className="flex-1 max-w-[40%]" />
+                      )}
 
-                    <span className="text-xs text-[var(--text-muted)] flex-shrink-0">
-                      {currentIndex + 1} / {caseSlugs.length}
-                    </span>
+                      <span className="text-xs text-[var(--text-muted)] flex-shrink-0 px-2">
+                        {currentIndex + 1} / {caseSlugs.length}
+                      </span>
 
-                    {nextCase ? (
-                      <Link
-                        href={`/cube-lab/algorithm-trainer/cases/${nextCase.slug}`}
-                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] bg-[var(--surface-elevated)] hover:bg-[var(--surface)] border border-[var(--border)] rounded-lg transition-colors min-w-0"
-                      >
-                        <span className="truncate">{nextCase.caseName}</span>
-                        <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                      </Link>
-                    ) : (
-                      <div />
-                    )}
+                      {nextCase ? (
+                        <Link
+                          href={`/cube-lab/algorithm-trainer/cases/${nextCase.slug}`}
+                          className="flex items-center justify-end gap-1.5 px-3 py-2 text-xs font-medium text-[var(--text-primary)] bg-[var(--surface-elevated)] hover:bg-[var(--surface)] border border-[var(--border)] rounded-lg transition-colors flex-1 min-w-0 max-w-[40%]"
+                        >
+                          <span className="truncate">{nextCase.caseName}</span>
+                          <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                        </Link>
+                      ) : (
+                        <div className="flex-1 max-w-[40%]" />
+                      )}
+                    </div>
+
+                    {/* Desktop: Full navigation */}
+                    <div className="hidden sm:flex items-center justify-between w-full gap-4">
+                      {prevCase ? (
+                        <Link
+                          href={`/cube-lab/algorithm-trainer/cases/${prevCase.slug}`}
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] bg-[var(--surface-elevated)] hover:bg-[var(--surface)] border border-[var(--border)] rounded-lg transition-colors min-w-0"
+                        >
+                          <ChevronLeft className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">{prevCase.caseName}</span>
+                        </Link>
+                      ) : (
+                        <div />
+                      )}
+
+                      <span className="text-xs text-[var(--text-muted)] flex-shrink-0">
+                        {currentIndex + 1} / {caseSlugs.length}
+                      </span>
+
+                      {nextCase ? (
+                        <Link
+                          href={`/cube-lab/algorithm-trainer/cases/${nextCase.slug}`}
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] bg-[var(--surface-elevated)] hover:bg-[var(--surface)] border border-[var(--border)] rounded-lg transition-colors min-w-0"
+                        >
+                          <span className="truncate">{nextCase.caseName}</span>
+                          <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                        </Link>
+                      ) : (
+                        <div />
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
