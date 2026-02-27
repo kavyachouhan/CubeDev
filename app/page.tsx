@@ -13,7 +13,7 @@ export default function Home() {
       <main className="flex-1 overflow-x-hidden">
         <TimerHero />
         <FeaturesShowcase />
-        {/* <Testimonials /> */}
+        <Testimonials />
         <WhyCubeDev />
         <CallToAction />
       </main>

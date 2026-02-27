@@ -32,14 +32,6 @@ const testimonials: Testimonial[] = [
   },
   {
     id: "2",
-    name: "Rohan Verma",
-    wcaId: "2022VERM15",
-    feedback:
-      "CubeDev has transformed how I track my progress. The analytics are detailed yet easy to understand, and the challenge rooms keep practice sessions exciting. Being able to compete with friends on the same scrambles is a game-changer.",
-    highlight: "Analytics & Challenge Rooms",
-  },
-  {
-    id: "3",
     name: "Junaid Ekhlaque",
     wcaId: "2024EKHL01",
     feedback:
@@ -49,7 +41,7 @@ const testimonials: Testimonial[] = [
       "https://avatars.worldcubeassociation.org/lk708827qkx43z5zl409ajj5oc26",
   },
   {
-    id: "4",
+    id: "3",
     name: "Ritesh Yeragi",
     wcaId: "2019YERA01",
     feedback:
