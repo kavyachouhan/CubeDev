@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useUser } from "@/components/UserProvider";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -16,12 +16,12 @@ import { AlgorithmPracticeSkeleton } from "@/components/SkeletonLoaders";
 import { ArrowLeft, Check, CheckCircle2, X, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
+import { isNotationCompatibleWithPlayer } from "@/lib/notation-utils";
 
 type PracticeMode = "srs" | "drill" | "all" | "infinite" | "custom";
 type DrillType = "rec" | "exec" | "pattern" | "blind";
 
 function PracticePageContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useUser();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -36,6 +36,7 @@ function PracticePageContent() {
   const [sessionStartTime] = useState(Date.now());
   const [randomizedCases, setRandomizedCases] = useState<any[] | null>(null);
   const [infiniteRepeatCount, setInfiniteRepeatCount] = useState(0);
+  const isFinishingRef = React.useRef(false);
 
   const mode = (searchParams.get("mode") || "srs") as PracticeMode;
   const drillType = (searchParams.get("type") || "rec") as DrillType;
@@ -51,14 +52,14 @@ function PracticePageContent() {
   // Queries based on mode
   const dueReviews = useQuery(
     api.algorithms.getDueReviews,
-    user?.convexId && mode === "srs" ? { userId: user.convexId } : "skip"
+    user?.convexId && mode === "srs" ? { userId: user.convexId } : "skip",
   );
 
   const drillCases = useQuery(
     api.algorithms.getRandomPracticeCases,
     user?.convexId && mode === "drill"
       ? { userId: user.convexId, count: 15 }
-      : "skip"
+      : "skip",
   );
 
   // Queries based on mode
@@ -66,7 +67,7 @@ function PracticePageContent() {
     api.algorithms.getCaseForPractice,
     user?.convexId && caseSlug && (mode === "all" || mode === "infinite")
       ? { userId: user.convexId, caseSlug }
-      : "skip"
+      : "skip",
   );
 
   // Queries based on mode
@@ -77,14 +78,20 @@ function PracticePageContent() {
           userId: user.convexId,
           setId: customSetId as Id<"customAlgorithmSets">,
         }
-      : "skip"
+      : "skip",
   );
 
   // Queries based on mode
   const allCaseNames = useQuery(
     api.algorithms.getAllCaseNames,
-    useBlindRecognition ? {} : "skip"
+    useBlindRecognition ? {} : "skip",
   );
+
+  // Extract custom algorithm names from the custom set cases to use in blind recognition mode (these won't have standard case records, but we can still show the names if available)
+  const customSetAlgNames =
+    mode === "custom" && useBlindRecognition && customSetCases
+      ? customSetCases.map((c: any) => c.case?.caseName).filter(Boolean)
+      : [];
 
   // Determine raw cases based on mode
   const rawCases =
@@ -107,14 +114,16 @@ function PracticePageContent() {
 
   const recordReview = useMutation(api.algorithms.recordReview);
   const recordPracticeSession = useMutation(
-    api.algorithms.recordPracticeSession
+    api.algorithms.recordPracticeSession,
   );
 
   const handleAnswer = async (
     timeMs: number,
     correct: boolean,
-    rating?: "again" | "hard" | "good" | "easy"
+    rating?: "again" | "hard" | "good" | "easy",
   ) => {
+    // Prevent any state updates or session finishing logic if we've already dispatched a finishSession call to avoid double-counting answers when users click rapidly at the end of a session
+    if (isFinishingRef.current) return;
     if (!casesToReview || casesToReview.length === 0 || !user) return;
 
     const currentReview = casesToReview[currentIndex];
@@ -134,23 +143,29 @@ function PracticePageContent() {
       return;
     }
 
-    try {
-      await recordReview({
-        userId: user.convexId as Id<"users">,
-        caseId: currentReview.case!._id,
-        rating: rating || (correct ? "good" : "again"),
-        recognitionTime: drillFocus === "recognition" ? timeMs : undefined,
-        executionTime: drillFocus === "execution" ? timeMs : undefined,
-        wasCorrect: correct,
-      });
-    } catch (error) {
-      console.error("Failed to record review:", error);
+    // Only record reviews for non-custom algorithms, since custom algs may have non-standard notation that isn't compatible with the player and we don't want to penalize users for that.  This also simplifies the logic since custom algs can be used in both drill and SRS modes without needing separate handling.
+    const isCustomAlg = currentReview.isCustomAlgorithm;
+    if (!isCustomAlg) {
+      try {
+        await recordReview({
+          userId: user.convexId as Id<"users">,
+          caseId: currentReview.case!._id,
+          rating: rating || (correct ? "good" : "again"),
+          recognitionTime: drillFocus === "recognition" ? timeMs : undefined,
+          executionTime: drillFocus === "execution" ? timeMs : undefined,
+          wasCorrect: correct,
+        });
+      } catch (error) {
+        console.error("Failed to record review:", error);
+      }
     }
 
     if (currentIndex < casesToReview.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      await finishSession();
+      isFinishingRef.current = true;
+      // Wait a tick to allow the last answer's state updates to propagate before finishing the session and potentially unmounting the component
+      await finishSession(correct, timeMs);
     }
   };
 
@@ -158,18 +173,25 @@ function PracticePageContent() {
     await handleAnswer(timeMs, true);
   };
 
-  const finishSession = async () => {
+  const finishSession = async (lastCorrect?: boolean, lastTimeMs?: number) => {
     if (!user) return;
 
-    const totalCases = sessionStats.correct + sessionStats.incorrect;
+    // Calculate final session stats including the last answered case
+    const finalCorrect = sessionStats.correct + (lastCorrect === true ? 1 : 0);
+    const finalIncorrect =
+      sessionStats.incorrect + (lastCorrect === false ? 1 : 0);
+    const finalTimes =
+      lastTimeMs !== undefined
+        ? [...sessionStats.times, lastTimeMs]
+        : sessionStats.times;
+    const totalCases = finalCorrect + finalIncorrect;
     const sessionDuration = Date.now() - sessionStartTime;
     const avgTime =
-      sessionStats.times.length > 0
-        ? sessionStats.times.reduce((a, b) => a + b, 0) /
-          sessionStats.times.length
+      finalTimes.length > 0
+        ? finalTimes.reduce((a, b) => a + b, 0) / finalTimes.length
         : undefined;
     const accuracyRate =
-      totalCases > 0 ? (sessionStats.correct / totalCases) * 100 : 100;
+      totalCases > 0 ? (finalCorrect / totalCases) * 100 : 100;
 
     // Determine session type
     let sessionType: "recognition" | "execution" | "drill" | "mixed";
@@ -261,6 +283,13 @@ function PracticePageContent() {
   }
 
   const currentReview = casesToReview[currentIndex];
+  const isCurrentCustomAlg = currentReview?.isCustomAlgorithm;
+  // For blind recognition mode, we won't have standard case records for custom algorithms, but we can still show the algorithm names if available from the custom set query
+  const notationToValidate =
+    currentReview?.case?.setupMoves || currentReview?.algorithm?.notation || "";
+  const currentNotationValid = notationToValidate
+    ? isNotationCompatibleWithPlayer(notationToValidate)
+    : false;
   const progressPercentage = ((currentIndex + 1) / casesToReview.length) * 100;
 
   if (sessionCompleted) {
@@ -356,13 +385,18 @@ function PracticePageContent() {
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
-                  href="/cube-lab/algorithm-trainer"
+                  href={
+                    mode === "custom" && customSetId
+                      ? `/cube-lab/algorithm-trainer/custom/${customSetId}`
+                      : "/cube-lab/algorithm-trainer"
+                  }
                   className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-medium"
                 >
-                  Back to Trainer
+                  {mode === "custom" ? "Back to Custom Set" : "Back to Trainer"}
                 </Link>
                 <button
                   onClick={() => {
+                    isFinishingRef.current = false;
                     setSessionCompleted(false);
                     setCurrentIndex(0);
                     setHasStarted(false);
@@ -394,11 +428,17 @@ function PracticePageContent() {
             {/* Header */}
             <div>
               <Link
-                href="/cube-lab/algorithm-trainer"
+                href={
+                  mode === "custom" && customSetId
+                    ? `/cube-lab/algorithm-trainer/custom/${customSetId}`
+                    : "/cube-lab/algorithm-trainer"
+                }
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors w-fit mb-4"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Back to Algorithm Trainer
+                {mode === "custom"
+                  ? "Back to Custom Set"
+                  : "Back to Algorithm Trainer"}
               </Link>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -427,13 +467,17 @@ function PracticePageContent() {
                   </p>
                 </div>
 
-                {/* Toggle Controls */}
-                {mode === "drill" && !hasStarted && (
+                {/* Toggle Controls - shown for drill and custom modes */}
+                {(mode === "drill" || mode === "custom") && !hasStarted && (
                   <div className="flex flex-col gap-3 w-full sm:w-auto">
                     {/* Recognition/Execution/Blind Toggle */}
                     <div className="inline-flex rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1 w-full sm:w-auto flex-wrap">
                       <Link
-                        href="/cube-lab/algorithm-trainer/practice?mode=drill&type=rec"
+                        href={
+                          mode === "custom"
+                            ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=rec`
+                            : "/cube-lab/algorithm-trainer/practice?mode=drill&type=rec"
+                        }
                         className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "rec"
                             ? "bg-[var(--primary)] text-white"
@@ -443,7 +487,11 @@ function PracticePageContent() {
                         Recognition
                       </Link>
                       <Link
-                        href="/cube-lab/algorithm-trainer/practice?mode=drill&type=exec"
+                        href={
+                          mode === "custom"
+                            ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=exec`
+                            : "/cube-lab/algorithm-trainer/practice?mode=drill&type=exec"
+                        }
                         className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "exec"
                             ? "bg-[var(--primary)] text-white"
@@ -453,7 +501,11 @@ function PracticePageContent() {
                         Execution
                       </Link>
                       <Link
-                        href="/cube-lab/algorithm-trainer/practice?mode=drill&type=blind"
+                        href={
+                          mode === "custom"
+                            ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=blind`
+                            : "/cube-lab/algorithm-trainer/practice?mode=drill&type=blind"
+                        }
                         className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "blind"
                             ? "bg-[var(--primary)] text-white"
@@ -467,7 +519,11 @@ function PracticePageContent() {
                     {/* Pattern Memory Toggle - Only for Recognition */}
                     {(drillType === "rec" || drillType === "pattern") && (
                       <Link
-                        href={`/cube-lab/algorithm-trainer/practice?mode=drill&type=${drillType === "pattern" ? "rec" : "pattern"}`}
+                        href={
+                          mode === "custom"
+                            ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=${drillType === "pattern" ? "rec" : "pattern"}`
+                            : `/cube-lab/algorithm-trainer/practice?mode=drill&type=${drillType === "pattern" ? "rec" : "pattern"}`
+                        }
                         className={`inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors border w-full sm:w-auto ${
                           drillType === "pattern"
                             ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
@@ -592,18 +648,28 @@ function PracticePageContent() {
                     onComplete={handleExecutionComplete}
                     hasStarted={hasStarted}
                     onStart={() => setHasStarted(true)}
+                    isCustomAlgorithm={isCurrentCustomAlg}
+                    hasValidNotation={currentNotationValid}
                   />
                 ) : useBlindRecognition ? (
                   <BlindRecognitionCard
                     caseName={currentReview.case.caseName}
                     setupMoves={currentReview.case.setupMoves}
-                    recognition={currentReview.case.recognition}
+                    recognition={currentReview.case.recognition || []}
                     algorithm={currentReview.algorithm?.notation}
                     puzzleType={currentReview.set?.puzzleType || "3x3x3"}
-                    allCaseNames={allCaseNames || []}
+                    allCaseNames={
+                      mode === "custom"
+                        ? customSetAlgNames.length > 0
+                          ? customSetAlgNames
+                          : allCaseNames || []
+                        : allCaseNames || []
+                    }
                     onAnswer={handleAnswer}
                     hasStarted={hasStarted}
                     onStart={() => setHasStarted(true)}
+                    isCustomAlgorithm={isCurrentCustomAlg}
+                    hasValidNotation={currentNotationValid}
                   />
                 ) : (
                   <RecognitionFlashCard
@@ -614,7 +680,7 @@ function PracticePageContent() {
                     }
                     caseName={currentReview.case.caseName}
                     setupMoves={currentReview.case.setupMoves}
-                    recognition={currentReview.case.recognition}
+                    recognition={currentReview.case.recognition || []}
                     algorithm={currentReview.algorithm?.notation}
                     puzzleType={currentReview.set?.puzzleType || "3x3x3"}
                     onAnswer={handleAnswer}
@@ -624,6 +690,8 @@ function PracticePageContent() {
                     onStart={() => setHasStarted(true)}
                     showSrsRatings={mode === "srs"}
                     isInfiniteMode={isInfiniteMode}
+                    isCustomAlgorithm={isCurrentCustomAlg}
+                    hasValidNotation={currentNotationValid}
                   />
                 )}
               </>

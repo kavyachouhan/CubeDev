@@ -46,7 +46,7 @@ export default function CustomSetsPage() {
   // Fetch user's custom sets
   const customSets = useQuery(
     api.algorithms.getUserCustomSets,
-    user?.convexId ? { userId: user.convexId } : "skip"
+    user?.convexId ? { userId: user.convexId } : "skip",
   );
 
   // Mutations
@@ -166,7 +166,7 @@ export default function CustomSetsPage() {
   };
 
   const getTotalAlgorithmCount = (set: any) => {
-    const predefined = set.caseIds?.length || 0;
+    const predefined = set.validCaseCount ?? (set.caseIds?.length || 0);
     const custom = set.customAlgorithms?.length || 0;
     return predefined + custom;
   };
@@ -189,7 +189,7 @@ export default function CustomSetsPage() {
     (set: any) =>
       searchQuery === "" ||
       set.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      set.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      set.description?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (!user) return null;
@@ -235,7 +235,7 @@ export default function CustomSetsPage() {
                     className="inline-flex items-center gap-2 px-4 py-2 text-sm border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors"
                   >
                     <Upload className="w-4 h-4" />
-                    <span className="hidden sm:inline">Import</span>
+                    <span className="sm:inline">Import</span>
                   </button>
                   <button
                     onClick={() => setShowCreateModal(true)}
@@ -261,7 +261,7 @@ export default function CustomSetsPage() {
                   <p className="text-2xl font-bold text-[var(--text-primary)] font-statement">
                     {customSets.reduce(
                       (acc: number, s: any) => acc + getTotalAlgorithmCount(s),
-                      0
+                      0,
                     )}
                   </p>
                   <p className="text-xs text-[var(--text-muted)]">
@@ -273,7 +273,7 @@ export default function CustomSetsPage() {
                     {customSets.reduce(
                       (acc: number, s: any) =>
                         acc + (s.customAlgorithms?.length || 0),
-                      0
+                      0,
                     )}
                   </p>
                   <p className="text-xs text-[var(--text-muted)]">
@@ -326,150 +326,156 @@ export default function CustomSetsPage() {
             ) : (
               <div className="grid gap-3">
                 {filteredSets?.map((set: any) => {
-                  const totalAlgs = getTotalAlgorithmCount(set);
-                  const predefinedCount = set.caseIds?.length || 0;
+                  const predefinedCount =
+                    set.validCaseCount ?? (set.caseIds?.length || 0);
                   const customCount = set.customAlgorithms?.length || 0;
+                  const totalAlgs = predefinedCount + customCount;
 
                   return (
                     <div
                       key={set._id}
-                      onClick={() => router.push(`/cube-lab/algorithm-trainer/custom/${set._id}`)}
-                      className="timer-card block group cursor-pointer"
+                      onClick={() =>
+                        router.push(
+                          `/cube-lab/algorithm-trainer/custom/${set._id}`,
+                        )
+                      }
+                      className="timer-card block group cursor-pointer relative"
                     >
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                        {/* Set Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-base font-bold text-[var(--text-primary)] font-statement truncate">
-                              {set.name}
-                            </h3>
-                            {set.isPublic ? (
-                              <Globe className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
-                            ) : (
-                              <Lock className="w-3.5 h-3.5 text-[var(--text-muted)] flex-shrink-0" />
-                            )}
-                          </div>
-                          {set.description && (
-                            <p className="text-sm text-[var(--text-muted)] mb-2 line-clamp-1">
-                              {set.description}
-                            </p>
-                          )}
+                      <div
+                        className="absolute top-3 right-3 flex items-center gap-1.5 z-10"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {totalAlgs > 0 && (
+                          <button
+                            onClick={() =>
+                              router.push(
+                                `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${set._id}&type=rec`,
+                              )
+                            }
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors text-xs sm:text-sm"
+                          >
+                            <Play className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Practice</span>
+                          </button>
+                        )}
 
-                          {/* Meta Info */}
-                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
-                            <span className="inline-flex items-center gap-1">
-                              <Code2 className="w-3 h-3" />
-                              {totalAlgs} algorithm{totalAlgs !== 1 ? "s" : ""}
-                            </span>
-                            {predefinedCount > 0 && (
-                              <span className="inline-flex items-center gap-1">
-                                <BookOpen className="w-3 h-3" />
-                                {predefinedCount} predefined
-                              </span>
-                            )}
-                            {customCount > 0 && (
-                              <span className="inline-flex items-center gap-1">
-                                <Edit2 className="w-3 h-3" />
-                                {customCount} custom
-                              </span>
-                            )}
-                            <span className="inline-flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {getTimeAgo(set.updatedAt)}
-                            </span>
-                          </div>
+                        {/* More menu */}
+                        <div className="relative">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setOpenMenuId(
+                                openMenuId === set._id ? null : set._id,
+                              );
+                            }}
+                            className="p-1.5 hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] rounded-lg transition-colors"
+                          >
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
 
-                          {/* Algorithm Preview */}
-                          {customCount > 0 && (
-                            <div className="mt-2 flex flex-wrap gap-1.5">
-                              {(set.customAlgorithms || [])
-                                .slice(0, 3)
-                                .map((alg: any) => (
-                                  <span
-                                    key={alg.id}
-                                    className="inline-block px-2 py-0.5 text-xs font-mono bg-[var(--surface-elevated)] border border-[var(--border)] rounded text-[var(--text-secondary)] truncate max-w-[200px]"
-                                  >
-                                    {alg.notation}
-                                  </span>
-                                ))}
-                              {customCount > 3 && (
-                                <span className="inline-block px-2 py-0.5 text-xs text-[var(--text-muted)]">
-                                  +{customCount - 3} more
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Actions */}
-                        <div
-                          className="flex items-center gap-2 flex-shrink-0"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {totalAlgs > 0 && (
-                            <button
-                              onClick={() => router.push(`/cube-lab/algorithm-trainer/practice?mode=custom&setId=${set._id}`)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors text-sm"
-                            >
-                              <Play className="w-3.5 h-3.5" />
-                              <span className="hidden sm:inline">Practice</span>
-                            </button>
-                          )}
-
-                          {/* More menu */}
-                          <div className="relative">
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setOpenMenuId(
-                                  openMenuId === set._id ? null : set._id
-                                );
-                              }}
-                              className="p-2 hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] rounded-lg transition-colors"
-                            >
-                              <MoreVertical className="w-4 h-4" />
-                            </button>
-
-                            {openMenuId === set._id && (
-                              <>
-                                <div
-                                  className="fixed inset-0 z-40"
+                          {openMenuId === set._id && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-40"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setOpenMenuId(null);
+                                }}
+                              />
+                              <div className="absolute right-0 top-full mt-1 w-44 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-50 py-1 overflow-hidden">
+                                <button
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
+                                    handleExportSet(set);
                                     setOpenMenuId(null);
                                   }}
-                                />
-                                <div className="absolute right-0 top-full mt-1 w-44 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-50 py-1 overflow-hidden">
-                                  <button
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      handleExportSet(set);
-                                      setOpenMenuId(null);
-                                    }}
-                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors"
-                                  >
-                                    <Download className="w-4 h-4" />
-                                    Export JSON
-                                  </button>
-                                  <button
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      handleDeleteSet(set._id);
-                                    }}
-                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                    Delete Set
-                                  </button>
-                                </div>
-                              </>
+                                  className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors"
+                                >
+                                  <Download className="w-4 h-4" />
+                                  Export JSON
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDeleteSet(set._id);
+                                  }}
+                                  className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  Delete Set
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Set Info */}
+                      <div className="pr-24 sm:pr-36">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-base font-bold text-[var(--text-primary)] font-statement truncate">
+                            {set.name}
+                          </h3>
+                          {set.isPublic ? (
+                            <Globe className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
+                          ) : (
+                            <Lock className="w-3.5 h-3.5 text-[var(--text-muted)] flex-shrink-0" />
+                          )}
+                        </div>
+                        {set.description && (
+                          <p className="text-sm text-[var(--text-muted)] mb-2 line-clamp-1">
+                            {set.description}
+                          </p>
+                        )}
+
+                        {/* Meta Info */}
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--text-muted)]">
+                          <span className="inline-flex items-center gap-1">
+                            <Code2 className="w-3 h-3" />
+                            {totalAlgs} algorithm{totalAlgs !== 1 ? "s" : ""}
+                          </span>
+                          {predefinedCount > 0 && (
+                            <span className="inline-flex items-center gap-1">
+                              <BookOpen className="w-3 h-3" />
+                              {predefinedCount} predefined
+                            </span>
+                          )}
+                          {customCount > 0 && (
+                            <span className="inline-flex items-center gap-1">
+                              <Edit2 className="w-3 h-3" />
+                              {customCount} custom
+                            </span>
+                          )}
+                          <span className="inline-flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {getTimeAgo(set.updatedAt)}
+                          </span>
+                        </div>
+
+                        {/* Algorithm Preview */}
+                        {customCount > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {(set.customAlgorithms || [])
+                              .slice(0, 3)
+                              .map((alg: any) => (
+                                <span
+                                  key={alg.id}
+                                  className="inline-block px-2 py-0.5 text-xs font-mono bg-[var(--surface-elevated)] border border-[var(--border)] rounded text-[var(--text-secondary)] truncate max-w-[160px] sm:max-w-[200px]"
+                                >
+                                  {alg.notation}
+                                </span>
+                              ))}
+                            {customCount > 3 && (
+                              <span className="inline-block px-2 py-0.5 text-xs text-[var(--text-muted)]">
+                                +{customCount - 3} more
+                              </span>
                             )}
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   );

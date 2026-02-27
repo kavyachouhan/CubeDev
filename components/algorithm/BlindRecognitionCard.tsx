@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Eye, Clock, Search, Check, X } from "lucide-react";
+import { Eye, Clock, Search, Check, X, AlertTriangle } from "lucide-react";
 import CubeVisualizer3D from "./CubeVisualizer3D";
 
 interface BlindRecognitionCardProps {
@@ -15,10 +15,12 @@ interface BlindRecognitionCardProps {
   onAnswer: (
     timeMs: number,
     correct: boolean,
-    rating?: "again" | "hard" | "good" | "easy"
+    rating?: "again" | "hard" | "good" | "easy",
   ) => void;
   hasStarted?: boolean;
   onStart?: () => void;
+  isCustomAlgorithm?: boolean; // Whether this is a user-created custom algorithm
+  hasValidNotation?: boolean; // Whether notation is compatible with 3D player
 }
 
 export default function BlindRecognitionCard({
@@ -32,6 +34,8 @@ export default function BlindRecognitionCard({
   onAnswer,
   hasStarted = false,
   onStart,
+  isCustomAlgorithm = false,
+  hasValidNotation = true,
 }: BlindRecognitionCardProps) {
   const [startTime, setStartTime] = useState<number>(Date.now());
   const [currentTime, setCurrentTime] = useState<number>(Date.now());
@@ -143,7 +147,7 @@ export default function BlindRecognitionCard({
 
             {/* Case Display */}
             <div className="flex flex-col items-center justify-center min-h-[300px] mb-6">
-              {setupMoves ? (
+              {setupMoves && hasValidNotation ? (
                 <div className="w-full max-w-md">
                   <CubeVisualizer3D
                     algorithm={setupMoves}
@@ -152,6 +156,23 @@ export default function BlindRecognitionCard({
                     showControls={false}
                     height="300px"
                   />
+                </div>
+              ) : setupMoves && !hasValidNotation ? (
+                <div className="w-full max-w-md">
+                  <div className="bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] p-6 min-h-[250px] flex flex-col items-center justify-center">
+                    <div className="flex items-center gap-2 mb-4">
+                      <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                      <span className="text-xs text-yellow-500/80">
+                        Non-standard notation
+                      </span>
+                    </div>
+                    <p className="font-mono text-lg text-[var(--text-primary)] text-center break-all leading-relaxed">
+                      {setupMoves}
+                    </p>
+                    <p className="text-xs text-[var(--text-muted)] mt-4 text-center">
+                      3D preview unavailable for this notation
+                    </p>
+                  </div>
                 </div>
               ) : caseImage ? (
                 <img
@@ -172,15 +193,17 @@ export default function BlindRecognitionCard({
                 </div>
               )}
 
-              {/* Setup Moves (for reference) */}
-              <div className="mt-4 p-3 bg-[var(--surface-elevated)] rounded-lg">
-                <p className="text-xs text-[var(--text-muted)] text-center mb-1">
-                  Setup
-                </p>
-                <p className="text-sm font-mono text-[var(--text-primary)] text-center">
-                  {setupMoves}
-                </p>
-              </div>
+              {/* Setup Moves - hide for custom algs with non-standard notation */}
+              {setupMoves && !(isCustomAlgorithm && !hasValidNotation) && (
+                <div className="mt-4 p-3 bg-[var(--surface-elevated)] rounded-lg">
+                  <p className="text-xs text-[var(--text-muted)] text-center mb-1">
+                    Setup
+                  </p>
+                  <p className="text-sm font-mono text-[var(--text-primary)] text-center">
+                    {setupMoves}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Answer Input Section */}
@@ -308,22 +331,35 @@ export default function BlindRecognitionCard({
                 )}
 
                 {/* Recognition Tips */}
-                <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
-                  <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
-                    Recognition Tips:
-                  </h4>
-                  <ul className="space-y-1">
-                    {recognition.map((tip, index) => (
-                      <li
-                        key={index}
-                        className="text-sm text-[var(--text-secondary)] flex items-start gap-2"
-                      >
-                        <span className="text-[var(--primary)] mt-0.5">•</span>
-                        <span>{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {recognition && recognition.length > 0 ? (
+                  <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+                    <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
+                      Recognition Tips:
+                    </h4>
+                    <ul className="space-y-1">
+                      {recognition.map((tip, index) => (
+                        <li
+                          key={index}
+                          className="text-sm text-[var(--text-secondary)] flex items-start gap-2"
+                        >
+                          <span className="text-[var(--primary)] mt-0.5">
+                            •
+                          </span>
+                          <span>{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : isCustomAlgorithm ? (
+                  <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+                    <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
+                      Custom Algorithm
+                    </h4>
+                    <p className="text-sm text-[var(--text-muted)]">
+                      This is a custom algorithm from your collection.
+                    </p>
+                  </div>
+                ) : null}
 
                 {/* Rating Buttons */}
                 <div className="space-y-3">

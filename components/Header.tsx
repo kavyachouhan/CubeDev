@@ -53,7 +53,7 @@ export default function Header() {
   const navItems = [
     { name: "Home", href: "/" },
     { name: "Cubers", href: "/cuber" },
-    { name: "WCA Stats", href: "/wca-stats" },
+    // { name: "WCA Stats", href: "/wca-stats" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Eye, Clock } from "lucide-react";
+import { Eye, Clock, AlertTriangle } from "lucide-react";
 import CubeVisualizer3D from "./CubeVisualizer3D";
 
 interface RecognitionFlashCardProps {
@@ -14,7 +14,7 @@ interface RecognitionFlashCardProps {
   onAnswer: (
     timeMs: number,
     correct: boolean,
-    rating?: "again" | "hard" | "good" | "easy"
+    rating?: "again" | "hard" | "good" | "easy",
   ) => void;
   showAnswer?: boolean;
   mode?: "srs" | "drill" | "all" | "infinite" | "custom";
@@ -23,6 +23,8 @@ interface RecognitionFlashCardProps {
   onStart?: () => void;
   showSrsRatings?: boolean; // Whether to show SRS rating buttons
   isInfiniteMode?: boolean; // Whether in infinite drill mode
+  isCustomAlgorithm?: boolean; // Whether this is a user-created custom algorithm
+  hasValidNotation?: boolean; // Whether notation is compatible with 3D player
 }
 
 export default function RecognitionFlashCard({
@@ -40,6 +42,8 @@ export default function RecognitionFlashCard({
   onStart,
   showSrsRatings = false,
   isInfiniteMode = false,
+  isCustomAlgorithm = false,
+  hasValidNotation = true,
 }: RecognitionFlashCardProps) {
   const [revealed, setRevealed] = useState(showAnswer);
   const [startTime, setStartTime] = useState<number>(Date.now());
@@ -47,7 +51,7 @@ export default function RecognitionFlashCard({
   const [currentTime, setCurrentTime] = useState<number>(Date.now());
   const [isFlashing, setIsFlashing] = useState(usePatternMemory);
   const [flashTimeLeft, setFlashTimeLeft] = useState(
-    usePatternMemory ? 3000 : 0
+    usePatternMemory ? 3000 : 0,
   );
 
   // Determine if SRS rating buttons should be shown
@@ -175,7 +179,7 @@ export default function RecognitionFlashCard({
             <div className="flex flex-col items-center justify-center min-h-[300px] mb-6">
               {isFlashing && usePatternMemory ? (
                 // Flashing state
-                setupMoves ? (
+                setupMoves && hasValidNotation ? (
                   <div className="w-full max-w-md relative">
                     <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-purple-500/20 rounded-lg animate-pulse z-10 pointer-events-none" />
                     <CubeVisualizer3D
@@ -185,6 +189,15 @@ export default function RecognitionFlashCard({
                       showControls={false}
                       height="300px"
                     />
+                  </div>
+                ) : setupMoves && !hasValidNotation ? (
+                  <div className="w-full max-w-md h-[300px] bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center border border-[var(--border)] relative">
+                    <div className="absolute inset-0 bg-orange-500/5 rounded-lg animate-pulse z-10 pointer-events-none" />
+                    <div className="text-center px-6 z-20">
+                      <p className="font-mono text-lg text-[var(--text-primary)] break-all leading-relaxed">
+                        {setupMoves}
+                      </p>
+                    </div>
                   </div>
                 ) : caseImage ? (
                   <div className="relative">
@@ -208,7 +221,7 @@ export default function RecognitionFlashCard({
                   </div>
                 </div>
               ) : // Normal display after flash or in non-pattern memory mode
-              setupMoves ? (
+              setupMoves && hasValidNotation ? (
                 <div className="w-full max-w-md">
                   <CubeVisualizer3D
                     algorithm={setupMoves}
@@ -217,6 +230,26 @@ export default function RecognitionFlashCard({
                     showControls={false}
                     height="300px"
                   />
+                </div>
+              ) : setupMoves && !hasValidNotation ? (
+                // If notation is not compatible with 3D player, show moves in text form with warning
+                <div className="w-full max-w-md">
+                  <div className="bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] p-6 min-h-[250px] flex flex-col items-center justify-center">
+                    <div className="flex items-center gap-2 mb-4">
+                      <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                      <span className="text-xs text-yellow-500/80">
+                        Non-standard notation
+                      </span>
+                    </div>
+                    <p className="font-mono text-lg text-[var(--text-primary)] text-center break-all leading-relaxed">
+                      {setupMoves}
+                    </p>
+                    {isCustomAlgorithm && (
+                      <p className="text-xs text-[var(--text-muted)] mt-4 text-center">
+                        3D preview unavailable for this notation
+                      </p>
+                    )}
+                  </div>
                 </div>
               ) : caseImage ? (
                 <img
@@ -237,17 +270,20 @@ export default function RecognitionFlashCard({
                 </div>
               )}
 
-              {/* Setup Moves */}
-              {!(usePatternMemory && !revealed) && !isFlashing && (
-                <div className="mt-4 p-3 bg-[var(--surface-elevated)] rounded-lg">
-                  <p className="text-xs text-[var(--text-muted)] text-center mb-1">
-                    Setup
-                  </p>
-                  <p className="text-sm font-mono text-[var(--text-primary)] text-center">
-                    {setupMoves}
-                  </p>
-                </div>
-              )}
+              {/* Setup Moves - hide for custom algorithms where setup = notation */}
+              {!(usePatternMemory && !revealed) &&
+                !isFlashing &&
+                setupMoves &&
+                !(isCustomAlgorithm && !hasValidNotation) && (
+                  <div className="mt-4 p-3 bg-[var(--surface-elevated)] rounded-lg">
+                    <p className="text-xs text-[var(--text-muted)] text-center mb-1">
+                      Setup
+                    </p>
+                    <p className="text-sm font-mono text-[var(--text-primary)] text-center">
+                      {setupMoves}
+                    </p>
+                  </div>
+                )}
             </div>
 
             {/* Question */}
@@ -293,23 +329,37 @@ export default function RecognitionFlashCard({
                   </div>
                 )}
 
-                {/* Recognition Tips */}
-                <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
-                  <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
-                    Recognition Tips:
-                  </h4>
-                  <ul className="space-y-1">
-                    {recognition.map((tip, index) => (
-                      <li
-                        key={index}
-                        className="text-sm text-[var(--text-secondary)] flex items-start gap-2"
-                      >
-                        <span className="text-[var(--primary)] mt-0.5">•</span>
-                        <span>{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {/* Recognition Tips - show hints for predefined, show notation info for custom */}
+                {recognition && recognition.length > 0 ? (
+                  <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+                    <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
+                      Recognition Tips:
+                    </h4>
+                    <ul className="space-y-1">
+                      {recognition.map((tip, index) => (
+                        <li
+                          key={index}
+                          className="text-sm text-[var(--text-secondary)] flex items-start gap-2"
+                        >
+                          <span className="text-[var(--primary)] mt-0.5">
+                            •
+                          </span>
+                          <span>{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : isCustomAlgorithm ? (
+                  <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+                    <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
+                      Custom Algorithm
+                    </h4>
+                    <p className="text-sm text-[var(--text-muted)]">
+                      This is a custom algorithm from your collection. Practice
+                      recognizing and recalling it.
+                    </p>
+                  </div>
+                ) : null}
               </div>
             )}
 

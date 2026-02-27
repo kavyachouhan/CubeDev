@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Play } from "lucide-react";
+import { Play, AlertTriangle } from "lucide-react";
 import CubeVisualizer3D from "./CubeVisualizer3D";
 
 interface ExecutionPracticeCardProps {
@@ -12,6 +12,8 @@ interface ExecutionPracticeCardProps {
   onComplete: (timeMs: number) => void;
   hasStarted?: boolean;
   onStart?: () => void;
+  isCustomAlgorithm?: boolean; // Whether this is a user-created custom algorithm
+  hasValidNotation?: boolean; // Whether notation is compatible with 3D player
 }
 
 export default function ExecutionPracticeCard({
@@ -22,6 +24,8 @@ export default function ExecutionPracticeCard({
   onComplete,
   hasStarted = false,
   onStart,
+  isCustomAlgorithm = false,
+  hasValidNotation = true,
 }: ExecutionPracticeCardProps) {
   const [timerState, setTimerState] = useState<
     "idle" | "inspection" | "holding" | "ready" | "running" | "finished"
@@ -327,13 +331,31 @@ export default function ExecutionPracticeCard({
 
             {/* Cube Visualization */}
             <div className="mb-6">
-              <CubeVisualizer3D
-                algorithm={setupMoves}
-                puzzle={puzzleType as any}
-                autoPlay={false}
-                showControls={true}
-                height="300px"
-              />
+              {hasValidNotation ? (
+                <CubeVisualizer3D
+                  algorithm={setupMoves}
+                  puzzle={puzzleType as any}
+                  autoPlay={false}
+                  showControls={true}
+                  height="300px"
+                />
+              ) : (
+                <div className="bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] p-6 min-h-[250px] flex flex-col items-center justify-center">
+                  <div className="flex items-center gap-2 mb-4">
+                    <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                    <span className="text-xs text-yellow-500/80">
+                      Non-standard notation
+                    </span>
+                  </div>
+                  <p className="font-mono text-lg text-[var(--text-primary)] text-center break-all leading-relaxed">
+                    {setupMoves}
+                  </p>
+                  <p className="text-xs text-[var(--text-muted)] mt-4 text-center">
+                    3D preview unavailable - practice by executing the algorithm
+                    above
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Timer Display */}
@@ -360,7 +382,7 @@ export default function ExecutionPracticeCard({
                       ? formatTime(
                           timerState === "finished"
                             ? executionTime || 0
-                            : currentTime - startTime
+                            : currentTime - startTime,
                         )
                       : timerState === "holding"
                         ? inspectionTime < 15

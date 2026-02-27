@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X, Code2 } from "lucide-react";
+import { X, AlertTriangle } from "lucide-react";
 
 interface AddCustomAlgorithmModalProps {
   isOpen: boolean;
@@ -13,10 +13,24 @@ interface AddCustomAlgorithmModalProps {
 
 // Common cube notation moves for validation hint
 const VALID_MOVES = [
-  "R", "L", "U", "D", "F", "B",
-  "M", "E", "S",
-  "r", "l", "u", "d", "f", "b",
-  "x", "y", "z",
+  "R",
+  "L",
+  "U",
+  "D",
+  "F",
+  "B",
+  "M",
+  "E",
+  "S",
+  "r",
+  "l",
+  "u",
+  "d",
+  "f",
+  "b",
+  "x",
+  "y",
+  "z",
 ];
 
 function countMoves(notation: string): number {
@@ -34,7 +48,7 @@ function isValidMove(move: string): boolean {
       move === m + "2'" ||
       move === m + "w" ||
       move === m + "w'" ||
-      move === m + "w2"
+      move === m + "w2",
   );
 }
 
@@ -66,6 +80,15 @@ export default function AddCustomAlgorithmModal({
 
   const moveCount = countMoves(notation);
   const isValid = name.trim().length > 0 && notation.trim().length > 0;
+
+  // Check for invalid moves in the notation to provide user feedback, but still allow saving (in case of typos or non-standard notation)
+  const invalidMoves = notation.trim()
+    ? notation
+        .trim()
+        .split(/\s+/)
+        .filter((move) => move.length > 0 && !isValidMove(move))
+    : [];
+  const hasInvalidMoves = invalidMoves.length > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +125,6 @@ export default function AddCustomAlgorithmModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <Code2 className="w-5 h-5 text-[var(--primary)]" />
             <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
               {initialData ? "Edit Algorithm" : "Add Custom Algorithm"}
             </h2>
@@ -158,6 +180,22 @@ export default function AddCustomAlgorithmModal({
               Use standard cube notation (R, U, F, L, D, B and their
               variations). Separate moves with spaces.
             </p>
+            {hasInvalidMoves && (
+              <div className="flex items-start gap-2 mt-2 p-2.5 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-medium text-yellow-500 font-inter">
+                    Non-standard notation detected
+                  </p>
+                  <p className="text-xs text-yellow-500/80 mt-0.5 font-inter">
+                    {invalidMoves.map((m) => `"${m}"`).join(", ")}{" "}
+                    {invalidMoves.length === 1 ? "is" : "are"} not recognized as
+                    standard cube moves. You can still save, but verify your
+                    notation is correct.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Notes */}
@@ -229,6 +267,6 @@ export default function AddCustomAlgorithmModal({
         </form>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
