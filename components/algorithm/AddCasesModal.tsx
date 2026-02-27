@@ -32,6 +32,7 @@ export default function AddCasesModal({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSet, setSelectedSet] = useState<string>("all");
   const [showSetDropdown, setShowSetDropdown] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   // Extract available sets from all cases
   const availableSets = useMemo(() => {
@@ -194,36 +195,57 @@ export default function AddCasesModal({
           ) : selectedSet === "all" ? (
             // Grouped view when showing all sets
             <div className="space-y-6">
-              {Object.entries(groupedCases).map(([setName, cases]) => (
-                <div key={setName}>
-                  <h3 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">
-                    {setName}
-                  </h3>
-                  <div className="space-y-1">
-                    {cases.slice(0, 10).map((c) => (
-                      <div
-                        key={c._id}
-                        className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg hover:bg-[var(--surface-elevated)]/80 transition-colors"
-                      >
-                        <span className="font-medium text-[var(--text-primary)]">
-                          {c.caseName}
-                        </span>
-                        <button
-                          onClick={() => onAddCase(c._id)}
-                          className="p-2 hover:bg-[var(--primary)]/10 text-[var(--primary)] rounded-lg transition-colors"
+              {Object.entries(groupedCases).map(([setName, cases]) => {
+                const isExpanded = expandedGroups.has(setName);
+                const displayedCases = isExpanded ? cases : cases.slice(0, 10);
+                const hiddenCount = cases.length - 10;
+
+                return (
+                  <div key={setName}>
+                    <h3 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">
+                      {setName}
+                    </h3>
+                    <div className="space-y-1">
+                      {displayedCases.map((c) => (
+                        <div
+                          key={c._id}
+                          className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg hover:bg-[var(--surface-elevated)]/80 transition-colors"
                         >
-                          <Plus className="w-4 h-4" />
+                          <span className="font-medium text-[var(--text-primary)]">
+                            {c.caseName}
+                          </span>
+                          <button
+                            onClick={() => onAddCase(c._id)}
+                            className="p-2 hover:bg-[var(--primary)]/10 text-[var(--primary)] rounded-lg transition-colors"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                      {cases.length > 10 && (
+                        <button
+                          onClick={() => {
+                            setExpandedGroups((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(setName)) {
+                                next.delete(setName);
+                              } else {
+                                next.add(setName);
+                              }
+                              return next;
+                            });
+                          }}
+                          className="w-full text-xs text-[var(--primary)] hover:text-[var(--primary-hover)] font-medium text-center py-2 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors cursor-pointer"
+                        >
+                          {isExpanded
+                            ? "Show less"
+                            : `+${hiddenCount} more cases — tap to show all`}
                         </button>
-                      </div>
-                    ))}
-                    {cases.length > 10 && (
-                      <p className="text-xs text-[var(--text-muted)] text-center py-2">
-                        +{cases.length - 10} more cases
-                      </p>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             // Ungrouped view when a specific set is selected
