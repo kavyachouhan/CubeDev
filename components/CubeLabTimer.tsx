@@ -26,6 +26,7 @@ import { useSessionState } from "./timer/hooks/useSessionState";
 import { useSolveOperations } from "./timer/hooks/useSolveOperations";
 import { useDatabaseSync } from "./timer/hooks/useDatabaseSync";
 import { useLocalStorageManager } from "./timer/hooks/useLocalStorageManager";
+import { useKeyboardShortcuts } from "./timer/hooks/useKeyboardShortcuts";
 
 // Dynamically import ScramblePreview to avoid heavy initial load
 const ScramblePreview = dynamic(() => import("./timer/ScramblePreview"), {
@@ -208,6 +209,72 @@ export default function CubeLabTimer({
     },
     [handleSessionChange, handleEventChange, selectedEvent]
   );
+
+  // Keyboard shortcuts handlers
+  const handleNextSession = useCallback(() => {
+    if (!sessions || sessions.length === 0 || !currentSession) return;
+    const currentIndex = sessions.findIndex((s) => s.id === currentSession.id);
+    const nextIndex = (currentIndex + 1) % sessions.length;
+    handleSessionChange(sessions[nextIndex]);
+  }, [sessions, currentSession, handleSessionChange]);
+
+  const handlePrevSession = useCallback(() => {
+    if (!sessions || sessions.length === 0 || !currentSession) return;
+    const currentIndex = sessions.findIndex((s) => s.id === currentSession.id);
+    const prevIndex = currentIndex <= 0 ? sessions.length - 1 : currentIndex - 1;
+    handleSessionChange(sessions[prevIndex]);
+  }, [sessions, currentSession, handleSessionChange]);
+
+  const handleDeleteLastSolve = useCallback(() => {
+    if (!currentSession || !lastSolveId) return;
+    deleteSolve(
+      lastSolveId,
+      currentSession,
+      getSessionHistory(currentSession.id),
+      removeSolve
+    );
+  }, [currentSession, lastSolveId, deleteSolve, getSessionHistory, removeSolve]);
+
+  const handleMarkDnf = useCallback(() => {
+    if (!lastSolveId) return;
+    const solve = history.find((s) => s.id === lastSolveId);
+    if (solve) applyPenalty(lastSolveId, "DNF", solve.time, updateSolve);
+  }, [lastSolveId, history, applyPenalty, updateSolve]);
+
+  const handleMarkPlus2 = useCallback(() => {
+    if (!lastSolveId) return;
+    const solve = history.find((s) => s.id === lastSolveId);
+    if (solve) applyPenalty(lastSolveId, "+2", solve.time, updateSolve);
+  }, [lastSolveId, history, applyPenalty, updateSolve]);
+
+  const handleMarkOk = useCallback(() => {
+    if (!lastSolveId) return;
+    const solve = history.find((s) => s.id === lastSolveId);
+    if (solve) applyPenalty(lastSolveId, "none", solve.time, updateSolve);
+  }, [lastSolveId, history, applyPenalty, updateSolve]);
+
+  // Initialize keyboard shortcuts - only active on timer page
+  useKeyboardShortcuts({
+    onEventChange: handleEventChange,
+    onNextScramble: handleNewScramble,
+    onClearSession: () => {
+      if (currentSession) {
+        clearSessionSolves(
+          getSessionHistory(currentSession.id),
+          currentSession,
+          clearSessionHistory
+        );
+      }
+    },
+    onDeleteLastSolve: handleDeleteLastSolve,
+    onNextSession: handleNextSession,
+    onPrevSession: handlePrevSession,
+    onMarkDnf: handleMarkDnf,
+    onMarkPlus2: handleMarkPlus2,
+    onMarkOk: handleMarkOk,
+    timerRunning: isTimerFocusMode,
+    isTimerPage: true, // Enable shortcuts on timer page
+  });
 
   // Initialize complete history from database or cache
   useEffect(() => {
