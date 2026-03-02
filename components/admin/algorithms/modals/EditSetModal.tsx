@@ -5,6 +5,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { X, Plus, Trash2 } from "lucide-react";
+import { AdminSelect } from "../../AdminDropdown";
 import {
   ALGORITHM_CATEGORIES,
   DIFFICULTY_OPTIONS,
@@ -190,18 +191,19 @@ export function EditSetModal({
               Category *
             </label>
             <div className="flex flex-col sm:flex-row gap-2">
-              <select
+              <AdminSelect
                 value={showCustomCategory ? "custom" : formData.category}
-                onChange={(e) => handleCategoryChange(e.target.value)}
-                className="flex-1 px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
-              >
-                {ALGORITHM_CATEGORIES.map((cat) => (
-                  <option key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </option>
-                ))}
-                <option value="custom">+ Custom Category</option>
-              </select>
+                onChange={(val) => handleCategoryChange(val)}
+                options={[
+                  ...ALGORITHM_CATEGORIES.map((cat) => ({
+                    value: cat.value,
+                    label: cat.label,
+                  })),
+                  { value: "custom", label: "+ Custom Category" },
+                ]}
+                className="flex-1"
+                fullWidth
+              />
               {!showCustomCategory && (
                 <button
                   type="button"
@@ -265,40 +267,36 @@ export function EditSetModal({
               <label className="block text-sm font-medium text-[var(--text-secondary)] font-inter mb-1.5">
                 Difficulty
               </label>
-              <select
+              <AdminSelect
                 value={formData.difficulty}
-                onChange={(e) =>
+                onChange={(val) =>
                   setFormData({
                     ...formData,
-                    difficulty: e.target.value as SetFormData["difficulty"],
+                    difficulty: val as SetFormData["difficulty"],
                   })
                 }
-                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
-              >
-                {DIFFICULTY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+                options={DIFFICULTY_OPTIONS.map((opt) => ({
+                  value: opt.value,
+                  label: opt.label,
+                }))}
+                fullWidth
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-[var(--text-secondary)] font-inter mb-1.5">
                 Puzzle Type
               </label>
-              <select
+              <AdminSelect
                 value={formData.puzzleType}
-                onChange={(e) =>
-                  setFormData({ ...formData, puzzleType: e.target.value })
+                onChange={(val) =>
+                  setFormData({ ...formData, puzzleType: val })
                 }
-                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
-              >
-                {PUZZLE_TYPES.map((pt) => (
-                  <option key={pt.value} value={pt.value}>
-                    {pt.label}
-                  </option>
-                ))}
-              </select>
+                options={PUZZLE_TYPES.map((pt) => ({
+                  value: pt.value,
+                  label: pt.label,
+                }))}
+                fullWidth
+              />
             </div>
           </div>
 

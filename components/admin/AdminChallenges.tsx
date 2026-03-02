@@ -44,6 +44,7 @@ import {
   AlertCircle,
   Zap,
 } from "lucide-react";
+import { AdminSelect } from "./AdminDropdown";
 
 // Register ChartJS components
 ChartJS.register(
@@ -1534,36 +1535,31 @@ export default function AdminChallengesNew() {
             </div>
 
             {/* Status Filter */}
-            <div className="relative">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="appearance-none w-full sm:w-auto px-4 py-2 pr-8 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter text-sm"
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="expired">Expired</option>
-                <option value="archived">Archived</option>
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
-            </div>
+            <AdminSelect
+              value={statusFilter}
+              onChange={(val) => setStatusFilter(val)}
+              options={[
+                { value: "all", label: "All Status" },
+                { value: "active", label: "Active" },
+                { value: "expired", label: "Expired" },
+                { value: "archived", label: "Archived" },
+              ]}
+              compact
+            />
 
             {/* Event Filter */}
-            <div className="relative">
-              <select
-                value={eventFilter}
-                onChange={(e) => setEventFilter(e.target.value)}
-                className="appearance-none w-full sm:w-auto px-4 py-2 pr-8 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter text-sm"
-              >
-                <option value="all">All Events</option>
-                {uniqueEvents.map((event) => (
-                  <option key={event} value={event}>
-                    {EVENT_NAMES[event] || event}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
-            </div>
+            <AdminSelect
+              value={eventFilter}
+              onChange={(val) => setEventFilter(val)}
+              options={[
+                { value: "all", label: "All Events" },
+                ...uniqueEvents.map((event) => ({
+                  value: event,
+                  label: EVENT_NAMES[event] || event,
+                })),
+              ]}
+              compact
+            />
           </div>
 
           {/* Rooms Grid */}
