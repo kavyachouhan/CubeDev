@@ -134,7 +134,7 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
   };
 
   const getTrendColor = (trend: number, higherIsBetter: boolean) => {
-    if (Math.abs(trend) < 1) return "text-[var(--text-muted)]";
+    if (Math.abs(trend) < 1) return "text-(--text-muted)";
     const isPositive = higherIsBetter ? trend > 0 : trend < 0;
     return isPositive
       ? "text-green-500 dark:text-green-400"
@@ -144,8 +144,8 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
   const statItems = [
     {
       icon: BarChart3,
-      iconBg: "bg-[var(--primary)]/10",
-      iconColor: "text-[var(--primary)]",
+      iconBg: "bg-(--primary)/10",
+      iconColor: "text-(--primary)",
       value: stats.totalSessions,
       label: "Total Sessions",
     },
@@ -176,7 +176,7 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
 
   return (
     <div className="timer-card">
-      <h3 className="text-lg font-bold text-[var(--text-primary)] font-statement mb-6">
+      <h3 className="text-lg font-bold text-(--text-primary) font-statement mb-6">
         Overall Statistics
       </h3>
 
@@ -184,7 +184,7 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
         {statItems.map((item, index) => (
           <div
             key={index}
-            className="p-4 rounded-lg bg-[var(--surface-elevated)]"
+            className="p-4 rounded-lg bg-(--surface-elevated)"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className={`p-2 rounded-lg ${item.iconBg}`}>
@@ -198,10 +198,10 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
                 </div>
               )}
             </div>
-            <div className="text-2xl font-bold text-[var(--text-primary)] font-statement">
+            <div className="text-2xl font-bold text-(--text-primary) font-statement">
               {item.value}
             </div>
-            <div className="text-sm text-[var(--text-muted)] mt-1">
+            <div className="text-sm text-(--text-muted) mt-1">
               {item.label}
             </div>
           </div>
@@ -209,17 +209,17 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
       </div>
 
       {stats.avgRecognitionTime > 0 && (
-        <div className="mt-6 pt-6 border-t border-[var(--border)]">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-[var(--surface-elevated)]">
+        <div className="mt-6 pt-6 border-t border-(--border)">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-(--surface-elevated)">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-cyan-500/10">
                 <Eye className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
               </div>
               <div>
-                <div className="text-sm text-[var(--text-muted)]">
+                <div className="text-sm text-(--text-muted)">
                   Avg Recognition Time
                 </div>
-                <div className="text-xl font-bold text-[var(--text-primary)] font-statement">
+                <div className="text-xl font-bold text-(--text-primary) font-statement">
                   {formatTime(stats.avgRecognitionTime)}
                 </div>
               </div>

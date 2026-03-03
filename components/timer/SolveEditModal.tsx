@@ -377,15 +377,15 @@ export default function SolveEditModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl max-w-md w-full mx-4">
+      <div className="relative bg-(--surface) border border-(--border) rounded-lg shadow-xl max-w-md w-full mx-4">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <div className="flex items-center justify-between p-4 border-b border-(--border)">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
             Edit Solve Time
           </h3>
           <button
             onClick={onClose}
-            className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+            className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -395,7 +395,7 @@ export default function SolveEditModal({
         <div className="p-6 space-y-4">
           {/* Time Input */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+            <label className="block text-sm font-medium text-(--text-secondary) mb-2">
               Time
             </label>
             <input
@@ -404,12 +404,12 @@ export default function SolveEditModal({
               onChange={(e) => handleInputChange(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="e.g., 12.34 or 1:23.45"
-              className="w-full px-4 py-3 text-lg font-mono bg-[var(--background)] border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+              className="w-full px-4 py-3 text-lg font-mono bg-(--background) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
               autoFocus
             />
 
             {/* Format hints */}
-            <div className="mt-2 text-xs text-[var(--text-muted)] space-y-1">
+            <div className="mt-2 text-xs text-(--text-muted) space-y-1">
               <div>Supported formats:</div>
               <div className="pl-2">
                 • <span className="font-mono">12.34</span> (seconds with
@@ -433,43 +433,43 @@ export default function SolveEditModal({
 
             {/* Error message */}
             {error && (
-              <div className="mt-2 text-sm text-[var(--error)]">{error}</div>
+              <div className="mt-2 text-sm text-(--error)">{error}</div>
             )}
           </div>
 
           {/* Preview */}
           {parsedTime !== null && !error && (
-            <div className="bg-[var(--surface-elevated)] rounded-lg p-4 border border-[var(--border)]">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide mb-2">
+            <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
+              <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-2">
                 Preview
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-[var(--text-secondary)]">
+                  <span className="text-(--text-secondary)">
                     Raw Time:
                   </span>
-                  <span className="font-mono text-[var(--text-primary)]">
+                  <span className="font-mono text-(--text-primary)">
                     {parsedTime === 0 && penalty === "DNF"
                       ? "DNF"
                       : formatTimeDisplay(parsedTime, "none")}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-[var(--text-secondary)]">Penalty:</span>
+                  <span className="text-(--text-secondary)">Penalty:</span>
                   <span
                     className={`font-mono ${
                       penalty === "+2"
                         ? "text-yellow-400"
                         : penalty === "DNF"
                           ? "text-red-400"
-                          : "text-[var(--text-primary)]"
+                          : "text-(--text-primary)"
                     }`}
                   >
                     {penalty === "none" ? "None" : penalty}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm border-t border-[var(--border)] pt-2">
-                  <span className="text-[var(--text-secondary)] font-semibold">
+                <div className="flex justify-between text-sm border-t border-(--border) pt-2">
+                  <span className="text-(--text-secondary) font-semibold">
                     Final Time:
                   </span>
                   <span
@@ -478,7 +478,7 @@ export default function SolveEditModal({
                         ? "text-yellow-400"
                         : penalty === "DNF" || parsedTime === 0
                           ? "text-red-400"
-                          : "text-[var(--text-primary)]"
+                          : "text-(--text-primary)"
                     }`}
                   >
                     {formatTimeDisplay(getFinalTime(), penalty)}
@@ -490,7 +490,7 @@ export default function SolveEditModal({
 
           {/* Penalty Buttons */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+            <label className="block text-sm font-medium text-(--text-secondary) mb-2">
               Penalty
             </label>
             <div className="flex gap-2">
@@ -498,8 +498,8 @@ export default function SolveEditModal({
                 onClick={() => setPenalty("none")}
                 className={`flex-1 px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
                   penalty === "none"
-                    ? "bg-[var(--primary)] text-white"
-                    : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)] border border-[var(--border)]"
+                    ? "bg-(--primary) text-white"
+                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
                 }`}
               >
                 OK
@@ -508,8 +508,8 @@ export default function SolveEditModal({
                 onClick={() => setPenalty("+2")}
                 className={`flex-1 px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
                   penalty === "+2"
-                    ? "bg-[var(--warning)] text-white"
-                    : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)] border border-[var(--border)]"
+                    ? "bg-(--warning) text-white"
+                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
                 }`}
               >
                 +2
@@ -518,8 +518,8 @@ export default function SolveEditModal({
                 onClick={() => setPenalty("DNF")}
                 className={`flex-1 px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
                   penalty === "DNF"
-                    ? "bg-[var(--error)] text-white"
-                    : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)] border border-[var(--border)]"
+                    ? "bg-(--error) text-white"
+                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
                 }`}
               >
                 DNF
@@ -532,14 +532,14 @@ export default function SolveEditModal({
             <button
               onClick={handleSave}
               disabled={!!error || !timeInput.trim()}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[var(--primary)]"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-(--primary)"
             >
               <Check className="w-4 h-4" />
               Save Changes
             </button>
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--border)] text-[var(--text-secondary)] rounded-lg font-medium transition-colors border border-[var(--border)]"
+              className="px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-secondary) rounded-lg font-medium transition-colors border border-(--border)"
             >
               Cancel
             </button>

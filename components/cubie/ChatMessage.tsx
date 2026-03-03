@@ -125,10 +125,10 @@ export default function ChatMessage({
     <div className={`flex gap-2 md:gap-4 ${isUser ? "flex-row-reverse" : ""}`}>
       {/* Avatar */}
       <div
-        className={`flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center ${
+        className={`shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center ${
           isUser
-            ? "bg-[var(--primary)]/10 border border-[var(--primary)]/20"
-            : "bg-[var(--accent)]/10 border border-[var(--accent)]/20"
+            ? "bg-(--primary)/10 border border-(--primary)/20"
+            : "bg-(--accent)/10 border border-(--accent)/20"
         }`}
       >
         {isUser ? (
@@ -141,10 +141,10 @@ export default function ChatMessage({
               className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
             />
           ) : (
-            <User className="w-4 h-4 md:w-5 md:h-5 text-[var(--primary)]" />
+            <User className="w-4 h-4 md:w-5 md:h-5 text-(--primary)" />
           )
         ) : (
-          <Bot className="w-4 h-4 md:w-5 md:h-5 text-[var(--accent)]" />
+          <Bot className="w-4 h-4 md:w-5 md:h-5 text-(--accent)" />
         )}
       </div>
 
@@ -156,12 +156,12 @@ export default function ChatMessage({
         <div
           className={`px-3 md:px-4 py-2 md:py-3 rounded-xl ${
             isUser
-              ? "bg-[var(--primary)] text-white"
-              : "bg-[var(--surface-elevated)] border border-[var(--border)] text-[var(--text-primary)]"
+              ? "bg-(--primary) text-white"
+              : "bg-(--surface-elevated) border border-(--border) text-(--text-primary)"
           }`}
         >
           {isUser ? (
-            <p className="font-inter text-sm md:text-base leading-relaxed whitespace-pre-wrap break-words">
+            <p className="font-inter text-sm md:text-base leading-relaxed whitespace-pre-wrap wrap-break-word">
               {message.content}
             </p>
           ) : (
@@ -177,7 +177,7 @@ export default function ChatMessage({
         </div>
 
         {/* Metadata */}
-        <div className="mt-1.5 md:mt-2 flex items-center gap-2 md:gap-3 text-xs text-[var(--text-muted)] flex-wrap">
+        <div className="mt-1.5 md:mt-2 flex items-center gap-2 md:gap-3 text-xs text-(--text-muted) flex-wrap">
           {/* Show tools used for assistant messages */}
           {!isUser &&
             message.metadata?.tools_used &&
@@ -186,7 +186,7 @@ export default function ChatMessage({
                 {message.metadata.tools_used.map((tool, idx) => (
                   <span
                     key={idx}
-                    className="flex items-center gap-1 px-1.5 md:px-2 py-0.5 md:py-1 bg-[var(--surface)] border border-[var(--border)] rounded-md font-inter text-xs"
+                    className="flex items-center gap-1 px-1.5 md:px-2 py-0.5 md:py-1 bg-(--surface) border border-(--border) rounded-md font-inter text-xs"
                   >
                     {tool.tool_type === "knowledge_base" ? (
                       <Database className="w-3 h-3" />
@@ -204,17 +204,17 @@ export default function ChatMessage({
             <div className="flex items-center gap-1">
               <button
                 onClick={() => handleFeedbackClick("like")}
-                className="p-1 hover:bg-[var(--success)]/10 border border-transparent hover:border-[var(--success)]/20 rounded transition-colors"
+                className="p-1 hover:bg-(--success)/10 border border-transparent hover:border-(--success)/20 rounded transition-colors"
                 title="Helpful"
               >
-                <ThumbsUp className="w-3.5 h-3.5 text-[var(--text-muted)] hover:text-[var(--success)]" />
+                <ThumbsUp className="w-3.5 h-3.5 text-(--text-muted) hover:text-(--success)" />
               </button>
               <button
                 onClick={() => handleFeedbackClick("dislike")}
-                className="p-1 hover:bg-[var(--error)]/10 border border-transparent hover:border-[var(--error)]/20 rounded transition-colors"
+                className="p-1 hover:bg-(--error)/10 border border-transparent hover:border-(--error)/20 rounded transition-colors"
                 title="Not helpful"
               >
-                <ThumbsDown className="w-3.5 h-3.5 text-[var(--text-muted)] hover:text-[var(--error)]" />
+                <ThumbsDown className="w-3.5 h-3.5 text-(--text-muted) hover:text-(--error)" />
               </button>
             </div>
           )}
@@ -224,21 +224,21 @@ export default function ChatMessage({
             <div
               className={`flex items-center gap-1 px-2 py-0.5 rounded-md transition-opacity duration-500 ${
                 message.feedback.feedback_type === "like"
-                  ? "bg-[var(--success)]/10 border border-[var(--success)]/20"
-                  : "bg-[var(--error)]/10 border border-[var(--error)]/20"
+                  ? "bg-(--success)/10 border border-(--success)/20"
+                  : "bg-(--error)/10 border border-(--error)/20"
               } ${showFeedbackBadge ? "opacity-100" : "opacity-0"}`}
             >
               {message.feedback.feedback_type === "like" ? (
                 <>
-                  <ThumbsUp className="w-3 h-3 text-[var(--success)]" />
-                  <span className="text-xs text-[var(--success)] font-inter font-medium">
+                  <ThumbsUp className="w-3 h-3 text-(--success)" />
+                  <span className="text-xs text-(--success) font-inter font-medium">
                     Helpful
                   </span>
                 </>
               ) : (
                 <>
-                  <ThumbsDown className="w-3 h-3 text-[var(--error)]" />
-                  <span className="text-xs text-[var(--error)] font-inter font-medium">
+                  <ThumbsDown className="w-3 h-3 text-(--error)" />
+                  <span className="text-xs text-(--error) font-inter font-medium">
                     Not helpful
                   </span>
                 </>
@@ -259,7 +259,7 @@ export default function ChatMessage({
           message.metadata?.sources &&
           message.metadata.sources.length > 0 && (
             <div className="mt-2 md:mt-3 space-y-2">
-              <p className="text-xs font-semibold text-[var(--text-muted)] font-inter">
+              <p className="text-xs font-semibold text-(--text-muted) font-inter">
                 Sources:
               </p>
               <div className="flex flex-wrap gap-1.5 md:gap-2">
@@ -269,7 +269,7 @@ export default function ChatMessage({
                     href={source.url || "#"}
                     target={source.url ? "_blank" : undefined}
                     rel={source.url ? "noopener noreferrer" : undefined}
-                    className={`text-xs px-2 md:px-3 py-1 md:py-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg hover:border-[var(--primary)] transition-colors font-inter ${
+                    className={`text-xs px-2 md:px-3 py-1 md:py-1.5 bg-(--surface) border border-(--border) rounded-lg hover:border-(--primary) transition-colors font-inter ${
                       source.url ? "cursor-pointer" : "cursor-default"
                     }`}
                   >

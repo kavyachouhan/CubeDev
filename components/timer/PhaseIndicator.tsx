@@ -38,7 +38,7 @@ export default function PhaseIndicator({
           </div>
         ))}
       </div>
-      <div className="text-xs text-[var(--text-muted)]">
+      <div className="text-xs text-(--text-muted)">
         Press spacebar or tap to advance to next phase
       </div>
     </div>

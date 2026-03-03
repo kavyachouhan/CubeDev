@@ -516,10 +516,10 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
         <div className="flex items-center justify-between">
           <button
             onClick={() => setShowChart(!showChart)}
-            className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+            className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
             title={showChart ? "Hide chart" : "Show chart"}
           >
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+            <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
               Time Progress
             </h3>
             {showChart ? (
@@ -530,7 +530,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
           </button>
           <button
             onClick={() => setShowChart(!showChart)}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={showChart ? "Hide chart" : "Show chart"}
           >
             {showChart ? (
@@ -543,13 +543,13 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
 
         {showChart && (
           <div className="text-center py-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-8 h-8 text-[var(--text-muted)]" />
+            <div className="w-16 h-16 mx-auto mb-4 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-8 h-8 text-(--text-muted)" />
             </div>
-            <div className="text-[var(--text-secondary)]">
+            <div className="text-(--text-secondary)">
               No data to display
             </div>
-            <div className="text-sm text-[var(--text-muted)] mt-2">
+            <div className="text-sm text-(--text-muted) mt-2">
               Start solving to see your progress!
             </div>
           </div>
@@ -565,10 +565,10 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowChart(!showChart)}
-            className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+            className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
             title={showChart ? "Hide chart" : "Show chart"}
           >
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+            <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
               Time Progress
             </h3>
             {showChart ? (
@@ -579,7 +579,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
           </button>
           <button
             onClick={() => setShowChart(!showChart)}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={showChart ? "Hide chart" : "Show chart"}
           >
             {showChart ? (
@@ -591,7 +591,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
         </div>
 
         {showChart && (
-          <div className="flex items-center gap-1 p-1 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] sm:overflow-x-auto">
+          <div className="flex items-center gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border) sm:overflow-x-auto">
             {(
               [
                 ["25", "Last 25"],
@@ -605,8 +605,8 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
                 onClick={() => setDataRange(range)}
                 className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap flex-1 sm:flex-none ${
                   dataRange === range
-                    ? "bg-[var(--primary)] text-white shadow-sm"
-                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)]"
+                    ? "bg-(--primary) text-white shadow-sm"
+                    : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface)"
                 }`}
               >
                 {label}
@@ -623,19 +623,19 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
               {/* Trend Card - only show if we have trend data */}
               {progressStats.trend && (
-                <div className="bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 border border-[var(--border)]">
+                <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
                   <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                     <div
                       className={`p-1 sm:p-1.5 rounded-md ${
                         progressStats.trend.isImproving
                           ? "bg-emerald-500/10"
                           : progressStats.trend.improvement === 0
-                            ? "bg-[var(--text-muted)]/10"
+                            ? "bg-(--text-muted)/10"
                             : "bg-red-500/10"
                       }`}
                     ></div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                      <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                         Progress Trend
                       </div>
                       <div
@@ -643,7 +643,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
                           progressStats.trend.isImproving
                             ? "text-emerald-400"
                             : progressStats.trend.improvement === 0
-                              ? "text-[var(--text-muted)]"
+                              ? "text-(--text-muted)"
                               : "text-red-400"
                         }`}
                       >
@@ -664,8 +664,8 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
 
               {/* Best Single Card */}
               {progressStats.bestSingle && (
-                <div className="bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 border border-[var(--border)]">
-                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide mb-1 truncate">
+                <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1 truncate">
                     Best Single
                   </div>
                   <div className="text-xs sm:text-sm font-bold text-yellow-400 font-mono">
@@ -675,8 +675,8 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
               )}
 
               {/* Sessions Count Card */}
-              <div className="bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 border border-[var(--border)]">
-                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide mb-1">
+              <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+                <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
                   Sessions
                 </div>
                 <div className="text-xs sm:text-sm font-bold text-blue-400">
@@ -687,8 +687,8 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
               {/* Consistency Score Card - only show if we have enough data */}
               {progressStats.consistencyScore !== null &&
                 progressStats.trend === null && (
-                  <div className="bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 border border-[var(--border)]">
-                    <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide mb-1">
+                  <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+                    <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
                       Consistency
                     </div>
                     <div
@@ -713,12 +713,12 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
               onClick={() => toggleDataLine("singles")}
               className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg transition-all ${
                 showDataLines.singles
-                  ? "bg-[var(--surface-elevated)] text-[var(--text-primary)] border border-[var(--border)]"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                  ? "bg-(--surface-elevated) text-(--text-primary) border border-(--border)"
+                  : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
               }`}
             >
               <div
-                className="w-2 h-2 rounded-full flex-shrink-0"
+                className="w-2 h-2 rounded-full shrink-0"
                 style={{
                   backgroundColor: showDataLines.singles
                     ? effectiveTheme === "light"
@@ -734,12 +734,12 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
               onClick={() => toggleDataLine("ao5")}
               className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg transition-all ${
                 showDataLines.ao5
-                  ? "bg-[var(--surface-elevated)] text-blue-400 border border-[var(--border)]"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                  ? "bg-(--surface-elevated) text-blue-400 border border-(--border)"
+                  : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
               }`}
             >
               <div
-                className="w-2 h-2 rounded-full flex-shrink-0"
+                className="w-2 h-2 rounded-full shrink-0"
                 style={{
                   backgroundColor: showDataLines.ao5
                     ? "rgba(59, 130, 246, 1)"
@@ -753,12 +753,12 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
               onClick={() => toggleDataLine("ao12")}
               className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg transition-all ${
                 showDataLines.ao12
-                  ? "bg-[var(--surface-elevated)] text-purple-400 border border-[var(--border)]"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                  ? "bg-(--surface-elevated) text-purple-400 border border-(--border)"
+                  : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
               }`}
             >
               <div
-                className="w-2 h-2 rounded-full flex-shrink-0"
+                className="w-2 h-2 rounded-full shrink-0"
                 style={{
                   backgroundColor: showDataLines.ao12
                     ? "rgba(168, 85, 247, 1)"
@@ -772,12 +772,12 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
               onClick={() => toggleDataLine("trend")}
               className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg transition-all ${
                 showDataLines.trend
-                  ? "bg-[var(--surface-elevated)] text-emerald-400 border border-[var(--border)]"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                  ? "bg-(--surface-elevated) text-emerald-400 border border-(--border)"
+                  : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
               }`}
             >
               <div
-                className="w-2 h-2 rounded-full border border-dashed flex-shrink-0"
+                className="w-2 h-2 rounded-full border border-dashed shrink-0"
                 style={{
                   borderColor: showDataLines.trend
                     ? "rgba(34, 197, 94, 0.8)"
@@ -790,7 +790,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
           </div>
 
           {/* Chart */}
-          <div className="bg-[var(--surface)] rounded-lg p-2 sm:p-4 border border-[var(--border)] overflow-hidden">
+          <div className="bg-(--surface) rounded-lg p-2 sm:p-4 border border-(--border) overflow-hidden">
             <div className="h-32 xs:h-40 sm:h-48 lg:h-64 w-full min-w-0">
               <Line data={chartData} options={chartOptions} />
             </div>

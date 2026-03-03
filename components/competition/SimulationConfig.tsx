@@ -272,16 +272,16 @@ export default function SimulationConfig() {
     return (
       <div className="h-full flex items-center justify-center p-4">
         <div className="timer-card text-center max-w-md w-full">
-          <AlertTriangle className="w-10 h-10 sm:w-12 sm:h-12 text-[var(--error)] mx-auto mb-4" />
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-2">
+          <AlertTriangle className="w-10 h-10 sm:w-12 sm:h-12 text-(--error) mx-auto mb-4" />
+          <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) mb-2">
             Competition Not Found
           </h2>
-          <p className="text-sm text-[var(--text-muted)] mb-4">
+          <p className="text-sm text-(--text-muted) mb-4">
             {error || "The competition could not be loaded."}
           </p>
           <Link
             href="/cube-lab/competitions"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Competitions
@@ -297,7 +297,7 @@ export default function SimulationConfig() {
         {/* Back Link */}
         <Link
           href={`/cube-lab/competitions/${competitionId}`}
-          className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-(--text-muted) hover:text-(--primary) transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Competition
@@ -305,11 +305,11 @@ export default function SimulationConfig() {
 
         {/* Header */}
         <div className="timer-card">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--text-primary)] font-statement mb-2">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-(--text-primary) font-statement mb-2">
             Configure Simulation
           </h1>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs sm:text-sm text-[var(--text-muted)]">
-            <span className="font-medium text-[var(--text-secondary)]">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs sm:text-sm text-(--text-muted)">
+            <span className="font-medium text-(--text-secondary)">
               {competition.name}
             </span>
             <span className="flex items-center gap-1.5">
@@ -326,20 +326,20 @@ export default function SimulationConfig() {
         {/* Event Selection */}
         <div className="timer-card">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-base sm:text-lg font-bold text-[var(--text-primary)]">
+            <h2 className="text-base sm:text-lg font-bold text-(--text-primary)">
               Select Events to Simulate
             </h2>
             <div className="flex gap-2 text-xs">
               <button
                 onClick={selectAllEvents}
-                className="text-[var(--primary)] hover:underline"
+                className="text-(--primary) hover:underline"
               >
                 Select All
               </button>
-              <span className="text-[var(--text-muted)]">|</span>
+              <span className="text-(--text-muted)">|</span>
               <button
                 onClick={clearAllEvents}
-                className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                className="text-(--text-muted) hover:text-(--text-primary)"
               >
                 Clear
               </button>
@@ -357,20 +357,20 @@ export default function SimulationConfig() {
                   onClick={() => toggleEvent(eventId)}
                   className={`relative flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border transition-all ${
                     isSelected
-                      ? "border-[var(--primary)] bg-[var(--primary)]/15"
-                      : "border-[var(--border)] hover:border-[var(--primary)]/50 bg-[var(--surface)]"
+                      ? "border-(--primary) bg-(--primary)/15"
+                      : "border-(--border) hover:border-(--primary)/50 bg-(--surface)"
                   }`}
                 >
                   {isSelected && (
-                    <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-4 h-4 sm:w-5 sm:h-5 bg-[var(--primary)] rounded-full flex items-center justify-center">
+                    <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-4 h-4 sm:w-5 sm:h-5 bg-(--primary) rounded-full flex items-center justify-center">
                       <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
                     </div>
                   )}
                   <div
                     className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg ${
                       isSelected
-                        ? "bg-[var(--primary)]/20"
-                        : "bg-[var(--surface-elevated)]"
+                        ? "bg-(--primary)/20"
+                        : "bg-(--surface-elevated)"
                     }`}
                   >
                     <Image
@@ -384,8 +384,8 @@ export default function SimulationConfig() {
                   <span
                     className={`text-[10px] sm:text-xs font-medium text-center leading-tight ${
                       isSelected
-                        ? "text-[var(--text-primary)]"
-                        : "text-[var(--text-secondary)]"
+                        ? "text-(--text-primary)"
+                        : "text-(--text-secondary)"
                     }`}
                   >
                     {event.name}
@@ -395,7 +395,7 @@ export default function SimulationConfig() {
             })}
           </div>
 
-          <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-[var(--text-muted)]">
+          <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-(--text-muted)">
             {selectedEvents.length} of {competition.event_ids.length} events
             selected
           </div>
@@ -404,8 +404,8 @@ export default function SimulationConfig() {
         {/* Atmosphere Settings */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-4 sm:mb-6">
-            <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)]" />
-            <h2 className="text-base sm:text-lg font-bold text-[var(--text-primary)]">
+            <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-(--primary)" />
+            <h2 className="text-base sm:text-lg font-bold text-(--text-primary)">
               Simulation Atmosphere
             </h2>
           </div>
@@ -415,12 +415,12 @@ export default function SimulationConfig() {
             <div className="space-y-2 sm:space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Volume2 className="w-4 h-4 text-[var(--primary)]" />
-                  <span className="text-xs sm:text-sm font-medium text-[var(--text-primary)]">
+                  <Volume2 className="w-4 h-4 text-(--primary)" />
+                  <span className="text-xs sm:text-sm font-medium text-(--text-primary)">
                     Crowd Noise
                   </span>
                 </div>
-                <span className="text-lg sm:text-xl font-bold text-[var(--primary)]">
+                <span className="text-lg sm:text-xl font-bold text-(--primary)">
                   {atmosphere.crowdNoise}%
                 </span>
               </div>
@@ -435,9 +435,9 @@ export default function SimulationConfig() {
                     crowdNoise: parseInt(e.target.value),
                   })
                 }
-                className="w-full h-2 sm:h-3 bg-[var(--surface-elevated)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
+                className="w-full h-2 sm:h-3 bg-(--surface-elevated) rounded-lg appearance-none cursor-pointer accent-(--primary)"
               />
-              <div className="flex justify-between text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <div className="flex justify-between text-[10px] sm:text-xs text-(--text-muted)">
                 <span>Silent</span>
                 <span>Moderate</span>
                 <span>Loud</span>
@@ -448,12 +448,12 @@ export default function SimulationConfig() {
             <div className="space-y-2 sm:space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Brain className="w-4 h-4 text-[var(--warning)]" />
-                  <span className="text-xs sm:text-sm font-medium text-[var(--text-primary)]">
+                  <Brain className="w-4 h-4 text-(--warning)" />
+                  <span className="text-xs sm:text-sm font-medium text-(--text-primary)">
                     Competition Pressure
                   </span>
                 </div>
-                <span className="text-lg sm:text-xl font-bold text-[var(--warning)]">
+                <span className="text-lg sm:text-xl font-bold text-(--warning)">
                   {atmosphere.pressure}%
                 </span>
               </div>
@@ -468,14 +468,14 @@ export default function SimulationConfig() {
                     pressure: parseInt(e.target.value),
                   })
                 }
-                className="w-full h-2 sm:h-3 bg-[var(--surface-elevated)] rounded-lg appearance-none cursor-pointer accent-[var(--warning)]"
+                className="w-full h-2 sm:h-3 bg-(--surface-elevated) rounded-lg appearance-none cursor-pointer accent-(--warning)"
               />
-              <div className="flex justify-between text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <div className="flex justify-between text-[10px] sm:text-xs text-(--text-muted)">
                 <span>Relaxed</span>
                 <span>Normal</span>
                 <span>Intense</span>
               </div>
-              <p className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <p className="text-[10px] sm:text-xs text-(--text-muted)">
                 Higher pressure adds visual cues and timing variations to
                 simulate real competition stress
               </p>
@@ -493,23 +493,23 @@ export default function SimulationConfig() {
                 }
                 className={`p-3 sm:p-4 rounded-lg border text-left transition-all ${
                   atmosphere.distractions
-                    ? "border-[var(--primary)] bg-[var(--primary)]/15"
-                    : "border-[var(--border)] hover:border-[var(--primary)]/50 bg-[var(--surface)]"
+                    ? "border-(--primary) bg-(--primary)/15"
+                    : "border-(--border) hover:border-(--primary)/50 bg-(--surface)"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
                   <Zap
-                    className={`w-4 h-4 sm:w-5 sm:h-5 ${atmosphere.distractions ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`}
+                    className={`w-4 h-4 sm:w-5 sm:h-5 ${atmosphere.distractions ? "text-(--primary)" : "text-(--text-muted)"}`}
                   />
-                  <span className="text-sm sm:text-base font-medium text-[var(--text-primary)]">
+                  <span className="text-sm sm:text-base font-medium text-(--text-primary)">
                     Distractions
                   </span>
                 </div>
-                <p className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+                <p className="text-[10px] sm:text-xs text-(--text-muted)">
                   Random visual distractions during solves
                 </p>
                 <div
-                  className={`mt-2 sm:mt-3 text-xs sm:text-sm font-bold ${atmosphere.distractions ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`}
+                  className={`mt-2 sm:mt-3 text-xs sm:text-sm font-bold ${atmosphere.distractions ? "text-(--primary)" : "text-(--text-muted)"}`}
                 >
                   {atmosphere.distractions ? "On" : "Off"}
                 </div>
@@ -525,23 +525,23 @@ export default function SimulationConfig() {
                 }
                 className={`p-3 sm:p-4 rounded-lg border text-left transition-all ${
                   atmosphere.timerDelay
-                    ? "border-[var(--primary)] bg-[var(--primary)]/15"
-                    : "border-[var(--border)] hover:border-[var(--primary)]/50 bg-[var(--surface)]"
+                    ? "border-(--primary) bg-(--primary)/15"
+                    : "border-(--border) hover:border-(--primary)/50 bg-(--surface)"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
                   <Timer
-                    className={`w-4 h-4 sm:w-5 sm:h-5 ${atmosphere.timerDelay ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`}
+                    className={`w-4 h-4 sm:w-5 sm:h-5 ${atmosphere.timerDelay ? "text-(--primary)" : "text-(--text-muted)"}`}
                   />
-                  <span className="text-sm sm:text-base font-medium text-[var(--text-primary)]">
+                  <span className="text-sm sm:text-base font-medium text-(--text-primary)">
                     Timer Delay
                   </span>
                 </div>
-                <p className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+                <p className="text-[10px] sm:text-xs text-(--text-muted)">
                   Slight random delays like real stackmat
                 </p>
                 <div
-                  className={`mt-2 sm:mt-3 text-xs sm:text-sm font-bold ${atmosphere.timerDelay ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`}
+                  className={`mt-2 sm:mt-3 text-xs sm:text-sm font-bold ${atmosphere.timerDelay ? "text-(--primary)" : "text-(--text-muted)"}`}
                 >
                   {atmosphere.timerDelay ? "On" : "Off"}
                 </div>
@@ -557,23 +557,23 @@ export default function SimulationConfig() {
                 }
                 className={`p-3 sm:p-4 rounded-lg border text-left transition-all ${
                   atmosphere.judgeInteractions
-                    ? "border-[var(--primary)] bg-[var(--primary)]/15"
-                    : "border-[var(--border)] hover:border-[var(--primary)]/50 bg-[var(--surface)]"
+                    ? "border-(--primary) bg-(--primary)/15"
+                    : "border-(--border) hover:border-(--primary)/50 bg-(--surface)"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
                   <Users
-                    className={`w-4 h-4 sm:w-5 sm:h-5 ${atmosphere.judgeInteractions ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`}
+                    className={`w-4 h-4 sm:w-5 sm:h-5 ${atmosphere.judgeInteractions ? "text-(--primary)" : "text-(--text-muted)"}`}
                   />
-                  <span className="text-sm sm:text-base font-medium text-[var(--text-primary)]">
+                  <span className="text-sm sm:text-base font-medium text-(--text-primary)">
                     Judge Sim
                   </span>
                 </div>
-                <p className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+                <p className="text-[10px] sm:text-xs text-(--text-muted)">
                   Simulate judge ready prompts
                 </p>
                 <div
-                  className={`mt-2 sm:mt-3 text-xs sm:text-sm font-bold ${atmosphere.judgeInteractions ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`}
+                  className={`mt-2 sm:mt-3 text-xs sm:text-sm font-bold ${atmosphere.judgeInteractions ? "text-(--primary)" : "text-(--text-muted)"}`}
                 >
                   {atmosphere.judgeInteractions ? "On" : "Off"}
                 </div>
@@ -584,39 +584,39 @@ export default function SimulationConfig() {
 
         {/* Atmosphere Preview */}
         <div className="timer-card">
-          <h3 className="text-xs sm:text-sm font-medium text-[var(--text-muted)] mb-2 sm:mb-3">
+          <h3 className="text-xs sm:text-sm font-medium text-(--text-muted) mb-2 sm:mb-3">
             Atmosphere Preview
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-            <div className="text-center p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg">
-              <div className="text-lg sm:text-2xl font-bold text-[var(--primary)]">
+            <div className="text-center p-2 sm:p-3 bg-(--surface-elevated) rounded-lg">
+              <div className="text-lg sm:text-2xl font-bold text-(--primary)">
                 {atmosphere.crowdNoise}%
               </div>
-              <div className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <div className="text-[10px] sm:text-xs text-(--text-muted)">
                 Crowd Noise
               </div>
             </div>
-            <div className="text-center p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg">
-              <div className="text-lg sm:text-2xl font-bold text-[var(--warning)]">
+            <div className="text-center p-2 sm:p-3 bg-(--surface-elevated) rounded-lg">
+              <div className="text-lg sm:text-2xl font-bold text-(--warning)">
                 {atmosphere.pressure}%
               </div>
-              <div className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <div className="text-[10px] sm:text-xs text-(--text-muted)">
                 Pressure
               </div>
             </div>
-            <div className="text-center p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg">
-              <div className="text-lg sm:text-2xl font-bold text-[var(--text-primary)]">
+            <div className="text-center p-2 sm:p-3 bg-(--surface-elevated) rounded-lg">
+              <div className="text-lg sm:text-2xl font-bold text-(--text-primary)">
                 {atmosphere.distractions ? "On" : "Off"}
               </div>
-              <div className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <div className="text-[10px] sm:text-xs text-(--text-muted)">
                 Distractions
               </div>
             </div>
-            <div className="text-center p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg">
-              <div className="text-lg sm:text-2xl font-bold text-[var(--text-primary)]">
+            <div className="text-center p-2 sm:p-3 bg-(--surface-elevated) rounded-lg">
+              <div className="text-lg sm:text-2xl font-bold text-(--text-primary)">
                 {atmosphere.judgeInteractions ? "On" : "Off"}
               </div>
-              <div className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <div className="text-[10px] sm:text-xs text-(--text-muted)">
                 Judge Sim
               </div>
             </div>
@@ -628,7 +628,7 @@ export default function SimulationConfig() {
           <button
             onClick={handleStartSimulation}
             disabled={selectedEvents.length === 0 || isStarting}
-            className="flex items-center justify-center gap-2 sm:gap-3 w-full px-6 py-3 sm:py-4 bg-[var(--primary)] text-white text-sm sm:text-lg font-bold rounded-lg sm:rounded-xl hover:bg-[var(--primary-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-2 sm:gap-3 w-full px-6 py-3 sm:py-4 bg-(--primary) text-white text-sm sm:text-lg font-bold rounded-lg sm:rounded-xl hover:bg-(--primary-hover) transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isStarting ? (
               <>
@@ -644,7 +644,7 @@ export default function SimulationConfig() {
           </button>
 
           {selectedEvents.length === 0 && (
-            <p className="text-center text-xs sm:text-sm text-[var(--error)] mt-3">
+            <p className="text-center text-xs sm:text-sm text-(--error) mt-3">
               Please select at least one event to simulate
             </p>
           )}

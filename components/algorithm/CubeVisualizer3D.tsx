@@ -159,15 +159,15 @@ export default function CubeVisualizer3D({
   return (
     <div className="w-full">
       {/* 3D Cube Container */}
-      <div className="relative bg-[var(--surface-elevated)] rounded-lg overflow-hidden border border-[var(--border)]">
+      <div className="relative bg-(--surface-elevated) rounded-lg overflow-hidden border border-(--border)">
         {isLoading && (
           <div
             className="absolute inset-0 flex items-center justify-center z-10"
             style={{ height }}
           >
             <div className="text-center">
-              <div className="animate-spin w-8 h-8 border-3 border-[var(--primary)] border-t-transparent rounded-full mx-auto mb-2"></div>
-              <div className="text-sm text-[var(--text-muted)]">
+              <div className="animate-spin w-8 h-8 border-3 border-(--primary) border-t-transparent rounded-full mx-auto mb-2"></div>
+              <div className="text-sm text-(--text-muted)">
                 Loading 3D cube...
               </div>
             </div>
@@ -192,15 +192,15 @@ export default function CubeVisualizer3D({
           <div className="flex items-center justify-center gap-2">
             <button
               onClick={handleReset}
-              className="p-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface)] border border-[var(--border)] rounded-lg transition-colors"
+              className="p-2 bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-lg transition-colors"
               title="Reset to start"
             >
-              <RotateCcw className="w-5 h-5 text-[var(--text-secondary)]" />
+              <RotateCcw className="w-5 h-5 text-(--text-secondary)" />
             </button>
 
             <button
               onClick={handlePlayPause}
-              className="px-4 sm:px-6 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors flex items-center gap-2"
+              className="px-4 sm:px-6 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors flex items-center gap-2"
             >
               {isPlaying ? (
                 <>
@@ -217,16 +217,16 @@ export default function CubeVisualizer3D({
 
             <button
               onClick={handleVerify}
-              className="p-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface)] border border-[var(--border)] rounded-lg transition-colors"
+              className="p-2 bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-lg transition-colors"
               title="Verify (show solved state after algorithm)"
             >
-              <FastForward className="w-5 h-5 text-[var(--text-secondary)]" />
+              <FastForward className="w-5 h-5 text-(--text-secondary)" />
             </button>
           </div>
 
           {/* Speed Control */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
-            <span className="text-sm text-[var(--text-muted)]">Speed:</span>
+            <span className="text-sm text-(--text-muted)">Speed:</span>
             <div className="flex flex-wrap justify-center gap-2">
               {[0.25, 0.5, 1, 1.5, 2].map((speed) => (
                 <button
@@ -234,8 +234,8 @@ export default function CubeVisualizer3D({
                   onClick={() => handleSpeedChange(speed)}
                   className={`px-3 py-1 rounded text-sm transition-colors ${
                     playbackSpeed === speed
-                      ? "bg-[var(--primary)] text-white"
-                      : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--surface)] border border-[var(--border)]"
+                      ? "bg-(--primary) text-white"
+                      : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--surface) border border-(--border)"
                   }`}
                 >
                   {speed}x
@@ -245,8 +245,8 @@ export default function CubeVisualizer3D({
           </div>
 
           {/* Algorithm Display */}
-          <div className="p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] overflow-x-auto">
-            <p className="text-center font-mono text-sm text-[var(--text-primary)] whitespace-nowrap">
+          <div className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border) overflow-x-auto">
+            <p className="text-center font-mono text-sm text-(--text-primary) whitespace-nowrap">
               {algorithm}
             </p>
           </div>

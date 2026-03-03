@@ -365,19 +365,19 @@ export default function CompetitionTimer({
   const getTimerColor = () => {
     switch (state) {
       case "holding":
-        return "text-[var(--warning)]";
+        return "text-(--warning)";
       case "inspection":
-        if (inspectionTime <= 3) return "text-[var(--error)]";
-        if (inspectionTime <= 8) return "text-[var(--warning)]";
-        return "text-[var(--timer-ready)]";
+        if (inspectionTime <= 3) return "text-(--error)";
+        if (inspectionTime <= 8) return "text-(--warning)";
+        return "text-(--timer-ready)";
       case "ready":
-        return "text-[var(--timer-ready)]";
+        return "text-(--timer-ready)";
       case "running":
-        return "text-[var(--timer-running)]";
+        return "text-(--timer-running)";
       case "stopped":
-        return "text-[var(--primary)]";
+        return "text-(--primary)";
       default:
-        return "text-[var(--text-muted)]";
+        return "text-(--text-muted)";
     }
   };
 
@@ -422,7 +422,7 @@ export default function CompetitionTimer({
         {/* Hold Progress Bar */}
         {(state === "holding" || holdProgress > 0) && (
           <div
-            className="absolute top-0 left-0 h-1 bg-[var(--timer-ready)] transition-all duration-75"
+            className="absolute top-0 left-0 h-1 bg-(--timer-ready) transition-all duration-75"
             style={{ width: `${holdProgress * 100}%` }}
           />
         )}
@@ -445,15 +445,15 @@ export default function CompetitionTimer({
 
           {/* Inspection Penalty Warning */}
           {inspectionPenalty && state !== "stopped" && (
-            <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--error)]/10 border border-[var(--error)]/30">
-              <span className="text-sm font-medium text-[var(--error)]">
+            <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-(--error)/10 border border-(--error)/30">
+              <span className="text-sm font-medium text-(--error)">
                 {inspectionPenalty} Inspection Penalty
               </span>
             </div>
           )}
 
           {/* Status Text */}
-          <div className="mt-4 text-sm text-[var(--text-secondary)]">
+          <div className="mt-4 text-sm text-(--text-secondary)">
             {getStatusText()}
           </div>
         </div>
@@ -462,15 +462,15 @@ export default function CompetitionTimer({
       {/* Penalty Buttons - shown when stopped */}
       {state === "stopped" && (
         <div className="timer-card">
-          <h3 className="text-sm font-medium text-[var(--text-primary)] mb-4 text-center">
+          <h3 className="text-sm font-medium text-(--text-primary) mb-4 text-center">
             Confirm Result
           </h3>
           <div className="text-center mb-4">
-            <span className="text-2xl font-mono font-bold text-[var(--text-primary)]">
+            <span className="text-2xl font-mono font-bold text-(--text-primary)">
               {formatTime(time)}
             </span>
             {inspectionPenalty && (
-              <span className="ml-2 text-sm text-[var(--warning)]">
+              <span className="ml-2 text-sm text-(--warning)">
                 + {inspectionPenalty} inspection
               </span>
             )}
@@ -478,19 +478,19 @@ export default function CompetitionTimer({
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={() => confirmSolve("none")}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-[var(--success)] text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-(--success) text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
             >
               OK
             </button>
             <button
               onClick={() => confirmSolve("+2")}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-[var(--warning)] text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-(--warning) text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
             >
               +2 Penalty
             </button>
             <button
               onClick={() => confirmSolve("DNF")}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-[var(--error)] text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-(--error) text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
             >
               DNF
             </button>

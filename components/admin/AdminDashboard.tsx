@@ -31,8 +31,8 @@ function StatCard({
   title,
   value,
   icon: Icon,
-  iconColor = "text-[var(--primary)]",
-  iconBgColor = "bg-[var(--primary)]/10",
+  iconColor = "text-(--primary)",
+  iconBgColor = "bg-(--primary)/10",
 }: {
   title: string;
   value: string | number;
@@ -41,16 +41,16 @@ function StatCard({
   iconBgColor?: string;
 }) {
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
       <div className="flex items-center gap-2 sm:gap-3">
         <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
           <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate font-inter">
+          <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate font-inter">
             {title}
           </div>
-          <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-statement">
+          <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
             {typeof value === "number" ? value.toLocaleString() : value}
           </div>
         </div>
@@ -92,9 +92,9 @@ function CollapsibleCard({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={toggleOpen}
-          className="flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
         >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             {title}
           </h3>
           {isOpen ? (
@@ -105,7 +105,7 @@ function CollapsibleCard({
         </button>
         <button
           onClick={toggleOpen}
-          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+          className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
           title={isOpen ? "Hide" : "Show"}
         >
           {isOpen ? (
@@ -141,7 +141,7 @@ function ActivityItem({
       case "challenge_room":
         return <Trophy className="w-4 h-4 text-purple-500" />;
       default:
-        return <Activity className="w-4 h-4 text-[var(--text-muted)]" />;
+        return <Activity className="w-4 h-4 text-(--text-muted)" />;
     }
   };
 
@@ -155,15 +155,15 @@ function ActivityItem({
   };
 
   return (
-    <div className="flex items-start gap-3 py-3 border-b border-[var(--border)] last:border-0">
-      <div className="p-2 bg-[var(--surface-elevated)] rounded-lg shrink-0">
+    <div className="flex items-start gap-3 py-3 border-b border-(--border) last:border-0">
+      <div className="p-2 bg-(--surface-elevated) rounded-lg shrink-0">
         {getIcon()}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-[var(--text-primary)] font-inter truncate">
+        <p className="text-sm text-(--text-primary) font-inter truncate">
           {description}
         </p>
-        <p className="text-xs text-[var(--text-muted)] font-inter mt-0.5">
+        <p className="text-xs text-(--text-muted) font-inter mt-0.5">
           {getTimeAgo(timestamp)}
         </p>
       </div>
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
         <button
           onClick={handleRefresh}
           disabled={isFetching}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-3 py-1.5 text-sm text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-lg transition-colors disabled:opacity-50"
           title={
             statsFromCache
               ? "Data loaded from cache - Click to refresh"
@@ -388,16 +388,16 @@ export default function AdminDashboard() {
                     key={i}
                     className="flex items-start gap-3 py-3 animate-pulse"
                   >
-                    <div className="w-8 h-8 bg-[var(--surface-elevated)] rounded-lg shrink-0" />
+                    <div className="w-8 h-8 bg-(--surface-elevated) rounded-lg shrink-0" />
                     <div className="flex-1">
-                      <div className="h-4 w-3/4 bg-[var(--surface-elevated)] rounded" />
-                      <div className="h-3 w-16 bg-[var(--surface-elevated)] rounded mt-1" />
+                      <div className="h-4 w-3/4 bg-(--surface-elevated) rounded" />
+                      <div className="h-3 w-16 bg-(--surface-elevated) rounded mt-1" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : recentActivity.length === 0 ? (
-              <p className="text-[var(--text-muted)] text-sm font-inter py-4 text-center">
+              <p className="text-(--text-muted) text-sm font-inter py-4 text-center">
                 No recent activity
               </p>
             ) : (
@@ -424,10 +424,10 @@ export default function AdminDashboard() {
               {[...Array(4)].map((_, i) => (
                 <div key={i}>
                   <div className="flex justify-between mb-2">
-                    <div className="h-4 w-24 bg-[var(--surface-elevated)] rounded" />
-                    <div className="h-4 w-12 bg-[var(--surface-elevated)] rounded" />
+                    <div className="h-4 w-24 bg-(--surface-elevated) rounded" />
+                    <div className="h-4 w-12 bg-(--surface-elevated) rounded" />
                   </div>
-                  <div className="h-2 bg-[var(--surface-elevated)] rounded-full" />
+                  <div className="h-2 bg-(--surface-elevated) rounded-full" />
                 </div>
               ))}
             </div>
@@ -436,14 +436,14 @@ export default function AdminDashboard() {
               {/* Active Today Progress */}
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-[var(--text-secondary)] font-inter">
+                  <span className="text-sm text-(--text-secondary) font-inter">
                     Active Today
                   </span>
-                  <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                  <span className="text-sm font-medium text-(--text-primary) font-inter">
                     {systemStats.users.activeDay} / {systemStats.users.total}
                   </span>
                 </div>
-                <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                   <div
                     className="h-full bg-blue-500 rounded-full transition-all"
                     style={{
@@ -456,14 +456,14 @@ export default function AdminDashboard() {
               {/* Active This Week Progress */}
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-[var(--text-secondary)] font-inter">
+                  <span className="text-sm text-(--text-secondary) font-inter">
                     Active This Week
                   </span>
-                  <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                  <span className="text-sm font-medium text-(--text-primary) font-inter">
                     {systemStats.users.activeWeek} / {systemStats.users.total}
                   </span>
                 </div>
-                <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                   <div
                     className="h-full bg-green-500 rounded-full transition-all"
                     style={{
@@ -476,14 +476,14 @@ export default function AdminDashboard() {
               {/* Active This Month Progress */}
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-[var(--text-secondary)] font-inter">
+                  <span className="text-sm text-(--text-secondary) font-inter">
                     Active This Month
                   </span>
-                  <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                  <span className="text-sm font-medium text-(--text-primary) font-inter">
                     {systemStats.users.activeMonth} / {systemStats.users.total}
                   </span>
                 </div>
-                <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                   <div
                     className="h-full bg-yellow-500 rounded-full transition-all"
                     style={{
@@ -496,15 +496,15 @@ export default function AdminDashboard() {
               {/* Challenge Room Activity */}
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-[var(--text-secondary)] font-inter">
+                  <span className="text-sm text-(--text-secondary) font-inter">
                     Active Challenge Rooms
                   </span>
-                  <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                  <span className="text-sm font-medium text-(--text-primary) font-inter">
                     {systemStats.challengeRooms.active} /{" "}
                     {systemStats.challengeRooms.total}
                   </span>
                 </div>
-                <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                   <div
                     className="h-full bg-purple-500 rounded-full transition-all"
                     style={{
@@ -517,15 +517,15 @@ export default function AdminDashboard() {
               {/* Competition Completion */}
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-[var(--text-secondary)] font-inter">
+                  <span className="text-sm text-(--text-secondary) font-inter">
                     Completed Simulations
                   </span>
-                  <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                  <span className="text-sm font-medium text-(--text-primary) font-inter">
                     {systemStats.competitions.completed} /{" "}
                     {systemStats.competitions.total}
                   </span>
                 </div>
-                <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                   <div
                     className="h-full bg-cyan-500 rounded-full transition-all"
                     style={{

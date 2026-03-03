@@ -89,19 +89,19 @@ export default function TimerCore({
   const getTimerColor = () => {
     switch (state) {
       case "holding":
-        return "text-[var(--warning)]";
+        return "text-(--warning)";
       case "inspection":
-        if (inspectionTime <= 3) return "text-[var(--timer-running)]";
-        if (inspectionTime <= 8) return "text-[var(--warning)]";
-        return "text-[var(--timer-ready)]";
+        if (inspectionTime <= 3) return "text-(--timer-running)";
+        if (inspectionTime <= 8) return "text-(--warning)";
+        return "text-(--timer-ready)";
       case "ready":
-        return "text-[var(--timer-ready)]";
+        return "text-(--timer-ready)";
       case "running":
-        return "text-[var(--timer-running)]";
+        return "text-(--timer-running)";
       case "stopped":
-        return "text-[var(--primary)]";
+        return "text-(--primary)";
       default:
-        return "text-[var(--text-muted)]";
+        return "text-(--text-muted)";
     }
   };
 
@@ -191,8 +191,8 @@ export default function TimerCore({
         <div
           className={`text-xs font-semibold px-2 py-1 rounded-full transition-all duration-300 ${
             currentPenalty === "+2"
-              ? "bg-[var(--warning)]/10 text-[var(--warning)] border border-[var(--warning)]/30"
-              : "bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30"
+              ? "bg-(--warning)/10 text-(--warning) border border-(--warning)/30"
+              : "bg-(--error)/10 text-(--error) border border-(--error)/30"
           }`}
         >
           {currentPenalty === "+2" ? "+2 Penalty Applied" : "DNF Applied"}
@@ -200,7 +200,7 @@ export default function TimerCore({
       )}
 
       {/* Status Text */}
-      <div className="text-sm text-[var(--text-secondary)] font-inter select-none">
+      <div className="text-sm text-(--text-secondary) font-inter select-none">
         {getStatusText()}
       </div>
     </div>

@@ -90,13 +90,13 @@ export default function RecentRoomsModal({
       <div className="timer-card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-6">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] font-statement">
+            <h2 className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement">
               Recent Challenge Rooms
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)] self-start sm:self-auto"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated) self-start sm:self-auto"
           >
             <X className="w-5 h-5" />
           </button>
@@ -104,10 +104,10 @@ export default function RecentRoomsModal({
 
         {!user ? (
           <div className="text-center py-8">
-            <div className="w-12 h-12 bg-[var(--surface-elevated)] rounded-full flex items-center justify-center mx-auto mb-3">
-              <Users className="w-6 h-6 text-[var(--text-muted)]" />
+            <div className="w-12 h-12 bg-(--surface-elevated) rounded-full flex items-center justify-center mx-auto mb-3">
+              <Users className="w-6 h-6 text-(--text-muted)" />
             </div>
-            <p className="text-[var(--text-secondary)] font-inter">
+            <p className="text-(--text-secondary) font-inter">
               Please sign in to view your recent rooms
             </p>
           </div>
@@ -116,33 +116,33 @@ export default function RecentRoomsModal({
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg animate-pulse"
+                className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-(--surface-elevated) border border-(--border) rounded-lg animate-pulse"
               >
                 <div className="flex items-center gap-3 flex-1">
-                  <div className="w-8 h-8 bg-[var(--border)] rounded-lg flex-shrink-0" />
+                  <div className="w-8 h-8 bg-(--border) rounded-lg shrink-0" />
                   <div className="space-y-2 flex-1">
-                    <div className="h-4 bg-[var(--border)] rounded w-full max-w-32" />
-                    <div className="h-3 bg-[var(--border)] rounded w-full max-w-24" />
+                    <div className="h-4 bg-(--border) rounded w-full max-w-32" />
+                    <div className="h-3 bg-(--border) rounded w-full max-w-24" />
                   </div>
                 </div>
                 <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:gap-1">
-                  <div className="h-6 bg-[var(--border)] rounded w-16" />
-                  <div className="h-4 bg-[var(--border)] rounded w-12" />
+                  <div className="h-6 bg-(--border) rounded w-16" />
+                  <div className="h-4 bg-(--border) rounded w-12" />
                 </div>
               </div>
             ))}
           </div>
         ) : !recentRooms || recentRooms.length === 0 ? (
           <div className="text-center py-8">
-            <div className="w-12 h-12 bg-[var(--surface-elevated)] rounded-full flex items-center justify-center mx-auto mb-3">
-              <Trophy className="w-6 h-6 text-[var(--text-muted)]" />
+            <div className="w-12 h-12 bg-(--surface-elevated) rounded-full flex items-center justify-center mx-auto mb-3">
+              <Trophy className="w-6 h-6 text-(--text-muted)" />
             </div>
-            <p className="text-[var(--text-secondary)] font-inter mb-3">
+            <p className="text-(--text-secondary) font-inter mb-3">
               No challenge rooms yet
             </p>
             <button
               onClick={onClose}
-              className="inline-flex items-center gap-1 text-[var(--primary)] hover:underline text-sm font-medium"
+              className="inline-flex items-center gap-1 text-(--primary) hover:underline text-sm font-medium"
             >
               Create or join your first room <ArrowRight className="w-3 h-3" />
             </button>
@@ -186,7 +186,7 @@ export default function RecentRoomsModal({
                   );
                 } else {
                   return (
-                    <span className="text-xs text-[var(--text-muted)]">
+                    <span className="text-xs text-(--text-muted)">
                       #{participation.finalRank}
                     </span>
                   );
@@ -196,29 +196,29 @@ export default function RecentRoomsModal({
               return (
                 <div
                   key={participation._id}
-                  className="p-4 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--border)] transition-colors group"
+                  className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg hover:bg-(--border) transition-colors group"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="w-8 h-8 bg-[var(--primary)] rounded-lg flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 bg-(--primary) rounded-lg flex items-center justify-center shrink-0">
                       <Image
                         src={event.icon}
                         alt={event.name}
                         width={24}
                         height={24}
-                        className="w-6 h-6 flex-shrink-0 brightness-0 invert"
+                        className="w-6 h-6 shrink-0 brightness-0 invert"
                       />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium text-[var(--text-primary)] font-inter truncate">
+                          <h4 className="font-medium text-(--text-primary) font-inter truncate">
                             {room.name}
                           </h4>
-                          <span className="px-2 py-0.5 bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-medium rounded flex-shrink-0">
+                          <span className="px-2 py-0.5 bg-(--primary)/10 text-(--primary) text-xs font-medium rounded shrink-0">
                             {room.format.toUpperCase()}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 sm:gap-3 text-xs text-[var(--text-muted)] flex-wrap">
+                        <div className="flex items-center gap-2 sm:gap-3 text-xs text-(--text-muted) flex-wrap">
                           <span>{event.name}</span>
                           <span className="hidden sm:inline">•</span>
                           <span>{formatTimeAgo(participation.joinedAt)}</span>
@@ -251,15 +251,15 @@ export default function RecentRoomsModal({
                             Incomplete
                           </span>
                         ) : participation.average ? (
-                          <span className="font-mono font-semibold text-[var(--text-primary)]">
+                          <span className="font-mono font-semibold text-(--text-primary)">
                             {formatTime(participation.average)}
                           </span>
                         ) : participation.isCompleted ? (
-                          <span className="text-[var(--text-muted)] text-sm">
+                          <span className="text-(--text-muted) text-sm">
                             DNF
                           </span>
                         ) : (
-                          <span className="text-[var(--text-muted)] text-sm">
+                          <span className="text-(--text-muted) text-sm">
                             {participation.solvesCompleted}/
                             {participation.totalSolves}
                           </span>
@@ -270,7 +270,7 @@ export default function RecentRoomsModal({
 
                       <Link
                         href={`/cube-lab/challenges/room/${room.roomId}`}
-                        className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                        className="p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                         title="View Room"
                       >
                         <ExternalLink className="w-4 h-4" />
@@ -283,7 +283,7 @@ export default function RecentRoomsModal({
           </div>
         )}
 
-        <div className="flex justify-end pt-6 mt-6 border-t border-[var(--border)]">
+        <div className="flex justify-end pt-6 mt-6 border-t border-(--border)">
           <button onClick={onClose} className="btn-secondary">
             Close
           </button>

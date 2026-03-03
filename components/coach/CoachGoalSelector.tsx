@@ -110,10 +110,10 @@ export default function CoachGoalSelector({
     <div className="space-y-6">
       {/* Header Card */}
       <div className="timer-card text-center">
-        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+        <h2 className="text-2xl font-bold text-(--text-primary) mb-2">
           What's Your Goal?
         </h2>
-        <p className="text-[var(--text-secondary)]">
+        <p className="text-(--text-secondary)">
           Choose a target time to work towards. We'll create a training plan to
           help you get there.
         </p>
@@ -123,11 +123,11 @@ export default function CoachGoalSelector({
       {data.currentAverage && (
         <div className="timer-card">
           <div className="flex items-center justify-center gap-3">
-            <Timer className="w-5 h-5 text-[var(--primary)]" />
-            <span className="text-[var(--text-secondary)]">
+            <Timer className="w-5 h-5 text-(--primary)" />
+            <span className="text-(--text-secondary)">
               Your current average:
             </span>
-            <span className="text-xl font-bold text-[var(--primary)]">
+            <span className="text-xl font-bold text-(--primary)">
               {formatTime(data.currentAverage)}
             </span>
           </div>
@@ -137,8 +137,8 @@ export default function CoachGoalSelector({
       {/* Recommended Goals Card */}
       <div className="timer-card">
         <div className="flex items-center gap-2 mb-4">
-          <Trophy className="w-5 h-5 text-[var(--primary)]" />
-          <h3 className="font-semibold text-[var(--text-primary)]">
+          <Trophy className="w-5 h-5 text-(--primary)" />
+          <h3 className="font-semibold text-(--text-primary)">
             Recommended for your level
           </h3>
         </div>
@@ -150,16 +150,16 @@ export default function CoachGoalSelector({
               onClick={() => handleGoalSelect(goal.id)}
               className={`w-full flex items-center justify-between p-4 rounded-lg border transition-all ${
                 data.goalType === goal.id
-                  ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                  : "bg-[var(--surface-elevated)] border-[var(--border)] hover:border-[var(--border-hover)]"
+                  ? "bg-(--primary)/10 border-(--primary)"
+                  : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
               }`}
             >
               <div className="flex items-center gap-3">
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center ${
                     data.goalType === goal.id
-                      ? "bg-[var(--primary)] text-white"
-                      : "bg-[var(--surface)] text-[var(--text-muted)]"
+                      ? "bg-(--primary) text-white"
+                      : "bg-(--surface) text-(--text-muted)"
                   }`}
                 >
                   <Target className="w-5 h-5" />
@@ -168,13 +168,13 @@ export default function CoachGoalSelector({
                   <span
                     className={`font-semibold block ${
                       data.goalType === goal.id
-                        ? "text-[var(--primary)]"
-                        : "text-[var(--text-primary)]"
+                        ? "text-(--primary)"
+                        : "text-(--text-primary)"
                     }`}
                   >
                     {goal.label}
                   </span>
-                  <span className="text-sm text-[var(--text-muted)]">
+                  <span className="text-sm text-(--text-muted)">
                     {goal.description}
                   </span>
                 </div>
@@ -182,8 +182,8 @@ export default function CoachGoalSelector({
               <span
                 className={`text-lg font-mono ${
                   data.goalType === goal.id
-                    ? "text-[var(--primary)]"
-                    : "text-[var(--text-secondary)]"
+                    ? "text-(--primary)"
+                    : "text-(--text-secondary)"
                 }`}
               >
                 {formatTime(goal.time)}
@@ -195,7 +195,7 @@ export default function CoachGoalSelector({
 
       {/* Other Goals Card */}
       <div className="timer-card">
-        <h3 className="font-semibold text-[var(--text-primary)] mb-4">
+        <h3 className="font-semibold text-(--text-primary) mb-4">
           Other goals
         </h3>
 
@@ -206,12 +206,12 @@ export default function CoachGoalSelector({
               onClick={() => handleGoalSelect(goal.id)}
               className={`p-3 rounded-lg border text-center transition-all ${
                 data.goalType === goal.id
-                  ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-                  : "bg-[var(--surface-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
+                  ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
+                  : "bg-(--surface-elevated) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
               }`}
             >
               <span className="font-medium block">{goal.label}</span>
-              <span className="text-xs text-[var(--text-muted)]">
+              <span className="text-xs text-(--text-muted)">
                 {formatTime(goal.time)}
               </span>
             </button>
@@ -221,7 +221,7 @@ export default function CoachGoalSelector({
 
       {/* Custom Goal Card */}
       <div className="timer-card space-y-3">
-        <h3 className="font-semibold text-[var(--text-primary)] mb-2">
+        <h3 className="font-semibold text-(--text-primary) mb-2">
           Custom goal
         </h3>
 
@@ -230,27 +230,27 @@ export default function CoachGoalSelector({
           onClick={() => handleGoalSelect("custom")}
           className={`w-full p-4 rounded-lg border text-left transition-all ${
             data.goalType === "custom"
-              ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-              : "bg-[var(--surface-elevated)] border-[var(--border)] hover:border-[var(--border-hover)]"
+              ? "bg-(--primary)/10 border-(--primary)"
+              : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
           }`}
         >
           <span
             className={`font-semibold block ${
               data.goalType === "custom"
-                ? "text-[var(--primary)]"
-                : "text-[var(--text-primary)]"
+                ? "text-(--primary)"
+                : "text-(--text-primary)"
             }`}
           >
             Custom Goal
           </span>
-          <span className="text-sm text-[var(--text-muted)]">
+          <span className="text-sm text-(--text-muted)">
             Set your own target time
           </span>
         </button>
 
         {data.goalType === "custom" && (
-          <div className="flex items-center gap-3 p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-            <label className="text-sm text-[var(--text-secondary)]">
+          <div className="flex items-center gap-3 p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+            <label className="text-sm text-(--text-secondary)">
               Target time (seconds):
             </label>
             <input
@@ -260,7 +260,7 @@ export default function CoachGoalSelector({
                 onUpdate({ customGoalTime: parseFloat(e.target.value) * 1000 })
               }
               placeholder="e.g., 25"
-              className="flex-1 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]"
+              className="flex-1 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:border-(--primary)"
               min={1}
               max={300}
             />

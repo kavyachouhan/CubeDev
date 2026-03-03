@@ -15,7 +15,7 @@ export default function ColorSchemeSelector() {
 
   return (
     <div>
-      <label className="text-sm font-medium text-[var(--text-secondary)] mb-3 block">
+      <label className="text-sm font-medium text-(--text-secondary) mb-3 block">
         Color Scheme
       </label>
       <div className="grid grid-cols-5 gap-2 sm:gap-3">
@@ -27,8 +27,8 @@ export default function ColorSchemeSelector() {
               relative aspect-square rounded-lg border-2 transition-all overflow-hidden
               ${
                 colorScheme === scheme.value
-                  ? "border-[var(--primary)] ring-2 ring-[var(--primary)]/20"
-                  : "border-[var(--border)] hover:border-[var(--border-hover)]"
+                  ? "border-(--primary) ring-2 ring-(--primary)/20"
+                  : "border-(--border) hover:border-(--border-hover)"
               }
             `}
             title={scheme.label}
@@ -59,7 +59,7 @@ export default function ColorSchemeSelector() {
           </button>
         ))}
       </div>
-      <p className="text-xs text-[var(--text-muted)] mt-2">
+      <p className="text-xs text-(--text-muted) mt-2">
         Selected: {schemes.find((s) => s.value === colorScheme)?.label}
       </p>
     </div>

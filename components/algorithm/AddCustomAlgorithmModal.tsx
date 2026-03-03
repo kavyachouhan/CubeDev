@@ -125,13 +125,13 @@ export default function AddCustomAlgorithmModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+            <h2 className="text-xl font-bold text-(--text-primary) font-statement">
               {initialData ? "Edit Algorithm" : "Add Custom Algorithm"}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -140,7 +140,7 @@ export default function AddCustomAlgorithmModal({
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Algorithm Name */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Algorithm Name
             </label>
             <input
@@ -148,7 +148,7 @@ export default function AddCustomAlgorithmModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., T-Perm, Sune, My OLL 21 variant"
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
               autoFocus
               required
               maxLength={100}
@@ -158,11 +158,11 @@ export default function AddCustomAlgorithmModal({
           {/* Algorithm Notation */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-[var(--text-primary)] font-inter">
+              <label className="text-sm font-medium text-(--text-primary) font-inter">
                 Notation
               </label>
               {notation.trim() && (
-                <span className="text-xs text-[var(--text-muted)] font-inter">
+                <span className="text-xs text-(--text-muted) font-inter">
                   {moveCount} move{moveCount !== 1 ? "s" : ""}
                 </span>
               )}
@@ -172,17 +172,17 @@ export default function AddCustomAlgorithmModal({
               onChange={(e) => setNotation(e.target.value)}
               placeholder="e.g., R U R' U' R' F R2 U' R' U' R U R' F'"
               rows={3}
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-mono text-sm resize-none transition-all font-inter"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-mono text-sm resize-none transition-all font-inter"
               required
               maxLength={500}
             />
-            <p className="text-xs text-[var(--text-muted)] mt-1.5 font-inter">
+            <p className="text-xs text-(--text-muted) mt-1.5 font-inter">
               Use standard cube notation (R, U, F, L, D, B and their
               variations). Separate moves with spaces.
             </p>
             {hasInvalidMoves && (
               <div className="flex items-start gap-2 mt-2 p-2.5 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-xs font-medium text-yellow-500 font-inter">
                     Non-standard notation detected
@@ -200,9 +200,9 @@ export default function AddCustomAlgorithmModal({
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Notes{" "}
-              <span className="text-[var(--text-muted)] font-normal">
+              <span className="text-(--text-muted) font-normal">
                 (optional)
               </span>
             </label>
@@ -211,15 +211,15 @@ export default function AddCustomAlgorithmModal({
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Finger tricks, recognition tips, or any other notes..."
               rows={2}
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none transition-all font-inter"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
               maxLength={500}
             />
           </div>
 
           {/* Preview */}
           {notation.trim() && (
-            <div className="timer-card bg-[var(--surface-elevated)] p-4 border border-[var(--border)]">
-              <p className="text-sm font-medium text-[var(--text-primary)] mb-3 font-statement">
+            <div className="timer-card bg-(--surface-elevated) p-4 border border-(--border)">
+              <p className="text-sm font-medium text-(--text-primary) mb-3 font-statement">
                 Preview
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -231,8 +231,8 @@ export default function AddCustomAlgorithmModal({
                       key={i}
                       className={`inline-block px-2 py-1 rounded text-xs font-mono ${
                         isValidMove(move)
-                          ? "bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20"
-                          : "bg-[var(--surface)] text-[var(--text-secondary)] border border-[var(--border)]"
+                          ? "bg-(--primary)/10 text-(--primary) border border-(--primary)/20"
+                          : "bg-(--surface) text-(--text-secondary) border border-(--border)"
                       }`}
                     >
                       {move}

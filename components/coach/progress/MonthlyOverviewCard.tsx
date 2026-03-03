@@ -94,30 +94,30 @@ export default function MonthlyOverviewCard({
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <StatCard
             icon={Clock}
-            iconColor="bg-[var(--primary)]/10 text-[var(--primary)]"
+            iconColor="bg-(--primary)/10 text-(--primary)"
             label="Practice"
             value={formatDuration(progressStats.monthly.practiceMinutes)}
           />
           <StatCard
             icon={BarChart3}
-            iconColor="bg-[var(--accent)]/10 text-[var(--accent)]"
+            iconColor="bg-(--accent)/10 text-(--accent)"
             label="Solves"
             value={progressStats.monthly.solves.toLocaleString()}
           />
           <StatCard
             icon={Target}
-            iconColor="bg-[var(--success)]/10 text-[var(--success)]"
+            iconColor="bg-(--success)/10 text-(--success)"
             label="Average"
             value={
               progressStats.monthly.average
                 ? formatTime(progressStats.monthly.average)
                 : "—"
             }
-            valueColor="text-[var(--success)]"
+            valueColor="text-(--success)"
           />
           <StatCard
             icon={Calendar}
-            iconColor="bg-[var(--warning)]/10 text-[var(--warning)]"
+            iconColor="bg-(--warning)/10 text-(--warning)"
             label="Active"
             value={`${progressStats.monthly.activeDays} days`}
           />
@@ -126,7 +126,7 @@ export default function MonthlyOverviewCard({
         {/* Mood Distribution Chart */}
         {moodChartData && (
           <div className="mt-4">
-            <div className="text-sm font-medium text-[var(--text-primary)] border-b border-[var(--border)] pb-2 mb-3">
+            <div className="text-sm font-medium text-(--text-primary) border-b border-(--border) pb-2 mb-3">
               Mood Distribution
             </div>
             <div className="h-40 sm:h-48">

@@ -96,7 +96,7 @@ export default function AlgorithmSetPage() {
           <div>
             <Link
               href="/cube-lab/algorithm-trainer"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors w-fit mb-4"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors w-fit mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Algorithm Trainer
@@ -104,20 +104,20 @@ export default function AlgorithmSetPage() {
 
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] font-statement">
+                <h1 className="text-3xl sm:text-4xl font-bold text-(--text-primary) font-statement">
                   {set.name}
                 </h1>
-                <p className="text-[var(--text-muted)] mt-2">
+                <p className="text-(--text-muted) mt-2">
                   {set.description}
                 </p>
               </div>
 
               {user && userProgress && (
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-[var(--primary)] font-statement">
+                  <div className="text-2xl font-bold text-(--primary) font-statement">
                     {userProgress.learned}/{userProgress.total}
                   </div>
-                  <div className="text-sm text-[var(--text-muted)]">
+                  <div className="text-sm text-(--text-muted)">
                     Learned
                   </div>
                 </div>
@@ -129,19 +129,19 @@ export default function AlgorithmSetPage() {
           {user && userProgress && (
             <div className="timer-card">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-[var(--text-primary)]">
+                <span className="text-sm font-medium text-(--text-primary)">
                   Overall Progress
                 </span>
-                <span className="text-sm text-[var(--text-muted)]">
+                <span className="text-sm text-(--text-muted)">
                   {Math.round(
                     (userProgress.learned / userProgress.total) * 100
                   )}
                   %
                 </span>
               </div>
-              <div className="h-3 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+              <div className="h-3 bg-(--surface-elevated) rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[var(--primary)] transition-all duration-500"
+                  className="h-full bg-(--primary) transition-all duration-500"
                   style={{
                     width: `${(userProgress.learned / userProgress.total) * 100}%`,
                   }}
@@ -153,7 +153,7 @@ export default function AlgorithmSetPage() {
                   <div className="text-xl font-bold text-yellow-500 font-statement">
                     {userProgress.learned - userProgress.mastered}
                   </div>
-                  <div className="text-xs text-[var(--text-muted)]">
+                  <div className="text-xs text-(--text-muted)">
                     Learning
                   </div>
                 </div>
@@ -161,15 +161,15 @@ export default function AlgorithmSetPage() {
                   <div className="text-xl font-bold text-green-500 font-statement">
                     {userProgress.mastered}
                   </div>
-                  <div className="text-xs text-[var(--text-muted)]">
+                  <div className="text-xs text-(--text-muted)">
                     Mastered
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-bold text-[var(--text-muted)] font-statement">
+                  <div className="text-xl font-bold text-(--text-muted) font-statement">
                     {userProgress.total - userProgress.learned}
                   </div>
-                  <div className="text-xs text-[var(--text-muted)]">
+                  <div className="text-xs text-(--text-muted)">
                     Not Started
                   </div>
                 </div>
@@ -181,24 +181,24 @@ export default function AlgorithmSetPage() {
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-(--text-muted)" />
               <input
                 type="text"
                 placeholder="Search cases..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
               />
             </div>
 
             {/* Filter by Stage */}
             {user && (
               <div className="flex items-center gap-2">
-                <Filter className="w-5 h-5 text-[var(--text-muted)]" />
+                <Filter className="w-5 h-5 text-(--text-muted)" />
                 <select
                   value={filterStage}
                   onChange={(e) => setFilterStage(e.target.value)}
-                  className="px-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                  className="px-4 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
                 >
                   <option value="all">All Cases</option>
                   <option value="new">Not Learned</option>
@@ -214,7 +214,7 @@ export default function AlgorithmSetPage() {
               <button
                 onClick={handleBulkMarkAsLearned}
                 disabled={isBulkMarking}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-[var(--primary)] bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 border border-[var(--primary)]/20 rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-(--primary) bg-(--primary)/10 hover:bg-(--primary)/20 border border-(--primary)/20 rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 {isBulkMarking
@@ -227,7 +227,7 @@ export default function AlgorithmSetPage() {
           {/* Cases Grid */}
           {filteredCases.length === 0 ? (
             <div className="timer-card text-center py-12">
-              <p className="text-[var(--text-muted)]">
+              <p className="text-(--text-muted)">
                 No cases found matching your criteria
               </p>
             </div>

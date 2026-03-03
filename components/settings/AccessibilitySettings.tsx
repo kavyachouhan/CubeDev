@@ -42,34 +42,34 @@ export default function AccessibilitySettings() {
 
   return (
     <div>
-      <label className="text-sm font-medium text-[var(--text-secondary)] mb-3 block">
+      <label className="text-sm font-medium text-(--text-secondary) mb-3 block">
         Accessibility & Effects
       </label>
       <div className="space-y-3">
         {settings.map((setting) => (
           <div
             key={setting.id}
-            className="flex items-start gap-3 p-4 rounded-lg border border-[var(--border)] hover:border-[var(--border-hover)] transition-colors"
+            className="flex items-start gap-3 p-4 rounded-lg border border-(--border) hover:border-(--border-hover) transition-colors"
           >
-            <div className="text-[var(--primary)] mt-0.5">{setting.icon}</div>
+            <div className="text-(--primary) mt-0.5">{setting.icon}</div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h4 className="text-sm font-medium text-[var(--text-primary)]">
+                  <h4 className="text-sm font-medium text-(--text-primary)">
                     {setting.label}
                   </h4>
-                  <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                  <p className="text-xs text-(--text-muted) mt-0.5">
                     {setting.description}
                   </p>
                 </div>
                 <button
                   onClick={() => setting.onChange(!setting.checked)}
                   className={`
-                    relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0
+                    relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0
                     ${
                       setting.checked
-                        ? "bg-[var(--primary)]"
-                        : "bg-[var(--border)]"
+                        ? "bg-(--primary)"
+                        : "bg-(--border)"
                     }
                   `}
                   role="switch"

@@ -290,17 +290,17 @@ export default function TimerHero() {
   const getTimerColor = () => {
     switch (state) {
       case "inspection":
-        if (inspectionTime <= 3) return "text-[var(--timer-running)]";
-        if (inspectionTime <= 8) return "text-[var(--timer-inspection)]";
-        return "text-[var(--timer-ready)]";
+        if (inspectionTime <= 3) return "text-(--timer-running)";
+        if (inspectionTime <= 8) return "text-(--timer-inspection)";
+        return "text-(--timer-ready)";
       case "ready":
-        return "text-[var(--timer-ready)]";
+        return "text-(--timer-ready)";
       case "running":
-        return "text-[var(--timer-running)]";
+        return "text-(--timer-running)";
       case "stopped":
-        return "text-[var(--primary)]";
+        return "text-(--primary)";
       default:
-        return "text-[var(--text-muted)]";
+        return "text-(--text-muted)";
     }
   };
 
@@ -337,23 +337,23 @@ export default function TimerHero() {
       : null;
 
   return (
-    <section className="min-h-screen bg-[var(--background)] flex items-center">
+    <section className="min-h-screen bg-(--background) flex items-center">
       <div className="container-responsive">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left side - Headings */}
           <div className="space-y-6 lg:space-y-8">
             {/* Beta Badge */}
-            <div className="inline-flex items-center px-3 py-1 bg-[var(--warning)]/10 border border-[var(--warning)]/20 rounded-full mt-8 md:mt-0">
-              <span className="text-sm font-medium text-[var(--warning)] font-inter">
+            <div className="inline-flex items-center px-3 py-1 bg-(--warning)/10 border border-(--warning)/20 rounded-full mt-8 md:mt-0">
+              <span className="text-sm font-medium text-(--warning) font-inter">
                 Beta Version
               </span>
             </div>
 
             <div className="space-y-4">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-[var(--text-primary)] leading-tight font-statement">
-                Master your <span className="text-[var(--primary)]">cube.</span>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-(--text-primary) leading-tight font-statement">
+                Master your <span className="text-(--primary)">cube.</span>
               </h1>
-              <p className="text-xl md:text-2xl text-[var(--text-secondary)] max-w-lg font-inter">
+              <p className="text-xl md:text-2xl text-(--text-secondary) max-w-lg font-inter">
                 Advanced timer with phase analysis, comprehensive statistics,
                 challenge rooms, and WCA integration.
               </p>
@@ -363,14 +363,14 @@ export default function TimerHero() {
               {user ? (
                 <a
                   href="/cube-lab/timer"
-                  className="px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-lg text-center"
+                  className="px-8 py-4 bg-(--primary) hover:bg-(--primary-hover) text-white font-semibold rounded-lg transition-all duration-200 font-button text-lg text-center"
                 >
                   Go to Timer
                 </a>
               ) : (
                 <button
                   onClick={handleWCASignIn}
-                  className="px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-lg flex items-center justify-center gap-2"
+                  className="px-8 py-4 bg-(--primary) hover:bg-(--primary-hover) text-white font-semibold rounded-lg transition-all duration-200 font-button text-lg flex items-center justify-center gap-2"
                 >
                   <img src="/wca_logo.png" alt="WCA" className="w-5 h-5" />
                   Sign in with WCA
@@ -385,19 +385,19 @@ export default function TimerHero() {
               <div className="timer-card">
                 {/* Timer Header */}
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-semibold text-[var(--text-primary)] font-statement">
+                  <h3 className="text-xl font-semibold text-(--text-primary) font-statement">
                     CubeDev Timer
                   </h3>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setShowSettings(!showSettings)}
-                      className="p-2 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+                      className="p-2 text-(--text-secondary) hover:text-(--primary) transition-colors"
                     >
                       <Settings className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setShowStats(!showStats)}
-                      className="p-2 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+                      className="p-2 text-(--text-secondary) hover:text-(--primary) transition-colors"
                     >
                       <BarChart3 className="w-4 h-4" />
                     </button>
@@ -406,10 +406,10 @@ export default function TimerHero() {
 
                 {/* Settings Panel */}
                 {showSettings && (
-                  <div className="mb-6 p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                  <div className="mb-6 p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-[var(--text-secondary)] font-inter">
+                        <span className="text-sm text-(--text-secondary) font-inter">
                           Inspection
                         </span>
                         <button
@@ -418,8 +418,8 @@ export default function TimerHero() {
                           }
                           className={`w-10 h-6 rounded-full transition-colors ${
                             inspectionEnabled
-                              ? "bg-[var(--primary)]"
-                              : "bg-[var(--border)]"
+                              ? "bg-(--primary)"
+                              : "bg-(--border)"
                           }`}
                         >
                           <div
@@ -442,7 +442,7 @@ export default function TimerHero() {
                   onMouseUp={handleMouseUp}
                 >
                   {state === "inspection" && (
-                    <div className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider font-statement">
+                    <div className="text-sm font-semibold text-(--text-secondary) uppercase tracking-wider font-statement">
                       Inspection
                     </div>
                   )}
@@ -455,7 +455,7 @@ export default function TimerHero() {
                       : formatTime(time)}
                   </div>
 
-                  <div className="text-sm text-[var(--text-secondary)] font-inter">
+                  <div className="text-sm text-(--text-secondary) font-inter">
                     {getStatusText()}
                   </div>
                 </div>
@@ -465,13 +465,13 @@ export default function TimerHero() {
                   <div className="mt-6 flex justify-center gap-3">
                     <button
                       onClick={() => applyPenalty("+2")}
-                      className="px-6 py-2 bg-[var(--penalty-plus2)] hover:bg-[var(--penalty-plus2-hover)] text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105"
+                      className="px-6 py-2 bg-(--penalty-plus2) hover:bg-(--penalty-plus2-hover) text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105"
                     >
                       +2
                     </button>
                     <button
                       onClick={() => applyPenalty("DNF")}
-                      className="px-6 py-2 bg-[var(--penalty-dnf)] hover:bg-[var(--penalty-dnf-hover)] text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105"
+                      className="px-6 py-2 bg-(--penalty-dnf) hover:bg-(--penalty-dnf-hover) text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105"
                     >
                       DNF
                     </button>
@@ -480,28 +480,28 @@ export default function TimerHero() {
 
                 {/* Stats */}
                 {showStats && (
-                  <div className="mt-6 grid grid-cols-3 gap-4 p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                  <div className="mt-6 grid grid-cols-3 gap-4 p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
                     <div className="text-center">
-                      <div className="text-sm text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                      <div className="text-sm text-(--text-muted) uppercase tracking-wide font-inter">
                         Best
                       </div>
-                      <div className="text-xl font-bold text-[var(--primary)] font-mono">
+                      <div className="text-xl font-bold text-(--primary) font-mono">
                         {bestTime ? formatTime(bestTime) : "-"}
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-base text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                      <div className="text-base text-(--text-muted) uppercase tracking-wide font-inter">
                         AO5
                       </div>
-                      <div className="text-xl font-bold text-[var(--primary)] font-mono">
+                      <div className="text-xl font-bold text-(--primary) font-mono">
                         {ao5 ? formatTime(ao5) : "-"}
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-base text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                      <div className="text-base text-(--text-muted) uppercase tracking-wide font-inter">
                         Solves
                       </div>
-                      <div className="text-xl font-bold text-[var(--primary)] font-mono">
+                      <div className="text-xl font-bold text-(--primary) font-mono">
                         {history.length}
                       </div>
                     </div>
@@ -513,7 +513,7 @@ export default function TimerHero() {
                   <div className="flex items-center justify-between mb-3">
                     <button
                       onClick={() => setShowHistory(!showHistory)}
-                      className="text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors font-inter flex items-center gap-2"
+                      className="text-sm font-semibold text-(--text-secondary) hover:text-(--primary) transition-colors font-inter flex items-center gap-2"
                     >
                       Recent Times
                       {showHistory ? (
@@ -528,7 +528,7 @@ export default function TimerHero() {
                           setHistory([]);
                           localStorage.removeItem("cubedev-timer-history");
                         }}
-                        className="p-1 text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
+                        className="p-1 text-(--text-muted) hover:text-(--error) transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -540,13 +540,13 @@ export default function TimerHero() {
                       {history.slice(0, 10).map((record, index) => (
                         <div
                           key={record.id}
-                          className="flex justify-between items-center py-2 px-3 bg-[var(--surface-elevated)] rounded border border-[var(--border)]"
+                          className="flex justify-between items-center py-2 px-3 bg-(--surface-elevated) rounded border border-(--border)"
                         >
-                          <span className="text-sm text-[var(--text-muted)] font-inter">
+                          <span className="text-sm text-(--text-muted) font-inter">
                             #{index + 1}
                           </span>
                           <span
-                            className={`font-mono text-[var(--text-primary)] ${
+                            className={`font-mono text-(--text-primary) ${
                               record.penalty === "+2"
                                 ? "text-yellow-400"
                                 : record.penalty === "DNF"
@@ -557,13 +557,13 @@ export default function TimerHero() {
                             {formatTime(record.finalTime)}
                             {record.penalty === "+2" && "+"}
                           </span>
-                          <span className="text-xs text-[var(--text-muted)] font-inter">
+                          <span className="text-xs text-(--text-muted) font-inter">
                             {record.timestamp.toLocaleTimeString()}
                           </span>
                         </div>
                       ))}
                       {history.length === 0 && (
-                        <div className="text-center py-4 text-[var(--text-muted)] font-inter">
+                        <div className="text-center py-4 text-(--text-muted) font-inter">
                           No solves yet
                         </div>
                       )}

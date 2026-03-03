@@ -147,10 +147,10 @@ export default function CoachTimelineSelector({
     <div className="space-y-6">
       {/* Header Card */}
       <div className="timer-card text-center">
-        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+        <h2 className="text-2xl font-bold text-(--text-primary) mb-2">
           When Do You Want to Achieve It?
         </h2>
-        <p className="text-[var(--text-secondary)]">
+        <p className="text-(--text-secondary)">
           Set a realistic timeline for your goal. We'll pace your training
           accordingly.
         </p>
@@ -158,7 +158,7 @@ export default function CoachTimelineSelector({
 
       {/* Timeline Options Card */}
       <div className="timer-card">
-        <h3 className="font-semibold text-[var(--text-primary)] mb-4">
+        <h3 className="font-semibold text-(--text-primary) mb-4">
           Select Timeline
         </h3>
         <div className="space-y-2">
@@ -168,16 +168,16 @@ export default function CoachTimelineSelector({
               onClick={() => handleOptionSelect(option.id, option.days)}
               className={`w-full flex items-center justify-between p-4 rounded-lg border transition-all ${
                 selectedOption === option.id
-                  ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                  : "bg-[var(--surface-elevated)] border-[var(--border)] hover:border-[var(--border-hover)]"
+                  ? "bg-(--primary)/10 border-(--primary)"
+                  : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
               }`}
             >
               <div className="flex items-center gap-3">
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center ${
                     selectedOption === option.id
-                      ? "bg-[var(--primary)] text-white"
-                      : "bg-[var(--surface)] text-[var(--text-muted)]"
+                      ? "bg-(--primary) text-white"
+                      : "bg-(--surface) text-(--text-muted)"
                   }`}
                 >
                   <Calendar className="w-5 h-5" />
@@ -186,19 +186,19 @@ export default function CoachTimelineSelector({
                   <span
                     className={`font-semibold block ${
                       selectedOption === option.id
-                        ? "text-[var(--primary)]"
-                        : "text-[var(--text-primary)]"
+                        ? "text-(--primary)"
+                        : "text-(--text-primary)"
                     }`}
                   >
                     {option.label}
                   </span>
-                  <span className="text-sm text-[var(--text-muted)]">
+                  <span className="text-sm text-(--text-muted)">
                     {option.description}
                   </span>
                 </div>
               </div>
               {option.days > 0 && (
-                <span className="text-sm text-[var(--text-muted)]">
+                <span className="text-sm text-(--text-muted)">
                   {formatDate(Date.now() + option.days * 24 * 60 * 60 * 1000)}
                 </span>
               )}
@@ -210,7 +210,7 @@ export default function CoachTimelineSelector({
       {/* Custom Date Picker */}
       {selectedOption === "custom" && (
         <div className="timer-card">
-          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+          <label className="block text-sm font-medium text-(--text-secondary) mb-2">
             Select Target Date
           </label>
           <input
@@ -226,30 +226,30 @@ export default function CoachTimelineSelector({
                 .toISOString()
                 .split("T")[0]
             }
-            className="w-full px-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]"
+            className="w-full px-4 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:border-(--primary)"
           />
         </div>
       )}
 
       {/* Target Date Summary Card */}
       <div className="timer-card">
-        <h3 className="font-semibold text-[var(--text-primary)] mb-4">
+        <h3 className="font-semibold text-(--text-primary) mb-4">
           Summary
         </h3>
         <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-            <span className="text-xs text-[var(--text-muted)] block mb-1">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+            <span className="text-xs text-(--text-muted) block mb-1">
               Target Date
             </span>
-            <span className="font-bold text-[var(--text-primary)]">
+            <span className="font-bold text-(--text-primary)">
               {formatDate(data.targetDate || Date.now())}
             </span>
           </div>
-          <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-            <span className="text-xs text-[var(--text-muted)] block mb-1">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+            <span className="text-xs text-(--text-muted) block mb-1">
               Time Remaining
             </span>
-            <span className="font-bold text-[var(--primary)]">
+            <span className="font-bold text-(--primary)">
               {daysUntilTarget} days
             </span>
           </div>
@@ -260,28 +260,28 @@ export default function CoachTimelineSelector({
       <div
         className={`timer-card ${
           assessment.type === "realistic"
-            ? "!bg-[var(--success)]/5 !border-[var(--success)]/30"
+            ? "!bg-(--success)/5 !border-(--success)/30"
             : assessment.type === "challenging"
-              ? "!bg-[var(--warning)]/5 !border-[var(--warning)]/30"
-              : "!bg-[var(--error)]/5 !border-[var(--error)]/30"
+              ? "!bg-(--warning)/5 !border-(--warning)/30"
+              : "!bg-(--error)/5 !border-(--error)/30"
         }`}
       >
         <div className="flex items-start gap-3">
           {assessment.type === "realistic" ? (
-            <CheckCircle2 className="w-5 h-5 text-[var(--success)] flex-shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
           ) : assessment.type === "challenging" ? (
-            <Clock className="w-5 h-5 text-[var(--warning)] flex-shrink-0 mt-0.5" />
+            <Clock className="w-5 h-5 text-(--warning) shrink-0 mt-0.5" />
           ) : (
-            <AlertTriangle className="w-5 h-5 text-[var(--error)] flex-shrink-0 mt-0.5" />
+            <AlertTriangle className="w-5 h-5 text-(--error) shrink-0 mt-0.5" />
           )}
           <div>
             <span
               className={`font-medium block ${
                 assessment.type === "realistic"
-                  ? "text-[var(--success)]"
+                  ? "text-(--success)"
                   : assessment.type === "challenging"
-                    ? "text-[var(--warning)]"
-                    : "text-[var(--error)]"
+                    ? "text-(--warning)"
+                    : "text-(--error)"
               }`}
             >
               {assessment.type === "realistic"
@@ -290,7 +290,7 @@ export default function CoachTimelineSelector({
                   ? "Challenging Timeline"
                   : "Aggressive Timeline"}
             </span>
-            <span className="text-sm text-[var(--text-secondary)]">
+            <span className="text-sm text-(--text-secondary)">
               {assessment.message}
             </span>
           </div>

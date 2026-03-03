@@ -19,14 +19,14 @@ export default function RoomScrambleDisplay({
   return (
     <div className="timer-card">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
           Current Scramble
         </h3>
         <div className="flex items-center gap-2">
           {canEdit && onNewScramble && (
             <button
               onClick={onNewScramble}
-              className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+              className="p-1.5 text-(--text-secondary) hover:text-(--primary) transition-colors"
               title="Generate new scramble"
             >
               <RotateCcw className="w-4 h-4" />
@@ -34,7 +34,7 @@ export default function RoomScrambleDisplay({
           )}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={isExpanded ? "Hide scramble" : "Show scramble"}
           >
             {isExpanded ? (
@@ -47,8 +47,8 @@ export default function RoomScrambleDisplay({
       </div>
 
       {isExpanded && (
-        <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
-          <p className="text-lg font-mono text-[var(--text-primary)] text-center leading-relaxed">
+        <div className="p-4 bg-(--surface-elevated) rounded-lg">
+          <p className="text-lg font-mono text-(--text-primary) text-center leading-relaxed">
             {scramble}
           </p>
         </div>

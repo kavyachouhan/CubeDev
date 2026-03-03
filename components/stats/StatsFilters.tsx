@@ -334,10 +334,10 @@ export default function StatsFilters({
       >
         <button
           onClick={toggleExpanded}
-          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
           title={isExpanded ? "Hide filters" : "Show filters"}
         >
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+        <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
           Filters
         </h3>
         {isExpanded ? (
@@ -349,7 +349,7 @@ export default function StatsFilters({
         <div className="flex items-center gap-2">
           <button
             onClick={toggleExpanded}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={isExpanded ? "Hide filters" : "Show filters"}
           >
             {isExpanded ? (
@@ -374,17 +374,17 @@ export default function StatsFilters({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           {/* Time Period Filter */}
           <div className="relative" ref={timeDropdownRef}>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+            <label className="block text-sm font-medium text-(--text-secondary) mb-2">
               Time Period
             </label>
             <button
               onClick={() => setIsTimeDropdownOpen(!isTimeDropdownOpen)}
-              className="w-full flex items-center justify-between p-2 md:p-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)] transition-colors"
+              className="w-full flex items-center justify-between p-2 md:p-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
             >
               <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                <Calendar className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+                <Calendar className="w-4 h-4 text-(--primary) shrink-0" />
                 <div className="text-left min-w-0 flex-1">
-                  <div className="font-medium text-[var(--text-primary)] font-statement truncate">
+                  <div className="font-medium text-(--text-primary) font-statement truncate">
                     {filters.timeFilter === "custom" && filters.customTimeRange
                       ? `${formatDate(filters.customTimeRange.startDate)} - ${formatDate(filters.customTimeRange.endDate)}`
                       : TIME_FILTER_OPTIONS.find(
@@ -394,14 +394,14 @@ export default function StatsFilters({
                 </div>
               </div>
               <ChevronDown
-                className={`w-4 h-4 text-[var(--text-secondary)] transition-transform flex-shrink-0 ${
+                className={`w-4 h-4 text-(--text-secondary) transition-transform shrink-0 ${
                   isTimeDropdownOpen ? "rotate-180" : ""
                 }`}
               />
             </button>
 
             {isTimeDropdownOpen && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-[9999] max-h-80 overflow-hidden">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-80 overflow-hidden">
                 <div className="max-h-56 overflow-y-auto">
                   {TIME_FILTER_OPTIONS.map((option) => (
                     <div key={option.value}>
@@ -412,24 +412,24 @@ export default function StatsFilters({
                             setIsTimeDropdownOpen(false);
                           }
                         }}
-                        className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-[var(--surface-elevated)] transition-colors ${
+                        className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-(--surface-elevated) transition-colors ${
                           option.value === filters.timeFilter
-                            ? "bg-[var(--primary)]/20 border-[var(--primary)]/30"
-                            : "bg-[var(--background)]"
+                            ? "bg-(--primary)/20 border-(--primary)/30"
+                            : "bg-(--background)"
                         }`}
                       >
-                        <Clock className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
-                        <div className="font-medium text-[var(--text-primary)] font-statement">
+                        <Clock className="w-4 h-4 text-(--primary) shrink-0" />
+                        <div className="font-medium text-(--text-primary) font-statement">
                           {option.label}
                         </div>
                       </button>
 
                       {option.value === "custom" &&
                         filters.timeFilter === "custom" && (
-                          <div className="p-3 border-t border-[var(--border)] bg-[var(--surface-elevated)]">
+                          <div className="p-3 border-t border-(--border) bg-(--surface-elevated)">
                             <div className="grid grid-cols-2 gap-2">
                               <div>
-                                <label className="block text-xs text-[var(--text-muted)] mb-1">
+                                <label className="block text-xs text-(--text-muted) mb-1">
                                   Start Date
                                 </label>
                                 <input
@@ -447,11 +447,11 @@ export default function StatsFilters({
                                       },
                                     })
                                   }
-                                  className="w-full px-2 py-1 bg-[var(--background)] border border-[var(--border)] rounded text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                                  className="w-full px-2 py-1 bg-(--background) border border-(--border) rounded text-sm text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
                                 />
                               </div>
                               <div>
-                                <label className="block text-xs text-[var(--text-muted)] mb-1">
+                                <label className="block text-xs text-(--text-muted) mb-1">
                                   End Date
                                 </label>
                                 <input
@@ -467,13 +467,13 @@ export default function StatsFilters({
                                       },
                                     })
                                   }
-                                  className="w-full px-2 py-1 bg-[var(--background)] border border-[var(--border)] rounded text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                                  className="w-full px-2 py-1 bg-(--background) border border-(--border) rounded text-sm text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
                                 />
                               </div>
                             </div>
                             <button
                               onClick={() => setIsTimeDropdownOpen(false)}
-                              className="mt-2 w-full px-3 py-2 bg-[var(--primary)] text-white rounded-md hover:bg-[var(--primary)]/80 transition-colors text-sm font-medium"
+                              className="mt-2 w-full px-3 py-2 bg-(--primary) text-white rounded-md hover:bg-(--primary)/80 transition-colors text-sm font-medium"
                             >
                               Apply Range
                             </button>
@@ -488,30 +488,30 @@ export default function StatsFilters({
 
           {/* Session Filter */}
           <div className="relative" ref={sessionDropdownRef}>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+            <label className="block text-sm font-medium text-(--text-secondary) mb-2">
               Session
             </label>
             <button
               onClick={() => setIsSessionDropdownOpen(!isSessionDropdownOpen)}
-              className="w-full flex items-center justify-between p-2 md:p-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)] transition-colors"
+              className="w-full flex items-center justify-between p-2 md:p-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
             >
               <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                <FolderOpen className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+                <FolderOpen className="w-4 h-4 text-(--primary) shrink-0" />
                 <div className="text-left min-w-0 flex-1">
-                  <div className="font-medium text-[var(--text-primary)] font-statement truncate">
+                  <div className="font-medium text-(--text-primary) font-statement truncate">
                     {selectedSession ? selectedSession.name : "All Sessions"}
                   </div>
                 </div>
               </div>
               <ChevronDown
-                className={`w-4 h-4 text-[var(--text-secondary)] transition-transform flex-shrink-0 ${
+                className={`w-4 h-4 text-(--text-secondary) transition-transform shrink-0 ${
                   isSessionDropdownOpen ? "rotate-180" : ""
                 }`}
               />
             </button>
 
             {isSessionDropdownOpen && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-[9999] max-h-80 overflow-hidden">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-80 overflow-hidden">
                 <div className="max-h-56 overflow-y-auto">
                   <button
                     onClick={() => {
@@ -521,18 +521,18 @@ export default function StatsFilters({
                       });
                       setIsSessionDropdownOpen(false);
                     }}
-                    className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-[var(--surface-elevated)] transition-colors border-b border-[var(--border)]/50 ${
+                    className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-(--surface-elevated) transition-colors border-b border-(--border)/50 ${
                       filters.sessionFilter === "all"
-                        ? "bg-[var(--primary)]/20 border-[var(--primary)]/30"
-                        : "bg-[var(--background)]"
+                        ? "bg-(--primary)/20 border-(--primary)/30"
+                        : "bg-(--background)"
                     }`}
                   >
-                    <FolderOpen className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+                    <FolderOpen className="w-4 h-4 text-(--primary) shrink-0" />
                     <div>
-                      <div className="font-medium text-[var(--text-primary)] font-statement">
+                      <div className="font-medium text-(--text-primary) font-statement">
                         All Sessions
                       </div>
-                      <div className="text-xs text-[var(--text-muted)] font-inter">
+                      <div className="text-xs text-(--text-muted) font-inter">
                         {availableSessions.length} sessions
                       </div>
                     </div>
@@ -548,22 +548,22 @@ export default function StatsFilters({
                         });
                         setIsSessionDropdownOpen(false);
                       }}
-                      className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-[var(--surface-elevated)] transition-colors border-b border-[var(--border)]/50 last:border-b-0 ${
+                      className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-(--surface-elevated) transition-colors border-b border-(--border)/50 last:border-b-0 ${
                         session.id === filters.sessionFilter
-                          ? "bg-[var(--primary)]/20 border-[var(--primary)]/30"
-                          : "bg-[var(--background)]"
+                          ? "bg-(--primary)/20 border-(--primary)/30"
+                          : "bg-(--background)"
                       }`}
                     >
-                      <FolderOpen className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+                      <FolderOpen className="w-4 h-4 text-(--primary) shrink-0" />
                       <div className="min-w-0 flex-1">
-                        <div className="font-medium text-[var(--text-primary)] font-statement truncate">
+                        <div className="font-medium text-(--text-primary) font-statement truncate">
                           {session.name}
                         </div>
-                        <div className="text-xs text-[var(--text-muted)] font-inter truncate">
+                        <div className="text-xs text-(--text-muted) font-inter truncate">
                           {getSessionSolveCount(session.id)} solves
                         </div>
                         {/* Show available events in this session */}
-                        <div className="text-xs text-[var(--text-muted)] font-inter truncate mt-1">
+                        <div className="text-xs text-(--text-muted) font-inter truncate mt-1">
                           Events:{" "}
                           {getSessionEvents(session.id)
                             .map((e) => EVENT_NAMES[e] || e)
@@ -584,15 +584,15 @@ export default function StatsFilters({
               {selectedSession && sessionEvents.length > 1 ? (
                 // Secondary Event Filter (when a specific session with multiple events is selected)
                 <>
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                  <label className="block text-sm font-medium text-(--text-secondary) mb-2">
                     Event within Session
                   </label>
                   <button
                     onClick={() => setIsEventDropdownOpen(!isEventDropdownOpen)}
-                    className="w-full flex items-center justify-between p-2 md:p-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)] transition-colors"
+                    className="w-full flex items-center justify-between p-2 md:p-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
                   >
                     <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                      <div className="w-6 h-6 bg-[var(--primary)] text-white rounded-lg flex items-center justify-center p-0.5 flex-shrink-0">
+                      <div className="w-6 h-6 bg-(--primary) text-white rounded-lg flex items-center justify-center p-0.5 shrink-0">
                         <Image
                           src={getEventIconPath(
                             filters.secondaryEventFilter || sessionEvents[0]
@@ -604,7 +604,7 @@ export default function StatsFilters({
                         />
                       </div>
                       <div className="text-left min-w-0 flex-1">
-                        <div className="font-medium text-[var(--text-primary)] font-statement truncate">
+                        <div className="font-medium text-(--text-primary) font-statement truncate">
                           {filters.secondaryEventFilter
                             ? EVENT_NAMES[filters.secondaryEventFilter] ||
                               filters.secondaryEventFilter
@@ -613,28 +613,28 @@ export default function StatsFilters({
                       </div>
                     </div>
                     <ChevronDown
-                      className={`w-4 h-4 text-[var(--text-secondary)] transition-transform flex-shrink-0 ${
+                      className={`w-4 h-4 text-(--text-secondary) transition-transform shrink-0 ${
                         isEventDropdownOpen ? "rotate-180" : ""
                       }`}
                     />
                   </button>
 
                   {isEventDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-[9999] max-h-80 overflow-hidden">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-80 overflow-hidden">
                       <div className="max-h-56 overflow-y-auto">
                         <button
                           onClick={() => {
                             onFilterChange({ secondaryEventFilter: undefined });
                             setIsEventDropdownOpen(false);
                           }}
-                          className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-[var(--surface-elevated)] transition-colors border-b border-[var(--border)]/50 ${
+                          className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-(--surface-elevated) transition-colors border-b border-(--border)/50 ${
                             !filters.secondaryEventFilter
-                              ? "bg-[var(--primary)]/20 border-[var(--primary)]/30"
-                              : "bg-[var(--background)]"
+                              ? "bg-(--primary)/20 border-(--primary)/30"
+                              : "bg-(--background)"
                           }`}
                         >
-                          <Filter className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
-                          <div className="font-medium text-[var(--text-primary)] font-statement">
+                          <Filter className="w-4 h-4 text-(--primary) shrink-0" />
+                          <div className="font-medium text-(--text-primary) font-statement">
                             All Events
                           </div>
                         </button>
@@ -646,13 +646,13 @@ export default function StatsFilters({
                               onFilterChange({ secondaryEventFilter: event });
                               setIsEventDropdownOpen(false);
                             }}
-                            className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-[var(--surface-elevated)] transition-colors border-b border-[var(--border)]/50 last:border-b-0 ${
+                            className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-(--surface-elevated) transition-colors border-b border-(--border)/50 last:border-b-0 ${
                               event === filters.secondaryEventFilter
-                                ? "bg-[var(--primary)]/20 border-[var(--primary)]/30"
-                                : "bg-[var(--background)]"
+                                ? "bg-(--primary)/20 border-(--primary)/30"
+                                : "bg-(--background)"
                             }`}
                           >
-                            <div className="w-6 h-6 bg-[var(--primary)] text-white rounded-lg flex items-center justify-center p-0.5 flex-shrink-0">
+                            <div className="w-6 h-6 bg-(--primary) text-white rounded-lg flex items-center justify-center p-0.5 shrink-0">
                               <Image
                                 src={getEventIconPath(event)}
                                 alt={EVENT_NAMES[event] || event}
@@ -661,7 +661,7 @@ export default function StatsFilters({
                                 className="w-full h-full object-contain brightness-0 invert"
                               />
                             </div>
-                            <div className="font-medium text-[var(--text-primary)] font-statement">
+                            <div className="font-medium text-(--text-primary) font-statement">
                               {EVENT_NAMES[event] || event}
                             </div>
                           </button>
@@ -673,15 +673,15 @@ export default function StatsFilters({
               ) : (
                 // Primary Event Filter (when all sessions or no session selected)
                 <>
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                  <label className="block text-sm font-medium text-(--text-secondary) mb-2">
                     Event
                   </label>
                   <button
                     onClick={() => setIsEventDropdownOpen(!isEventDropdownOpen)}
-                    className="w-full flex items-center justify-between p-2 md:p-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)] transition-colors"
+                    className="w-full flex items-center justify-between p-2 md:p-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
                   >
                     <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                      <div className="w-6 h-6 bg-[var(--primary)] text-white rounded-lg flex items-center justify-center p-0.5 flex-shrink-0">
+                      <div className="w-6 h-6 bg-(--primary) text-white rounded-lg flex items-center justify-center p-0.5 shrink-0">
                         <Image
                           src={getEventIconPath(
                             filters.eventFilter === "all"
@@ -695,7 +695,7 @@ export default function StatsFilters({
                         />
                       </div>
                       <div className="text-left min-w-0 flex-1">
-                        <div className="font-medium text-[var(--text-primary)] font-statement truncate">
+                        <div className="font-medium text-(--text-primary) font-statement truncate">
                           {filters.eventFilter === "all"
                             ? "All Events"
                             : EVENT_NAMES[filters.eventFilter] ||
@@ -704,28 +704,28 @@ export default function StatsFilters({
                       </div>
                     </div>
                     <ChevronDown
-                      className={`w-4 h-4 text-[var(--text-secondary)] transition-transform flex-shrink-0 ${
+                      className={`w-4 h-4 text-(--text-secondary) transition-transform shrink-0 ${
                         isEventDropdownOpen ? "rotate-180" : ""
                       }`}
                     />
                   </button>
 
                   {isEventDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-[9999] max-h-80 overflow-hidden">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-80 overflow-hidden">
                       <div className="max-h-56 overflow-y-auto">
                         <button
                           onClick={() => {
                             onFilterChange({ eventFilter: "all" });
                             setIsEventDropdownOpen(false);
                           }}
-                          className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-[var(--surface-elevated)] transition-colors border-b border-[var(--border)]/50 ${
+                          className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-(--surface-elevated) transition-colors border-b border-(--border)/50 ${
                             filters.eventFilter === "all"
-                              ? "bg-[var(--primary)]/20 border-[var(--primary)]/30"
-                              : "bg-[var(--background)]"
+                              ? "bg-(--primary)/20 border-(--primary)/30"
+                              : "bg-(--background)"
                           }`}
                         >
-                          <Filter className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
-                          <div className="font-medium text-[var(--text-primary)] font-statement">
+                          <Filter className="w-4 h-4 text-(--primary) shrink-0" />
+                          <div className="font-medium text-(--text-primary) font-statement">
                             All Events
                           </div>
                         </button>
@@ -737,13 +737,13 @@ export default function StatsFilters({
                               onFilterChange({ eventFilter: event });
                               setIsEventDropdownOpen(false);
                             }}
-                            className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-[var(--surface-elevated)] transition-colors border-b border-[var(--border)]/50 last:border-b-0 ${
+                            className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-(--surface-elevated) transition-colors border-b border-(--border)/50 last:border-b-0 ${
                               event === filters.eventFilter
-                                ? "bg-[var(--primary)]/20 border-[var(--primary)]/30"
-                                : "bg-[var(--background)]"
+                                ? "bg-(--primary)/20 border-(--primary)/30"
+                                : "bg-(--background)"
                             }`}
                           >
-                            <div className="w-6 h-6 bg-[var(--primary)] text-white rounded-lg flex items-center justify-center p-0.5 flex-shrink-0">
+                            <div className="w-6 h-6 bg-(--primary) text-white rounded-lg flex items-center justify-center p-0.5 shrink-0">
                               <Image
                                 src={getEventIconPath(event)}
                                 alt={EVENT_NAMES[event] || event}
@@ -752,7 +752,7 @@ export default function StatsFilters({
                                 className="w-full h-full object-contain brightness-0 invert"
                               />
                             </div>
-                            <div className="font-medium text-[var(--text-primary)] font-statement">
+                            <div className="font-medium text-(--text-primary) font-statement">
                               {EVENT_NAMES[event] || event}
                             </div>
                           </button>
@@ -771,13 +771,13 @@ export default function StatsFilters({
           filters.eventFilter !== "all" ||
           filters.sessionFilter !== "all" ||
           filters.secondaryEventFilter) && (
-          <div className="flex flex-wrap gap-2 pt-4 border-t border-[var(--border)]">
-            <span className="text-sm text-[var(--text-muted)] py-1">
+          <div className="flex flex-wrap gap-2 pt-4 border-t border-(--border)">
+            <span className="text-sm text-(--text-muted) py-1">
               Active filters:
             </span>
 
             {filters.timeFilter !== "all" && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 bg-[var(--primary)] bg-opacity-20 text-[var(--text-primary)] rounded-md text-sm">
+              <span className="inline-flex items-center gap-1 px-2 py-1 bg-(--primary) bg-opacity-20 text-(--text-primary) rounded-md text-sm">
                 {filters.timeFilter === "custom" && filters.customTimeRange
                   ? `${formatDate(filters.customTimeRange.startDate)} - ${formatDate(filters.customTimeRange.endDate)}`
                   : TIME_FILTER_OPTIONS.find(
@@ -790,7 +790,7 @@ export default function StatsFilters({
                       customTimeRange: undefined,
                     })
                   }
-                  className="ml-1 hover:bg-[var(--primary)] hover:bg-opacity-30 rounded-full w-4 h-4 flex items-center justify-center text-[var(--text-primary)]"
+                  className="ml-1 hover:bg-(--primary) hover:bg-opacity-30 rounded-full w-4 h-4 flex items-center justify-center text-(--text-primary)"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -798,7 +798,7 @@ export default function StatsFilters({
             )}
 
             {filters.sessionFilter !== "all" && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 bg-[var(--success)] bg-opacity-20 text-[var(--text-primary)] rounded-md text-sm">
+              <span className="inline-flex items-center gap-1 px-2 py-1 bg-(--success) bg-opacity-20 text-(--text-primary) rounded-md text-sm">
                 {selectedSession?.name || "Session"}
                 <button
                   onClick={() =>
@@ -807,7 +807,7 @@ export default function StatsFilters({
                       secondaryEventFilter: undefined,
                     })
                   }
-                  className="ml-1 hover:bg-[var(--success)] hover:bg-opacity-30 rounded-full w-4 h-4 flex items-center justify-center text-[var(--text-primary)]"
+                  className="ml-1 hover:bg-(--success) hover:bg-opacity-30 rounded-full w-4 h-4 flex items-center justify-center text-(--text-primary)"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -815,14 +815,14 @@ export default function StatsFilters({
             )}
 
             {filters.secondaryEventFilter && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 bg-[var(--accent)] bg-opacity-20 text-[var(--text-primary)] rounded-md text-sm">
+              <span className="inline-flex items-center gap-1 px-2 py-1 bg-(--accent) bg-opacity-20 text-(--text-primary) rounded-md text-sm">
                 {EVENT_NAMES[filters.secondaryEventFilter] ||
                   filters.secondaryEventFilter}
                 <button
                   onClick={() =>
                     onFilterChange({ secondaryEventFilter: undefined })
                   }
-                  className="ml-1 hover:bg-[var(--accent)] hover:bg-opacity-30 rounded-full w-4 h-4 flex items-center justify-center text-[var(--text-primary)]"
+                  className="ml-1 hover:bg-(--accent) hover:bg-opacity-30 rounded-full w-4 h-4 flex items-center justify-center text-(--text-primary)"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -831,11 +831,11 @@ export default function StatsFilters({
 
             {filters.eventFilter !== "all" &&
               filters.sessionFilter === "all" && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-[var(--accent)] bg-opacity-20 text-[var(--text-primary)] rounded-md text-sm">
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-(--accent) bg-opacity-20 text-(--text-primary) rounded-md text-sm">
                   {EVENT_NAMES[filters.eventFilter] || filters.eventFilter}
                   <button
                     onClick={() => onFilterChange({ eventFilter: "all" })}
-                    className="ml-1 hover:bg-[var(--accent)] hover:bg-opacity-30 rounded-full w-4 h-4 flex items-center justify-center text-[var(--text-primary)]"
+                    className="ml-1 hover:bg-(--accent) hover:bg-opacity-30 rounded-full w-4 h-4 flex items-center justify-center text-(--text-primary)"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -852,7 +852,7 @@ export default function StatsFilters({
                   secondaryEventFilter: undefined,
                 })
               }
-              className="text-sm text-[var(--text-muted)] hover:text-[var(--text-secondary)] underline py-1"
+              className="text-sm text-(--text-muted) hover:text-(--text-secondary) underline py-1"
             >
               Clear all
             </button>

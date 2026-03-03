@@ -26,14 +26,14 @@ const ScramblePreview = dynamic(
     loading: () => (
       <div className="timer-card">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
             Scramble Preview
           </h3>
         </div>
-        <div className="w-full min-h-[200px] bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
+        <div className="w-full min-h-[200px] bg-(--surface-elevated) rounded-lg flex items-center justify-center">
           <div className="text-center">
             <div className="text-4xl mb-2">🧩</div>
-            <div className="text-sm text-[var(--text-muted)]">
+            <div className="text-sm text-(--text-muted)">
               Loading preview...
             </div>
           </div>
@@ -162,8 +162,8 @@ export default function ChallengeRoom({ roomId }: ChallengeRoomProps) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-[var(--text-secondary)] font-inter">
+          <div className="w-8 h-8 border-2 border-(--primary) border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-(--text-secondary) font-inter">
             Loading challenge room...
           </p>
         </div>
@@ -176,15 +176,15 @@ export default function ChallengeRoom({ roomId }: ChallengeRoomProps) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+          <h1 className="text-2xl font-bold text-(--text-primary) mb-2">
             Room Not Found
           </h1>
-          <p className="text-[var(--text-secondary)] mb-4">
+          <p className="text-(--text-secondary) mb-4">
             The room code "{roomId}" does not exist or has expired.
           </p>
           <Link
             href="/cube-lab/challenges"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Challenges

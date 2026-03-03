@@ -4,7 +4,7 @@ import CuberDirectory from "@/components/CuberDirectory";
 
 export default function CubersPage() {
   return (
-    <div className="min-h-screen bg-[var(--background)] flex flex-col">
+    <div className="min-h-screen bg-(--background) flex flex-col">
       <Header />
       <main className="flex-1">
         <CuberDirectory />

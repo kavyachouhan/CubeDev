@@ -60,7 +60,7 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 bg-[var(--surface)] border-b border-[var(--border)] backdrop-blur-sm transition-all duration-500 ease-in-out ${
+      className={`sticky top-0 z-50 bg-(--surface) border-b border-(--border) backdrop-blur-sm transition-all duration-500 ease-in-out ${
         isVisible || mobileMenuOpen
           ? "translate-y-0 opacity-100"
           : "-translate-y-full opacity-0"
@@ -81,8 +81,8 @@ export default function Header() {
               height={32}
               className="w-8 h-8"
             />
-            <span className="text-2xl font-bold text-[var(--text-primary)] group-hover:opacity-80 transition-opacity font-statement">
-              Cube<span className="text-[var(--primary)]">Dev</span>
+            <span className="text-2xl font-bold text-(--text-primary) group-hover:opacity-80 transition-opacity font-statement">
+              Cube<span className="text-(--primary)">Dev</span>
             </span>
           </Link>
 
@@ -95,8 +95,8 @@ export default function Header() {
                 onClick={() => setActiveTab(item.name)}
                 className={`text-base font-medium transition-all duration-200 font-button ${
                   activeTab === item.name
-                    ? "text-[var(--primary)] underline decoration-[var(--primary)] underline-offset-4"
-                    : "text-[var(--text-secondary)] hover:text-[var(--primary)] hover:underline decoration-[var(--primary)] underline-offset-4"
+                    ? "text-(--primary) underline decoration-(--primary) underline-offset-4"
+                    : "text-(--text-secondary) hover:text-(--primary) hover:underline decoration-(--primary) underline-offset-4"
                 }`}
               >
                 {item.name}
@@ -110,7 +110,7 @@ export default function Header() {
               /* WCA Sign In Button */
               <button
                 onClick={handleWCASignIn}
-                className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-sm hover:scale-105"
+                className="flex items-center gap-2 px-4 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white font-semibold rounded-lg transition-all duration-200 font-button text-sm hover:scale-105"
               >
                 <Image
                   src="/wca_logo.png"
@@ -129,7 +129,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-2 rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+              className="text-(--text-secondary) hover:text-(--text-primary) p-2 rounded-lg hover:bg-(--surface-elevated) transition-colors"
               aria-label="Toggle menu"
             >
               <svg
@@ -155,7 +155,7 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-[var(--border)] py-4 animate-fade-in">
+          <div className="md:hidden border-t border-(--border) py-4 animate-fade-in">
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
                 <Link
@@ -167,8 +167,8 @@ export default function Header() {
                   }}
                   className={`px-4 py-2 text-lg font-medium transition-all duration-200 font-button ${
                     activeTab === item.name
-                      ? "text-[var(--primary)] underline decoration-[var(--primary)] underline-offset-4"
-                      : "text-[var(--text-secondary)] hover:text-[var(--primary)] hover:underline decoration-[var(--primary)] underline-offset-4"
+                      ? "text-(--primary) underline decoration-(--primary) underline-offset-4"
+                      : "text-(--text-secondary) hover:text-(--primary) hover:underline decoration-(--primary) underline-offset-4"
                   }`}
                 >
                   {item.name}
@@ -179,7 +179,7 @@ export default function Header() {
               {user ? (
                 <div className="mx-4 space-y-4">
                   {/* User Info */}
-                  <div className="flex items-center gap-3 px-4 py-3 bg-[var(--surface-elevated)] rounded-lg">
+                  <div className="flex items-center gap-3 px-4 py-3 bg-(--surface-elevated) rounded-lg">
                     {user.avatar && (
                       <Image
                         src={user.avatar.url || user.avatar}
@@ -190,11 +190,11 @@ export default function Header() {
                       />
                     )}
                     <div>
-                      <div className="text-base font-semibold text-[var(--text-primary)] font-button">
+                      <div className="text-base font-semibold text-(--text-primary) font-button">
                         {user.name}
                       </div>
                       {user.wcaId && (
-                        <div className="text-sm text-[var(--text-secondary)] font-inter">
+                        <div className="text-sm text-(--text-secondary) font-inter">
                           {user.wcaId}
                         </div>
                       )}
@@ -206,7 +206,7 @@ export default function Header() {
                     <Link
                       href="/cube-lab/timer"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors font-inter"
+                      className="flex items-center gap-3 px-4 py-3 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors font-inter"
                     >
                       <svg
                         className="w-4 h-4"
@@ -228,7 +228,7 @@ export default function Header() {
                       <Link
                         href={`/cuber/${user.wcaId}`}
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors font-inter"
+                        className="flex items-center gap-3 px-4 py-3 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors font-inter"
                       >
                         <svg
                           className="w-4 h-4"
@@ -250,7 +250,7 @@ export default function Header() {
                     <Link
                       href="/me"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors font-inter"
+                      className="flex items-center gap-3 px-4 py-3 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors font-inter"
                     >
                       <svg
                         className="w-4 h-4"
@@ -281,7 +281,7 @@ export default function Header() {
                       signOut();
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full flex items-center justify-center gap-3 px-4 py-3 text-[var(--error)] hover:text-[var(--error)] hover:bg-[var(--error)]/10 border border-[var(--error)]/30 rounded-lg transition-all duration-200 font-button text-base"
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 text-(--error) hover:text-(--error) hover:bg-(--error)/10 border border-(--error)/30 rounded-lg transition-all duration-200 font-button text-base"
                   >
                     <svg
                       className="w-4 h-4"
@@ -306,7 +306,7 @@ export default function Header() {
                     handleWCASignIn();
                     setMobileMenuOpen(false);
                   }}
-                  className="mx-4 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button text-base"
+                  className="mx-4 flex items-center justify-center gap-2 px-4 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white font-semibold rounded-lg transition-all duration-200 font-button text-base"
                 >
                   <Image
                     src="/wca_logo.png"

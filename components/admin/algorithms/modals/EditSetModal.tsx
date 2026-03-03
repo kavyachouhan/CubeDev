@@ -141,21 +141,21 @@ export function EditSetModal({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
       <div className="timer-card max-w-lg w-full my-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+          <h2 className="text-xl font-bold text-(--text-primary) font-statement">
             {isNew ? "New Algorithm Set" : "Edit Set"}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+            className="p-2 hover:bg-(--surface-elevated) rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-[var(--text-muted)]" />
+            <X className="w-5 h-5 text-(--text-muted)" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] font-inter mb-1.5">
+            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
               Name *
             </label>
             <input
@@ -163,14 +163,14 @@ export function EditSetModal({
               value={formData.name}
               onChange={(e) => handleNameChange(e.target.value)}
               required
-              className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
+              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               placeholder="e.g., OLL, PLL, F2L"
             />
           </div>
 
           {/* Slug */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] font-inter mb-1.5">
+            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
               Slug
             </label>
             <input
@@ -179,21 +179,21 @@ export function EditSetModal({
               onChange={(e) =>
                 setFormData({ ...formData, slug: e.target.value })
               }
-              className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
+              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               placeholder="auto-generated-from-name"
             />
           </div>
 
           {/* Category with Custom Option */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] font-inter mb-1.5">
+            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
               Category *
             </label>
             <div className="flex flex-col sm:flex-row gap-2">
               <select
                 value={showCustomCategory ? "custom" : formData.category}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className="flex-1 px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
+                className="flex-1 px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               >
                 {ALGORITHM_CATEGORIES.map((cat) => (
                   <option key={cat.value} value={cat.value}>
@@ -206,7 +206,7 @@ export function EditSetModal({
                 <button
                   type="button"
                   onClick={() => setShowCustomCategory(true)}
-                  className="px-3 py-2.5 bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] transition-colors font-inter text-sm flex items-center gap-1.5"
+                  className="px-3 py-2.5 bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter text-sm flex items-center gap-1.5"
                 >
                   <Plus className="w-4 h-4" />
                   <span className="hidden sm:inline">Custom</span>
@@ -223,7 +223,7 @@ export function EditSetModal({
                     setFormData({ ...formData, customCategory: e.target.value })
                   }
                   placeholder="Enter custom category name"
-                  className="flex-1 px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
+                  className="flex-1 px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
                 />
                 <button
                   type="button"
@@ -235,7 +235,7 @@ export function EditSetModal({
                       customCategory: "",
                     });
                   }}
-                  className="p-2.5 hover:bg-red-500/10 text-[var(--text-muted)] hover:text-red-500 rounded-lg transition-colors"
+                  className="p-2.5 hover:bg-red-500/10 text-(--text-muted) hover:text-red-500 rounded-lg transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -245,7 +245,7 @@ export function EditSetModal({
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] font-inter mb-1.5">
+            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
               Description
             </label>
             <textarea
@@ -254,7 +254,7 @@ export function EditSetModal({
                 setFormData({ ...formData, description: e.target.value })
               }
               rows={2}
-              className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm resize-none"
+              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm resize-none"
               placeholder="Brief description of this algorithm set"
             />
           </div>
@@ -262,7 +262,7 @@ export function EditSetModal({
           {/* Difficulty & Puzzle Type Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] font-inter mb-1.5">
+              <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
                 Difficulty
               </label>
               <select
@@ -273,7 +273,7 @@ export function EditSetModal({
                     difficulty: e.target.value as SetFormData["difficulty"],
                   })
                 }
-                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
+                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               >
                 {DIFFICULTY_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -283,7 +283,7 @@ export function EditSetModal({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] font-inter mb-1.5">
+              <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
                 Puzzle Type
               </label>
               <select
@@ -291,7 +291,7 @@ export function EditSetModal({
                 onChange={(e) =>
                   setFormData({ ...formData, puzzleType: e.target.value })
                 }
-                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
+                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               >
                 {PUZZLE_TYPES.map((pt) => (
                   <option key={pt.value} value={pt.value}>
@@ -304,7 +304,7 @@ export function EditSetModal({
 
           {/* Order */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] font-inter mb-1.5">
+            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
               Display Order
             </label>
             <input
@@ -316,7 +316,7 @@ export function EditSetModal({
                   order: parseInt(e.target.value) || 0,
                 })
               }
-              className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
+              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
             />
           </div>
 
@@ -328,9 +328,9 @@ export function EditSetModal({
               onChange={(e) =>
                 setFormData({ ...formData, isPublished: e.target.checked })
               }
-              className="w-4 h-4 rounded border-[var(--border)] bg-[var(--surface-elevated)] text-[var(--primary)] focus:ring-[var(--primary)]"
+              className="w-4 h-4 rounded border-(--border) bg-(--surface-elevated) text-(--primary) focus:ring-(--primary)"
             />
-            <span className="text-sm text-[var(--text-primary)] font-inter">
+            <span className="text-sm text-(--text-primary) font-inter">
               Published (visible to users)
             </span>
           </label>
@@ -340,7 +340,7 @@ export function EditSetModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 bg-[var(--surface-elevated)] hover:bg-[var(--border)] text-[var(--text-primary)] font-medium rounded-lg transition-colors font-inter text-sm order-2 sm:order-1"
+              className="flex-1 px-4 py-2.5 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-lg transition-colors font-inter text-sm order-2 sm:order-1"
               disabled={isSubmitting}
             >
               Cancel
@@ -348,7 +348,7 @@ export function EditSetModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-medium rounded-lg transition-colors font-inter text-sm disabled:opacity-50 order-1 sm:order-2"
+              className="flex-1 px-4 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white font-medium rounded-lg transition-colors font-inter text-sm disabled:opacity-50 order-1 sm:order-2"
             >
               {isSubmitting
                 ? "Saving..."

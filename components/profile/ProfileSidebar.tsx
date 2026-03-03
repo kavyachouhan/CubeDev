@@ -149,7 +149,7 @@ export default function ProfileSidebar({
       <div className="timer-card text-center">
         {/* Avatar */}
         <div className="mb-6">
-          <div className="relative mx-auto w-32 h-32 rounded-full overflow-hidden bg-[var(--surface-elevated)] border-4 border-[var(--border)]">
+          <div className="relative mx-auto w-32 h-32 rounded-full overflow-hidden bg-(--surface-elevated) border-4 border-(--border)">
             {person.avatar?.url && !imageError ? (
               <Image
                 src={person.avatar.url}
@@ -163,9 +163,9 @@ export default function ProfileSidebar({
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 {imageError ? (
-                  <User className="w-12 h-12 text-[var(--text-muted)]" />
+                  <User className="w-12 h-12 text-(--text-muted)" />
                 ) : (
-                  <span className="text-4xl font-bold text-[var(--text-muted)]">
+                  <span className="text-4xl font-bold text-(--text-muted)">
                     {person.name.charAt(0).toUpperCase()}
                   </span>
                 )}
@@ -176,33 +176,33 @@ export default function ProfileSidebar({
 
         {/* Name and WCA ID */}
         <div className="mb-4">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)] font-statement mb-1">
+          <h1 className="text-2xl font-bold text-(--text-primary) font-statement mb-1">
             {person.name}
           </h1>
-          <p className="text-[var(--text-secondary)] font-inter text-md">
+          <p className="text-(--text-secondary) font-inter text-md">
             {wcaId}
           </p>
         </div>
 
         {/* Country */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <MapPin className="w-4 h-4 text-[var(--text-muted)]" />
-          <span className="text-[var(--text-secondary)] font-inter">
+          <MapPin className="w-4 h-4 text-(--text-muted)" />
+          <span className="text-(--text-secondary) font-inter">
             {person.country.name}
           </span>
         </div>
 
         {/* CubeDev Membership Info */}
         {cubeDevUser && (
-          <div className="space-y-2 p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] mb-6">
+          <div className="space-y-2 p-4 bg-(--surface-elevated) rounded-lg border border-(--border) mb-6">
             {joinDate && (
-              <div className="flex items-center justify-center gap-2 text-xs text-[var(--text-muted)]">
+              <div className="flex items-center justify-center gap-2 text-xs text-(--text-muted)">
                 <Calendar className="w-3 h-3" />
                 <span>Joined {joinDate}</span>
               </div>
             )}
             {lastActive && (
-              <div className="flex items-center justify-center gap-2 text-xs text-[var(--text-muted)]">
+              <div className="flex items-center justify-center gap-2 text-xs text-(--text-muted)">
                 <Clock className="w-3 h-3" />
                 <span>Last active {lastActive}</span>
               </div>
@@ -216,7 +216,7 @@ export default function ProfileSidebar({
             href={`https://www.worldcubeassociation.org/persons/${wcaId}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary)]/90 transition-colors font-inter font-medium text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary)/90 transition-colors font-inter font-medium text-sm"
           >
             <ExternalLink className="w-4 h-4" />
             View WCA Profile
@@ -228,8 +228,8 @@ export default function ProfileSidebar({
       {/* Best Events Card */}
       {personalRecords && personalRecords.length > 0 && (
         <div className="timer-card">
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-[var(--primary)]" />
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-4 flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-(--primary)" />
             Top Events
           </h3>
           <div className="space-y-3">
@@ -270,23 +270,23 @@ export default function ProfileSidebar({
                 return (
                   <div
                     key={record.event_id}
-                    className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]"
+                    className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)"
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                      <div className="text-sm font-medium text-(--text-primary) font-inter">
                         {EVENT_NAMES[
                           record.event_id as keyof typeof EVENT_NAMES
                         ] || record.event_id}
                       </div>
-                      <div className="text-xs text-[var(--text-muted)]">
+                      <div className="text-xs text-(--text-muted)">
                         {formatTime(bestTime || 0)}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm font-bold text-[var(--primary)]">
+                      <div className="text-sm font-bold text-(--primary)">
                         #{bestRank}
                       </div>
-                      <div className="text-xs text-[var(--text-muted)]">WR</div>
+                      <div className="text-xs text-(--text-muted)">WR</div>
                     </div>
                   </div>
                 );

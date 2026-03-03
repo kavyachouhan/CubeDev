@@ -115,13 +115,13 @@ export default function PhaseAverages({ solves }: PhaseAveragesProps) {
   if (phaseStats.length === 0) {
     return (
       <div className="text-center py-8">
-        <div className="w-16 h-16 bg-[var(--surface-elevated)] rounded-full flex items-center justify-center mx-auto mb-4">
-          <BarChart3 className="w-8 h-8 text-[var(--text-muted)]" />
+        <div className="w-16 h-16 bg-(--surface-elevated) rounded-full flex items-center justify-center mx-auto mb-4">
+          <BarChart3 className="w-8 h-8 text-(--text-muted)" />
         </div>
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+        <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
           No Phase Data Yet
         </h3>
-        <p className="text-[var(--text-secondary)] text-sm">
+        <p className="text-(--text-secondary) text-sm">
           Enable Phase Split Timer in timer settings and start solving to see
           phase statistics!
         </p>
@@ -144,13 +144,13 @@ export default function PhaseAverages({ solves }: PhaseAveragesProps) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-6 h-6 bg-[var(--primary)]/20 text-[var(--primary)] rounded flex items-center justify-center">
+        <div className="w-6 h-6 bg-(--primary)/20 text-(--primary) rounded flex items-center justify-center">
           <Clock className="w-3 h-3" />
         </div>
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
           Phase Averages
         </h3>
-        <span className="text-xs text-[var(--text-muted)] bg-[var(--surface-elevated)] px-2 py-1 rounded">
+        <span className="text-xs text-(--text-muted) bg-(--surface-elevated) px-2 py-1 rounded">
           {phaseStats.reduce((sum, stat) => sum + stat.count, 0)} total splits
         </span>
       </div>
@@ -158,7 +158,7 @@ export default function PhaseAverages({ solves }: PhaseAveragesProps) {
       <div className="space-y-6">
         {Object.entries(groupedStats).map(([methodName, stats]) => (
           <div key={methodName} className="space-y-3">
-            <h4 className="text-sm font-medium text-[var(--text-primary)] border-b border-[var(--border)] pb-2">
+            <h4 className="text-sm font-medium text-(--text-primary) border-b border-(--border) pb-2">
               {methodName}
             </h4>
 
@@ -166,7 +166,7 @@ export default function PhaseAverages({ solves }: PhaseAveragesProps) {
               {stats.map((stat) => (
                 <div
                   key={stat.phase}
-                  className="p-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg"
+                  className="p-3 bg-(--surface-elevated) border border-(--border) rounded-lg"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <div
@@ -175,38 +175,38 @@ export default function PhaseAverages({ solves }: PhaseAveragesProps) {
                         "bg-"
                       )}`}
                     />
-                    <span className="text-sm font-medium text-[var(--text-primary)]">
+                    <span className="text-sm font-medium text-(--text-primary)">
                       {stat.name}
                     </span>
-                    <span className="text-xs text-[var(--text-muted)]">
+                    <span className="text-xs text-(--text-muted)">
                       ({stat.count})
                     </span>
                   </div>
 
                   <div className="space-y-1">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-[var(--text-muted)]">
+                      <span className="text-xs text-(--text-muted)">
                         Mean
                       </span>
-                      <span className="text-sm font-mono font-semibold text-[var(--text-primary)]">
+                      <span className="text-sm font-mono font-semibold text-(--text-primary)">
                         {formatPhaseTime(stat.mean)}s
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-[var(--text-muted)]">
+                      <span className="text-xs text-(--text-muted)">
                         Std Dev
                       </span>
-                      <span className="text-sm font-mono text-[var(--text-secondary)]">
+                      <span className="text-sm font-mono text-(--text-secondary)">
                         ±{formatPhaseTime(stat.stdDev)}s
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-[var(--text-muted)]">
+                      <span className="text-xs text-(--text-muted)">
                         Range
                       </span>
-                      <span className="text-sm font-mono text-[var(--text-secondary)]">
+                      <span className="text-sm font-mono text-(--text-secondary)">
                         {formatPhaseTime(stat.best)}s -{" "}
                         {formatPhaseTime(stat.worst)}s
                       </span>
@@ -214,10 +214,10 @@ export default function PhaseAverages({ solves }: PhaseAveragesProps) {
                   </div>
 
                   {/* Consistency indicator */}
-                  <div className="mt-2 pt-2 border-t border-[var(--border)]">
+                  <div className="mt-2 pt-2 border-t border-(--border)">
                     <div className="flex items-center gap-1">
-                      <TrendingUp className="w-3 h-3 text-[var(--text-muted)]" />
-                      <span className="text-xs text-[var(--text-muted)]">
+                      <TrendingUp className="w-3 h-3 text-(--text-muted)" />
+                      <span className="text-xs text-(--text-muted)">
                         Consistency:{" "}
                         {((1 - stat.stdDev / stat.mean) * 100).toFixed(0)}%
                       </span>

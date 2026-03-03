@@ -310,28 +310,28 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
       {/* Modal */}
       <div className="relative timer-card max-w-2xl w-full my-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <div className="flex items-center justify-between p-4 border-b border-(--border)">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
             Import Algorithm Data
           </h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+            className="p-2 hover:bg-(--surface-elevated) rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-[var(--text-muted)]" />
+            <X className="w-5 h-5 text-(--text-muted)" />
           </button>
         </div>
 
         {/* Content */}
         <div className="p-4 space-y-4">
           {/* Tab Navigation */}
-          <div className="flex border-b border-[var(--border)]">
+          <div className="flex border-b border-(--border)">
             <button
               onClick={() => setActiveTab("paste")}
               className={`flex items-center gap-2 px-4 py-2 text-sm font-inter border-b-2 transition-colors ${
                 activeTab === "paste"
-                  ? "border-[var(--primary)] text-[var(--primary)]"
-                  : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
               }`}
             >
               <ClipboardPaste className="w-4 h-4" />
@@ -341,8 +341,8 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
               onClick={() => setActiveTab("file")}
               className={`flex items-center gap-2 px-4 py-2 text-sm font-inter border-b-2 transition-colors ${
                 activeTab === "file"
-                  ? "border-[var(--primary)] text-[var(--primary)]"
-                  : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
               }`}
             >
               <FileUp className="w-4 h-4" />
@@ -353,14 +353,14 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
           {/* Tab Content */}
           {activeTab === "paste" ? (
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] font-inter mb-1.5">
+              <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
                 Paste JSON Data
               </label>
               <textarea
                 value={importData}
                 onChange={(e) => handleDataChange(e.target.value)}
                 rows={10}
-                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-mono text-sm resize-y"
+                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-mono text-sm resize-y"
                 placeholder={`{
   "sets": [...],
   "cases": [...],
@@ -375,8 +375,8 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
               onDrop={handleDrop}
               className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                 isDragOver
-                  ? "border-[var(--primary)] bg-[var(--primary)]/5"
-                  : "border-[var(--border)] hover:border-[var(--text-muted)]"
+                  ? "border-(--primary) bg-(--primary)/5"
+                  : "border-(--border) hover:border-(--text-muted)"
               }`}
             >
               <input
@@ -386,16 +386,16 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
                 onChange={handleFileUpload}
                 className="hidden"
               />
-              <FileJson className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-              <p className="text-[var(--text-primary)] font-inter font-medium mb-1">
+              <FileJson className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
+              <p className="text-(--text-primary) font-inter font-medium mb-1">
                 Drop JSON file here
               </p>
-              <p className="text-sm text-[var(--text-muted)] font-inter mb-3">
+              <p className="text-sm text-(--text-muted) font-inter mb-3">
                 or click to browse
               </p>
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors font-inter text-sm"
+                className="px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) rounded-lg transition-colors font-inter text-sm"
               >
                 <Upload className="w-4 h-4 inline-block mr-2" />
                 Choose File
@@ -408,27 +408,27 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
             <div
               className={`flex items-start gap-3 p-3 rounded-lg ${
                 validationStatus.isValid
-                  ? "bg-[var(--success)]/10 border border-[var(--success)]/20"
-                  : "bg-[var(--error)]/10 border border-[var(--error)]/20"
+                  ? "bg-(--success)/10 border border-(--success)/20"
+                  : "bg-(--error)/10 border border-(--error)/20"
               }`}
             >
               {validationStatus.isValid ? (
-                <CheckCircle2 className="w-5 h-5 text-[var(--success)] shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
               ) : (
-                <AlertCircle className="w-5 h-5 text-[var(--error)] shrink-0 mt-0.5" />
+                <AlertCircle className="w-5 h-5 text-(--error) shrink-0 mt-0.5" />
               )}
               <div className="flex-1 min-w-0">
                 <p
                   className={`text-sm font-inter ${
                     validationStatus.isValid
-                      ? "text-[var(--success)]"
-                      : "text-[var(--error)]"
+                      ? "text-(--success)"
+                      : "text-(--error)"
                   }`}
                 >
                   {validationStatus.message}
                 </p>
                 {validationStatus.summary && (
-                  <div className="flex flex-wrap gap-4 mt-2 text-xs text-[var(--text-muted)] font-inter">
+                  <div className="flex flex-wrap gap-4 mt-2 text-xs text-(--text-muted) font-inter">
                     <span>{validationStatus.summary.sets} sets</span>
                     <span>{validationStatus.summary.cases} cases</span>
                     <span>
@@ -445,21 +445,21 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
             <div
               className={`p-3 rounded-lg ${
                 importResult.errors.length === 0
-                  ? "bg-[var(--success)]/10 border border-[var(--success)]/20"
-                  : "bg-[var(--warning)]/10 border border-[var(--warning)]/20"
+                  ? "bg-(--success)/10 border border-(--success)/20"
+                  : "bg-(--warning)/10 border border-(--warning)/20"
               }`}
             >
               <div className="flex items-start gap-3">
                 {importResult.errors.length === 0 ? (
-                  <CheckCircle2 className="w-5 h-5 text-[var(--success)] shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
                 ) : (
-                  <AlertCircle className="w-5 h-5 text-[var(--warning)] shrink-0 mt-0.5" />
+                  <AlertCircle className="w-5 h-5 text-(--warning) shrink-0 mt-0.5" />
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-inter text-[var(--text-primary)] font-medium mb-1">
+                  <p className="text-sm font-inter text-(--text-primary) font-medium mb-1">
                     Import Complete
                   </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs text-[var(--text-muted)] font-inter">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs text-(--text-muted) font-inter">
                     <span>
                       Sets: {importResult.setsCreated} created,{" "}
                       {importResult.setsUpdated} updated
@@ -475,10 +475,10 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
                   </div>
                   {importResult.errors.length > 0 && (
                     <div className="mt-2">
-                      <p className="text-xs text-[var(--error)] font-inter font-medium">
+                      <p className="text-xs text-(--error) font-inter font-medium">
                         Errors ({importResult.errors.length}):
                       </p>
-                      <ul className="text-xs text-[var(--error)] font-inter mt-1 space-y-0.5 max-h-20 overflow-y-auto">
+                      <ul className="text-xs text-(--error) font-inter mt-1 space-y-0.5 max-h-20 overflow-y-auto">
                         {importResult.errors.slice(0, 5).map((err, i) => (
                           <li key={i} className="truncate">
                             {err}
@@ -496,9 +496,9 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
           )}
 
           {/* Help Text */}
-          <div className="p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-            <p className="text-xs text-[var(--text-muted)] font-inter">
-              <strong className="text-[var(--text-secondary)]">
+          <div className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+            <p className="text-xs text-(--text-muted) font-inter">
+              <strong className="text-(--text-secondary)">
                 Supported formats:
               </strong>{" "}
               CubeDev export format with sets, cases, and algorithms arrays.
@@ -508,10 +508,10 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex flex-col sm:flex-row gap-3 p-4 border-t border-[var(--border)]">
+        <div className="flex flex-col sm:flex-row gap-3 p-4 border-t border-(--border)">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 bg-[var(--surface-elevated)] hover:bg-[var(--border)] text-[var(--text-primary)] font-medium rounded-lg transition-colors font-inter text-sm order-2 sm:order-1"
+            className="flex-1 px-4 py-2.5 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-lg transition-colors font-inter text-sm order-2 sm:order-1"
             disabled={isImporting}
           >
             Cancel
@@ -519,7 +519,7 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
           <button
             onClick={handleImport}
             disabled={!validationStatus?.isValid || isImporting}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-medium rounded-lg transition-colors font-inter text-sm disabled:opacity-50 order-1 sm:order-2"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white font-medium rounded-lg transition-colors font-inter text-sm disabled:opacity-50 order-1 sm:order-2"
           >
             {isImporting ? (
               <>

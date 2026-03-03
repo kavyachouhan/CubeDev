@@ -219,9 +219,9 @@ function CollapsibleCard({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={toggleOpen}
-          className="flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
         >
-          <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-base sm:text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             {title}
           </h3>
           {isOpen ? (
@@ -234,7 +234,7 @@ function CollapsibleCard({
           {headerExtra}
           <button
             onClick={toggleOpen}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
           >
             {isOpen ? (
               <EyeOff className="w-4 h-4" />
@@ -254,8 +254,8 @@ function StatCard({
   title,
   value,
   icon: Icon,
-  iconColor = "text-[var(--primary)]",
-  iconBgColor = "bg-[var(--primary)]/10",
+  iconColor = "text-(--primary)",
+  iconBgColor = "bg-(--primary)/10",
   subValue,
 }: {
   title: string;
@@ -266,17 +266,17 @@ function StatCard({
   subValue?: string;
 }) {
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] sm:text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter truncate">
+          <p className="text-[10px] sm:text-xs text-(--text-muted) uppercase tracking-wide font-inter truncate">
             {title}
           </p>
-          <p className="text-lg sm:text-xl font-bold text-[var(--text-primary)] font-statement mt-0.5">
+          <p className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement mt-0.5">
             {typeof value === "number" ? value.toLocaleString() : value}
           </p>
           {subValue && (
-            <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter mt-0.5 truncate">
+            <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter mt-0.5 truncate">
               {subValue}
             </p>
           )}
@@ -294,13 +294,13 @@ function StatusBadge({ status }: { status: string }) {
   const getStatusStyles = () => {
     switch (status) {
       case "active":
-        return "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20";
+        return "bg-(--success)/10 text-(--success) border-(--success)/20";
       case "expired":
-        return "bg-[var(--warning)]/10 text-[var(--warning)] border-[var(--warning)]/20";
+        return "bg-(--warning)/10 text-(--warning) border-(--warning)/20";
       case "archived":
-        return "bg-[var(--text-muted)]/10 text-[var(--text-muted)] border-[var(--text-muted)]/20";
+        return "bg-(--text-muted)/10 text-(--text-muted) border-(--text-muted)/20";
       default:
-        return "bg-[var(--surface-elevated)] text-[var(--text-muted)]";
+        return "bg-(--surface-elevated) text-(--text-muted)";
     }
   };
 
@@ -348,7 +348,7 @@ function ChallengeRoomCard({
 
   return (
     <div
-      className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-xl p-3 sm:p-4 hover:border-[var(--border-hover)] transition-colors cursor-pointer"
+      className="bg-(--surface-elevated) border border-(--border) rounded-xl p-3 sm:p-4 hover:border-(--border-hover) transition-colors cursor-pointer"
       onClick={onClick}
     >
       <div className="flex items-start justify-between mb-2 sm:mb-3">
@@ -356,101 +356,101 @@ function ChallengeRoomCard({
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
             <StatusBadge status={isExpired ? "expired" : room.status} />
             {room.isPublic ? (
-              <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs text-(--text-muted)">
                 <Globe className="w-3 h-3" />
                 <span className="hidden xs:inline">Public</span>
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs text-(--text-muted)">
                 <Lock className="w-3 h-3" />
                 <span className="hidden xs:inline">Private</span>
               </span>
             )}
           </div>
-          <h3 className="text-sm font-semibold text-[var(--text-primary)] font-statement truncate">
+          <h3 className="text-sm font-semibold text-(--text-primary) font-statement truncate">
             {room.name}
           </h3>
           {room.creatorName && (
-            <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter truncate">
+            <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter truncate">
               by {room.creatorName}{" "}
               {room.creatorWcaId && (
-                <span className="text-[var(--primary)]">
+                <span className="text-(--primary)">
                   ({room.creatorWcaId})
                 </span>
               )}
             </p>
           )}
         </div>
-        <span className="text-[10px] sm:text-xs px-2 py-1 bg-[var(--primary)]/10 text-[var(--primary)] rounded-full font-inter shrink-0 ml-2">
+        <span className="text-[10px] sm:text-xs px-2 py-1 bg-(--primary)/10 text-(--primary) rounded-full font-inter shrink-0 ml-2">
           {EVENT_NAMES[room.event] || room.event}
         </span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-sm">
         <div>
-          <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+          <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
             Format
           </p>
-          <p className="font-medium text-[var(--text-primary)] font-inter text-xs sm:text-sm">
+          <p className="font-medium text-(--text-primary) font-inter text-xs sm:text-sm">
             {room.format.toUpperCase()}
           </p>
         </div>
         <div>
-          <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+          <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
             Participants
           </p>
-          <p className="font-medium text-[var(--text-primary)] font-inter text-xs sm:text-sm">
+          <p className="font-medium text-(--text-primary) font-inter text-xs sm:text-sm">
             {participantCount}
           </p>
         </div>
         <div>
-          <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+          <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
             Completed
           </p>
-          <p className="font-medium text-[var(--text-primary)] font-inter text-xs sm:text-sm">
+          <p className="font-medium text-(--text-primary) font-inter text-xs sm:text-sm">
             {completedCount}{" "}
-            <span className="text-[var(--text-muted)]">
+            <span className="text-(--text-muted)">
               ({completionRate}%)
             </span>
           </p>
         </div>
         <div>
-          <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+          <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
             Created
           </p>
-          <p className="font-medium text-[var(--text-primary)] font-inter text-xs sm:text-sm">
+          <p className="font-medium text-(--text-primary) font-inter text-xs sm:text-sm">
             {formatDate(room.createdAt)}
           </p>
         </div>
       </div>
 
       {(room.avgTime || room.bestTime) && (
-        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-[var(--border)] grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
+        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-(--border) grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
           {room.bestTime && (
             <div>
-              <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+              <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
                 Best Time
               </p>
-              <p className="font-medium text-[var(--success)] font-inter text-xs sm:text-sm">
+              <p className="font-medium text-(--success) font-inter text-xs sm:text-sm">
                 {formatTime(room.bestTime)}
               </p>
             </div>
           )}
           {room.avgTime && (
             <div>
-              <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+              <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
                 Avg Time
               </p>
-              <p className="font-medium text-[var(--text-primary)] font-inter text-xs sm:text-sm">
+              <p className="font-medium text-(--text-primary) font-inter text-xs sm:text-sm">
                 {formatTime(room.avgTime)}
               </p>
             </div>
           )}
           <div>
-            <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+            <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
               Total Solves
             </p>
-            <p className="font-medium text-[var(--text-primary)] font-inter text-xs sm:text-sm">
+            <p className="font-medium text-(--text-primary) font-inter text-xs sm:text-sm">
               {room.totalSolves || 0}
             </p>
           </div>
@@ -485,14 +485,14 @@ function RoomDetailModal({
       <div className="timer-card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div className="flex items-center gap-2 sm:gap-3">
-            <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] font-statement">
+            <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
               {room.name}
             </h2>
             <StatusBadge status={isExpired ? "expired" : room.status} />
           </div>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -500,35 +500,35 @@ function RoomDetailModal({
 
         {/* Room Details */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-          <div className="bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 border border-[var(--border)]">
-            <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+          <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+            <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
               Event
             </p>
-            <p className="font-medium text-[var(--text-primary)] font-inter text-sm sm:text-base">
+            <p className="font-medium text-(--text-primary) font-inter text-sm sm:text-base">
               {EVENT_NAMES[room.event] || room.event}
             </p>
           </div>
-          <div className="bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 border border-[var(--border)]">
-            <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+          <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+            <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
               Format
             </p>
-            <p className="font-medium text-[var(--text-primary)] font-inter text-sm sm:text-base">
+            <p className="font-medium text-(--text-primary) font-inter text-sm sm:text-base">
               {room.format.toUpperCase()}
             </p>
           </div>
-          <div className="bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 border border-[var(--border)]">
-            <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+          <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+            <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
               Room ID
             </p>
-            <p className="font-medium text-[var(--primary)] font-mono text-sm sm:text-base">
+            <p className="font-medium text-(--primary) font-mono text-sm sm:text-base">
               {room.roomId}
             </p>
           </div>
-          <div className="bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 border border-[var(--border)]">
-            <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+          <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+            <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
               Visibility
             </p>
-            <p className="font-medium text-[var(--text-primary)] font-inter flex items-center gap-1 text-sm sm:text-base">
+            <p className="font-medium text-(--text-primary) font-inter flex items-center gap-1 text-sm sm:text-base">
               {room.isPublic ? (
                 <>
                   <Globe className="w-3 h-3 sm:w-4 sm:h-4" /> Public
@@ -543,15 +543,15 @@ function RoomDetailModal({
         </div>
 
         {room.description && (
-          <div className="mb-4 sm:mb-6 p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-            <p className="text-xs sm:text-sm text-[var(--text-secondary)] font-inter">
+          <div className="mb-4 sm:mb-6 p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+            <p className="text-xs sm:text-sm text-(--text-secondary) font-inter">
               {room.description}
             </p>
           </div>
         )}
 
         {/* Participants */}
-        <h3 className="text-sm sm:text-base font-semibold text-[var(--text-primary)] font-statement mb-3">
+        <h3 className="text-sm sm:text-base font-semibold text-(--text-primary) font-statement mb-3">
           Participants ({participants?.length || 0})
         </h3>
 
@@ -560,17 +560,17 @@ function RoomDetailModal({
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="bg-[var(--surface-elevated)] rounded-lg p-3 sm:p-4 border border-[var(--border)] animate-pulse"
+                className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border) animate-pulse"
               >
-                <div className="h-4 w-32 bg-[var(--surface)] rounded mb-2" />
-                <div className="h-3 w-24 bg-[var(--surface)] rounded" />
+                <div className="h-4 w-32 bg-(--surface) rounded mb-2" />
+                <div className="h-3 w-24 bg-(--surface) rounded" />
               </div>
             ))}
           </div>
         ) : participants.length === 0 ? (
-          <div className="text-center py-6 sm:py-8 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-            <Users className="w-8 h-8 sm:w-10 sm:h-10 text-[var(--text-muted)] mx-auto mb-2" />
-            <p className="text-[var(--text-muted)] font-inter text-sm">
+          <div className="text-center py-6 sm:py-8 bg-(--surface-elevated) rounded-lg border border-(--border)">
+            <Users className="w-8 h-8 sm:w-10 sm:h-10 text-(--text-muted) mx-auto mb-2" />
+            <p className="text-(--text-muted) font-inter text-sm">
               No participants yet
             </p>
           </div>
@@ -579,7 +579,7 @@ function RoomDetailModal({
             {participants.map((participant: any, index: number) => (
               <div
                 key={participant._id}
-                className="bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 border border-[var(--border)] hover:border-[var(--border-hover)] transition-colors"
+                className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border) hover:border-(--border-hover) transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 sm:gap-3">
@@ -597,13 +597,13 @@ function RoomDetailModal({
                       </div>
                     )}
                     <div>
-                      <p className="font-medium text-[var(--text-primary)] font-inter text-sm">
+                      <p className="font-medium text-(--text-primary) font-inter text-sm">
                         {participant.userName}
-                        <span className="text-[var(--text-muted)] ml-1 sm:ml-2 text-xs">
+                        <span className="text-(--text-muted) ml-1 sm:ml-2 text-xs">
                           ({participant.userWcaId})
                         </span>
                       </p>
-                      <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+                      <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs text-(--text-muted) font-inter">
                         <span>
                           {participant.solvesCompleted}/
                           {participant.totalSolves} solves
@@ -621,12 +621,12 @@ function RoomDetailModal({
                   </div>
                   <div className="flex items-center gap-2">
                     {participant.isCompleted ? (
-                      <CheckCircle2 className="w-4 h-4 text-[var(--success)]" />
+                      <CheckCircle2 className="w-4 h-4 text-(--success)" />
                     ) : (
-                      <Clock className="w-4 h-4 text-[var(--warning)]" />
+                      <Clock className="w-4 h-4 text-(--warning)" />
                     )}
                     {participant.finalRank && (
-                      <span className="text-xs font-bold text-[var(--primary)]">
+                      <span className="text-xs font-bold text-(--primary)">
                         #{participant.finalRank}
                       </span>
                     )}
@@ -637,7 +637,7 @@ function RoomDetailModal({
           </div>
         )}
 
-        <div className="mt-4 sm:mt-6 pt-4 border-t border-[var(--border)] flex justify-end">
+        <div className="mt-4 sm:mt-6 pt-4 border-t border-(--border) flex justify-end">
           <button onClick={onClose} className="btn-secondary text-sm">
             Close
           </button>
@@ -765,12 +765,12 @@ function SendChallengeNotificationModal({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
       <div className="timer-card max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] font-statement">
+          <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
             Send Challenge Notification
           </h2>
           <button
             onClick={handleClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -779,7 +779,7 @@ function SendChallengeNotificationModal({
         <div className="space-y-4">
           {/* Notification Type Selection */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Send To
             </label>
             <div className="flex flex-wrap gap-2">
@@ -787,8 +787,8 @@ function SendChallengeNotificationModal({
                 onClick={() => setNotificationType("single")}
                 className={`flex-1 min-w-[100px] px-3 py-2 rounded-lg font-inter text-sm transition-colors ${
                   notificationType === "single"
-                    ? "bg-[var(--primary)] text-white"
-                    : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    ? "bg-(--primary) text-white"
+                    : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary)"
                 }`}
               >
                 Single User
@@ -797,8 +797,8 @@ function SendChallengeNotificationModal({
                 onClick={() => setNotificationType("challenge-users")}
                 className={`flex-1 min-w-[100px] px-3 py-2 rounded-lg font-inter text-sm transition-colors ${
                   notificationType === "challenge-users"
-                    ? "bg-[var(--primary)] text-white"
-                    : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    ? "bg-(--primary) text-white"
+                    : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary)"
                 }`}
               >
                 Challenge Users
@@ -807,8 +807,8 @@ function SendChallengeNotificationModal({
                 onClick={() => setNotificationType("broadcast")}
                 className={`flex-1 min-w-[100px] px-3 py-2 rounded-lg font-inter text-sm transition-colors ${
                   notificationType === "broadcast"
-                    ? "bg-[var(--primary)] text-white"
-                    : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    ? "bg-(--primary) text-white"
+                    : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary)"
                 }`}
               >
                 All Users
@@ -819,21 +819,21 @@ function SendChallengeNotificationModal({
           {/* User Selection (for single user) */}
           {notificationType === "single" && (
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                 Select User
               </label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
                 <input
                   type="text"
                   value={userSearch}
                   onChange={(e) => setUserSearch(e.target.value)}
                   placeholder="Search challenge participants..."
-                  className="w-full pl-10 pr-4 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter text-sm"
+                  className="w-full pl-10 pr-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
                 />
               </div>
               {userSearch && (
-                <div className="mt-2 max-h-32 overflow-y-auto bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg">
+                <div className="mt-2 max-h-32 overflow-y-auto bg-(--surface-elevated) border border-(--border) rounded-lg">
                   {filteredUsers.slice(0, 10).map((user: any) => (
                     <button
                       key={user._id}
@@ -841,12 +841,12 @@ function SendChallengeNotificationModal({
                         setSelectedUserId(user._id);
                         setUserSearch("");
                       }}
-                      className="w-full px-3 py-2 text-left hover:bg-[var(--surface)] transition-colors text-sm font-inter"
+                      className="w-full px-3 py-2 text-left hover:bg-(--surface) transition-colors text-sm font-inter"
                     >
-                      <span className="text-[var(--text-primary)]">
+                      <span className="text-(--text-primary)">
                         {user.name}
                       </span>
-                      <span className="text-[var(--text-muted)] ml-2">
+                      <span className="text-(--text-muted) ml-2">
                         ({user.wcaId}) - {user.participationCount} rooms
                       </span>
                     </button>
@@ -854,13 +854,13 @@ function SendChallengeNotificationModal({
                 </div>
               )}
               {selectedUserId && (
-                <div className="mt-2 flex items-center gap-2 p-2 bg-[var(--primary)]/10 rounded-lg">
-                  <span className="text-sm text-[var(--text-primary)] font-inter flex-1">
+                <div className="mt-2 flex items-center gap-2 p-2 bg-(--primary)/10 rounded-lg">
+                  <span className="text-sm text-(--text-primary) font-inter flex-1">
                     {users.find((u: any) => u._id === selectedUserId)?.name}
                   </span>
                   <button
                     onClick={() => setSelectedUserId("")}
-                    className="text-[var(--text-muted)] hover:text-[var(--error)]"
+                    className="text-(--text-muted) hover:text-(--error)"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -871,7 +871,7 @@ function SendChallengeNotificationModal({
 
           {/* Quick Presets */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Quick Templates
             </label>
             <div className="flex flex-wrap gap-2">
@@ -882,7 +882,7 @@ function SendChallengeNotificationModal({
                     setTitle(preset.title);
                     setBody(preset.body);
                   }}
-                  className="px-3 py-1.5 text-xs bg-[var(--surface-elevated)] text-[var(--text-secondary)] rounded-full hover:bg-[var(--surface)] hover:text-[var(--text-primary)] transition-colors font-inter"
+                  className="px-3 py-1.5 text-xs bg-(--surface-elevated) text-(--text-secondary) rounded-full hover:bg-(--surface) hover:text-(--text-primary) transition-colors font-inter"
                 >
                   {preset.name}
                 </button>
@@ -892,7 +892,7 @@ function SendChallengeNotificationModal({
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Title
             </label>
             <input
@@ -900,14 +900,14 @@ function SendChallengeNotificationModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Notification title..."
-              className="w-full px-4 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter text-sm"
+              className="w-full px-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
               maxLength={100}
             />
           </div>
 
           {/* Body */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Message
             </label>
             <textarea
@@ -915,14 +915,14 @@ function SendChallengeNotificationModal({
               onChange={(e) => setBody(e.target.value)}
               placeholder="Notification message..."
               rows={3}
-              className="w-full px-4 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none transition-all font-inter text-sm"
+              className="w-full px-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter text-sm"
               maxLength={300}
             />
           </div>
 
           {/* URL */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Link URL (optional)
             </label>
             <input
@@ -930,7 +930,7 @@ function SendChallengeNotificationModal({
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="/cube-lab/challenge"
-              className="w-full px-4 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter text-sm"
+              className="w-full px-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
             />
           </div>
 
@@ -939,8 +939,8 @@ function SendChallengeNotificationModal({
             <div
               className={`p-3 rounded-lg text-sm font-inter ${
                 result.success
-                  ? "bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/20"
-                  : "bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/20"
+                  ? "bg-(--success)/10 text-(--success) border border-(--success)/20"
+                  : "bg-(--error)/10 text-(--error) border border-(--error)/20"
               }`}
             >
               {result.message}
@@ -1009,32 +1009,32 @@ function LeaderboardItem({
     if (rank === 3)
       return <Medal className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />;
     return (
-      <span className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-xs font-bold text-[var(--text-muted)]">
+      <span className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-xs font-bold text-(--text-muted)">
         {rank}
       </span>
     );
   };
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] hover:border-[var(--border-hover)] transition-colors">
+    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-(--surface-elevated) rounded-lg border border-(--border) hover:border-(--border-hover) transition-colors">
       <div className="shrink-0">{getRankIcon()}</div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-[var(--text-primary)] font-inter text-sm truncate">
+        <p className="font-medium text-(--text-primary) font-inter text-sm truncate">
           {name}
         </p>
-        <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+        <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
           {wcaId}
         </p>
       </div>
       <div className="text-right shrink-0">
-        <p className="font-bold text-[var(--primary)] font-statement text-sm sm:text-base">
+        <p className="font-bold text-(--primary) font-statement text-sm sm:text-base">
           {value}
         </p>
-        <p className="text-[10px] sm:text-xs text-[var(--text-muted)] font-inter">
+        <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
           {valueLabel}
         </p>
         {secondaryValue && (
-          <p className="text-[10px] text-[var(--success)] font-inter">
+          <p className="text-[10px] text-(--success) font-inter">
             {secondaryValue}
           </p>
         )}
@@ -1251,10 +1251,10 @@ export default function AdminChallengesNew() {
               {[...Array(10)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)] animate-pulse"
+                  className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border) animate-pulse"
                 >
-                  <div className="h-3 w-16 bg-[var(--surface)] rounded mb-2" />
-                  <div className="h-6 w-12 bg-[var(--surface)] rounded" />
+                  <div className="h-3 w-16 bg-(--surface) rounded mb-2" />
+                  <div className="h-6 w-12 bg-(--surface) rounded" />
                 </div>
               ))}
             </div>
@@ -1349,24 +1349,24 @@ export default function AdminChallengesNew() {
                 title="Rooms Created"
                 value={analytics.weeklyActivity.rooms}
                 icon={Trophy}
-                iconColor="text-[var(--primary)]"
-                iconBgColor="bg-[var(--primary)]/10"
+                iconColor="text-(--primary)"
+                iconBgColor="bg-(--primary)/10"
                 subValue="Last 7 days"
               />
               <StatCard
                 title="Participants"
                 value={analytics.weeklyActivity.participants}
                 icon={Users}
-                iconColor="text-[var(--primary)]"
-                iconBgColor="bg-[var(--primary)]/10"
+                iconColor="text-(--primary)"
+                iconBgColor="bg-(--primary)/10"
                 subValue="Last 7 days"
               />
               <StatCard
                 title="Solves"
                 value={analytics.weeklyActivity.solves}
                 icon={Timer}
-                iconColor="text-[var(--primary)]"
-                iconBgColor="bg-[var(--primary)]/10"
+                iconColor="text-(--primary)"
+                iconBgColor="bg-(--primary)/10"
                 subValue="Last 7 days"
               />
             </div>
@@ -1384,14 +1384,14 @@ export default function AdminChallengesNew() {
             <div className="h-56 sm:h-64">
               {!analytics ? (
                 <div className="flex items-center justify-center h-full">
-                  <div className="w-32 h-32 rounded-full bg-[var(--surface)] animate-pulse" />
+                  <div className="w-32 h-32 rounded-full bg-(--surface) animate-pulse" />
                 </div>
               ) : eventChartData &&
                 analytics.eventDistribution &&
                 analytics.eventDistribution.length > 0 ? (
                 <Doughnut data={eventChartData} options={chartOptions} />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-[var(--text-muted)]">
+                <div className="flex flex-col items-center justify-center h-full text-(--text-muted)">
                   <BarChart3 className="w-10 h-10 sm:w-12 sm:h-12 mb-2 opacity-50" />
                   <p className="text-sm font-inter">No event data available</p>
                 </div>
@@ -1408,7 +1408,7 @@ export default function AdminChallengesNew() {
             <div className="h-56 sm:h-64">
               {!analytics ? (
                 <div className="flex items-center justify-center h-full">
-                  <div className="w-32 h-32 rounded-full bg-[var(--surface)] animate-pulse" />
+                  <div className="w-32 h-32 rounded-full bg-(--surface) animate-pulse" />
                 </div>
               ) : formatChartData &&
                 analytics.formatDistribution &&
@@ -1416,7 +1416,7 @@ export default function AdminChallengesNew() {
                   analytics.formatDistribution.ao12 > 0) ? (
                 <Doughnut data={formatChartData} options={chartOptions} />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-[var(--text-muted)]">
+                <div className="flex flex-col items-center justify-center h-full text-(--text-muted)">
                   <BarChart3 className="w-10 h-10 sm:w-12 sm:h-12 mb-2 opacity-50" />
                   <p className="text-sm font-inter">No format data available</p>
                 </div>
@@ -1438,12 +1438,12 @@ export default function AdminChallengesNew() {
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-16 bg-[var(--surface-elevated)] rounded-lg animate-pulse"
+                    className="h-16 bg-(--surface-elevated) rounded-lg animate-pulse"
                   />
                 ))}
               </div>
             ) : analytics.topCreators.length === 0 ? (
-              <p className="text-[var(--text-muted)] text-center py-8 font-inter">
+              <p className="text-(--text-muted) text-center py-8 font-inter">
                 No creators yet
               </p>
             ) : (
@@ -1473,12 +1473,12 @@ export default function AdminChallengesNew() {
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-16 bg-[var(--surface-elevated)] rounded-lg animate-pulse"
+                    className="h-16 bg-(--surface-elevated) rounded-lg animate-pulse"
                   />
                 ))}
               </div>
             ) : analytics.topParticipants.length === 0 ? (
-              <p className="text-[var(--text-muted)] text-center py-8 font-inter">
+              <p className="text-(--text-muted) text-center py-8 font-inter">
                 No participants yet
               </p>
             ) : (
@@ -1511,7 +1511,7 @@ export default function AdminChallengesNew() {
           headerExtra={
             <button
               onClick={handleExportRooms}
-              className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+              className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
               title="Export Rooms"
               disabled={!rooms}
             >
@@ -1523,13 +1523,13 @@ export default function AdminChallengesNew() {
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4">
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search rooms..."
-                className="w-full pl-10 pr-4 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter text-sm"
+                className="w-full pl-10 pr-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
               />
             </div>
 
@@ -1538,14 +1538,14 @@ export default function AdminChallengesNew() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="appearance-none w-full sm:w-auto px-4 py-2 pr-8 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter text-sm"
+                className="appearance-none w-full sm:w-auto px-4 py-2 pr-8 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
                 <option value="expired">Expired</option>
                 <option value="archived">Archived</option>
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted) pointer-events-none" />
             </div>
 
             {/* Event Filter */}
@@ -1553,7 +1553,7 @@ export default function AdminChallengesNew() {
               <select
                 value={eventFilter}
                 onChange={(e) => setEventFilter(e.target.value)}
-                className="appearance-none w-full sm:w-auto px-4 py-2 pr-8 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter text-sm"
+                className="appearance-none w-full sm:w-auto px-4 py-2 pr-8 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
               >
                 <option value="all">All Events</option>
                 {uniqueEvents.map((event) => (
@@ -1562,7 +1562,7 @@ export default function AdminChallengesNew() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted) pointer-events-none" />
             </div>
           </div>
 
@@ -1572,18 +1572,18 @@ export default function AdminChallengesNew() {
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-xl p-4 animate-pulse"
+                  className="bg-(--surface-elevated) border border-(--border) rounded-xl p-4 animate-pulse"
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="h-5 w-16 bg-[var(--surface)] rounded-full" />
-                    <div className="h-5 w-12 bg-[var(--surface)] rounded-full" />
+                    <div className="h-5 w-16 bg-(--surface) rounded-full" />
+                    <div className="h-5 w-12 bg-(--surface) rounded-full" />
                   </div>
-                  <div className="h-4 w-48 bg-[var(--surface)] rounded mb-3" />
+                  <div className="h-4 w-48 bg-(--surface) rounded mb-3" />
                   <div className="grid grid-cols-4 gap-3">
                     {[...Array(4)].map((_, j) => (
                       <div key={j}>
-                        <div className="h-3 w-12 bg-[var(--surface)] rounded mb-1" />
-                        <div className="h-4 w-8 bg-[var(--surface)] rounded" />
+                        <div className="h-3 w-12 bg-(--surface) rounded mb-1" />
+                        <div className="h-4 w-8 bg-(--surface) rounded" />
                       </div>
                     ))}
                   </div>
@@ -1591,9 +1591,9 @@ export default function AdminChallengesNew() {
               ))}
             </div>
           ) : filteredRooms.length === 0 ? (
-            <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-xl p-8 text-center">
-              <Trophy className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-              <p className="text-[var(--text-muted)] font-inter">
+            <div className="bg-(--surface-elevated) border border-(--border) rounded-xl p-8 text-center">
+              <Trophy className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
+              <p className="text-(--text-muted) font-inter">
                 {searchQuery || statusFilter !== "all" || eventFilter !== "all"
                   ? "No rooms match your filters"
                   : "No challenge rooms yet"}
@@ -1601,7 +1601,7 @@ export default function AdminChallengesNew() {
             </div>
           ) : (
             <>
-              <p className="text-xs text-[var(--text-muted)] mb-3 font-inter">
+              <p className="text-xs text-(--text-muted) mb-3 font-inter">
                 Showing {filteredRooms.length} room
                 {filteredRooms.length !== 1 ? "s" : ""}
               </p>

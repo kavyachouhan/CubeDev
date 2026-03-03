@@ -311,10 +311,10 @@ export default function ScrambleDisplay({
       >
         <button
           onClick={toggleExpanded}
-          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
           title={isExpanded ? "Hide scramble" : "Show scramble"}
         >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             Scramble
           </h3>
           {isExpanded ? (
@@ -330,8 +330,8 @@ export default function ScrambleDisplay({
             disabled={!previousScramble}
             className={`p-1.5 rounded-md transition-colors ${
               previousScramble
-                ? "text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)]"
-                : "text-[var(--text-muted)] opacity-50 cursor-not-allowed"
+                ? "text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated)"
+                : "text-(--text-muted) opacity-50 cursor-not-allowed"
             }`}
             title={
               previousScramble
@@ -345,7 +345,7 @@ export default function ScrambleDisplay({
           {/* Next/New scramble button */}
           <button
             onClick={handleNext}
-            className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={
               isAtCurrent ? "Generate new scramble" : "Go to current scramble"
             }
@@ -360,7 +360,7 @@ export default function ScrambleDisplay({
           {/* Expand/collapse button */}
           <button
             onClick={toggleExpanded}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={isExpanded ? "Hide scramble" : "Show scramble"}
           >
             {isExpanded ? (
@@ -383,7 +383,7 @@ export default function ScrambleDisplay({
         aria-hidden={!isBodyVisible}
       >
         <div
-          className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]"
+          className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)"
           onClick={handleBackgroundInteraction}
           onTouchEnd={handleBackgroundInteraction}
         >
@@ -405,10 +405,10 @@ export default function ScrambleDisplay({
                     px-1.5 sm:px-2 py-0.5 sm:py-1 rounded select-none
                     ${
                       isActive
-                        ? "bg-[var(--primary)] text-white scale-105 sm:scale-110 shadow-md"
+                        ? "bg-(--primary) text-white scale-105 sm:scale-110 shadow-md"
                         : isBeforeActive || isBeforeTapped
-                          ? "text-[var(--primary)] bg-[var(--surface)] font-semibold"
-                          : "text-[var(--text-primary)] hover:text-[var(--primary)] hover:bg-[var(--surface)] active:scale-95"
+                          ? "text-(--primary) bg-(--surface) font-semibold"
+                          : "text-(--text-primary) hover:text-(--primary) hover:bg-(--surface) active:scale-95"
                     }
                   `}
                   onMouseEnter={() => handleMoveHover(index)}

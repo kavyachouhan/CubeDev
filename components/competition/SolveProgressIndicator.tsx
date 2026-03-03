@@ -81,20 +81,20 @@ export default function SolveProgressIndicator({
         const isCompleted = idx < solves.length;
         const isCurrent = idx === currentSolve;
 
-        let bgColor = "bg-[var(--surface-elevated)]";
+        let bgColor = "bg-(--surface-elevated)";
         if (isCompleted) {
           if (solve?.penalty === "DNF") {
-            bgColor = "bg-[var(--error)]";
+            bgColor = "bg-(--error)";
           } else if (
             solve?.penalty === "+2" ||
             solve?.inspectionViolation === "+2"
           ) {
-            bgColor = "bg-[var(--warning)]";
+            bgColor = "bg-(--warning)";
           } else {
-            bgColor = "bg-[var(--success)]";
+            bgColor = "bg-(--success)";
           }
         } else if (isCurrent) {
-          bgColor = "bg-[var(--primary)]";
+          bgColor = "bg-(--primary)";
         }
 
         return (
@@ -122,26 +122,26 @@ export default function SolveProgressIndicator({
         const isCompleted = idx < solves.length;
         const isCurrent = idx === currentSolve;
 
-        let cardStyles = "bg-[var(--surface-elevated)] border-[var(--border)]";
-        let textStyles = "text-[var(--text-muted)]";
+        let cardStyles = "bg-(--surface-elevated) border-(--border)";
+        let textStyles = "text-(--text-muted)";
 
         if (isCompleted) {
           if (solve?.penalty === "DNF") {
-            cardStyles = "bg-[var(--error)]/10 border-[var(--error)]/30";
-            textStyles = "text-[var(--error)]";
+            cardStyles = "bg-(--error)/10 border-(--error)/30";
+            textStyles = "text-(--error)";
           } else if (
             solve?.penalty === "+2" ||
             solve?.inspectionViolation === "+2"
           ) {
-            cardStyles = "bg-[var(--warning)]/10 border-[var(--warning)]/30";
-            textStyles = "text-[var(--warning)]";
+            cardStyles = "bg-(--warning)/10 border-(--warning)/30";
+            textStyles = "text-(--warning)";
           } else {
-            cardStyles = "bg-[var(--success)]/10 border-[var(--success)]/30";
-            textStyles = "text-[var(--success)]";
+            cardStyles = "bg-(--success)/10 border-(--success)/30";
+            textStyles = "text-(--success)";
           }
         } else if (isCurrent) {
-          cardStyles = "bg-[var(--primary)]/10 border-[var(--primary)]/30";
-          textStyles = "text-[var(--primary)]";
+          cardStyles = "bg-(--primary)/10 border-(--primary)/30";
+          textStyles = "text-(--primary)";
         }
 
         return (
@@ -149,7 +149,7 @@ export default function SolveProgressIndicator({
             key={idx}
             className={`${getCardSize()} rounded-lg border ${cardStyles} text-center transition-all duration-200`}
           >
-            <div className="text-xs text-[var(--text-muted)] mb-0.5">
+            <div className="text-xs text-(--text-muted) mb-0.5">
               #{idx + 1}
             </div>
             <div className={`font-mono font-medium text-sm ${textStyles}`}>
@@ -175,30 +175,30 @@ export default function SolveProgressIndicator({
         const isCompleted = idx < solves.length;
         const isCurrent = idx === currentSolve;
 
-        let bgColor = "bg-[var(--surface-elevated)] border-[var(--border)]";
-        let iconColor = "text-[var(--text-muted)]";
+        let bgColor = "bg-(--surface-elevated) border-(--border)";
+        let iconColor = "text-(--text-muted)";
         let Icon = null;
 
         if (isCompleted) {
           if (solve?.penalty === "DNF") {
-            bgColor = "bg-[var(--error)]/10 border-[var(--error)]/30";
-            iconColor = "text-[var(--error)]";
+            bgColor = "bg-(--error)/10 border-(--error)/30";
+            iconColor = "text-(--error)";
             Icon = X;
           } else if (
             solve?.penalty === "+2" ||
             solve?.inspectionViolation === "+2"
           ) {
-            bgColor = "bg-[var(--warning)]/10 border-[var(--warning)]/30";
-            iconColor = "text-[var(--warning)]";
+            bgColor = "bg-(--warning)/10 border-(--warning)/30";
+            iconColor = "text-(--warning)";
             Icon = AlertTriangle;
           } else {
-            bgColor = "bg-[var(--success)]/10 border-[var(--success)]/30";
-            iconColor = "text-[var(--success)]";
+            bgColor = "bg-(--success)/10 border-(--success)/30";
+            iconColor = "text-(--success)";
             Icon = Check;
           }
         } else if (isCurrent) {
-          bgColor = "bg-[var(--primary)]/10 border-[var(--primary)]/30";
-          iconColor = "text-[var(--primary)]";
+          bgColor = "bg-(--primary)/10 border-(--primary)/30";
+          iconColor = "text-(--primary)";
         }
 
         return (
@@ -228,7 +228,7 @@ export default function SolveProgressIndicator({
     <div className="w-full">
       {/* Progress label */}
       <div className="text-center mb-3">
-        <span className="text-xs text-[var(--text-muted)]">
+        <span className="text-xs text-(--text-muted)">
           Solve {Math.min(currentSolve + 1, totalSolves)}/{totalSolves}
         </span>
       </div>

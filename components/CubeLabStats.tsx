@@ -257,9 +257,9 @@ export default function CubeLabStats() {
     return (
       <div className="p-8 text-center">
         <div className="timer-card max-w-md mx-auto">
-          <div className="w-16 h-16 mx-auto mb-4 bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
             <svg
-              className="w-8 h-8 text-[var(--text-muted)]"
+              className="w-8 h-8 text-(--text-muted)"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -272,10 +272,10 @@ export default function CubeLabStats() {
               />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
+          <h3 className="text-xl font-semibold text-(--text-primary) mb-2">
             Login Required
           </h3>
-          <p className="text-[var(--text-secondary)]">
+          <p className="text-(--text-secondary)">
             Please log in to view your statistics
           </p>
         </div>

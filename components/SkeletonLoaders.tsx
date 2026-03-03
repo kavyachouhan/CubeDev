@@ -5,7 +5,7 @@ export function ProfileSidebarSkeleton() {
       <div className="timer-card text-center">
         {/* Avatar */}
         <div className="mb-6">
-          <div className="relative mx-auto w-32 h-32 rounded-full skeleton-box border-4 border-[var(--border)]" />
+          <div className="relative mx-auto w-32 h-32 rounded-full skeleton-box border-4 border-(--border)" />
         </div>
 
         {/* Name */}
@@ -32,7 +32,7 @@ export function ProfileSidebarSkeleton() {
           {[1, 2, 3, 4, 5].map((i) => (
             <div
               key={i}
-              className="flex items-center justify-between p-3 skeleton-box-subtle rounded-lg border border-[var(--border)]"
+              className="flex items-center justify-between p-3 skeleton-box-subtle rounded-lg border border-(--border)"
             >
               <div className="min-w-0 flex-1">
                 <div className="h-4 skeleton-box rounded w-24 mb-2" />
@@ -62,7 +62,7 @@ export function EventStatsSkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="skeleton-box-subtle rounded-xl p-3 sm:p-4 border border-[var(--border)]"
+            className="skeleton-box-subtle rounded-xl p-3 sm:p-4 border border-(--border)"
           >
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="w-8 h-8 skeleton-box rounded-lg" />
@@ -86,7 +86,7 @@ export function PlatformStatsSkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="skeleton-box-subtle rounded-xl p-3 sm:p-4 border border-[var(--border)]"
+            className="skeleton-box-subtle rounded-xl p-3 sm:p-4 border border-(--border)"
           >
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="w-8 h-8 skeleton-box rounded-lg" />
@@ -113,7 +113,7 @@ export function CompetitionListSkeleton() {
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="p-4 skeleton-box-subtle rounded-lg border border-[var(--border)]"
+            className="p-4 skeleton-box-subtle rounded-lg border border-(--border)"
           >
             <div className="flex items-start justify-between">
               <div className="min-w-0 flex-1">
@@ -146,7 +146,7 @@ export function HeatmapSkeleton() {
           {Array.from({ length: 36 }).map((_, i) => (
             <div
               key={i}
-              className="aspect-square rounded skeleton-box-subtle border border-[var(--border)]"
+              className="aspect-square rounded skeleton-box-subtle border border-(--border)"
             />
           ))}
         </div>
@@ -167,7 +167,7 @@ export function CubieWelcomeSkeleton() {
       <div className="max-w-3xl w-full text-center space-y-8 animate-pulse">
         {/* Welcome Header */}
         <div className="space-y-4">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-[var(--primary)]/10 border border-[var(--primary)]/20 rounded-full mb-4">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-(--primary)/10 border border-(--primary)/20 rounded-full mb-4">
             <div className="w-10 h-10 skeleton-box rounded-full" />
           </div>
           <div className="h-10 skeleton-box rounded w-64 mx-auto mb-4" />
@@ -180,10 +180,10 @@ export function CubieWelcomeSkeleton() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="p-4 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-xl"
+              className="p-4 bg-(--surface-elevated) border border-(--border) rounded-xl"
             >
               <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-10 h-10 skeleton-box rounded-lg" />
+                <div className="shrink-0 w-10 h-10 skeleton-box rounded-lg" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 skeleton-box rounded w-32" />
                   <div className="h-3 skeleton-box rounded w-full" />
@@ -204,19 +204,19 @@ export function CubieMessagesSkeleton() {
         {/* User message */}
         <div className="flex items-start gap-2 md:gap-3 justify-end">
           <div className="flex-1 max-w-[85%]">
-            <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-[var(--primary)]/10 border border-[var(--primary)]/20">
+            <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-(--primary)/10 border border-(--primary)/20">
               <div className="h-4 skeleton-box rounded w-3/4 mb-2" />
               <div className="h-4 skeleton-box rounded w-full" />
             </div>
           </div>
-          <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full skeleton-box" />
+          <div className="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full skeleton-box" />
         </div>
 
         {/* Bot message */}
         <div className="flex items-start gap-2 md:gap-3">
-          <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full skeleton-box" />
+          <div className="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full skeleton-box" />
           <div className="flex-1 max-w-[85%]">
-            <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border)]">
+            <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-(--surface-elevated) border border-(--border)">
               <div className="h-4 skeleton-box rounded w-full mb-2" />
               <div className="h-4 skeleton-box rounded w-full mb-2" />
               <div className="h-4 skeleton-box rounded w-3/4" />
@@ -227,18 +227,18 @@ export function CubieMessagesSkeleton() {
         {/* User message */}
         <div className="flex items-start gap-2 md:gap-3 justify-end">
           <div className="flex-1 max-w-[85%]">
-            <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-[var(--primary)]/10 border border-[var(--primary)]/20">
+            <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-(--primary)/10 border border-(--primary)/20">
               <div className="h-4 skeleton-box rounded w-2/3" />
             </div>
           </div>
-          <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full skeleton-box" />
+          <div className="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full skeleton-box" />
         </div>
 
         {/* Bot message */}
         <div className="flex items-start gap-2 md:gap-3">
-          <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full skeleton-box" />
+          <div className="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full skeleton-box" />
           <div className="flex-1 max-w-[85%]">
-            <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border)]">
+            <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-(--surface-elevated) border border-(--border)">
               <div className="h-4 skeleton-box rounded w-full mb-2" />
               <div className="h-4 skeleton-box rounded w-5/6" />
             </div>
@@ -268,7 +268,7 @@ export function AlgorithmTrainerSkeleton() {
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="timer-card">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-[var(--surface-elevated)] rounded-lg">
+                  <div className="p-2 bg-(--surface-elevated) rounded-lg">
                     <div className="w-5 h-5 skeleton-box rounded" />
                   </div>
                 </div>
@@ -286,7 +286,7 @@ export function AlgorithmTrainerSkeleton() {
             {[1, 2, 3].map((i) => (
               <div key={i} className="timer-card">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-[var(--surface-elevated)] rounded-lg">
+                  <div className="p-3 bg-(--surface-elevated) rounded-lg">
                     <div className="w-8 h-8 skeleton-box rounded" />
                   </div>
                   <div className="flex-1">
@@ -452,14 +452,14 @@ export function AlgorithmCaseDetailSkeleton() {
         {/* Current Algorithm */}
         <div className="timer-card">
           <div className="h-6 skeleton-box rounded w-40 mb-4" />
-          <div className="p-4 bg-[var(--surface-elevated)] rounded-lg mb-4">
+          <div className="p-4 bg-(--surface-elevated) rounded-lg mb-4">
             <div className="h-6 skeleton-box rounded w-3/4 mx-auto" />
           </div>
           <div className="grid grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="text-center p-3 bg-[var(--surface-elevated)] rounded"
+                className="text-center p-3 bg-(--surface-elevated) rounded"
               >
                 <div className="h-6 skeleton-box rounded w-12 mx-auto mb-1" />
                 <div className="h-3 skeleton-box rounded w-16 mx-auto" />
@@ -621,7 +621,7 @@ export function EditCustomSetSkeleton() {
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="p-3 skeleton-box-subtle rounded-lg border border-[var(--border)]"
+                className="p-3 skeleton-box-subtle rounded-lg border border-(--border)"
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -716,7 +716,7 @@ export function AlgorithmStatsSkeleton() {
             {[1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className="flex items-center justify-between p-3 skeleton-box-subtle rounded-lg border border-[var(--border)]"
+                className="flex items-center justify-between p-3 skeleton-box-subtle rounded-lg border border-(--border)"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 skeleton-box rounded-lg" />
@@ -744,9 +744,9 @@ export function CompetitionBrowserSkeleton() {
     <div className="h-full overflow-y-auto p-3 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 animate-pulse">
         {/* Tab Navigation */}
-        <div className="border-b border-[var(--border)]">
+        <div className="border-b border-(--border)">
           <nav className="flex space-x-6 sm:space-x-8">
-            <div className="py-3 sm:py-4 px-1 border-b-2 border-[var(--primary)]">
+            <div className="py-3 sm:py-4 px-1 border-b-2 border-(--primary)">
               <div className="h-5 skeleton-box rounded w-36" />
             </div>
             <div className="py-3 sm:py-4 px-1">
@@ -803,7 +803,7 @@ export function CompetitionBrowserSkeleton() {
           {[1, 2, 3, 4, 5].map((i) => (
             <div
               key={i}
-              className="timer-card p-4 border border-[var(--border)]"
+              className="timer-card p-4 border border-(--border)"
             >
               <div className="flex flex-col sm:flex-row items-start gap-4">
                 {/* Date Badge */}
@@ -856,7 +856,7 @@ export function CompetitionCardsSkeleton({ count = 5 }: { count?: number }) {
   return (
     <div className="grid gap-3 animate-pulse">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="timer-card p-4 border border-[var(--border)]">
+        <div key={i} className="timer-card p-4 border border-(--border)">
           <div className="flex flex-col gap-3">
             {/* Header Row - Date, Status, CTA */}
             <div className="flex items-center justify-between gap-2">
@@ -937,7 +937,7 @@ export function RegisteredCompetitionsSkeleton() {
                 </div>
               </div>
 
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="h-8 sm:h-9 skeleton-box rounded-lg w-10 sm:w-24" />
               </div>
             </div>
@@ -964,7 +964,7 @@ export function SimulationHistorySkeleton() {
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)]"
+            className="p-3 rounded-lg border border-(--border) bg-(--surface)"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
@@ -1029,7 +1029,7 @@ export function CompetitionOverviewSkeleton() {
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-[var(--border)] mb-4 sm:mb-6">
+        <div className="border-b border-(--border) mb-4 sm:mb-6">
           <nav className="flex space-x-6 sm:space-x-8 overflow-x-auto">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="py-3 sm:py-4 px-1">
@@ -1047,7 +1047,7 @@ export function CompetitionOverviewSkeleton() {
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg"
+                  className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg"
                 >
                   <div className="h-3 skeleton-box rounded w-16 mb-2" />
                   <div className="h-5 skeleton-box rounded w-32" />
@@ -1083,7 +1083,7 @@ export function CompetitionEventsTabSkeleton() {
         {Array.from({ length: 14 }).map((_, i) => (
           <div
             key={i}
-            className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)]"
+            className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border border-(--border) bg-(--surface-elevated)"
           >
             <div className="w-8 h-8 sm:w-10 sm:h-10 skeleton-box rounded-lg" />
             <div className="h-3 skeleton-box rounded w-12" />
@@ -1091,7 +1091,7 @@ export function CompetitionEventsTabSkeleton() {
         ))}
       </div>
 
-      <div className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+      <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-4 h-4 skeleton-box rounded" />
           <div className="h-5 skeleton-box rounded w-40" />
@@ -1135,7 +1135,7 @@ export function SimulationConfigSkeleton() {
             {Array.from({ length: 14 }).map((_, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)]"
+                className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border border-(--border) bg-(--surface)"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 skeleton-box rounded-lg" />
                 <div className="h-3 skeleton-box rounded w-10" />
@@ -1239,7 +1239,7 @@ export function SimulationEventSelectSkeleton() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="flex flex-col items-center gap-3 p-6 rounded-xl border border-[var(--border)] bg-[var(--surface)]"
+              className="flex flex-col items-center gap-3 p-6 rounded-xl border border-(--border) bg-(--surface)"
             >
               <div className="w-10 h-10 skeleton-box rounded" />
               <div className="h-5 skeleton-box rounded w-20" />
@@ -1295,7 +1295,7 @@ export function SimulationRoundSkeleton() {
             <div className="h-5 skeleton-box rounded w-20" />
             <div className="h-8 skeleton-box rounded-lg w-24" />
           </div>
-          <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+          <div className="p-4 bg-(--surface-elevated) rounded-lg">
             <div className="h-5 skeleton-box rounded w-full mb-2" />
             <div className="h-5 skeleton-box rounded w-4/5" />
           </div>
@@ -1354,7 +1354,7 @@ export function CompetitionAnalyticsSkeleton() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]"
+                className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 skeleton-box rounded" />
@@ -1380,7 +1380,7 @@ export function CompetitionAnalyticsSkeleton() {
             {[1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg"
+                className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg"
               >
                 <div className="flex items-center gap-3">
                   <div className="h-5 skeleton-box rounded w-16" />
@@ -1405,7 +1405,7 @@ export function CompetitionTrainingTabSkeleton() {
       {/* Training Cards */}
       <div className="grid sm:grid-cols-2 gap-4">
         {[1, 2].map((i) => (
-          <div key={i} className="timer-card border border-[var(--border)]">
+          <div key={i} className="timer-card border border-(--border)">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 skeleton-box rounded-lg" />
               <div>
@@ -1454,7 +1454,7 @@ export function MockScheduleSkeleton() {
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="flex items-center gap-3 p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]"
+            className="flex items-center gap-3 p-3 bg-(--surface-elevated) rounded-lg border border-(--border)"
           >
             <div className="h-5 skeleton-box rounded w-12" />
             <div className="flex-1">
@@ -1502,7 +1502,7 @@ export function WCAScorecardSkeleton() {
       </div>
 
       {/* Results Row */}
-      <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
+      <div className="flex items-center justify-between pt-4 border-t border-(--border)">
         <div>
           <div className="h-3 skeleton-box rounded w-12 mb-1" />
           <div className="h-6 skeleton-box rounded w-20" />
@@ -1538,12 +1538,12 @@ export function CoachDashboardSkeleton() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+      <div className="flex gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border)">
         {[1, 2, 3].map((i) => (
           <div
             key={i}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md ${
-              i === 1 ? "bg-[var(--primary)]/20" : ""
+              i === 1 ? "bg-(--primary)/20" : ""
             }`}
           >
             <div className="w-4 h-4 skeleton-box rounded" />
@@ -1581,7 +1581,7 @@ export function CoachTrainingPlanSkeleton() {
 
       {/* Daily Plans */}
       {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} className="timer-card border border-[var(--border)]">
+        <div key={i} className="timer-card border border-(--border)">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 skeleton-box rounded-full" />
@@ -1631,7 +1631,7 @@ export function CoachJournalCalendarSkeleton() {
           {Array.from({ length: 35 }).map((_, i) => (
             <div
               key={i}
-              className="aspect-square p-1 skeleton-box-subtle rounded-lg border border-[var(--border)]"
+              className="aspect-square p-1 skeleton-box-subtle rounded-lg border border-(--border)"
             >
               <div className="h-4 skeleton-box rounded w-4" />
             </div>
@@ -1649,7 +1649,7 @@ export function CoachJournalCalendarSkeleton() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-3 skeleton-box-subtle rounded-lg border border-[var(--border)]"
+              className="p-3 skeleton-box-subtle rounded-lg border border-(--border)"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 skeleton-box rounded-full" />
@@ -1719,7 +1719,7 @@ export function CoachGoalProgressSkeleton() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]"
+              className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
             >
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-5 h-5 skeleton-box rounded" />
@@ -1748,7 +1748,7 @@ export function CoachPracticeStreakSkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]"
+            className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
           >
             <div className="flex items-center gap-2 mb-1">
               <div className="w-5 h-5 skeleton-box rounded" />
@@ -1777,7 +1777,7 @@ export function CoachWeeklySummarySkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]"
+            className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
           >
             <div className="flex items-center gap-2 mb-1">
               <div className="w-5 h-5 skeleton-box rounded" />
@@ -1805,7 +1805,7 @@ export function CoachLearningMetricsSkeleton() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Learning Velocity */}
-        <div className="bg-[var(--surface-elevated)] rounded-lg p-4 border border-[var(--border)]">
+        <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 skeleton-box rounded-lg" />
             <div className="h-4 skeleton-box rounded w-32" />
@@ -1815,7 +1815,7 @@ export function CoachLearningMetricsSkeleton() {
         </div>
 
         {/* Consistency */}
-        <div className="bg-[var(--surface-elevated)] rounded-lg p-4 border border-[var(--border)]">
+        <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 skeleton-box rounded-lg" />
             <div className="h-4 skeleton-box rounded w-28" />
@@ -1826,7 +1826,7 @@ export function CoachLearningMetricsSkeleton() {
       </div>
 
       {/* Mood Distribution */}
-      <div className="mt-4 bg-[var(--surface-elevated)] rounded-lg p-4 border border-[var(--border)]">
+      <div className="mt-4 bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
         <div className="h-4 skeleton-box rounded w-36 mb-3" />
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map((i) => (
@@ -1854,7 +1854,7 @@ export function CoachMonthlyOverviewSkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]"
+            className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
           >
             <div className="flex items-center gap-2 mb-1">
               <div className="w-5 h-5 skeleton-box rounded" />
@@ -1868,11 +1868,11 @@ export function CoachMonthlyOverviewSkeleton() {
 
       {/* Comparison Stats */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+        <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
           <div className="h-3 skeleton-box rounded w-24 mb-2" />
           <div className="h-5 skeleton-box rounded w-20" />
         </div>
-        <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+        <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
           <div className="h-3 skeleton-box rounded w-24 mb-2" />
           <div className="h-5 skeleton-box rounded w-20" />
         </div>
@@ -1894,7 +1894,7 @@ export function CoachAllTimeStatsSkeleton() {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="bg-[var(--surface-elevated)] rounded-lg p-4 border border-[var(--border)] text-center"
+            className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border) text-center"
           >
             <div className="w-8 h-8 skeleton-box rounded-full mx-auto mb-2" />
             <div className="h-6 skeleton-box rounded w-16 mx-auto mb-2" />
@@ -1917,6 +1917,182 @@ export function CoachProgressHistorySkeleton() {
 
       {/* Chart */}
       <div className="h-64 skeleton-box rounded-lg" />
+    </div>
+  );
+}
+
+// Help Center Skeleton
+
+export function HelpCenterSkeleton() {
+  return (
+    <div className="space-y-8 animate-pulse">
+      {/* Hero */}
+      <div className="text-center space-y-4">
+        <div className="h-10 skeleton-box rounded w-64 mx-auto" />
+        <div className="h-5 skeleton-box rounded w-96 max-w-full mx-auto" />
+      </div>
+
+      {/* Search */}
+      <div className="max-w-2xl mx-auto">
+        <div className="h-12 skeleton-box rounded-xl" />
+      </div>
+
+      {/* Featured Articles */}
+      <div className="space-y-4">
+        <div className="h-6 skeleton-box rounded w-40" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="timer-card">
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 skeleton-box rounded-lg shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 skeleton-box rounded w-3/4" />
+                  <div className="h-3 skeleton-box rounded w-full" />
+                  <div className="h-3 skeleton-box rounded w-1/3" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Categories */}
+      <div className="space-y-4">
+        <div className="h-6 skeleton-box rounded w-36" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="timer-card">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 skeleton-box rounded-lg shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 skeleton-box rounded w-2/3" />
+                  <div className="h-3 skeleton-box rounded w-full" />
+                  <div className="h-3 skeleton-box rounded w-1/4" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function HelpCategorySkeleton() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      {/* Back button */}
+      <div className="h-4 skeleton-box rounded w-36" />
+
+      {/* Category header */}
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 skeleton-box rounded-xl shrink-0" />
+        <div className="space-y-2 flex-1">
+          <div className="h-7 skeleton-box rounded w-48" />
+          <div className="h-4 skeleton-box rounded w-72 max-w-full" />
+        </div>
+      </div>
+
+      {/* Articles list */}
+      <div className="space-y-3">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="timer-card">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex-1 space-y-2">
+                <div className="h-5 skeleton-box rounded w-3/4" />
+                <div className="h-4 skeleton-box rounded w-full" />
+                <div className="h-3 skeleton-box rounded w-24" />
+              </div>
+              <div className="w-5 h-5 skeleton-box rounded shrink-0" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function HelpArticleSkeleton() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2">
+        <div className="h-4 skeleton-box rounded w-20" />
+        <div className="w-3 h-3 skeleton-box rounded" />
+        <div className="h-4 skeleton-box rounded w-24" />
+        <div className="w-3 h-3 skeleton-box rounded" />
+        <div className="h-4 skeleton-box rounded w-32" />
+      </div>
+
+      {/* Article card */}
+      <div className="timer-card space-y-6">
+        {/* Header */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 skeleton-box rounded-lg" />
+            <div className="h-3 skeleton-box rounded w-20" />
+          </div>
+          <div className="h-8 skeleton-box rounded w-3/4" />
+          <div className="h-5 skeleton-box rounded w-full" />
+          <div className="flex items-center gap-4">
+            <div className="h-3 skeleton-box rounded w-16" />
+            <div className="h-3 skeleton-box rounded w-20" />
+            <div className="h-3 skeleton-box rounded w-24" />
+          </div>
+        </div>
+
+        <div className="border-t border-(--border)" />
+
+        {/* Content */}
+        <div className="space-y-3">
+          <div className="h-4 skeleton-box rounded w-full" />
+          <div className="h-4 skeleton-box rounded w-5/6" />
+          <div className="h-4 skeleton-box rounded w-full" />
+          <div className="h-4 skeleton-box rounded w-2/3" />
+          <div className="h-4 skeleton-box rounded w-4/5" />
+        </div>
+
+        {/* Steps */}
+        <div className="space-y-4">
+          <div className="h-6 skeleton-box rounded w-40" />
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="relative pl-10 sm:pl-12">
+              <div className="absolute left-0 top-0 w-7 h-7 sm:w-8 sm:h-8 skeleton-box rounded-full" />
+              <div className="space-y-2 pb-4">
+                <div className="h-5 skeleton-box rounded w-1/2" />
+                <div className="h-4 skeleton-box rounded w-full" />
+                <div className="h-4 skeleton-box rounded w-3/4" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="border-t border-(--border)" />
+
+        {/* Feedback */}
+        <div className="text-center space-y-3">
+          <div className="h-4 skeleton-box rounded w-40 mx-auto" />
+          <div className="flex items-center justify-center gap-3">
+            <div className="h-10 skeleton-box rounded-lg w-20" />
+            <div className="h-10 skeleton-box rounded-lg w-20" />
+          </div>
+        </div>
+      </div>
+
+      {/* Related articles */}
+      <div className="space-y-4">
+        <div className="h-6 skeleton-box rounded w-36" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="timer-card">
+              <div className="space-y-2">
+                <div className="h-4 skeleton-box rounded w-3/4" />
+                <div className="h-3 skeleton-box rounded w-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

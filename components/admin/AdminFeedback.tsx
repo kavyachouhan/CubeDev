@@ -172,9 +172,9 @@ function CollapsibleCard({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={toggleOpen}
-          className="flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
         >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             {title}
           </h3>
           {isOpen ? (
@@ -187,7 +187,7 @@ function CollapsibleCard({
           {headerExtra}
           <button
             onClick={toggleOpen}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
           >
             {isOpen ? (
               <EyeOff className="w-4 h-4" />
@@ -207,8 +207,8 @@ function StatCard({
   title,
   value,
   icon: Icon,
-  iconColor = "text-[var(--primary)]",
-  iconBgColor = "bg-[var(--primary)]/10",
+  iconColor = "text-(--primary)",
+  iconBgColor = "bg-(--primary)/10",
   subValue,
   trend,
 }: {
@@ -221,17 +221,17 @@ function StatCard({
   trend?: { value: number; label: string };
 }) {
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
       <div className="flex items-center gap-2 sm:gap-3">
         <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
           <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate font-inter">
+          <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate font-inter">
             {title}
           </div>
           <div className="flex items-center gap-2">
-            <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-statement">
+            <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
               {typeof value === "number" ? value.toLocaleString() : value}
             </div>
             {trend && (
@@ -250,7 +250,7 @@ function StatCard({
             )}
           </div>
           {subValue && (
-            <div className="text-xs text-[var(--text-muted)] font-inter">
+            <div className="text-xs text-(--text-muted) font-inter">
               {subValue}
             </div>
           )}
@@ -275,8 +275,8 @@ function NPSGauge({ score }: { score: number }) {
   };
 
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
-      <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-2">
+    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+      <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-2">
         Net Promoter Score
       </div>
       <div className="flex items-center gap-3">
@@ -305,16 +305,16 @@ function NPSGauge({ score }: { score: number }) {
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-statement">
+            <span className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
               {score}
             </span>
           </div>
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-statement truncate">
+          <p className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement truncate">
             {getLabel()}
           </p>
-          <p className="text-xs text-[var(--text-muted)] font-inter">
+          <p className="text-xs text-(--text-muted) font-inter">
             Range: -100 to 100
           </p>
         </div>
@@ -340,16 +340,16 @@ function FeatureRatingBar({
 
   return (
     <div className="flex items-center gap-2 sm:gap-3">
-      <span className="w-20 sm:w-32 text-xs sm:text-sm text-[var(--text-secondary)] font-inter truncate shrink-0">
+      <span className="w-20 sm:w-32 text-xs sm:text-sm text-(--text-secondary) font-inter truncate shrink-0">
         {formatFeatureName(feature)}
       </span>
-      <div className="flex-1 h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+      <div className="flex-1 h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
         <div
-          className="h-full bg-[var(--primary)] rounded-full transition-all"
+          className="h-full bg-(--primary) rounded-full transition-all"
           style={{ width: `${(rating / 5) * 100}%` }}
         />
       </div>
-      <span className="w-10 text-sm font-medium text-[var(--text-primary)] font-inter text-right">
+      <span className="w-10 text-sm font-medium text-(--text-primary) font-inter text-right">
         {rating.toFixed(1)}
       </span>
     </div>
@@ -367,7 +367,7 @@ function CustomResponseValue({
   // Handle null/undefined
   if (value === null || value === undefined) {
     return (
-      <div className="text-sm text-[var(--text-muted)] italic font-inter">
+      <div className="text-sm text-(--text-muted) italic font-inter">
         No response
       </div>
     );
@@ -382,7 +382,7 @@ function CustomResponseValue({
             value ? "bg-green-500" : "bg-red-500"
           }`}
         />
-        <span className="text-sm text-[var(--text-primary)] font-inter">
+        <span className="text-sm text-(--text-primary) font-inter">
           {value ? "Yes" : "No"}
         </span>
       </div>
@@ -402,12 +402,12 @@ function CustomResponseValue({
                 className={`w-3.5 h-3.5 ${
                   star <= value
                     ? "text-amber-500 fill-amber-500"
-                    : "text-[var(--text-muted)]"
+                    : "text-(--text-muted)"
                 }`}
               />
             ))}
           </div>
-          <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+          <span className="text-sm font-medium text-(--text-primary) font-inter">
             {value}/5
           </span>
         </div>
@@ -416,14 +416,14 @@ function CustomResponseValue({
     // Check if it's a 1-10 scale
     if (value <= 10 && value >= 1) {
       return (
-        <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+        <span className="text-sm font-medium text-(--text-primary) font-inter">
           {value}/10
         </span>
       );
     }
     // Regular number
     return (
-      <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+      <span className="text-sm font-medium text-(--text-primary) font-inter">
         {typeof value === "number" ? value.toLocaleString() : value}
       </span>
     );
@@ -441,7 +441,7 @@ function CustomResponseValue({
       }
     }
     return (
-      <p className="text-sm text-[var(--text-primary)] font-inter whitespace-pre-wrap break-words">
+      <p className="text-sm text-(--text-primary) font-inter whitespace-pre-wrap wrap-break-word">
         {value}
       </p>
     );
@@ -451,7 +451,7 @@ function CustomResponseValue({
   if (Array.isArray(value)) {
     if (value.length === 0) {
       return (
-        <div className="text-sm text-[var(--text-muted)] italic font-inter">
+        <div className="text-sm text-(--text-muted) italic font-inter">
           Empty list
         </div>
       );
@@ -461,9 +461,9 @@ function CustomResponseValue({
         {value.map((item, idx) => (
           <div
             key={idx}
-            className="flex items-start gap-2 text-sm text-[var(--text-primary)] font-inter"
+            className="flex items-start gap-2 text-sm text-(--text-primary) font-inter"
           >
-            <span className="text-[var(--text-muted)]">•</span>
+            <span className="text-(--text-muted)">•</span>
             <span>
               {typeof item === "object" ? JSON.stringify(item) : String(item)}
             </span>
@@ -478,7 +478,7 @@ function CustomResponseValue({
     const entries = Object.entries(value);
     if (entries.length === 0) {
       return (
-        <div className="text-sm text-[var(--text-muted)] italic font-inter">
+        <div className="text-sm text-(--text-muted) italic font-inter">
           Empty object
         </div>
       );
@@ -488,9 +488,9 @@ function CustomResponseValue({
         {entries.map(([key, val]) => (
           <div
             key={key}
-            className="bg-[var(--surface)] rounded-lg p-2.5 border border-[var(--border)]"
+            className="bg-(--surface) rounded-lg p-2.5 border border-(--border)"
           >
-            <p className="text-xs text-[var(--text-muted)] font-inter mb-1 capitalize">
+            <p className="text-xs text-(--text-muted) font-inter mb-1 capitalize">
               {key
                 .replace(/([A-Z])/g, " $1")
                 .toLowerCase()
@@ -505,7 +505,7 @@ function CustomResponseValue({
 
   // Fallback
   return (
-    <span className="text-sm text-[var(--text-primary)] font-inter">
+    <span className="text-sm text-(--text-primary) font-inter">
       {String(value)}
     </span>
   );
@@ -537,7 +537,7 @@ function FeedbackItem({
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`w-4 h-4 ${star <= rating ? "text-[var(--warning)] fill-[var(--warning)]" : "text-[var(--text-muted)]"}`}
+            className={`w-4 h-4 ${star <= rating ? "text-(--warning) fill-(--warning)" : "text-(--text-muted)"}`}
           />
         ))}
       </div>
@@ -549,14 +549,14 @@ function FeedbackItem({
       {/* Header - Always Visible */}
       <button
         onClick={onToggle}
-        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2 hover:bg-[var(--surface-elevated)] transition-colors"
+        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2 hover:bg-(--surface-elevated) transition-colors"
       >
         <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <span className="text-xs px-1.5 sm:px-2 py-0.5 bg-[var(--primary)]/10 text-[var(--primary)] rounded-full font-inter truncate max-w-[80px] sm:max-w-none">
+            <span className="text-xs px-1.5 sm:px-2 py-0.5 bg-(--primary)/10 text-(--primary) rounded-full font-inter truncate max-w-[80px] sm:max-w-none">
               {feedback.surveyType || "general"}
             </span>
-            <span className="text-xs text-[var(--text-muted)] font-inter hidden xs:inline">
+            <span className="text-xs text-(--text-muted) font-inter hidden xs:inline">
               v{feedback.surveyVersion || "1.0"}
             </span>
           </div>
@@ -565,60 +565,60 @@ function FeedbackItem({
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <span className="text-xs sm:text-sm text-[var(--text-muted)] font-inter hidden sm:inline">
+          <span className="text-xs sm:text-sm text-(--text-muted) font-inter hidden sm:inline">
             {formatDate(feedback.createdAt)}
           </span>
           {isExpanded ? (
-            <ChevronUp className="w-4 h-4 text-[var(--text-muted)]" />
+            <ChevronUp className="w-4 h-4 text-(--text-muted)" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />
+            <ChevronDown className="w-4 h-4 text-(--text-muted)" />
           )}
         </div>
       </button>
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-2 border-t border-[var(--border)] space-y-3 sm:space-y-4">
+        <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-2 border-t border-(--border) space-y-3 sm:space-y-4">
           {/* Mobile date */}
-          <p className="text-xs text-[var(--text-muted)] font-inter sm:hidden">
+          <p className="text-xs text-(--text-muted) font-inter sm:hidden">
             {formatDate(feedback.createdAt)}
           </p>
           {/* Ratings Row */}
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             {feedback.uiuxRating && (
-              <div className="bg-[var(--surface-elevated)] rounded-lg p-3">
-                <p className="text-xs text-[var(--text-muted)] font-inter mb-1">
+              <div className="bg-(--surface-elevated) rounded-lg p-3">
+                <p className="text-xs text-(--text-muted) font-inter mb-1">
                   UI/UX Rating
                 </p>
                 <div className="flex items-center gap-2">
                   {renderStars(feedback.uiuxRating)}
-                  <span className="text-sm font-medium text-[var(--text-primary)]">
+                  <span className="text-sm font-medium text-(--text-primary)">
                     {feedback.uiuxRating}/5
                   </span>
                 </div>
               </div>
             )}
             {feedback.recommendScore && (
-              <div className="bg-[var(--surface-elevated)] rounded-lg p-3">
-                <p className="text-xs text-[var(--text-muted)] font-inter mb-1">
+              <div className="bg-(--surface-elevated) rounded-lg p-3">
+                <p className="text-xs text-(--text-muted) font-inter mb-1">
                   Recommend Score
                 </p>
                 <div className="flex items-center gap-2">
-                  <ThumbsUp className="w-4 h-4 text-[var(--primary)]" />
-                  <span className="text-sm font-medium text-[var(--text-primary)]">
+                  <ThumbsUp className="w-4 h-4 text-(--primary)" />
+                  <span className="text-sm font-medium text-(--text-primary)">
                     {feedback.recommendScore}/10
                   </span>
                 </div>
               </div>
             )}
             {feedback.userId && (
-              <div className="bg-[var(--surface-elevated)] rounded-lg p-3">
-                <p className="text-xs text-[var(--text-muted)] font-inter mb-1">
+              <div className="bg-(--surface-elevated) rounded-lg p-3">
+                <p className="text-xs text-(--text-muted) font-inter mb-1">
                   Submitted by
                 </p>
                 <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-[var(--primary)]" />
-                  <span className="text-sm font-medium text-[var(--text-primary)] truncate">
+                  <User className="w-4 h-4 text-(--primary)" />
+                  <span className="text-sm font-medium text-(--text-primary) truncate">
                     {feedback.userName ?? feedback.userId}
                   </span>
                 </div>
@@ -635,10 +635,10 @@ function FeedbackItem({
           {feedback.featureRatings &&
             Object.keys(feedback.featureRatings).length > 0 && (
               <div>
-                <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] font-inter mb-2">
+                <p className="text-xs sm:text-sm font-medium text-(--text-secondary) font-inter mb-2">
                   Feature Ratings
                 </p>
-                <div className="bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 space-y-2">
+                <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 space-y-2">
                   {Object.entries(feedback.featureRatings).map(
                     ([feature, rating]) => (
                       <FeatureRatingBar
@@ -655,10 +655,10 @@ function FeedbackItem({
           {/* Most Useful Feature */}
           {feedback.mostUsefulFeature && (
             <div>
-              <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] font-inter mb-1">
+              <p className="text-xs sm:text-sm font-medium text-(--text-secondary) font-inter mb-1">
                 Most Useful Feature
               </p>
-              <p className="text-xs sm:text-sm text-[var(--text-primary)] font-inter bg-[var(--surface-elevated)] rounded-lg p-2.5 sm:p-3">
+              <p className="text-xs sm:text-sm text-(--text-primary) font-inter bg-(--surface-elevated) rounded-lg p-2.5 sm:p-3">
                 {feedback.mostUsefulFeature}
               </p>
             </div>
@@ -667,10 +667,10 @@ function FeedbackItem({
           {/* Feature Requests */}
           {feedback.featureRequests && (
             <div>
-              <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] font-inter mb-1">
+              <p className="text-xs sm:text-sm font-medium text-(--text-secondary) font-inter mb-1">
                 Feature Requests
               </p>
-              <p className="text-xs sm:text-sm text-[var(--text-primary)] font-inter bg-[var(--surface-elevated)] rounded-lg p-2.5 sm:p-3 whitespace-pre-wrap break-words">
+              <p className="text-xs sm:text-sm text-(--text-primary) font-inter bg-(--surface-elevated) rounded-lg p-2.5 sm:p-3 whitespace-pre-wrap wrap-break-word">
                 {feedback.featureRequests}
               </p>
             </div>
@@ -679,10 +679,10 @@ function FeedbackItem({
           {/* Additional Comments */}
           {feedback.additionalComments && (
             <div>
-              <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] font-inter mb-1">
+              <p className="text-xs sm:text-sm font-medium text-(--text-secondary) font-inter mb-1">
                 Additional Comments
               </p>
-              <p className="text-xs sm:text-sm text-[var(--text-primary)] font-inter bg-[var(--surface-elevated)] rounded-lg p-2.5 sm:p-3 whitespace-pre-wrap break-words">
+              <p className="text-xs sm:text-sm text-(--text-primary) font-inter bg-(--surface-elevated) rounded-lg p-2.5 sm:p-3 whitespace-pre-wrap wrap-break-word">
                 {feedback.additionalComments}
               </p>
             </div>
@@ -693,7 +693,7 @@ function FeedbackItem({
             typeof feedback.customResponses === "object" &&
             Object.keys(feedback.customResponses).length > 0 && (
               <div>
-                <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)] font-inter mb-2">
+                <p className="text-xs sm:text-sm font-medium text-(--text-secondary) font-inter mb-2">
                   Custom Responses
                 </p>
                 <div className="space-y-2.5">
@@ -701,9 +701,9 @@ function FeedbackItem({
                     ([key, value]) => (
                       <div
                         key={key}
-                        className="bg-[var(--surface-elevated)] rounded-lg p-2.5 sm:p-3 border border-[var(--border)]"
+                        className="bg-(--surface-elevated) rounded-lg p-2.5 sm:p-3 border border-(--border)"
                       >
-                        <p className="text-xs text-[var(--text-muted)] font-inter mb-1.5 capitalize">
+                        <p className="text-xs text-(--text-muted) font-inter mb-1.5 capitalize">
                           {key
                             .replace(/([A-Z])/g, " $1")
                             .replace(/_/g, " ")
@@ -718,7 +718,7 @@ function FeedbackItem({
             )}
 
           {/* Metadata */}
-          <div className="flex items-center gap-2 sm:gap-4 text-xs text-[var(--text-muted)] font-inter pt-2 border-t border-[var(--border)] flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-4 text-xs text-(--text-muted) font-inter pt-2 border-t border-(--border) flex-wrap">
             <span className="flex items-center gap-1 shrink-0">
               <Calendar className="w-3 h-3" />
               {formatDate(feedback.createdAt)}
@@ -821,22 +821,22 @@ function RatingDistribution({
       {Array.from({ length: maxRating }, (_, i) => maxRating - i).map(
         (rating) => (
           <div key={rating} className="flex items-center gap-2">
-            <span className="text-xs text-[var(--text-muted)] font-inter w-6 text-right">
+            <span className="text-xs text-(--text-muted) font-inter w-6 text-right">
               {rating}
             </span>
             <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-            <div className="flex-1 h-2 bg-[var(--surface)] rounded-full overflow-hidden">
+            <div className="flex-1 h-2 bg-(--surface) rounded-full overflow-hidden">
               <div
-                className="h-full bg-[var(--primary)] rounded-full transition-all duration-500"
+                className="h-full bg-(--primary) rounded-full transition-all duration-500"
                 style={{
                   width: `${maxCount > 0 ? ((distribution[rating] || 0) / maxCount) * 100 : 0}%`,
                 }}
               />
             </div>
-            <span className="text-xs text-[var(--text-secondary)] font-inter w-8 text-right">
+            <span className="text-xs text-(--text-secondary) font-inter w-8 text-right">
               {distribution[rating] || 0}
             </span>
-            <span className="text-xs text-[var(--text-muted)] font-inter w-10 text-right">
+            <span className="text-xs text-(--text-muted) font-inter w-10 text-right">
               {total > 0
                 ? (((distribution[rating] || 0) / total) * 100).toFixed(0)
                 : 0}
@@ -876,7 +876,7 @@ function NPSBreakdown({
 
   return (
     <div className="space-y-3">
-      <div className="flex h-3 rounded-full overflow-hidden bg-[var(--surface)]">
+      <div className="flex h-3 rounded-full overflow-hidden bg-(--surface)">
         {items.map((item, idx) => (
           <div
             key={idx}
@@ -892,11 +892,11 @@ function NPSBreakdown({
           <div key={idx} className="text-center">
             <div className="flex items-center justify-center gap-1.5 mb-1">
               <div className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
-              <span className="text-lg font-bold text-[var(--text-primary)] font-statement">
+              <span className="text-lg font-bold text-(--text-primary) font-statement">
                 {item.value}
               </span>
             </div>
-            <span className="text-xs text-[var(--text-muted)] font-inter">
+            <span className="text-xs text-(--text-muted) font-inter">
               {item.label}
             </span>
           </div>
@@ -980,15 +980,15 @@ function FormSectionToggle({
       onClick={onToggle}
       className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all text-sm font-inter ${
         enabled
-          ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-          : "bg-[var(--surface-elevated)] border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--text-muted)]"
+          ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
+          : "bg-(--surface-elevated) border-(--border) text-(--text-muted) hover:border-(--text-muted)"
       }`}
     >
       <div
         className={`w-3 h-3 rounded-sm border transition-all ${
           enabled
-            ? "bg-[var(--primary)] border-[var(--primary)]"
-            : "border-[var(--text-muted)]"
+            ? "bg-(--primary) border-(--primary)"
+            : "border-(--text-muted)"
         }`}
       >
         {enabled && (
@@ -1268,16 +1268,16 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
       <div className="timer-card max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] font-statement">
+            <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
               Create Feedback Form
             </h2>
-            <p className="text-xs sm:text-sm text-[var(--text-muted)] font-inter mt-1">
+            <p className="text-xs sm:text-sm text-(--text-muted) font-inter mt-1">
               Configure form fields and submit feedback entry
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -1285,10 +1285,10 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Form Configuration */}
-          <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+          <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
             <div className="flex items-center gap-2 mb-3">
-              <Settings className="w-4 h-4 text-[var(--text-muted)]" />
-              <h3 className="text-sm font-medium text-[var(--text-primary)] font-inter">
+              <Settings className="w-4 h-4 text-(--text-muted)" />
+              <h3 className="text-sm font-medium text-(--text-primary) font-inter">
                 Form Configuration
               </h3>
             </div>
@@ -1329,13 +1329,13 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* Survey Type & Version */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                 Survey Type
               </label>
               <select
                 value={surveyType}
                 onChange={(e) => setSurveyType(e.target.value)}
-                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-inter focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) font-inter focus:outline-none focus:ring-2 focus:ring-(--primary)"
               >
                 {SURVEY_TYPES.map((type) => (
                   <option key={type.value} value={type.value}>
@@ -1349,20 +1349,20 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                   type="text"
                   value={customSurveyType}
                   onChange={(e) => setCustomSurveyType(e.target.value)}
-                  className="w-full mt-2 px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                  className="w-full mt-2 px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
                   placeholder="Enter custom survey type..."
                 />
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                 Version
               </label>
               <input
                 type="text"
                 value={surveyVersion}
                 onChange={(e) => setSurveyVersion(e.target.value)}
-                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
                 placeholder="2.0"
               />
             </div>
@@ -1371,7 +1371,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* UI/UX Rating */}
           {enabledSections.uiuxRating && (
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                 UI/UX Rating (1-5)
               </label>
               <div className="flex gap-2">
@@ -1382,13 +1382,13 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     onClick={() =>
                       setUiuxRating(uiuxRating === rating ? 0 : rating)
                     }
-                    className="p-2 rounded-lg transition-colors hover:bg-[var(--surface-elevated)]"
+                    className="p-2 rounded-lg transition-colors hover:bg-(--surface-elevated)"
                   >
                     <Star
                       className={`w-6 h-6 ${
                         rating <= uiuxRating
                           ? "text-amber-500 fill-amber-500"
-                          : "text-[var(--text-muted)]"
+                          : "text-(--text-muted)"
                       }`}
                     />
                   </button>
@@ -1401,10 +1401,10 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {enabledSections.featureRatings && (
             <div>
               <div className="flex items-center justify-between mb-3">
-                <label className="block text-sm font-medium text-[var(--text-primary)] font-inter">
+                <label className="block text-sm font-medium text-(--text-primary) font-inter">
                   Feature Ratings
                 </label>
-                <span className="text-xs text-[var(--text-muted)] font-inter">
+                <span className="text-xs text-(--text-muted) font-inter">
                   {selectedFeatures.length} selected
                 </span>
               </div>
@@ -1418,8 +1418,8 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     onClick={() => toggleFeature(feature.key)}
                     className={`px-2.5 py-1 rounded-md text-xs font-inter transition-colors ${
                       selectedFeatures.includes(feature.key)
-                        ? "bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/30"
-                        : "bg-[var(--surface-elevated)] text-[var(--text-muted)] border border-[var(--border)]"
+                        ? "bg-(--primary)/10 text-(--primary) border border-(--primary)/30"
+                        : "bg-(--surface-elevated) text-(--text-muted) border border-(--border)"
                     }`}
                   >
                     {feature.label}
@@ -1437,13 +1437,13 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                       onChange={(e) =>
                         updateExtraFeature(index, "label", e.target.value)
                       }
-                      className="flex-1 px-3 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                      className="flex-1 px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
                       placeholder="Feature name..."
                     />
                     <button
                       type="button"
                       onClick={() => removeExtraFeature(index)}
-                      className="p-2 text-[var(--text-muted)] hover:text-[var(--error)] hover:bg-[var(--error)]/10 rounded-lg transition-colors"
+                      className="p-2 text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 rounded-lg transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -1452,7 +1452,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                 <button
                   type="button"
                   onClick={addExtraFeature}
-                  className="flex items-center gap-1 px-2 py-1 text-xs bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-md text-[var(--text-secondary)] transition-colors font-inter"
+                  className="flex items-center gap-1 px-2 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-secondary) transition-colors font-inter"
                 >
                   <Plus className="w-3 h-3" />
                   Add Feature
@@ -1460,7 +1460,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
               </div>
 
               {/* Ratings */}
-              <div className="space-y-3 bg-[var(--surface-elevated)] rounded-lg p-2 sm:p-3 border border-[var(--border)]">
+              <div className="space-y-3 bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
                 {allFeatures
                   .filter((f) => selectedFeatures.includes(f.key))
                   .map((feature) => (
@@ -1468,7 +1468,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                       key={feature.key}
                       className="flex items-center justify-between gap-2"
                     >
-                      <span className="text-xs sm:text-sm text-[var(--text-secondary)] font-inter truncate min-w-0">
+                      <span className="text-xs sm:text-sm text-(--text-secondary) font-inter truncate min-w-0">
                         {feature.label}
                       </span>
                       <div className="flex gap-0.5 sm:gap-1 shrink-0">
@@ -1491,7 +1491,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                               className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
                                 rating <= (featureRatings[feature.key] || 0)
                                   ? "text-amber-500 fill-amber-500"
-                                  : "text-[var(--text-muted)]"
+                                  : "text-(--text-muted)"
                               }`}
                             />
                           </button>
@@ -1500,7 +1500,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     </div>
                   ))}
                 {selectedFeatures.length === 0 && (
-                  <p className="text-sm text-[var(--text-muted)] text-center py-2 font-inter">
+                  <p className="text-sm text-(--text-muted) text-center py-2 font-inter">
                     Select features above to rate
                   </p>
                 )}
@@ -1511,7 +1511,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* Recommend Score (NPS) */}
           {enabledSections.recommendScore && (
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                 Would Recommend (1-10 NPS)
               </label>
               <div className="flex gap-1 flex-wrap">
@@ -1524,8 +1524,8 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     }
                     className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
                       score === recommendScore
-                        ? "bg-[var(--primary)] text-white"
-                        : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
+                        ? "bg-(--primary) text-white"
+                        : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border)"
                     }`}
                   >
                     {score}
@@ -1538,13 +1538,13 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* Most Useful Feature */}
           {enabledSections.mostUsefulFeature && (
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                 Most Useful Feature
               </label>
               <select
                 value={mostUsefulFeature}
                 onChange={(e) => setMostUsefulFeature(e.target.value)}
-                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-inter focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) font-inter focus:outline-none focus:ring-2 focus:ring-(--primary)"
               >
                 <option value="">Select a feature...</option>
                 {allFeatures.map((feature) => (
@@ -1559,14 +1559,14 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* Feature Requests */}
           {enabledSections.featureRequests && (
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                 Feature Requests
               </label>
               <textarea
                 value={featureRequests}
                 onChange={(e) => setFeatureRequests(e.target.value)}
                 rows={2}
-                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none font-inter"
+                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) resize-none font-inter"
                 placeholder="Enter feature requests..."
               />
             </div>
@@ -1575,14 +1575,14 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* Additional Comments */}
           {enabledSections.additionalComments && (
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                 Additional Comments
               </label>
               <textarea
                 value={additionalComments}
                 onChange={(e) => setAdditionalComments(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none font-inter"
+                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) resize-none font-inter"
                 placeholder="Enter additional comments..."
               />
             </div>
@@ -1591,13 +1591,13 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* Custom Questions Builder */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <label className="block text-sm font-medium text-[var(--text-primary)] font-inter">
+              <label className="block text-sm font-medium text-(--text-primary) font-inter">
                 Custom Questions
               </label>
               <button
                 type="button"
                 onClick={addCustomQuestion}
-                className="flex items-center gap-1 px-2 py-1 text-xs bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-md text-[var(--text-secondary)] transition-colors font-inter"
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-secondary) transition-colors font-inter"
               >
                 <Plus className="w-3 h-3" />
                 Add Question
@@ -1608,16 +1608,16 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                 {customQuestions.map((question, idx) => (
                   <div
                     key={question.id}
-                    className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)] space-y-3"
+                    className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border) space-y-3"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-[var(--text-muted)] font-inter">
+                      <span className="text-xs text-(--text-muted) font-inter">
                         Question {idx + 1}
                       </span>
                       <button
                         type="button"
                         onClick={() => removeCustomQuestion(question.id)}
-                        className="p-1 text-[var(--text-muted)] hover:text-[var(--error)] hover:bg-[var(--error)]/10 rounded transition-colors"
+                        className="p-1 text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 rounded transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -1632,7 +1632,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                           label: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                      className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
                       placeholder="Enter question..."
                     />
 
@@ -1645,7 +1645,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                             type: e.target.value as CustomQuestionType,
                           })
                         }
-                        className="flex-1 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] font-inter focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                        className="flex-1 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) font-inter focus:outline-none focus:ring-2 focus:ring-(--primary)"
                       >
                         {QUESTION_TYPES.map((t) => (
                           <option key={t.value} value={t.value}>
@@ -1662,8 +1662,8 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                         }
                         className={`px-2.5 py-2 rounded-lg text-xs font-inter border transition-colors text-center ${
                           question.required
-                            ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-                            : "bg-[var(--surface)] border-[var(--border)] text-[var(--text-muted)]"
+                            ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
+                            : "bg-(--surface) border-(--border) text-(--text-muted)"
                         }`}
                       >
                         {question.required ? "Required" : "Optional"}
@@ -1680,15 +1680,15 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                             options: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                        className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
                         placeholder="Comma-separated options (e.g. Option A, Option B, Option C)"
                       />
                     )}
 
                     {/* Answer Input */}
                     {question.label.trim() && (
-                      <div className="pt-2 border-t border-[var(--border)]">
-                        <p className="text-xs text-[var(--text-muted)] font-inter mb-1.5">
+                      <div className="pt-2 border-t border-(--border)">
+                        <p className="text-xs text-(--text-muted) font-inter mb-1.5">
                           Answer:
                         </p>
                         {question.type === "text" && (
@@ -1698,7 +1698,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                             onChange={(e) =>
                               updateCustomAnswer(question.id, e.target.value)
                             }
-                            className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter"
+                            className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
                             placeholder="Enter answer..."
                           />
                         )}
@@ -1709,7 +1709,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                               updateCustomAnswer(question.id, e.target.value)
                             }
                             rows={2}
-                            className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none font-inter"
+                            className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) resize-none font-inter"
                             placeholder="Enter answer..."
                           />
                         )}
@@ -1733,7 +1733,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                                     ((customAnswers[question.id] as number) ||
                                       0)
                                       ? "text-amber-500 fill-amber-500"
-                                      : "text-[var(--text-muted)]"
+                                      : "text-(--text-muted)"
                                   }`}
                                 />
                               </button>
@@ -1754,8 +1754,8 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                                 }
                                 className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
                                   s === customAnswers[question.id]
-                                    ? "bg-[var(--primary)] text-white"
-                                    : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
+                                    ? "bg-(--primary) text-white"
+                                    : "bg-(--surface) text-(--text-secondary) hover:bg-(--border)"
                                 }`}
                               >
                                 {s}
@@ -1769,7 +1769,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                             onChange={(e) =>
                               updateCustomAnswer(question.id, e.target.value)
                             }
-                            className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] font-inter focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                            className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) font-inter focus:outline-none focus:ring-2 focus:ring-(--primary)"
                           >
                             <option value="">Select...</option>
                             {question.options
@@ -1789,7 +1789,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-[var(--text-muted)] font-inter">
+              <p className="text-xs text-(--text-muted) font-inter">
                 Add custom questions with different field types (text, rating,
                 scale, dropdown)
               </p>
@@ -1797,7 +1797,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4 border-t border-[var(--border)]">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4 border-t border-(--border)">
             <button
               type="button"
               onClick={onClose}
@@ -1895,14 +1895,14 @@ export default function AdminFeedback() {
       <div className="timer-card mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Filter className="w-4 h-4 text-[var(--text-muted)]" />
-            <span className="text-sm text-[var(--text-secondary)] font-inter">
+            <Filter className="w-4 h-4 text-(--text-muted)" />
+            <span className="text-sm text-(--text-secondary) font-inter">
               Survey Type:
             </span>
             <select
               value={surveyTypeFilter}
               onChange={(e) => setSurveyTypeFilter(e.target.value)}
-              className="px-3 py-1.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] font-inter focus:outline-none focus:border-[var(--primary)]"
+              className="px-3 py-1.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-sm text-(--text-primary) font-inter focus:outline-none focus:border-(--primary)"
             >
               <option value="all">All Types</option>
               {allSurveyTypes.map((type) => (
@@ -1915,7 +1915,7 @@ export default function AdminFeedback() {
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               onClick={() => setIsFeedbackModalOpen(true)}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-[var(--primary)] hover:bg-[var(--primary-hover)] rounded-lg text-white transition-colors font-inter"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--primary) hover:bg-(--primary-hover) rounded-lg text-white transition-colors font-inter"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden xs:inline">Create Form</span>
@@ -1924,7 +1924,7 @@ export default function AdminFeedback() {
             <button
               onClick={handleExportStats}
               disabled={!detailedStats}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="w-4 h-4" />
               <span className="hidden sm:inline">Export Analytics</span>
@@ -1947,10 +1947,10 @@ export default function AdminFeedback() {
               [...Array(4)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)] animate-pulse"
+                  className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border) animate-pulse"
                 >
-                  <div className="h-4 w-24 bg-[var(--surface)] rounded mb-2" />
-                  <div className="h-8 w-16 bg-[var(--surface)] rounded" />
+                  <div className="h-4 w-24 bg-(--surface) rounded mb-2" />
+                  <div className="h-8 w-16 bg-(--surface) rounded" />
                 </div>
               ))
             ) : (
@@ -2081,18 +2081,18 @@ export default function AdminFeedback() {
               {Object.entries(detailedStats.surveyTypeBreakdown).map(
                 ([type, count]) => (
                   <div key={type} className="flex items-center gap-3">
-                    <span className="text-sm text-[var(--text-secondary)] font-inter w-24 truncate capitalize">
+                    <span className="text-sm text-(--text-secondary) font-inter w-24 truncate capitalize">
                       {type}
                     </span>
-                    <div className="flex-1 h-2 bg-[var(--surface)] rounded-full overflow-hidden">
+                    <div className="flex-1 h-2 bg-(--surface) rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-[var(--primary)] rounded-full transition-all duration-500"
+                        className="h-full bg-(--primary) rounded-full transition-all duration-500"
                         style={{
                           width: `${detailedStats.totalResponses > 0 ? ((count as number) / detailedStats.totalResponses) * 100 : 0}%`,
                         }}
                       />
                     </div>
-                    <span className="text-sm text-[var(--text-primary)] font-inter w-10 text-right">
+                    <span className="text-sm text-(--text-primary) font-inter w-10 text-right">
                       {count as number}
                     </span>
                   </div>
@@ -2115,12 +2115,12 @@ export default function AdminFeedback() {
               {detailedStats.mostUsefulFeatures.slice(0, 9).map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between bg-[var(--surface-elevated)] rounded-lg p-2.5 border border-[var(--border)]"
+                  className="flex items-center justify-between bg-(--surface-elevated) rounded-lg p-2.5 border border-(--border)"
                 >
-                  <span className="text-sm text-[var(--text-secondary)] font-inter truncate capitalize">
+                  <span className="text-sm text-(--text-secondary) font-inter truncate capitalize">
                     {item.feature}
                   </span>
-                  <span className="text-sm font-semibold text-[var(--text-primary)] font-statement ml-2">
+                  <span className="text-sm font-semibold text-(--text-primary) font-statement ml-2">
                     {item.count}
                   </span>
                 </div>
@@ -2165,7 +2165,7 @@ export default function AdminFeedback() {
             <button
               onClick={handleExportFeedback}
               disabled={!feedbackList || feedbackList.length === 0}
-              className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-md text-[var(--text-secondary)] transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
               title="Export feedback as CSV"
             >
               <Download className="w-3.5 h-3.5" />
@@ -2178,16 +2178,16 @@ export default function AdminFeedback() {
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="timer-card animate-pulse">
                   <div className="flex items-center justify-between">
-                    <div className="h-4 w-32 bg-[var(--surface-elevated)] rounded" />
-                    <div className="h-4 w-24 bg-[var(--surface-elevated)] rounded" />
+                    <div className="h-4 w-32 bg-(--surface-elevated) rounded" />
+                    <div className="h-4 w-24 bg-(--surface-elevated) rounded" />
                   </div>
                 </div>
               ))}
             </div>
           ) : feedbackList.length === 0 ? (
             <div className="text-center py-8">
-              <MessageSquare className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-              <p className="text-[var(--text-muted)] font-inter">
+              <MessageSquare className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
+              <p className="text-(--text-muted) font-inter">
                 No feedback submissions yet
               </p>
             </div>

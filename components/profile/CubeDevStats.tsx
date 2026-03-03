@@ -140,10 +140,10 @@ export default function CubeDevStats({
               <Users className="w-8 h-8 text-gray-500" />
             </div>
           </div>
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+          <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
             Account Not Found
           </h3>
-          <p className="text-[var(--text-secondary)]">
+          <p className="text-(--text-secondary)">
             This user account is no longer available.
           </p>
         </div>
@@ -256,14 +256,14 @@ export default function CubeDevStats({
         <div className="timer-card">
           <div className="text-center py-12">
             <div className="flex justify-center mb-4">
-              <div className="p-4 bg-[var(--primary)]/10 rounded-full">
-                <EyeOff className="w-8 h-8 text-[var(--primary)]" />
+              <div className="p-4 bg-(--primary)/10 rounded-full">
+                <EyeOff className="w-8 h-8 text-(--primary)" />
               </div>
             </div>
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+            <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
               {cubeDevUser ? "Event Statistics Hidden" : "User Not Registered"}
             </h3>
-            <p className="text-[var(--text-secondary)]">
+            <p className="text-(--text-secondary)">
               {cubeDevUser
                 ? "User has chosen to hide their profile from public view."
                 : "This user is not registered on CubeDev."}
@@ -276,13 +276,13 @@ export default function CubeDevStats({
         attemptedEvents.length > 0 && (
           <div className="timer-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+              <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
                 Event Statistics
               </h3>
               <div className="relative">
                 <button
                   onClick={() => setShowEventDropdown(!showEventDropdown)}
-                  className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] hover:bg-[var(--border)] transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) hover:bg-(--border) transition-colors"
                 >
                   <span className="font-medium">
                     {EVENT_NAMES[selectedEvent as keyof typeof EVENT_NAMES] ||
@@ -292,7 +292,7 @@ export default function CubeDevStats({
                 </button>
 
                 {showEventDropdown && (
-                  <div className="absolute top-full right-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg z-10 min-w-[200px]">
+                  <div className="absolute top-full right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-lg z-10 min-w-[200px]">
                     {attemptedEvents.map((event) => (
                       <button
                         key={event}
@@ -300,10 +300,10 @@ export default function CubeDevStats({
                           setSelectedEvent(event);
                           setShowEventDropdown(false);
                         }}
-                        className={`w-full text-left px-4 py-2 hover:bg-[var(--surface-elevated)] transition-colors first:rounded-t-lg last:rounded-b-lg ${
+                        className={`w-full text-left px-4 py-2 hover:bg-(--surface-elevated) transition-colors first:rounded-t-lg last:rounded-b-lg ${
                           selectedEvent === event
-                            ? "bg-[var(--primary)]/20 text-[var(--primary)]"
-                            : "text-[var(--text-primary)]"
+                            ? "bg-(--primary)/20 text-(--primary)"
+                            : "text-(--text-primary)"
                         }`}
                       >
                         {EVENT_NAMES[event as keyof typeof EVENT_NAMES] ||
@@ -317,32 +317,32 @@ export default function CubeDevStats({
 
             {/* Event Statistics Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-              <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+              <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
                     <Target className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                    <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                       Total Solves
                     </div>
-                    <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                    <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
                       {(selectedEventStats?.totalSolves ?? 0).toLocaleString()}
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+              <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="p-1.5 sm:p-2 bg-green-500/10 rounded-lg">
                     <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                    <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                       Overall AVG
                     </div>
-                    <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-mono">
+                    <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-mono">
                       {selectedEventStats?.overallAverage
                         ? formatMs(selectedEventStats.overallAverage)
                         : "--:--"}
@@ -351,16 +351,16 @@ export default function CubeDevStats({
                 </div>
               </div>
 
-              <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+              <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="p-1.5 sm:p-2 bg-yellow-500/10 rounded-lg">
                     <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                    <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                       Best Single
                     </div>
-                    <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-mono">
+                    <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-mono">
                       {selectedEventStats?.bestSingle
                         ? formatMs(selectedEventStats.bestSingle)
                         : "--:--"}
@@ -369,20 +369,20 @@ export default function CubeDevStats({
                 </div>
               </div>
 
-              <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+              <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="p-1.5 sm:p-2 bg-purple-500/10 rounded-lg">
                     <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                    <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                       Best Ao5
                     </div>
                     <div
                       className={`text-sm sm:text-lg font-bold font-mono ${
                         selectedEventStats?.bestAo5 === Infinity
-                          ? "text-[var(--error)]"
-                          : "text-[var(--text-primary)]"
+                          ? "text-(--error)"
+                          : "text-(--text-primary)"
                       }`}
                     >
                       {selectedEventStats?.bestAo5 == null
@@ -404,16 +404,16 @@ export default function CubeDevStats({
         <div className="timer-card">
           <div className="text-center py-12">
             <div className="flex justify-center mb-4">
-              <div className="p-4 bg-[var(--primary)]/10 rounded-full">
-                <EyeOff className="w-8 h-8 text-[var(--primary)]" />
+              <div className="p-4 bg-(--primary)/10 rounded-full">
+                <EyeOff className="w-8 h-8 text-(--primary)" />
               </div>
             </div>
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+            <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
               {cubeDevUser
                 ? "Platform Statistics Hidden"
                 : "User Not Registered"}
             </h3>
-            <p className="text-[var(--text-secondary)]">
+            <p className="text-(--text-secondary)">
               {cubeDevUser
                 ? "User has chosen to hide their profile from public view."
                 : "This user is not registered on CubeDev."}
@@ -424,68 +424,68 @@ export default function CubeDevStats({
         <PlatformStatsSkeleton />
       ) : (
         <div className="timer-card">
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-4 flex items-center gap-2">
             CubeDev Statistics
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-1.5 sm:p-2 bg-orange-500/10 rounded-lg">
                   <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                     Active Days
                   </div>
-                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
                     {activityStats.activeDays}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-1.5 sm:p-2 bg-red-500/10 rounded-lg">
                   <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-red-500" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                     Current Streak
                   </div>
-                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
                     {activityStats.currentStreak}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-1.5 sm:p-2 bg-green-500/10 rounded-lg">
                   <Target className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                     Events Practiced
                   </div>
-                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
                     {attemptedEvents.length}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
                   <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                     Total Solves
                   </div>
-                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
                     {(
                       eventStats?.reduce(
                         (sum, stat) => sum + stat.totalSolves,
@@ -505,14 +505,14 @@ export default function CubeDevStats({
         <div className="timer-card">
           <div className="text-center py-12">
             <div className="flex justify-center mb-4">
-              <div className="p-4 bg-[var(--primary)]/10 rounded-full">
-                <EyeOff className="w-8 h-8 text-[var(--primary)]" />
+              <div className="p-4 bg-(--primary)/10 rounded-full">
+                <EyeOff className="w-8 h-8 text-(--primary)" />
               </div>
             </div>
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+            <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
               Challenge Room Stats are Private
             </h3>
-            <p className="text-[var(--text-secondary)]">
+            <p className="text-(--text-secondary)">
               This user has chosen to keep their challenge room statistics
               private.
             </p>
@@ -520,52 +520,52 @@ export default function CubeDevStats({
         </div>
       ) : (
         <div className="timer-card">
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-4 flex items-center gap-2">
             Challenge Room Statistics
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
-            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-1.5 sm:p-2 bg-yellow-500/10 rounded-lg">
                   <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                     Rooms Won
                   </div>
-                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
                     {challengeStats?.roomsWon ?? 0}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
                   <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                     Rooms Participated
                   </div>
-                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
                     {challengeStats?.roomsParticipated ?? 0}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-1.5 sm:p-2 bg-green-500/10 rounded-lg">
                   <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                     Rooms Created
                   </div>
-                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
                     {challengeStats?.roomsCreated ?? 0}
                   </div>
                 </div>
@@ -576,7 +576,7 @@ export default function CubeDevStats({
           {/* Recent Room Participations */}
           {roomParticipations && roomParticipations.length > 0 && (
             <div>
-              <h4 className="text-md font-semibold text-[var(--text-primary)] font-statement mb-3">
+              <h4 className="text-md font-semibold text-(--text-primary) font-statement mb-3">
                 Recent Room Participations
               </h4>
               <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -592,7 +592,7 @@ export default function CubeDevStats({
                   return (
                     <div
                       key={participation._id}
-                      className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded border border-[var(--border)] hover:bg-[var(--surface-elevated)]/80 transition-colors"
+                      className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded border border-(--border) hover:bg-(--surface-elevated)/80 transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <div
@@ -608,10 +608,10 @@ export default function CubeDevStats({
                           }`}
                         />
                         <div>
-                          <div className="font-medium text-[var(--text-primary)]">
+                          <div className="font-medium text-(--text-primary)">
                             {participation.roomName}
                           </div>
-                          <div className="text-sm text-[var(--text-muted)]">
+                          <div className="text-sm text-(--text-muted)">
                             {showIncomplete ? (
                               <>
                                 <span className="text-red-500 font-medium">
@@ -639,7 +639,7 @@ export default function CubeDevStats({
                             `/cube-lab/challenges/room/${participation.roomPublicId}`,
                           )
                         }
-                        className="px-3 py-1 text-xs bg-[var(--primary)] text-white rounded hover:bg-[var(--primary-hover)] transition-colors"
+                        className="px-3 py-1 text-xs bg-(--primary) text-white rounded hover:bg-(--primary-hover) transition-colors"
                       >
                         View Room
                       </button>
@@ -657,14 +657,14 @@ export default function CubeDevStats({
         <div className="timer-card">
           <div className="text-center py-12">
             <div className="flex justify-center mb-4">
-              <div className="p-4 bg-[var(--primary)]/10 rounded-full">
-                <EyeOff className="w-8 h-8 text-[var(--primary)]" />
+              <div className="p-4 bg-(--primary)/10 rounded-full">
+                <EyeOff className="w-8 h-8 text-(--primary)" />
               </div>
             </div>
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+            <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
               {cubeDevUser ? "Solve Activity Hidden" : "User Not Registered"}
             </h3>
-            <p className="text-[var(--text-secondary)]">
+            <p className="text-(--text-secondary)">
               {cubeDevUser
                 ? "User has chosen to hide their profile from public view."
                 : "This user is not registered on CubeDev."}

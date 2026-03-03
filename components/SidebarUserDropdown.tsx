@@ -58,7 +58,7 @@ export default function SidebarUserDropdown({
         onClick={() => setIsOpen(!isOpen)}
         className={
           collapsed
-            ? "p-2 rounded-full hover:bg-[var(--surface-elevated)] transition-colors"
+            ? "p-2 rounded-full hover:bg-(--surface-elevated) transition-colors"
             : "w-full sidebar-user-card flex items-center gap-3 p-3"
         }
         title={collapsed ? `${user.name} - Click to open menu` : undefined}
@@ -70,28 +70,28 @@ export default function SidebarUserDropdown({
               alt={`${user.name}'s avatar`}
               width={collapsed ? 32 : 36}
               height={collapsed ? 32 : 36}
-              className={`rounded-full object-cover border-2 ${collapsed ? "w-8 h-8 border-[var(--primary)]/50" : "w-9 h-9 border-[var(--primary)]/30 hover:border-[var(--primary)]"} transition-colors`}
+              className={`rounded-full object-cover border-2 ${collapsed ? "w-8 h-8 border-(--primary)/50" : "w-9 h-9 border-(--primary)/30 hover:border-(--primary)"} transition-colors`}
             />
           </div>
         )}
         {!collapsed && (
           <>
             <div className="flex-1 text-left min-w-0">
-              <div className="text-sm font-semibold text-[var(--text-primary)] font-button truncate">
+              <div className="text-sm font-semibold text-(--text-primary) font-button truncate">
                 {user.name}
               </div>
               {user.wcaId ? (
-                <div className="text-xs text-[var(--text-secondary)] font-inter">
+                <div className="text-xs text-(--text-secondary) font-inter">
                   {user.wcaId}
                 </div>
               ) : (
-                <div className="text-xs text-[var(--success)] font-inter">
+                <div className="text-xs text-(--success) font-inter">
                   Connected
                 </div>
               )}
             </div>
             <ChevronUp
-              className={`w-4 h-4 text-[var(--text-secondary)] transition-transform duration-200 ${
+              className={`w-4 h-4 text-(--text-secondary) transition-transform duration-200 ${
                 isOpen ? "rotate-0" : "rotate-180"
               }`}
             />
@@ -102,13 +102,13 @@ export default function SidebarUserDropdown({
       {/* Dropdown Menu */}
       {isOpen && (
         <div
-          className={`absolute bottom-full mb-2 bg-[var(--background)] border border-[var(--border)] rounded-lg shadow-lg z-50 py-2 ${collapsed ? "left-0 min-w-[200px]" : "left-0 right-0"}`}
+          className={`absolute bottom-full mb-2 bg-(--background) border border-(--border) rounded-lg shadow-lg z-50 py-2 ${collapsed ? "left-0 min-w-[200px]" : "left-0 right-0"}`}
         >
           {/* Menu Items */}
           <div className="py-1">
             <Link
               href="/"
-              className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+              className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
               onClick={() => setIsOpen(false)}
             >
               <Home className="w-4 h-4" />
@@ -118,7 +118,7 @@ export default function SidebarUserDropdown({
             {user.wcaId && (
               <Link
                 href={`/cuber/${user.wcaId}`}
-                className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+                className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
                 onClick={() => setIsOpen(false)}
               >
                 <User className="w-4 h-4" />
@@ -128,7 +128,7 @@ export default function SidebarUserDropdown({
 
             <Link
               href="/cuber"
-              className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+              className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
               onClick={() => setIsOpen(false)}
             >
               <Users className="w-4 h-4" />
@@ -137,7 +137,7 @@ export default function SidebarUserDropdown({
 
             <Link
               href="/contact"
-              className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+              className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
               onClick={() => setIsOpen(false)}
             >
               <Mail className="w-4 h-4" />
@@ -146,7 +146,7 @@ export default function SidebarUserDropdown({
 
             <Link
               href="/me"
-              className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+              className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
               onClick={() => setIsOpen(false)}
             >
               <Settings className="w-4 h-4" />
@@ -155,13 +155,13 @@ export default function SidebarUserDropdown({
           </div>
 
           {/* Sign Out */}
-          <div className="border-t border-[var(--border)] pt-1 mt-1">
+          <div className="border-t border-(--border) pt-1 mt-1">
             <button
               onClick={() => {
                 onSignOut();
                 setIsOpen(false);
               }}
-              className="flex items-center gap-3 px-4 py-2 w-full text-left text-[var(--text-secondary)] hover:text-red-500 hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+              className="flex items-center gap-3 px-4 py-2 w-full text-left text-(--text-secondary) hover:text-red-500 hover:bg-(--surface-elevated) transition-colors font-inter"
             >
               <LogOut className="w-4 h-4" />
               Sign Out

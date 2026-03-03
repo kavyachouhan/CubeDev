@@ -125,30 +125,30 @@ export default function EditGoalModal({
       <div className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] font-statement">
+          <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
             Edit Goal
           </h2>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Current Goal Info */}
-        <div className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] mb-4">
+        <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border) mb-4">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-[var(--text-muted)]">Current Goal:</span>
-            <span className="font-medium text-[var(--primary)]">
+            <span className="text-(--text-muted)">Current Goal:</span>
+            <span className="font-medium text-(--primary)">
               {profile.goalType === "custom"
                 ? `Custom: ${formatTime(currentTargetTime)}`
                 : profile.goalType.replace("-", " ").toUpperCase()}
             </span>
           </div>
           <div className="flex items-center justify-between text-sm mt-1.5">
-            <span className="text-[var(--text-muted)]">Target Date:</span>
-            <span className="font-medium text-[var(--text-primary)]">
+            <span className="text-(--text-muted)">Target Date:</span>
+            <span className="font-medium text-(--text-primary)">
               {new Date(profile.targetDate).toLocaleDateString("en-US", {
                 month: "short",
                 day: "numeric",
@@ -159,13 +159,13 @@ export default function EditGoalModal({
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 p-1 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] mb-4">
+        <div className="flex gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border) mb-4">
           <button
             onClick={() => setActiveTab("deadline")}
             className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-md transition-all ${
               activeTab === "deadline"
-                ? "bg-[var(--primary)] text-white shadow-sm"
-                : "text-[var(--text-secondary)] hover:bg-[var(--surface)]"
+                ? "bg-(--primary) text-white shadow-sm"
+                : "text-(--text-secondary) hover:bg-(--surface)"
             }`}
           >
             <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -175,8 +175,8 @@ export default function EditGoalModal({
             onClick={() => setActiveTab("goal")}
             className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-md transition-all ${
               activeTab === "goal"
-                ? "bg-[var(--primary)] text-white shadow-sm"
-                : "text-[var(--text-secondary)] hover:bg-[var(--surface)]"
+                ? "bg-(--primary) text-white shadow-sm"
+                : "text-(--text-secondary) hover:bg-(--surface)"
             }`}
           >
             <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -190,7 +190,7 @@ export default function EditGoalModal({
             <>
               {/* Quick extend options */}
               <div>
-                <p className="text-sm text-[var(--text-muted)] mb-3">
+                <p className="text-sm text-(--text-muted) mb-3">
                   Quick extend:
                 </p>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
@@ -200,8 +200,8 @@ export default function EditGoalModal({
                       onClick={() => setTargetDays(days)}
                       className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         targetDays === days
-                          ? "bg-[var(--primary)] text-white"
-                          : "border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--primary)] hover:text-[var(--primary)]"
+                          ? "bg-(--primary) text-white"
+                          : "border border-(--border) text-(--text-secondary) hover:border-(--primary) hover:text-(--primary)"
                       }`}
                     >
                       +{days}d
@@ -211,14 +211,14 @@ export default function EditGoalModal({
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex-1 h-px bg-[var(--border)]" />
-                <span className="text-xs text-[var(--text-muted)]">or</span>
-                <div className="flex-1 h-px bg-[var(--border)]" />
+                <div className="flex-1 h-px bg-(--border)" />
+                <span className="text-xs text-(--text-muted)">or</span>
+                <div className="flex-1 h-px bg-(--border)" />
               </div>
 
               {/* Custom date picker */}
               <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                <label className="block text-sm font-medium text-(--text-primary) mb-2">
                   Set specific date:
                 </label>
                 <input
@@ -226,7 +226,7 @@ export default function EditGoalModal({
                   value={customDate}
                   onChange={(e) => setCustomDate(e.target.value)}
                   min={new Date().toISOString().split("T")[0]}
-                  className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all"
                 />
               </div>
 
@@ -252,7 +252,7 @@ export default function EditGoalModal({
               <button
                 onClick={handleSetCustomDate}
                 disabled={isSubmitting}
-                className="w-full text-sm text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors disabled:opacity-50 py-2"
+                className="w-full text-sm text-(--primary) hover:text-(--primary-hover) transition-colors disabled:opacity-50 py-2"
               >
                 Use selected date instead
               </button>
@@ -269,21 +269,21 @@ export default function EditGoalModal({
                     onClick={() => setSelectedGoal(goal.id)}
                     className={`p-3 rounded-lg border text-left transition-all ${
                       selectedGoal === goal.id
-                        ? "border-[var(--primary)] bg-[var(--primary)]/10"
-                        : "border-[var(--border)] hover:border-[var(--primary)]"
+                        ? "border-(--primary) bg-(--primary)/10"
+                        : "border-(--border) hover:border-(--primary)"
                     }`}
                   >
                     <span
                       className={`font-medium block text-sm ${
                         selectedGoal === goal.id
-                          ? "text-[var(--primary)]"
-                          : "text-[var(--text-primary)]"
+                          ? "text-(--primary)"
+                          : "text-(--text-primary)"
                       }`}
                     >
                       {goal.label}
                     </span>
                     {goal.time && (
-                      <span className="text-xs text-[var(--text-muted)]">
+                      <span className="text-xs text-(--text-muted)">
                         {formatTime(goal.time)}
                       </span>
                     )}
@@ -294,7 +294,7 @@ export default function EditGoalModal({
               {/* Custom time input */}
               {selectedGoal === "custom" && (
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  <label className="block text-sm font-medium text-(--text-primary) mb-2">
                     Target time (seconds):
                   </label>
                   <input
@@ -302,7 +302,7 @@ export default function EditGoalModal({
                     value={customTime}
                     onChange={(e) => setCustomTime(e.target.value)}
                     placeholder="e.g., 25"
-                    className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all"
                     min={1}
                     max={300}
                   />

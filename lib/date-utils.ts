@@ -249,7 +249,7 @@ export function getCompetitionStatusDisplay(
   if (cancelled) {
     return {
       label: "Cancelled",
-      color: "text-[var(--error)] bg-[var(--error)]/10",
+      color: "text-(--error) bg-(--error)/10",
     };
   }
 
@@ -259,17 +259,17 @@ export function getCompetitionStatusDisplay(
     case "ongoing":
       return {
         label: "In Progress",
-        color: "text-[var(--success)] bg-[var(--success)]/10",
+        color: "text-(--success) bg-(--success)/10",
       };
     case "upcoming":
       return {
         label: "Upcoming",
-        color: "text-[var(--info)] bg-[var(--info)]/10",
+        color: "text-(--info) bg-(--info)/10",
       };
     case "past":
       return {
         label: "Completed",
-        color: "text-[var(--text-muted)] bg-[var(--surface-elevated)]",
+        color: "text-(--text-muted) bg-(--surface-elevated)",
       };
   }
 }

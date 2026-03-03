@@ -131,26 +131,26 @@ function Dropdown({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`w-full flex items-center justify-between px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg hover:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all ${
+        className={`w-full flex items-center justify-between px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg hover:border-(--primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all ${
           disabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
         <span
           className={`text-sm font-medium truncate font-inter ${
-            value ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"
+            value ? "text-(--text-primary)" : "text-(--text-muted)"
           }`}
         >
           {displayText}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-[var(--text-muted)] flex-shrink-0 transition-transform duration-200 ${
+          className={`w-4 h-4 text-(--text-muted) shrink-0 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto">
           <button
             type="button"
             onClick={() => {
@@ -159,13 +159,13 @@ function Dropdown({
             }}
             className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors font-inter ${
               !value
-                ? "text-[var(--primary)] bg-[var(--primary)]/10"
-                : "text-[var(--text-muted)] hover:bg-[var(--surface-elevated)]"
+                ? "text-(--primary) bg-(--primary)/10"
+                : "text-(--text-muted) hover:bg-(--surface-elevated)"
             }`}
           >
             <span className="truncate">{placeholder}</span>
             {!value && (
-              <Check className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+              <Check className="w-4 h-4 text-(--primary) shrink-0" />
             )}
           </button>
 
@@ -182,17 +182,17 @@ function Dropdown({
                   }
                 }}
                 disabled={isDisabled}
-                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors font-inter border-t border-[var(--border)]/50 ${
+                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors font-inter border-t border-(--border)/50 ${
                   value === option.value
-                    ? "text-[var(--primary)] bg-[var(--primary)]/10"
+                    ? "text-(--primary) bg-(--primary)/10"
                     : isDisabled
-                      ? "text-[var(--text-muted)] opacity-50 cursor-not-allowed"
-                      : "text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                      ? "text-(--text-muted) opacity-50 cursor-not-allowed"
+                      : "text-(--text-primary) hover:bg-(--surface-elevated)"
                 }`}
               >
                 <span className="truncate">{option.label}</span>
                 {value === option.value && (
-                  <Check className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+                  <Check className="w-4 h-4 text-(--primary) shrink-0" />
                 )}
               </button>
             );
@@ -392,18 +392,18 @@ We'll review your application and get back to you soon!`,
         <div className="timer-card max-w-md w-full text-center relative">
           <button
             onClick={handleClose}
-            className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1.5 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="absolute top-4 right-4 text-(--text-muted) hover:text-(--text-primary) transition-colors p-1.5 rounded-lg hover:bg-(--surface-elevated)"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
-          <div className="p-4 bg-[var(--success)]/10 rounded-full w-fit mx-auto mb-4 mt-2">
-            <CheckCircle2 className="w-10 h-10 text-[var(--success)]" />
+          <div className="p-4 bg-(--success)/10 rounded-full w-fit mx-auto mb-4 mt-2">
+            <CheckCircle2 className="w-10 h-10 text-(--success)" />
           </div>
-          <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement mb-2">
+          <h2 className="text-xl font-bold text-(--text-primary) font-statement mb-2">
             Application Received
           </h2>
-          <p className="text-[var(--text-secondary)] mb-6">
+          <p className="text-(--text-secondary) mb-6">
             Thank you for your interest! We&apos;ve sent a confirmation email to{" "}
             {formData.email}. We&apos;ll review your application and get back to
             you soon.
@@ -421,12 +421,12 @@ We'll review your application and get back to you soon!`,
       <div className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto relative">
         {/* Header with close button in top right */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+          <h2 className="text-xl font-bold text-(--text-primary) font-statement">
             Become a Contributor
           </h2>
           <button
             onClick={handleClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1.5 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1.5 rounded-lg hover:bg-(--surface-elevated)"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -434,25 +434,25 @@ We'll review your application and get back to you soon!`,
         </div>
 
         {/* Perks Section */}
-        <div className="mb-6 p-4 bg-[var(--primary)]/5 border border-[var(--primary)]/20 rounded-lg">
-          <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3 font-statement">
+        <div className="mb-6 p-4 bg-(--primary)/5 border border-(--primary)/20 rounded-lg">
+          <h3 className="text-sm font-semibold text-(--text-primary) mb-3 font-statement">
             Contributor Perks
           </h3>
           <ul className="space-y-2">
-            <li className="flex items-start gap-2 text-xs text-[var(--text-secondary)]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] mt-1.5 shrink-0" />
+            <li className="flex items-start gap-2 text-xs text-(--text-secondary)">
+              <span className="w-1.5 h-1.5 rounded-full bg-(--primary) mt-1.5 shrink-0" />
               <span>Get credited on the Credits page</span>
             </li>
-            <li className="flex items-start gap-2 text-xs text-[var(--text-secondary)]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] mt-1.5 shrink-0" />
+            <li className="flex items-start gap-2 text-xs text-(--text-secondary)">
+              <span className="w-1.5 h-1.5 rounded-full bg-(--primary) mt-1.5 shrink-0" />
               <span>Exclusive contributor badge on your profile</span>
             </li>
-            <li className="flex items-start gap-2 text-xs text-[var(--text-secondary)]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] mt-1.5 shrink-0" />
+            <li className="flex items-start gap-2 text-xs text-(--text-secondary)">
+              <span className="w-1.5 h-1.5 rounded-full bg-(--primary) mt-1.5 shrink-0" />
               <span>Early access to new CubeDev features</span>
             </li>
-            <li className="flex items-start gap-2 text-xs text-[var(--text-secondary)]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] mt-1.5 shrink-0" />
+            <li className="flex items-start gap-2 text-xs text-(--text-secondary)">
+              <span className="w-1.5 h-1.5 rounded-full bg-(--primary) mt-1.5 shrink-0" />
               <span>Make a positive impact on the cubing community</span>
             </li>
           </ul>
@@ -460,16 +460,16 @@ We'll review your application and get back to you soon!`,
 
         {/* Error Message */}
         {error && (
-          <div className="mb-4 p-3 bg-[var(--error)]/10 border border-[var(--error)]/20 rounded-lg">
-            <p className="text-sm text-[var(--error)]">{error}</p>
+          <div className="mb-4 p-3 bg-(--error)/10 border border-(--error)/20 rounded-lg">
+            <p className="text-sm text-(--error)">{error}</p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Personal Information */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
-              Name <span className="text-[var(--error)]">*</span>
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+              Name <span className="text-(--error)">*</span>
             </label>
             <input
               type="text"
@@ -477,14 +477,14 @@ We'll review your application and get back to you soon!`,
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
               placeholder="Your name"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               WCA ID
             </label>
             <input
@@ -493,14 +493,14 @@ We'll review your application and get back to you soon!`,
               onChange={(e) =>
                 setFormData({ ...formData, wcaId: e.target.value })
               }
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
               placeholder="e.g. 2023XXXX01"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
-              Email <span className="text-[var(--error)]">*</span>
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+              Email <span className="text-(--error)">*</span>
             </label>
             <input
               type="email"
@@ -508,7 +508,7 @@ We'll review your application and get back to you soon!`,
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
               placeholder="your@email.com"
               required
             />
@@ -516,10 +516,10 @@ We'll review your application and get back to you soon!`,
 
           {/* Event Averages Section */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Your Averages
             </label>
-            <p className="text-xs text-[var(--text-muted)] mb-3">
+            <p className="text-xs text-(--text-muted) mb-3">
               Add your average times for events you specialize in
             </p>
 
@@ -529,18 +529,18 @@ We'll review your application and get back to you soon!`,
                 {formData.eventAverages.map((ea, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-2 p-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg"
+                    className="flex items-center gap-2 p-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg"
                   >
-                    <span className="flex-1 text-sm text-[var(--text-primary)] font-inter">
+                    <span className="flex-1 text-sm text-(--text-primary) font-inter">
                       {getEventLabel(ea.event)}
                     </span>
-                    <span className="text-sm text-[var(--text-secondary)] font-mono">
+                    <span className="text-sm text-(--text-secondary) font-mono">
                       {ea.average}
                     </span>
                     <button
                       type="button"
                       onClick={() => removeEventAverage(index)}
-                      className="p-1 text-[var(--text-muted)] hover:text-[var(--error)] transition-colors rounded"
+                      className="p-1 text-(--text-muted) hover:text-(--error) transition-colors rounded"
                       aria-label="Remove event"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -564,7 +564,7 @@ We'll review your application and get back to you soon!`,
                   type="text"
                   value={newAverage}
                   onChange={(e) => setNewAverage(e.target.value)}
-                  className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter text-sm"
+                  className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
                   placeholder="e.g. 12.50"
                 />
               </div>
@@ -572,7 +572,7 @@ We'll review your application and get back to you soon!`,
                 type="button"
                 onClick={addEventAverage}
                 disabled={!newEvent || !newAverage.trim()}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-inter text-sm"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-secondary) hover:bg-(--surface-elevated) hover:text-(--text-primary) transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-inter text-sm"
               >
                 <Plus className="w-4 h-4" />
                 Add Event
@@ -581,8 +581,8 @@ We'll review your application and get back to you soon!`,
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
-              Skill Level <span className="text-[var(--error)]">*</span>
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+              Skill Level <span className="text-(--error)">*</span>
             </label>
             <Dropdown
               options={SKILL_LEVELS}
@@ -595,7 +595,7 @@ We'll review your application and get back to you soon!`,
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Notable Achievements
             </label>
             <textarea
@@ -604,13 +604,13 @@ We'll review your application and get back to you soon!`,
                 setFormData({ ...formData, achievements: e.target.value })
               }
               rows={2}
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none transition-all font-inter"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
               placeholder="Competition results, personal bests, teaching experience..."
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Weekly Availability
             </label>
             <input
@@ -619,20 +619,20 @@ We'll review your application and get back to you soon!`,
               onChange={(e) =>
                 setFormData({ ...formData, availability: e.target.value })
               }
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
               placeholder="e.g. 2-4 hours per week"
             />
           </div>
 
           {/* Social Accounts */}
-          <div className="p-4 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg">
-            <h3 className="text-sm font-medium text-[var(--text-primary)] mb-3">
+          <div className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg">
+            <h3 className="text-sm font-medium text-(--text-primary) mb-3">
               Social Accounts (Optional)
             </h3>
             <div className="space-y-3">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Youtube className="w-4 h-4 text-[var(--text-muted)]" />
+                  <Youtube className="w-4 h-4 text-(--text-muted)" />
                 </div>
                 <input
                   type="text"
@@ -646,13 +646,13 @@ We'll review your application and get back to you soon!`,
                       },
                     })
                   }
-                  className="w-full pl-10 pr-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all text-sm font-inter"
+                  className="w-full pl-10 pr-3 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all text-sm font-inter"
                   placeholder="YouTube channel URL"
                 />
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Instagram className="w-4 h-4 text-[var(--text-muted)]" />
+                  <Instagram className="w-4 h-4 text-(--text-muted)" />
                 </div>
                 <input
                   type="text"
@@ -666,13 +666,13 @@ We'll review your application and get back to you soon!`,
                       },
                     })
                   }
-                  className="w-full pl-10 pr-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all text-sm font-inter"
+                  className="w-full pl-10 pr-3 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all text-sm font-inter"
                   placeholder="Instagram @username"
                 />
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-[var(--text-muted)] text-sm font-medium">
+                  <span className="text-(--text-muted) text-sm font-medium">
                     𝕏
                   </span>
                 </div>
@@ -688,13 +688,13 @@ We'll review your application and get back to you soon!`,
                       },
                     })
                   }
-                  className="w-full pl-10 pr-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all text-sm font-inter"
+                  className="w-full pl-10 pr-3 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all text-sm font-inter"
                   placeholder="Twitter/X @handle"
                 />
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <ExternalLink className="w-4 h-4 text-[var(--text-muted)]" />
+                  <ExternalLink className="w-4 h-4 text-(--text-muted)" />
                 </div>
                 <input
                   type="text"
@@ -708,7 +708,7 @@ We'll review your application and get back to you soon!`,
                       },
                     })
                   }
-                  className="w-full pl-10 pr-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all text-sm font-inter"
+                  className="w-full pl-10 pr-3 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all text-sm font-inter"
                   placeholder="Other link (website, etc.)"
                 />
               </div>
@@ -716,9 +716,9 @@ We'll review your application and get back to you soon!`,
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Why do you want to contribute?{" "}
-              <span className="text-[var(--error)]">*</span>
+              <span className="text-(--error)">*</span>
             </label>
             <textarea
               value={formData.whyInterested}
@@ -726,7 +726,7 @@ We'll review your application and get back to you soon!`,
                 setFormData({ ...formData, whyInterested: e.target.value })
               }
               rows={3}
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none transition-all font-inter"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
               placeholder="Tell us about your cubing journey and why you want to help improve the coach..."
               required
             />
@@ -737,7 +737,7 @@ We'll review your application and get back to you soon!`,
             <button
               type="button"
               onClick={handleClose}
-              className="w-full sm:flex-1 px-4 py-2.5 bg-[var(--surface)] hover:bg-[var(--surface-elevated)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg transition-colors font-button text-sm disabled:opacity-50"
+              className="w-full sm:flex-1 px-4 py-2.5 bg-(--surface) hover:bg-(--surface-elevated) border border-(--border) text-(--text-primary) rounded-lg transition-colors font-button text-sm disabled:opacity-50"
               disabled={isSubmitting}
             >
               Cancel
@@ -745,7 +745,7 @@ We'll review your application and get back to you soon!`,
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full sm:flex-1 px-4 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-button text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:flex-1 px-4 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-button text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Submitting..." : "Submit Application"}
             </button>

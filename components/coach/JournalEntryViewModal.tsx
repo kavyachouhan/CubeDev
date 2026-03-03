@@ -77,19 +77,19 @@ const moodIcons: Record<string, React.ElementType> = {
 };
 
 const moodColors: Record<string, string> = {
-  great: "text-[var(--success)]",
-  good: "text-[var(--primary)]",
-  okay: "text-[var(--warning)]",
-  frustrated: "text-[var(--error)]",
-  tired: "text-[var(--text-muted)]",
+  great: "text-(--success)",
+  good: "text-(--primary)",
+  okay: "text-(--warning)",
+  frustrated: "text-(--error)",
+  tired: "text-(--text-muted)",
 };
 
 const moodBgColors: Record<string, string> = {
-  great: "bg-[var(--success)]/10",
-  good: "bg-[var(--primary)]/10",
-  okay: "bg-[var(--warning)]/10",
-  frustrated: "bg-[var(--error)]/10",
-  tired: "bg-[var(--surface-elevated)]",
+  great: "bg-(--success)/10",
+  good: "bg-(--primary)/10",
+  okay: "bg-(--warning)/10",
+  frustrated: "bg-(--error)/10",
+  tired: "bg-(--surface-elevated)",
 };
 
 const moodLabels: Record<string, string> = {
@@ -141,10 +141,10 @@ function MediaGalleryItem({
   return (
     <div
       onClick={onClick}
-      className="relative cursor-pointer group rounded-lg overflow-hidden border border-[var(--border)] hover:border-[var(--primary)] transition-colors"
+      className="relative cursor-pointer group rounded-lg overflow-hidden border border-(--border) hover:border-(--primary) transition-colors"
     >
       {isVideo ? (
-        <div className="aspect-video bg-[var(--surface)] flex items-center justify-center relative">
+        <div className="aspect-video bg-(--surface) flex items-center justify-center relative">
           {!videoError ? (
             <>
               <video
@@ -161,12 +161,12 @@ function MediaGalleryItem({
               </div>
             </>
           ) : (
-            <Film className="w-8 h-8 text-[var(--text-muted)]" />
+            <Film className="w-8 h-8 text-(--text-muted)" />
           )}
         </div>
       ) : imageError ? (
-        <div className="aspect-square bg-[var(--surface)] flex items-center justify-center">
-          <Image className="w-8 h-8 text-[var(--text-muted)]" />
+        <div className="aspect-square bg-(--surface) flex items-center justify-center">
+          <Image className="w-8 h-8 text-(--text-muted)" />
         </div>
       ) : (
         <img
@@ -303,14 +303,14 @@ export default function JournalEntryViewModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[var(--primary)]/10 flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-[var(--primary)]" />
+            <div className="w-10 h-10 rounded-full bg-(--primary)/10 flex items-center justify-center">
+              <BookOpen className="w-5 h-5 text-(--primary)" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+              <h2 className="text-xl font-bold text-(--text-primary) font-statement">
                 Journal Entry
               </h2>
-              <p className="text-sm text-[var(--text-muted)]">
+              <p className="text-sm text-(--text-muted)">
                 {formatDate(entry.entryDate)}
               </p>
             </div>
@@ -318,7 +318,7 @@ export default function JournalEntryViewModal({
           <div className="flex items-center gap-1">
             <button
               onClick={() => onEdit(entry)}
-              className="p-2 rounded-lg hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+              className="p-2 rounded-lg hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--primary) transition-colors"
               aria-label="Edit entry"
               title="Edit Entry"
             >
@@ -326,7 +326,7 @@ export default function JournalEntryViewModal({
             </button>
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="p-2 rounded-lg hover:bg-[var(--error)]/10 text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
+              className="p-2 rounded-lg hover:bg-(--error)/10 text-(--text-muted) hover:text-(--error) transition-colors"
               aria-label="Delete entry"
               title="Delete Entry"
             >
@@ -334,7 +334,7 @@ export default function JournalEntryViewModal({
             </button>
             <button
               onClick={onClose}
-              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+              className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
               aria-label="Close modal"
               title="Close"
             >
@@ -345,7 +345,7 @@ export default function JournalEntryViewModal({
 
         <div className="space-y-5">
           {/* Mood Section */}
-          <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+          <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
             <div className="flex items-center gap-3">
               <div
                 className={`w-12 h-12 rounded-full flex items-center justify-center ${moodBgColors[entry.mood]}`}
@@ -353,10 +353,10 @@ export default function JournalEntryViewModal({
                 <MoodIcon className={`w-6 h-6 ${moodColors[entry.mood]}`} />
               </div>
               <div>
-                <span className="text-xs text-[var(--text-muted)] block">
+                <span className="text-xs text-(--text-muted) block">
                   Mood
                 </span>
-                <p className="text-lg font-semibold text-[var(--text-primary)]">
+                <p className="text-lg font-semibold text-(--text-primary)">
                   {moodLabels[entry.mood]}
                 </p>
               </div>
@@ -367,53 +367,53 @@ export default function JournalEntryViewModal({
           {hasSessionData && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {entry.practiceMinutes && (
-                <div className="p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-[var(--primary)]" />
-                    <span className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+                    <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
+                    <span className="text-[10px] sm:text-xs text-(--text-muted)">
                       Practice
                     </span>
                   </div>
-                  <p className="text-sm sm:text-base font-bold text-[var(--text-primary)]">
+                  <p className="text-sm sm:text-base font-bold text-(--text-primary)">
                     {entry.practiceMinutes} min
                   </p>
                 </div>
               )}
               {displaySolveCount && (
-                <div className="p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <Target className="w-3 h-3 sm:w-4 sm:h-4 text-[var(--primary)]" />
-                    <span className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+                    <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
+                    <span className="text-[10px] sm:text-xs text-(--text-muted)">
                       {entry.customSolveCount ? "Solves" : "Solves"}
                     </span>
                   </div>
-                  <p className="text-sm sm:text-base font-bold text-[var(--text-primary)]">
+                  <p className="text-sm sm:text-base font-bold text-(--text-primary)">
                     {displaySolveCount}
                   </p>
                 </div>
               )}
               {displayAverage && (
-                <div className="p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <Timer className="w-3 h-3 sm:w-4 sm:h-4 text-[var(--primary)]" />
-                    <span className="text-[10px] sm:text-xs text-[var(--text-muted)] truncate">
+                    <Timer className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
+                    <span className="text-[10px] sm:text-xs text-(--text-muted) truncate">
                       {entry.customAverage ? "Avg" : "Avg Time"}
                     </span>
                   </div>
-                  <p className="text-sm sm:text-base font-bold text-[var(--primary)]">
+                  <p className="text-sm sm:text-base font-bold text-(--primary)">
                     {formatTime(displayAverage)}
                   </p>
                 </div>
               )}
               {entry.bestSingle && (
-                <div className="p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-[var(--success)]" />
-                    <span className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+                    <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-(--success)" />
+                    <span className="text-[10px] sm:text-xs text-(--text-muted)">
                       Best
                     </span>
                   </div>
-                  <p className="text-sm sm:text-base font-bold text-[var(--success)]">
+                  <p className="text-sm sm:text-base font-bold text-(--success)">
                     {formatTime(entry.bestSingle)}
                   </p>
                 </div>
@@ -424,7 +424,7 @@ export default function JournalEntryViewModal({
           {/* Media Gallery */}
           {entry.mediaUrls && entry.mediaUrls.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                 Attachments
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -515,14 +515,14 @@ export default function JournalEntryViewModal({
           {/* Focus Areas */}
           {entry.focusAreas && entry.focusAreas.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                 Focus Areas
               </label>
               <div className="flex flex-wrap gap-2">
                 {entry.focusAreas.map((area) => (
                   <span
                     key={area}
-                    className="px-3 py-1.5 text-sm bg-[var(--primary)]/10 text-[var(--primary)] rounded-full font-medium"
+                    className="px-3 py-1.5 text-sm bg-(--primary)/10 text-(--primary) rounded-full font-medium"
                   >
                     {area}
                   </span>
@@ -535,20 +535,20 @@ export default function JournalEntryViewModal({
           {dateTasks &&
             !dateTasks.plan.isRestDay &&
             dateTasks.plan.activities.length > 0 && (
-              <div className="bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] overflow-hidden">
+              <div className="bg-(--surface-elevated) rounded-lg border border-(--border) overflow-hidden">
                 <button
                   onClick={() => setShowTasks(!showTasks)}
                   className="w-full flex items-center justify-between p-4 text-left"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[var(--primary)]/10 flex items-center justify-center">
-                      <CheckCircle2 className="w-4 h-4 text-[var(--primary)]" />
+                    <div className="w-8 h-8 rounded-full bg-(--primary)/10 flex items-center justify-center">
+                      <CheckCircle2 className="w-4 h-4 text-(--primary)" />
                     </div>
                     <div>
-                      <span className="font-medium text-[var(--text-primary)] block text-sm">
+                      <span className="font-medium text-(--text-primary) block text-sm">
                         Training Tasks
                       </span>
-                      <span className="text-xs text-[var(--text-muted)]">
+                      <span className="text-xs text-(--text-muted)">
                         {
                           dateTasks.plan.activities.filter((a) => a.completed)
                             .length
@@ -558,9 +558,9 @@ export default function JournalEntryViewModal({
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-[var(--surface)] rounded-full overflow-hidden">
+                    <div className="w-16 h-2 bg-(--surface) rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-[var(--primary)] transition-all"
+                        className="h-full bg-(--primary) transition-all"
                         style={{
                           width: `${
                             dateTasks.plan.activities.length > 0
@@ -575,9 +575,9 @@ export default function JournalEntryViewModal({
                       />
                     </div>
                     {showTasks ? (
-                      <ChevronUp className="w-4 h-4 text-[var(--text-muted)]" />
+                      <ChevronUp className="w-4 h-4 text-(--text-muted)" />
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />
+                      <ChevronDown className="w-4 h-4 text-(--text-muted)" />
                     )}
                   </div>
                 </button>
@@ -592,15 +592,15 @@ export default function JournalEntryViewModal({
                             key={activityIndex}
                             className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
                               isCompleted
-                                ? "bg-[var(--success)]/10"
-                                : "bg-[var(--surface)]"
+                                ? "bg-(--success)/10"
+                                : "bg-(--surface)"
                             }`}
                           >
                             <div
-                              className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center ${
+                              className={`mt-0.5 shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center ${
                                 isCompleted
-                                  ? "bg-[var(--success)] border-[var(--success)] text-white"
-                                  : "border-[var(--border)]"
+                                  ? "bg-(--success) border-(--success) text-white"
+                                  : "border-(--border)"
                               }`}
                             >
                               {isCompleted && (
@@ -612,16 +612,16 @@ export default function JournalEntryViewModal({
                               <span
                                 className={`font-medium text-sm ${
                                   isCompleted
-                                    ? "text-[var(--text-muted)] line-through"
-                                    : "text-[var(--text-primary)]"
+                                    ? "text-(--text-muted) line-through"
+                                    : "text-(--text-primary)"
                                 }`}
                               >
                                 {activity.title}
                               </span>
-                              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                              <p className="text-xs text-(--text-muted) mt-0.5">
                                 {activity.description}
                               </p>
-                              <div className="flex items-center gap-3 mt-1.5 text-xs text-[var(--text-muted)]">
+                              <div className="flex items-center gap-3 mt-1.5 text-xs text-(--text-muted)">
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   {activity.durationMinutes} min
@@ -648,10 +648,10 @@ export default function JournalEntryViewModal({
             <div className="space-y-4">
               {entry.wentWell && (
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+                  <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                     What went well
                   </label>
-                  <p className="text-sm text-[var(--text-secondary)] bg-[var(--surface-elevated)] p-3 rounded-lg border border-[var(--border)]">
+                  <p className="text-sm text-(--text-secondary) bg-(--surface-elevated) p-3 rounded-lg border border-(--border)">
                     {entry.wentWell}
                   </p>
                 </div>
@@ -659,10 +659,10 @@ export default function JournalEntryViewModal({
 
               {entry.challenges && (
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+                  <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                     Challenges
                   </label>
-                  <p className="text-sm text-[var(--text-secondary)] bg-[var(--surface-elevated)] p-3 rounded-lg border border-[var(--border)]">
+                  <p className="text-sm text-(--text-secondary) bg-(--surface-elevated) p-3 rounded-lg border border-(--border)">
                     {entry.challenges}
                   </p>
                 </div>
@@ -670,10 +670,10 @@ export default function JournalEntryViewModal({
 
               {entry.notes && (
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+                  <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                     Notes
                   </label>
-                  <p className="text-sm text-[var(--text-secondary)] bg-[var(--surface-elevated)] p-3 rounded-lg border border-[var(--border)]">
+                  <p className="text-sm text-(--text-secondary) bg-(--surface-elevated) p-3 rounded-lg border border-(--border)">
                     {entry.notes}
                   </p>
                 </div>
@@ -682,17 +682,17 @@ export default function JournalEntryViewModal({
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t border-[var(--border)]">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t border-(--border)">
             <button
               type="button"
               onClick={onClose}
-              className="w-full sm:flex-1 px-4 py-3 bg-transparent border border-[var(--border)] text-[var(--text-primary)] font-semibold rounded-lg hover:border-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-all order-2 sm:order-1"
+              className="w-full sm:flex-1 px-4 py-3 bg-transparent border border-(--border) text-(--text-primary) font-semibold rounded-lg hover:border-(--primary) hover:bg-(--primary) hover:text-white transition-all order-2 sm:order-1"
             >
               Close
             </button>
             <button
               onClick={() => onEdit(entry)}
-              className="w-full sm:flex-1 px-4 py-3 bg-[var(--primary)] text-white font-semibold rounded-lg hover:bg-[var(--primary-hover)] transition-all flex items-center justify-center gap-2 order-1 sm:order-2"
+              className="w-full sm:flex-1 px-4 py-3 bg-(--primary) text-white font-semibold rounded-lg hover:bg-(--primary-hover) transition-all flex items-center justify-center gap-2 order-1 sm:order-2"
             >
               <Pencil className="w-4 h-4" />
               <span>Edit Entry</span>
@@ -702,22 +702,22 @@ export default function JournalEntryViewModal({
 
         {/* Delete Confirmation */}
         {showDeleteConfirm && (
-          <div className="absolute inset-0 bg-[var(--surface)]/95 backdrop-blur-sm flex items-center justify-center p-4 rounded-xl">
+          <div className="absolute inset-0 bg-(--surface)/95 backdrop-blur-sm flex items-center justify-center p-4 rounded-xl">
             <div className="text-center max-w-sm">
-              <div className="w-12 h-12 rounded-full bg-[var(--error)]/10 flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-6 h-6 text-[var(--error)]" />
+              <div className="w-12 h-12 rounded-full bg-(--error)/10 flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-6 h-6 text-(--error)" />
               </div>
-              <h3 className="font-semibold text-[var(--text-primary)] mb-2 font-statement">
+              <h3 className="font-semibold text-(--text-primary) mb-2 font-statement">
                 Delete Entry?
               </h3>
-              <p className="text-sm text-[var(--text-muted)] mb-6">
+              <p className="text-sm text-(--text-muted) mb-6">
                 This action cannot be undone. The journal entry will be
                 permanently deleted.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2.5 border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)] transition-colors font-medium"
+                  className="px-4 py-2.5 border border-(--border) rounded-lg text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors font-medium"
                   disabled={isDeleting}
                 >
                   Cancel
@@ -725,7 +725,7 @@ export default function JournalEntryViewModal({
                 <button
                   onClick={handleDelete}
                   disabled={isDeleting}
-                  className="px-4 py-2.5 bg-[var(--error)] text-white rounded-lg hover:bg-[var(--error)]/90 transition-colors disabled:opacity-50 font-medium"
+                  className="px-4 py-2.5 bg-(--error) text-white rounded-lg hover:bg-(--error)/90 transition-colors disabled:opacity-50 font-medium"
                 >
                   {isDeleting ? "Deleting..." : "Delete Entry"}
                 </button>

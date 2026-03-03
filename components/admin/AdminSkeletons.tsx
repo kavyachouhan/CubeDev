@@ -6,7 +6,7 @@ import React from "react";
 export function SkeletonPulse({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`bg-[var(--surface-elevated)] rounded animate-pulse ${className}`}
+      className={`bg-(--surface-elevated) rounded animate-pulse ${className}`}
     />
   );
 }
@@ -14,14 +14,14 @@ export function SkeletonPulse({ className = "" }: { className?: string }) {
 // Stat card skeleton - matches the structure of the StatCard component
 export function StatCardSkeleton() {
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)] animate-pulse">
+    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border) animate-pulse">
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="p-1.5 sm:p-2 bg-[var(--surface)] rounded-lg">
+        <div className="p-1.5 sm:p-2 bg-(--surface) rounded-lg">
           <div className="w-3 h-3 sm:w-4 sm:h-4" />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="h-3 w-20 bg-[var(--surface)] rounded mb-1.5" />
-          <div className="h-5 w-16 bg-[var(--surface)] rounded" />
+          <div className="h-3 w-20 bg-(--surface) rounded mb-1.5" />
+          <div className="h-5 w-16 bg-(--surface) rounded" />
         </div>
       </div>
     </div>
@@ -56,10 +56,10 @@ export function CollapsibleCardSkeleton({
   return (
     <div className={`timer-card animate-pulse ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <div className="h-6 w-40 bg-[var(--surface-elevated)] rounded" />
-        <div className="h-6 w-6 bg-[var(--surface-elevated)] rounded" />
+        <div className="h-6 w-40 bg-(--surface-elevated) rounded" />
+        <div className="h-6 w-6 bg-(--surface-elevated) rounded" />
       </div>
-      <div className={`bg-[var(--surface-elevated)] rounded-lg ${height}`} />
+      <div className={`bg-(--surface-elevated) rounded-lg ${height}`} />
     </div>
   );
 }
@@ -74,16 +74,16 @@ export function ListItemSkeleton({
 }) {
   return (
     <div
-      className={`flex items-center gap-4 animate-pulse py-3 border-b border-[var(--border)] last:border-0 ${className}`}
+      className={`flex items-center gap-4 animate-pulse py-3 border-b border-(--border) last:border-0 ${className}`}
     >
       {hasAvatar && (
-        <div className="w-10 h-10 bg-[var(--surface-elevated)] rounded-full shrink-0" />
+        <div className="w-10 h-10 bg-(--surface-elevated) rounded-full shrink-0" />
       )}
       <div className="flex-1 min-w-0">
-        <div className="h-4 w-32 bg-[var(--surface-elevated)] rounded mb-2" />
-        <div className="h-3 w-48 bg-[var(--surface-elevated)] rounded" />
+        <div className="h-4 w-32 bg-(--surface-elevated) rounded mb-2" />
+        <div className="h-3 w-48 bg-(--surface-elevated) rounded" />
       </div>
-      <div className="h-4 w-16 bg-[var(--surface-elevated)] rounded" />
+      <div className="h-4 w-16 bg-(--surface-elevated) rounded" />
     </div>
   );
 }
@@ -111,14 +111,14 @@ export function ListSkeleton({
 export function BadgeCardSkeleton({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`bg-[var(--surface-elevated)] rounded-xl p-4 border border-[var(--border)] animate-pulse ${className}`}
+      className={`bg-(--surface-elevated) rounded-xl p-4 border border-(--border) animate-pulse ${className}`}
     >
       <div className="flex items-center gap-2 mb-2">
-        <div className="h-5 w-16 bg-[var(--surface)] rounded-full" />
-        <div className="h-5 w-20 bg-[var(--surface)] rounded-full" />
+        <div className="h-5 w-16 bg-(--surface) rounded-full" />
+        <div className="h-5 w-20 bg-(--surface) rounded-full" />
       </div>
-      <div className="h-4 w-48 bg-[var(--surface)] rounded mb-1" />
-      <div className="h-3 w-64 bg-[var(--surface)] rounded" />
+      <div className="h-4 w-48 bg-(--surface) rounded mb-1" />
+      <div className="h-3 w-64 bg-(--surface) rounded" />
     </div>
   );
 }
@@ -133,13 +133,13 @@ export function ChartSkeleton({
 }) {
   return (
     <div
-      className={`bg-[var(--surface-elevated)] rounded-lg animate-pulse ${height} ${className}`}
+      className={`bg-(--surface-elevated) rounded-lg animate-pulse ${height} ${className}`}
     >
       <div className="flex items-end justify-around h-full p-4 gap-2">
         {[...Array(7)].map((_, i) => (
           <div
             key={i}
-            className="bg-[var(--surface)] rounded-t flex-1"
+            className="bg-(--surface) rounded-t flex-1"
             style={{ height: `${30 + Math.random() * 50}%` }}
           />
         ))}
@@ -153,10 +153,10 @@ export function FilterBarSkeleton({ className = "" }: { className?: string }) {
   return (
     <div className={`timer-card animate-pulse ${className}`}>
       <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1 h-10 bg-[var(--surface-elevated)] rounded-lg" />
+        <div className="flex-1 h-10 bg-(--surface-elevated) rounded-lg" />
         <div className="flex gap-2">
-          <div className="h-10 w-24 bg-[var(--surface-elevated)] rounded-lg" />
-          <div className="h-10 w-24 bg-[var(--surface-elevated)] rounded-lg" />
+          <div className="h-10 w-24 bg-(--surface-elevated) rounded-lg" />
+          <div className="h-10 w-24 bg-(--surface-elevated) rounded-lg" />
         </div>
       </div>
     </div>
@@ -180,7 +180,7 @@ export function AdminPageSkeleton({
       <div className="space-y-4 sm:space-y-6">
         {/* Header skeleton */}
         <div className="timer-card">
-          <div className="h-10 w-48 bg-[var(--surface-elevated)] rounded animate-pulse" />
+          <div className="h-10 w-48 bg-(--surface-elevated) rounded animate-pulse" />
         </div>
 
         {/* Stats grid */}
@@ -198,7 +198,7 @@ export function AdminPageSkeleton({
         {showList && (
           <div className="timer-card">
             <div className="flex items-center justify-between mb-4">
-              <div className="h-6 w-32 bg-[var(--surface-elevated)] rounded animate-pulse" />
+              <div className="h-6 w-32 bg-(--surface-elevated) rounded animate-pulse" />
             </div>
             <ListSkeleton count={5} />
           </div>
@@ -220,14 +220,14 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-      <div className="w-12 h-12 rounded-full bg-[var(--surface-elevated)] flex items-center justify-center mb-3">
-        <Icon className="w-6 h-6 text-[var(--text-muted)]" />
+      <div className="w-12 h-12 rounded-full bg-(--surface-elevated) flex items-center justify-center mb-3">
+        <Icon className="w-6 h-6 text-(--text-muted)" />
       </div>
-      <p className="text-sm font-medium text-[var(--text-secondary)] font-inter">
+      <p className="text-sm font-medium text-(--text-secondary) font-inter">
         {title}
       </p>
       {description && (
-        <p className="text-xs text-[var(--text-muted)] font-inter mt-1">
+        <p className="text-xs text-(--text-muted) font-inter mt-1">
           {description}
         </p>
       )}

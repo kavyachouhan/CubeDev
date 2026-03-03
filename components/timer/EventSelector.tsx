@@ -229,10 +229,10 @@ export default function EventSelector({
       >
         <button
           onClick={toggleExpanded}
-          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
           title={isExpanded ? "Hide event" : "Show event"}
         >
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+        <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
           Event
         </h3>
           {isExpanded ? (
@@ -244,7 +244,7 @@ export default function EventSelector({
         <div className="flex items-center gap-2">
           <button
             onClick={toggleExpanded}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={isExpanded ? "Hide event" : "Show event"}
           >
             {isExpanded ? (
@@ -269,10 +269,10 @@ export default function EventSelector({
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="w-full flex items-center justify-between p-2 md:p-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)] transition-colors"
+            className="w-full flex items-center justify-between p-2 md:p-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
           >
             <div className="flex items-center gap-2 md:gap-3">
-              <div className="w-8 h-8 bg-[var(--primary)] text-white rounded-lg flex items-center justify-center p-1">
+              <div className="w-8 h-8 bg-(--primary) text-white rounded-lg flex items-center justify-center p-1">
                 <Image
                   src={getEventIconPath(selectedEventData.id)}
                   alt={selectedEventData.name}
@@ -282,23 +282,23 @@ export default function EventSelector({
                 />
               </div>
               <div className="text-left">
-                <div className="font-medium text-[var(--text-primary)] font-statement">
+                <div className="font-medium text-(--text-primary) font-statement">
                   {selectedEventData.name}
                 </div>
-                <div className="text-xs text-[var(--text-muted)] font-inter">
+                <div className="text-xs text-(--text-muted) font-inter">
                   {getSolveCount(selectedEventData.id)} solves
                 </div>
               </div>
             </div>
             <ChevronDown
-              className={`w-4 h-4 text-[var(--text-secondary)] transition-transform ${
+              className={`w-4 h-4 text-(--text-secondary) transition-transform ${
                 isOpen ? "rotate-180" : ""
               }`}
             />
           </button>
 
           {isOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-[9999] max-h-64 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-64 overflow-y-auto">
               {events.map((event) => (
                 <button
                   key={event.id}
@@ -307,13 +307,13 @@ export default function EventSelector({
                     onEventChange(event.id);
                     setIsOpen(false);
                   }}
-                  className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-[var(--surface-elevated)] transition-colors ${
+                  className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-(--surface-elevated) transition-colors ${
                     event.id === selectedEvent
-                      ? "bg-[var(--primary)]/20 border-[var(--primary)]/30"
-                      : "bg-[var(--background)]"
+                      ? "bg-(--primary)/20 border-(--primary)/30"
+                      : "bg-(--background)"
                   }`}
                 >
-                  <div className="w-8 h-8 bg-[var(--primary)] text-white rounded-lg flex items-center justify-center p-1">
+                  <div className="w-8 h-8 bg-(--primary) text-white rounded-lg flex items-center justify-center p-1">
                     <Image
                       src={getEventIconPath(event.id)}
                       alt={event.name}
@@ -323,10 +323,10 @@ export default function EventSelector({
                     />
                   </div>
                   <div>
-                    <div className="font-medium text-[var(--text-primary)] font-statement">
+                    <div className="font-medium text-(--text-primary) font-statement">
                       {event.name}
                     </div>
-                    <div className="text-xs text-[var(--text-muted)] font-inter">
+                    <div className="text-xs text-(--text-muted) font-inter">
                       {getSolveCount(event.id)} solves
                     </div>
                   </div>

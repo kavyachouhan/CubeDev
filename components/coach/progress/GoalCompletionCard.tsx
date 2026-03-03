@@ -123,28 +123,28 @@ export default function GoalCompletionCard({
           customGoalTime={profile.customGoalTime}
           onComplete={() => setShowCelebration(false)}
         />
-        <div className="timer-card border-[var(--success)]">
+        <div className="timer-card border-(--success)">
           {/* Mobile: stacked layout, Desktop: side by side */}
           <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row gap-4">
-            <div className="w-14 h-14 sm:w-12 sm:h-12 rounded-full bg-[var(--success)]/10 flex items-center justify-center shrink-0">
-              <Trophy className="w-7 h-7 sm:w-6 sm:h-6 text-[var(--success)]" />
+            <div className="w-14 h-14 sm:w-12 sm:h-12 rounded-full bg-(--success)/10 flex items-center justify-center shrink-0">
+              <Trophy className="w-7 h-7 sm:w-6 sm:h-6 text-(--success)" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-1">
+              <h3 className="text-lg font-semibold text-(--text-primary) mb-1">
                 Goal Achieved!
               </h3>
-              <p className="text-sm text-[var(--text-muted)] mb-3">
+              <p className="text-sm text-(--text-muted) mb-3">
                 Congratulations! You&apos;ve reached your{" "}
                 {profile.goalType.replace("-", " ").toUpperCase()} goal with an
                 average of {formatTime(currentAverage)}.
               </p>
-              <div className="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-[var(--text-muted)]">
+              <div className="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-(--text-muted)">
                 <span className="flex items-center gap-1">
                   <Target className="w-3.5 h-3.5" />
                   Target: {formatTime(targetTime)}
                 </span>
                 <span className="flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[var(--success)]" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-(--success)" />
                   Current: {formatTime(currentAverage)}
                 </span>
               </div>
@@ -155,7 +155,7 @@ export default function GoalCompletionCard({
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => setShowGoalSetup(true)}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--primary)] text-white rounded-lg font-medium hover:bg-[var(--primary-hover)] transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors"
               >
                 <Target className="w-4 h-4" />
                 Set New Goal
@@ -163,7 +163,7 @@ export default function GoalCompletionCard({
               {onDismiss && (
                 <button
                   onClick={onDismiss}
-                  className="px-4 py-2.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                  className="px-4 py-2.5 text-(--text-secondary) hover:text-(--text-primary) transition-colors"
                 >
                   Dismiss
                 </button>
@@ -189,22 +189,22 @@ export default function GoalCompletionCard({
   // Expired status
   return (
     <>
-      <div className="timer-card border-[var(--warning)]">
+      <div className="timer-card border-(--warning)">
         <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row gap-4">
-          <div className="w-14 h-14 sm:w-12 sm:h-12 rounded-full bg-[var(--warning)]/10 flex items-center justify-center shrink-0">
-            <AlertTriangle className="w-7 h-7 sm:w-6 sm:h-6 text-[var(--warning)]" />
+          <div className="w-14 h-14 sm:w-12 sm:h-12 rounded-full bg-(--warning)/10 flex items-center justify-center shrink-0">
+            <AlertTriangle className="w-7 h-7 sm:w-6 sm:h-6 text-(--warning)" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-1 font-statement">
+            <h3 className="text-lg font-semibold text-(--text-primary) mb-1 font-statement">
               Target Date Passed
             </h3>
-            <p className="text-sm text-[var(--text-muted)] mb-3">
+            <p className="text-sm text-(--text-muted) mb-3">
               Your deadline for{" "}
               {profile.goalType.replace("-", " ").toUpperCase()} has passed.
               Don&apos;t worry, progress takes time! You can extend your
               deadline or set a new goal.
             </p>
-            <div className="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-[var(--text-muted)]">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-(--text-muted)">
               <span className="flex items-center gap-1">
                 <Target className="w-3.5 h-3.5" />
                 Target: {formatTime(targetTime)}
@@ -213,25 +213,25 @@ export default function GoalCompletionCard({
                 <Clock className="w-3.5 h-3.5" />
                 Current: {formatTime(currentAverage)}
               </span>
-              <span className="flex items-center gap-1 text-[var(--warning)]">
+              <span className="flex items-center gap-1 text-(--warning)">
                 <Calendar className="w-3.5 h-3.5" />
                 {Math.abs(daysRemaining)} days overdue
               </span>
             </div>
 
             {currentAverage > targetTime && (
-              <div className="mt-3 p-2 bg-[var(--surface-elevated)] rounded-lg">
+              <div className="mt-3 p-2 bg-(--surface-elevated) rounded-lg">
                 <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="text-[var(--text-muted)]">
+                  <span className="text-(--text-muted)">
                     Gap to target:
                   </span>
-                  <span className="font-medium text-[var(--warning)]">
+                  <span className="font-medium text-(--warning)">
                     {formatTime(currentAverage - targetTime)} to go
                   </span>
                 </div>
-                <div className="h-1.5 bg-[var(--surface)] rounded-full overflow-hidden">
+                <div className="h-1.5 bg-(--surface) rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-[var(--primary)] transition-all duration-500"
+                    className="h-full bg-(--primary) transition-all duration-500"
                     style={{
                       width: `${Math.min(100, (targetTime / currentAverage) * 100)}%`,
                     }}
@@ -244,7 +244,7 @@ export default function GoalCompletionCard({
 
         <div className="mt-6 space-y-4">
           <div>
-            <p className="text-xs text-[var(--text-muted)] mb-2">
+            <p className="text-xs text-(--text-muted) mb-2">
               Extend deadline:
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -253,7 +253,7 @@ export default function GoalCompletionCard({
                   key={days}
                   onClick={() => handleExtendDeadline(days)}
                   disabled={isSubmitting}
-                  className="px-3 sm:px-4 py-2 border border-[var(--border)] rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors disabled:opacity-50"
+                  className="px-3 sm:px-4 py-2 border border-(--border) rounded-lg text-sm font-medium text-(--text-secondary) hover:border-(--primary) hover:text-(--primary) transition-colors disabled:opacity-50"
                 >
                   +{days} days
                 </button>
@@ -262,14 +262,14 @@ export default function GoalCompletionCard({
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-[var(--border)]" />
-            <span className="text-xs text-[var(--text-muted)]">or</span>
-            <div className="flex-1 h-px bg-[var(--border)]" />
+            <div className="flex-1 h-px bg-(--border)" />
+            <span className="text-xs text-(--text-muted)">or</span>
+            <div className="flex-1 h-px bg-(--border)" />
           </div>
 
           <button
             onClick={() => setShowGoalSetup(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--primary)] text-white rounded-lg font-medium hover:bg-[var(--primary-hover)] transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors"
           >
             <Target className="w-4 h-4" />
             Set a Different Goal

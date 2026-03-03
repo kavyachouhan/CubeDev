@@ -96,14 +96,14 @@ export default function AdminAlgorithms() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowImportModal(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] transition-colors font-inter"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter"
             >
               <Upload className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Import</span>
             </button>
             <button
               onClick={() => setShowNewSetModal(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-inter"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-inter"
             >
               <Plus className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Add Set</span>
@@ -113,13 +113,13 @@ export default function AdminAlgorithms() {
       >
         {/* Search */}
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
           <input
             type="text"
             placeholder="Search sets by name or category..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
+            className="w-full pl-10 pr-4 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
           />
         </div>
 
@@ -146,8 +146,8 @@ export default function AdminAlgorithms() {
           </div>
         ) : (
           <div className="timer-card text-center py-8">
-            <BookOpen className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-            <p className="text-[var(--text-muted)] font-inter">
+            <BookOpen className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
+            <p className="text-(--text-muted) font-inter">
               No algorithm sets found
             </p>
           </div>

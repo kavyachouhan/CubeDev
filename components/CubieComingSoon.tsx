@@ -5,23 +5,23 @@ import Link from "next/link";
 
 export default function CubieComingSoon() {
   return (
-    <section className="py-16 lg:py-24 bg-[var(--surface)] overflow-hidden">
+    <section className="py-16 lg:py-24 bg-(--surface) overflow-hidden">
       <div className="container-responsive">
         <div className="max-w-5xl mx-auto">
           {/* Main Announcement Card */}
-          <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-2xl p-6 sm:p-8 md:p-12 shadow-xl">
+          <div className="bg-(--surface-elevated) border border-(--border) rounded-2xl p-6 sm:p-8 md:p-12 shadow-xl">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)]/10 border border-[var(--primary)]/20 rounded-full mb-6">
-                <Sparkles className="w-4 h-4 text-[var(--primary)]" />
-                <span className="text-sm font-semibold text-[var(--primary)] font-button">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary)/10 border border-(--primary)/20 rounded-full mb-6">
+                <Sparkles className="w-4 h-4 text-(--primary)" />
+                <span className="text-sm font-semibold text-(--primary) font-button">
                   Coming Soon
                 </span>
               </div>
 
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-primary)] mb-4 font-statement">
-                Meet <span className="text-[var(--primary)]">Cubie AI</span>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-(--text-primary) mb-4 font-statement">
+                Meet <span className="text-(--primary)">Cubie AI</span>
               </h2>
-              <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto font-inter">
+              <p className="text-lg md:text-xl text-(--text-secondary) max-w-2xl mx-auto font-inter">
                 Your personal AI cubing assistant, powered by advanced language
                 models to help you improve faster than ever before.
               </p>
@@ -29,54 +29,54 @@ export default function CubieComingSoon() {
 
             {/* Features Grid */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-[var(--background)] border border-[var(--border)] rounded-xl p-6">
-                <div className="w-12 h-12 bg-[var(--primary)]/10 rounded-lg flex items-center justify-center mb-4">
-                  <TrendingUp className="w-6 h-6 text-[var(--primary)]" />
+              <div className="bg-(--background) border border-(--border) rounded-xl p-6">
+                <div className="w-12 h-12 bg-(--primary)/10 rounded-lg flex items-center justify-center mb-4">
+                  <TrendingUp className="w-6 h-6 text-(--primary)" />
                 </div>
-                <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2 font-button">
+                <h3 className="text-xl font-semibold text-(--text-primary) mb-2 font-button">
                   Solve Analysis
                 </h3>
-                <p className="text-[var(--text-secondary)] font-inter">
+                <p className="text-(--text-secondary) font-inter">
                   Get instant insights into your solving patterns, identify
                   weaknesses, and receive personalized improvement strategies.
                 </p>
               </div>
 
-              <div className="bg-[var(--background)] border border-[var(--border)] rounded-xl p-6">
-                <div className="w-12 h-12 bg-[var(--accent)]/10 rounded-lg flex items-center justify-center mb-4">
-                  <MessageSquare className="w-6 h-6 text-[var(--accent)]" />
+              <div className="bg-(--background) border border-(--border) rounded-xl p-6">
+                <div className="w-12 h-12 bg-(--accent)/10 rounded-lg flex items-center justify-center mb-4">
+                  <MessageSquare className="w-6 h-6 text-(--accent)" />
                 </div>
-                <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2 font-button">
+                <h3 className="text-xl font-semibold text-(--text-primary) mb-2 font-button">
                   WCA Intelligence
                 </h3>
-                <p className="text-[var(--text-secondary)] font-inter">
+                <p className="text-(--text-secondary) font-inter">
                   Ask questions about WCA regulations, competition data,
                   records, and get instant, accurate answers from the official
                   database.
                 </p>
               </div>
 
-              <div className="bg-[var(--background)] border border-[var(--border)] rounded-xl p-6">
-                <div className="w-12 h-12 bg-[var(--success)]/10 rounded-lg flex items-center justify-center mb-4">
-                  <Zap className="w-6 h-6 text-[var(--success)]" />
+              <div className="bg-(--background) border border-(--border) rounded-xl p-6">
+                <div className="w-12 h-12 bg-(--success)/10 rounded-lg flex items-center justify-center mb-4">
+                  <Zap className="w-6 h-6 text-(--success)" />
                 </div>
-                <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2 font-button">
+                <h3 className="text-xl font-semibold text-(--text-primary) mb-2 font-button">
                   Training Plans
                 </h3>
-                <p className="text-[var(--text-secondary)] font-inter">
+                <p className="text-(--text-secondary) font-inter">
                   Generate custom practice routines based on your skill level,
                   goals, and available time to maximize your improvement.
                 </p>
               </div>
 
-              <div className="bg-[var(--background)] border border-[var(--border)] rounded-xl p-6">
-                <div className="w-12 h-12 bg-[var(--warning)]/10 rounded-lg flex items-center justify-center mb-4">
-                  <Brain className="w-6 h-6 text-[var(--warning)]" />
+              <div className="bg-(--background) border border-(--border) rounded-xl p-6">
+                <div className="w-12 h-12 bg-(--warning)/10 rounded-lg flex items-center justify-center mb-4">
+                  <Brain className="w-6 h-6 text-(--warning)" />
                 </div>
-                <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2 font-button">
+                <h3 className="text-xl font-semibold text-(--text-primary) mb-2 font-button">
                   Smart Recommendations
                 </h3>
-                <p className="text-[var(--text-secondary)] font-inter">
+                <p className="text-(--text-secondary) font-inter">
                   Discover algorithms, techniques, and solving methods tailored
                   to your current skill level and learning style.
                 </p>
@@ -84,14 +84,14 @@ export default function CubieComingSoon() {
             </div>
 
             {/* CTA Section */}
-            <div className="text-center pt-6 border-t border-[var(--border)]">
-              <p className="text-[var(--text-secondary)] mb-4 font-inter">
+            <div className="text-center pt-6 border-t border-(--border)">
+              <p className="text-(--text-secondary) mb-4 font-inter">
                 Be among the first to experience the future of speedcubing
                 training
               </p>
               <Link
                 href="/cube-lab/cubie"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg font-button transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-button transition-all"
               >
                 Learn More About Cubie
               </Link>

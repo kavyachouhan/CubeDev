@@ -142,7 +142,7 @@ function MediaPreviewItem({
     <div className="relative group">
       {isVideo ? (
         <div
-          className="aspect-video bg-[var(--surface)] rounded-lg flex items-center justify-center border border-[var(--border)] relative overflow-hidden cursor-pointer"
+          className="aspect-video bg-(--surface) rounded-lg flex items-center justify-center border border-(--border) relative overflow-hidden cursor-pointer"
           onClick={onPreview}
         >
           {!videoError ? (
@@ -161,28 +161,28 @@ function MediaPreviewItem({
               </div>
             </>
           ) : (
-            <Film className="w-8 h-8 text-[var(--text-muted)]" />
+            <Film className="w-8 h-8 text-(--text-muted)" />
           )}
         </div>
       ) : imageError ? (
         <div
-          className="aspect-square bg-[var(--surface)] rounded-lg flex items-center justify-center border border-[var(--border)] cursor-pointer"
+          className="aspect-square bg-(--surface) rounded-lg flex items-center justify-center border border-(--border) cursor-pointer"
           onClick={onPreview}
         >
-          <Image className="w-8 h-8 text-[var(--text-muted)]" />
+          <Image className="w-8 h-8 text-(--text-muted)" />
         </div>
       ) : (
         <img
           src={url}
           alt="Media attachment"
-          className="w-full aspect-square object-cover rounded-lg border border-[var(--border)] cursor-pointer"
+          className="w-full aspect-square object-cover rounded-lg border border-(--border) cursor-pointer"
           onClick={onPreview}
           onError={() => setImageError(true)}
         />
       )}
       <button
         onClick={onRemove}
-        className="absolute top-1 right-1 p-1.5 bg-[var(--error)] text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-1 right-1 p-1.5 bg-(--error) text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
         aria-label="Remove media"
       >
         <Trash2 className="w-3 h-3" />
@@ -226,12 +226,12 @@ function UploadingMediaItem({
     <div className="relative group">
       {isVideo ? (
         videoError ? (
-          <div className="aspect-video bg-[var(--surface)] rounded-lg flex items-center justify-center border border-[var(--border)]">
-            <Film className="w-8 h-8 text-[var(--text-muted)]" />
+          <div className="aspect-video bg-(--surface) rounded-lg flex items-center justify-center border border-(--border)">
+            <Film className="w-8 h-8 text-(--text-muted)" />
           </div>
         ) : (
           <div
-            className={`relative aspect-video rounded-lg overflow-hidden border border-[var(--border)] ${media.progress === "completed" ? "cursor-pointer" : ""}`}
+            className={`relative aspect-video rounded-lg overflow-hidden border border-(--border) ${media.progress === "completed" ? "cursor-pointer" : ""}`}
             onClick={handleClick}
           >
             <video
@@ -255,7 +255,7 @@ function UploadingMediaItem({
         <img
           src={media.previewUrl}
           alt="New media"
-          className={`w-full aspect-square object-cover rounded-lg border border-[var(--border)] ${media.progress === "completed" ? "cursor-pointer" : ""}`}
+          className={`w-full aspect-square object-cover rounded-lg border border-(--border) ${media.progress === "completed" ? "cursor-pointer" : ""}`}
           onClick={handleClick}
         />
       )}
@@ -272,7 +272,7 @@ function UploadingMediaItem({
 
       {/* Error overlay */}
       {media.progress === "error" && (
-        <div className="absolute inset-0 bg-[var(--error)]/80 rounded-lg flex items-center justify-center">
+        <div className="absolute inset-0 bg-(--error)/80 rounded-lg flex items-center justify-center">
           <div className="flex flex-col items-center gap-2 p-2 text-center">
             <AlertCircle className="w-5 h-5 text-white" />
             <span className="text-xs text-white font-medium">Failed</span>
@@ -291,7 +291,7 @@ function UploadingMediaItem({
 
       {/* Completed badge */}
       {media.progress === "completed" && (
-        <div className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-[var(--success)] text-white text-[10px] rounded flex items-center gap-1">
+        <div className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-(--success) text-white text-[10px] rounded flex items-center gap-1">
           <Check className="w-2.5 h-2.5" />
           <span>Uploaded</span>
         </div>
@@ -300,7 +300,7 @@ function UploadingMediaItem({
       {/* Remove button */}
       <button
         onClick={onRemove}
-        className="absolute top-1 right-1 p-1.5 bg-[var(--error)] text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-1 right-1 p-1.5 bg-(--error) text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
         aria-label="Remove media"
       >
         <Trash2 className="w-3 h-3" />
@@ -859,21 +859,21 @@ export default function DailyJournalModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[var(--primary)]/10 flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-[var(--primary)]" />
+            <div className="w-10 h-10 rounded-full bg-(--primary)/10 flex items-center justify-center">
+              <BookOpen className="w-5 h-5 text-(--primary)" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+              <h2 className="text-xl font-bold text-(--text-primary) font-statement">
                 Daily Journal
               </h2>
-              <p className="text-sm text-[var(--text-muted)]">
+              <p className="text-sm text-(--text-muted)">
                 {formatDate(stableDate)}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -882,7 +882,7 @@ export default function DailyJournalModal({
         <div className="space-y-6">
           {/* Mood Selection */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-3 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-3 font-inter">
               How was your practice session?
             </label>
             <div className="flex flex-wrap gap-2">
@@ -895,12 +895,12 @@ export default function DailyJournalModal({
                     onClick={() => setMood(m.id)}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors text-sm ${
                       isSelected
-                        ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-                        : "bg-[var(--surface-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
+                        ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
+                        : "bg-(--surface-elevated) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
                     }`}
                   >
                     <Icon
-                      className={`w-4 h-4 ${isSelected ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`}
+                      className={`w-4 h-4 ${isSelected ? "text-(--primary)" : "text-(--text-muted)"}`}
                     />
                     <span className="font-medium">{m.label}</span>
                   </button>
@@ -911,51 +911,51 @@ export default function DailyJournalModal({
 
           {/* Link Timer Session */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Link a Timer Session (Optional)
             </label>
 
             {selectedSessionId && sessionStats ? (
-              <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <FolderOpen className="w-4 h-4 text-[var(--primary)]" />
-                    <span className="font-medium text-[var(--text-primary)] text-sm">
+                    <FolderOpen className="w-4 h-4 text-(--primary)" />
+                    <span className="font-medium text-(--text-primary) text-sm">
                       {sessions?.find((s) => s._id === selectedSessionId)
                         ?.name || "Session"}
                     </span>
                   </div>
                   <button
                     onClick={() => setSelectedSessionId(null)}
-                    className="text-xs text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
+                    className="text-xs text-(--text-muted) hover:text-(--error) transition-colors"
                   >
                     Remove
                   </button>
                 </div>
                 <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="p-2 bg-[var(--surface)] rounded-lg">
-                    <span className="text-xs text-[var(--text-muted)] block">
+                  <div className="p-2 bg-(--surface) rounded-lg">
+                    <span className="text-xs text-(--text-muted) block">
                       Solves
                     </span>
-                    <span className="font-semibold text-[var(--text-primary)] text-sm">
+                    <span className="font-semibold text-(--text-primary) text-sm">
                       {sessionStats.solveCount}
                     </span>
                   </div>
-                  <div className="p-2 bg-[var(--surface)] rounded-lg">
-                    <span className="text-xs text-[var(--text-muted)] block">
+                  <div className="p-2 bg-(--surface) rounded-lg">
+                    <span className="text-xs text-(--text-muted) block">
                       Average
                     </span>
-                    <span className="font-semibold text-[var(--text-primary)] text-sm">
+                    <span className="font-semibold text-(--text-primary) text-sm">
                       {sessionStats.average
                         ? formatTime(sessionStats.average)
                         : "-"}
                     </span>
                   </div>
-                  <div className="p-2 bg-[var(--surface)] rounded-lg">
-                    <span className="text-xs text-[var(--text-muted)] block">
+                  <div className="p-2 bg-(--surface) rounded-lg">
+                    <span className="text-xs text-(--text-muted) block">
                       Best
                     </span>
-                    <span className="font-semibold text-[var(--success)] text-sm">
+                    <span className="font-semibold text-(--success) text-sm">
                       {sessionStats.bestSingle
                         ? formatTime(sessionStats.bestSingle)
                         : "-"}
@@ -966,9 +966,9 @@ export default function DailyJournalModal({
             ) : (
               <button
                 onClick={() => setShowSessionSelector(!showSessionSelector)}
-                className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-left hover:border-[var(--border-hover)] transition-colors"
+                className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-left hover:border-(--border-hover) transition-colors"
               >
-                <span className="text-sm text-[var(--text-muted)]">
+                <span className="text-sm text-(--text-muted)">
                   Click to select a session from Timer...
                 </span>
               </button>
@@ -977,7 +977,7 @@ export default function DailyJournalModal({
             {showSessionSelector &&
               !selectedSessionId &&
               filteredSessions.length > 0 && (
-                <div className="mt-2 max-h-40 overflow-y-auto space-y-1 p-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg">
+                <div className="mt-2 max-h-40 overflow-y-auto space-y-1 p-2 bg-(--surface-elevated) border border-(--border) rounded-lg">
                   {filteredSessions.slice(0, 5).map((session) => (
                     <button
                       key={session._id}
@@ -985,12 +985,12 @@ export default function DailyJournalModal({
                         setSelectedSessionId(session._id);
                         setShowSessionSelector(false);
                       }}
-                      className="w-full flex items-center justify-between p-2 rounded hover:bg-[var(--surface)] transition-colors"
+                      className="w-full flex items-center justify-between p-2 rounded hover:bg-(--surface) transition-colors"
                     >
-                      <span className="text-sm font-medium text-[var(--text-primary)]">
+                      <span className="text-sm font-medium text-(--text-primary)">
                         {session.name}
                       </span>
-                      <span className="text-xs text-[var(--text-muted)]">
+                      <span className="text-xs text-(--text-muted)">
                         {session.solveCount3x3} solves
                       </span>
                     </button>
@@ -999,7 +999,7 @@ export default function DailyJournalModal({
               )}
 
             {/* Session Selection Note */}
-            <p className="text-xs text-[var(--text-muted)] mt-2 leading-relaxed">
+            <p className="text-xs text-(--text-muted) mt-2 leading-relaxed">
               Select a session that reflects your actual practice. Sessions with
               inaccurate data may affect your training insights.
             </p>
@@ -1007,7 +1007,7 @@ export default function DailyJournalModal({
 
           {/* Custom Average */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Session Average
             </label>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -1018,8 +1018,8 @@ export default function DailyJournalModal({
                 }}
                 className={`flex-1 px-4 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
                   useSessionAverage
-                    ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-                    : "bg-[var(--surface-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
+                    ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
+                    : "bg-(--surface-elevated) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
                 }`}
               >
                 {sessionStats?.average
@@ -1035,15 +1035,15 @@ export default function DailyJournalModal({
                     setUseSessionAverage(false);
                   }}
                   placeholder="12.34 or 1:23.45"
-                  className={`w-full px-3 py-2.5 bg-[var(--surface-elevated)] border rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter text-sm ${
+                  className={`w-full px-3 py-2.5 bg-(--surface-elevated) border rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm ${
                     !useSessionAverage && customAverage
-                      ? "border-[var(--primary)]"
-                      : "border-[var(--border)]"
+                      ? "border-(--primary)"
+                      : "border-(--border)"
                   }`}
                 />
               </div>
             </div>
-            <p className="text-xs text-[var(--text-muted)] mt-1.5">
+            <p className="text-xs text-(--text-muted) mt-1.5">
               Use session average or enter a custom average (e.g., 12.34 or
               1:23.45)
             </p>
@@ -1051,7 +1051,7 @@ export default function DailyJournalModal({
 
           {/* Custom Solve Count */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Total Solves
             </label>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -1062,8 +1062,8 @@ export default function DailyJournalModal({
                 }}
                 className={`flex-1 px-4 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
                   useSessionSolveCount
-                    ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-                    : "bg-[var(--surface-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
+                    ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
+                    : "bg-(--surface-elevated) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
                 }`}
               >
                 {sessionStats?.solveCount
@@ -1080,43 +1080,43 @@ export default function DailyJournalModal({
                   }}
                   placeholder="Enter solves"
                   min={0}
-                  className={`w-full px-3 py-2.5 bg-[var(--surface-elevated)] border rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter text-sm ${
+                  className={`w-full px-3 py-2.5 bg-(--surface-elevated) border rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm ${
                     !useSessionSolveCount && customSolveCount
-                      ? "border-[var(--primary)]"
-                      : "border-[var(--border)]"
+                      ? "border-(--primary)"
+                      : "border-(--border)"
                   }`}
                 />
               </div>
             </div>
-            <p className="text-xs text-[var(--text-muted)] mt-1.5">
+            <p className="text-xs text-(--text-muted) mt-1.5">
               Use session solve count or enter a custom number
             </p>
           </div>
 
           {/* Practice Time */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               How long did you practice?
             </label>
             <div className="flex items-center gap-2 sm:gap-3">
-              <Clock className="w-5 h-5 text-[var(--text-muted)] flex-shrink-0" />
+              <Clock className="w-5 h-5 text-(--text-muted) shrink-0" />
               <input
                 type="number"
                 value={practiceMinutes}
                 onChange={(e) =>
                   setPracticeMinutes(parseInt(e.target.value) || 0)
                 }
-                className="w-20 sm:w-24 px-2 sm:px-3 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter text-sm"
+                className="w-20 sm:w-24 px-2 sm:px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
                 min={0}
                 max={480}
               />
-              <span className="text-sm text-[var(--text-muted)]">minutes</span>
+              <span className="text-sm text-(--text-muted)">minutes</span>
             </div>
           </div>
 
           {/* Focus Areas */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               What did you focus on?
             </label>
             <div className="flex flex-wrap gap-2">
@@ -1126,8 +1126,8 @@ export default function DailyJournalModal({
                   onClick={() => toggleFocusArea(area.id)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                     focusAreas.includes(area.id)
-                      ? "bg-[var(--primary)] text-white"
-                      : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--border-hover)]"
+                      ? "bg-(--primary) text-white"
+                      : "bg-(--surface-elevated) text-(--text-secondary) border border-(--border) hover:border-(--border-hover)"
                   }`}
                 >
                   {area.label}
@@ -1138,37 +1138,37 @@ export default function DailyJournalModal({
 
           {/* Tasks Section for the selected date */}
           {dateTasks && !dateTasks.plan.isRestDay && (
-            <div className="timer-card !p-0 overflow-hidden bg-[var(--surface-elevated)] border border-[var(--border)]">
+            <div className="timer-card !p-0 overflow-hidden bg-(--surface-elevated) border border-(--border)">
               <button
                 onClick={() => setShowTasks(!showTasks)}
                 className="w-full flex items-center justify-between p-4 text-left"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[var(--primary)]/10 flex items-center justify-center">
-                    <CheckCircle2 className="w-4 h-4 text-[var(--primary)]" />
+                  <div className="w-8 h-8 rounded-full bg-(--primary)/10 flex items-center justify-center">
+                    <CheckCircle2 className="w-4 h-4 text-(--primary)" />
                   </div>
                   <div>
-                    <span className="font-medium text-[var(--text-primary)] block text-sm">
+                    <span className="font-medium text-(--text-primary) block text-sm">
                       Training Tasks
                     </span>
-                    <span className="text-xs text-[var(--text-muted)]">
+                    <span className="text-xs text-(--text-muted)">
                       {completedActivitiesCount}/{totalActivities} completed
                     </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-16 h-2 bg-[var(--surface)] rounded-full overflow-hidden">
+                  <div className="w-16 h-2 bg-(--surface) rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[var(--primary)] transition-all"
+                      className="h-full bg-(--primary) transition-all"
                       style={{
                         width: `${totalActivities > 0 ? (completedActivitiesCount / totalActivities) * 100 : 0}%`,
                       }}
                     />
                   </div>
                   {showTasks ? (
-                    <ChevronUp className="w-4 h-4 text-[var(--text-muted)]" />
+                    <ChevronUp className="w-4 h-4 text-(--text-muted)" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />
+                    <ChevronDown className="w-4 h-4 text-(--text-muted)" />
                   )}
                 </div>
               </button>
@@ -1182,16 +1182,16 @@ export default function DailyJournalModal({
                         key={activityIndex}
                         className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
                           isCompleted
-                            ? "bg-[var(--success)]/10"
-                            : "bg-[var(--surface)]"
+                            ? "bg-(--success)/10"
+                            : "bg-(--surface)"
                         }`}
                       >
                         <button
                           onClick={() => toggleTaskCompletion(activityIndex)}
-                          className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                          className={`mt-0.5 shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                             isCompleted
-                              ? "bg-[var(--success)] border-[var(--success)] text-white"
-                              : "border-[var(--border)] hover:border-[var(--primary)]"
+                              ? "bg-(--success) border-(--success) text-white"
+                              : "border-(--border) hover:border-(--primary)"
                           }`}
                         >
                           {isCompleted && <CheckCircle2 className="w-3 h-3" />}
@@ -1201,16 +1201,16 @@ export default function DailyJournalModal({
                           <span
                             className={`font-medium text-sm ${
                               isCompleted
-                                ? "text-[var(--text-muted)] line-through"
-                                : "text-[var(--text-primary)]"
+                                ? "text-(--text-muted) line-through"
+                                : "text-(--text-primary)"
                             }`}
                           >
                             {activity.title}
                           </span>
-                          <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                          <p className="text-xs text-(--text-muted) mt-0.5">
                             {activity.description}
                           </p>
-                          <div className="flex items-center gap-3 mt-1.5 text-xs text-[var(--text-muted)]">
+                          <div className="flex items-center gap-3 mt-1.5 text-xs text-(--text-muted)">
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />
                               {activity.durationMinutes} min
@@ -1227,8 +1227,8 @@ export default function DailyJournalModal({
 
           {/* Rest Day Notice */}
           {dateTasks?.plan.isRestDay && (
-            <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] text-center">
-              <span className="text-sm text-[var(--text-muted)]">
+            <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border) text-center">
+              <span className="text-sm text-(--text-muted)">
                 Today is a rest day. Take it easy!
               </span>
             </div>
@@ -1236,49 +1236,49 @@ export default function DailyJournalModal({
 
           {/* What Went Well */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               What went well?
             </label>
             <textarea
               value={wentWell}
               onChange={(e) => setWentWell(e.target.value)}
               placeholder="e.g., Cross planning was much better today..."
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none transition-all font-inter text-sm"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter text-sm"
               rows={2}
             />
           </div>
 
           {/* Challenges */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               What was challenging?
             </label>
             <textarea
               value={challenges}
               onChange={(e) => setChallenges(e.target.value)}
               placeholder="e.g., Struggled with F2L lookahead..."
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none transition-all font-inter text-sm"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter text-sm"
               rows={2}
             />
           </div>
 
           {/* Additional Notes */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Additional Notes
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any other thoughts or observations..."
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none transition-all font-inter text-sm"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter text-sm"
               rows={2}
             />
           </div>
 
           {/* Media Upload Section */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Attach Images or Videos (Optional)
             </label>
 
@@ -1295,17 +1295,17 @@ export default function DailyJournalModal({
             {/* Upload button */}
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-dashed border-[var(--border)] rounded-lg text-left hover:border-[var(--primary)] hover:bg-[var(--primary)]/5 transition-colors flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-dashed border-(--border) rounded-lg text-left hover:border-(--primary) hover:bg-(--primary)/5 transition-colors flex items-center justify-center gap-2"
             >
-              <Upload className="w-4 h-4 text-[var(--text-muted)]" />
-              <span className="text-sm text-[var(--text-muted)]">
+              <Upload className="w-4 h-4 text-(--text-muted)" />
+              <span className="text-sm text-(--text-muted)">
                 Click to upload images or videos
               </span>
             </button>
 
             {/* Upload error */}
             {uploadError && (
-              <div className="mt-2 flex items-center gap-2 text-sm text-[var(--error)]">
+              <div className="mt-2 flex items-center gap-2 text-sm text-(--error)">
                 <AlertCircle className="w-4 h-4" />
                 <span>{uploadError}</span>
               </div>
@@ -1370,18 +1370,18 @@ export default function DailyJournalModal({
               </div>
             )}
 
-            <p className="text-xs text-[var(--text-muted)] mt-2">
+            <p className="text-xs text-(--text-muted) mt-2">
               Max 10MB for images, 50MB for videos. Supported: JPG, PNG, GIF,
               WebP, MP4, WebM
             </p>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t border-[var(--border)]">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t border-(--border)">
             <button
               type="button"
               onClick={onClose}
-              className="w-full sm:flex-1 px-4 py-3 bg-transparent border border-[var(--border)] text-[var(--text-primary)] font-semibold rounded-lg hover:border-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-all order-2 sm:order-1"
+              className="w-full sm:flex-1 px-4 py-3 bg-transparent border border-(--border) text-(--text-primary) font-semibold rounded-lg hover:border-(--primary) hover:bg-(--primary) hover:text-white transition-all order-2 sm:order-1"
               disabled={isSubmitting}
             >
               Cancel
@@ -1389,7 +1389,7 @@ export default function DailyJournalModal({
             <button
               onClick={handleSave}
               disabled={isSubmitting || isUploading || hasUploadErrors}
-              className="w-full sm:flex-1 px-4 py-3 bg-[var(--primary)] text-white font-semibold rounded-lg hover:bg-[var(--primary-hover)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-2"
+              className="w-full sm:flex-1 px-4 py-3 bg-(--primary) text-white font-semibold rounded-lg hover:bg-(--primary-hover) transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-2"
             >
               {isSubmitting ? (
                 <>

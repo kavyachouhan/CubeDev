@@ -135,13 +135,13 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
           <div className="relative">
             {/* Success Header */}
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-[var(--surface-elevated)] rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--border)]">
-                <Check className="w-8 h-8 text-[var(--primary)]" />
+              <div className="w-16 h-16 bg-(--surface-elevated) rounded-full flex items-center justify-center mx-auto mb-4 border border-(--border)">
+                <Check className="w-8 h-8 text-(--primary)" />
               </div>
-              <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement mb-2">
+              <h2 className="text-xl font-bold text-(--text-primary) font-statement mb-2">
                 Room Created!
               </h2>
-              <p className="text-[var(--text-secondary)] font-inter">
+              <p className="text-(--text-secondary) font-inter">
                 Your challenge room is ready. Share the room code or link with
                 others.
               </p>
@@ -149,12 +149,12 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
 
             {/* Room Details */}
             <div className="space-y-4 mb-6">
-              <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg p-4">
+              <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
                 <div className="text-center">
-                  <p className="text-sm text-[var(--text-secondary)] font-inter mb-1">
+                  <p className="text-sm text-(--text-secondary) font-inter mb-1">
                     Room Code
                   </p>
-                  <p className="text-2xl font-bold text-[var(--primary)] font-mono tracking-wider">
+                  <p className="text-2xl font-bold text-(--primary) font-mono tracking-wider">
                     {roomCreated.roomId}
                   </p>
                 </div>
@@ -182,7 +182,7 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
 
             <button
               onClick={onClose}
-              className="absolute top-0 right-0 p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+              className="absolute top-0 right-0 p-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -200,17 +200,17 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div>
-                <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+                <h2 className="text-xl font-bold text-(--text-primary) font-statement">
                   Create Challenge Room
                 </h2>
-                <p className="text-sm text-[var(--text-secondary)] font-inter">
+                <p className="text-sm text-(--text-secondary) font-inter">
                   Set up a new challenge room to compete with others.
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+              className="p-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -220,7 +220,7 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Room Name */}
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] font-inter mb-2">
+              <label className="block text-sm font-medium text-(--text-primary) font-inter mb-2">
                 Room Name
               </label>
               <input
@@ -230,24 +230,24 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
                   setFormData({ ...formData, name: e.target.value })
                 }
                 placeholder="Enter room name..."
-                className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors font-inter"
+                className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) transition-colors font-inter"
                 required
               />
             </div>
 
             {/* Event Selection */}
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] font-inter mb-3">
+              <label className="block text-sm font-medium text-(--text-primary) font-inter mb-3">
                 Event
               </label>
               <div className="relative" ref={dropdownRef}>
                 <button
                   type="button"
                   onClick={() => setIsEventDropdownOpen(!isEventDropdownOpen)}
-                  className="w-full flex items-center justify-between p-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)] transition-colors"
+                  className="w-full flex items-center justify-between p-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-[var(--primary)] text-white rounded-lg flex items-center justify-center p-1">
+                    <div className="w-8 h-8 bg-(--primary) text-white rounded-lg flex items-center justify-center p-1">
                       <Image
                         src={
                           EVENTS.find((e) => e.id === formData.event)?.icon ||
@@ -263,21 +263,21 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
                       />
                     </div>
                     <div className="text-left">
-                      <div className="font-medium text-[var(--text-primary)] font-statement">
+                      <div className="font-medium text-(--text-primary) font-statement">
                         {EVENTS.find((e) => e.id === formData.event)?.name ||
                           "3x3"}
                       </div>
                     </div>
                   </div>
                   <ChevronDown
-                    className={`w-4 h-4 text-[var(--text-secondary)] transition-transform ${
+                    className={`w-4 h-4 text-(--text-secondary) transition-transform ${
                       isEventDropdownOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
 
                 {isEventDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-[9999] max-h-64 overflow-y-auto">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-64 overflow-y-auto">
                     {EVENTS.map((event) => (
                       <button
                         key={event.id}
@@ -286,13 +286,13 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
                           setFormData({ ...formData, event: event.id });
                           setIsEventDropdownOpen(false);
                         }}
-                        className={`w-full flex items-center gap-3 p-3 text-left hover:bg-[var(--surface-elevated)] transition-colors ${
+                        className={`w-full flex items-center gap-3 p-3 text-left hover:bg-(--surface-elevated) transition-colors ${
                           event.id === formData.event
-                            ? "bg-[var(--primary)]/20 border-[var(--primary)]/30"
+                            ? "bg-(--primary)/20 border-(--primary)/30"
                             : ""
                         }`}
                       >
-                        <div className="w-8 h-8 bg-[var(--primary)] text-white rounded-lg flex items-center justify-center p-1">
+                        <div className="w-8 h-8 bg-(--primary) text-white rounded-lg flex items-center justify-center p-1">
                           <Image
                             src={event.icon}
                             alt={event.name}
@@ -302,7 +302,7 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
                           />
                         </div>
                         <div>
-                          <div className="font-medium text-[var(--text-primary)] font-statement">
+                          <div className="font-medium text-(--text-primary) font-statement">
                             {event.name}
                           </div>
                         </div>
@@ -315,25 +315,25 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
 
             {/* Format Selection */}
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] font-inter mb-3">
+              <label className="block text-sm font-medium text-(--text-primary) font-inter mb-3">
                 Format
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, format: "ao5" })}
-                  className={`p-4 border rounded-lg transition-all duration-200 hover:bg-[var(--surface-elevated)] ${
+                  className={`p-4 border rounded-lg transition-all duration-200 hover:bg-(--surface-elevated) ${
                     formData.format === "ao5"
-                      ? "border-[var(--primary)] bg-[var(--primary)]/10"
-                      : "border-[var(--border)]"
+                      ? "border-(--primary) bg-(--primary)/10"
+                      : "border-(--border)"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-[var(--primary)] rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-(--primary) rounded-lg flex items-center justify-center">
                       <Clock5 className="w-4 h-4 text-white" />
                     </div>
                     <div className="text-left">
-                      <div className="font-semibold text-[var(--text-primary)] font-statement">
+                      <div className="font-semibold text-(--text-primary) font-statement">
                         Average of 5
                       </div>
                     </div>
@@ -343,18 +343,18 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, format: "ao12" })}
-                  className={`p-4 border rounded-lg transition-all duration-200 hover:bg-[var(--surface-elevated)] ${
+                  className={`p-4 border rounded-lg transition-all duration-200 hover:bg-(--surface-elevated) ${
                     formData.format === "ao12"
-                      ? "border-[var(--primary)] bg-[var(--primary)]/10"
-                      : "border-[var(--border)]"
+                      ? "border-(--primary) bg-(--primary)/10"
+                      : "border-(--border)"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-[var(--primary)] rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-(--primary) rounded-lg flex items-center justify-center">
                       <Clock12 className="w-4 h-4 text-white" />
                     </div>
                     <div className="text-left">
-                      <div className="font-semibold text-[var(--text-primary)] font-statement">
+                      <div className="font-semibold text-(--text-primary) font-statement">
                         Average of 12
                       </div>
                     </div>
@@ -365,7 +365,7 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] font-inter mb-2">
+              <label className="block text-sm font-medium text-(--text-primary) font-inter mb-2">
                 Description (Optional)
               </label>
               <textarea
@@ -375,17 +375,17 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
                 }
                 placeholder="Add a description for your room..."
                 rows={3}
-                className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors font-inter resize-none"
+                className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) transition-colors font-inter resize-none"
               />
             </div>
 
             {/* Public/Private Toggle */}
             <div className="flex items-center justify-between">
               <div>
-                <div className="font-medium text-[var(--text-primary)] font-inter">
+                <div className="font-medium text-(--text-primary) font-inter">
                   Public Room
                 </div>
-                <div className="text-sm text-[var(--text-secondary)] font-inter">
+                <div className="text-sm text-(--text-secondary) font-inter">
                   Allow room to appear in public listings
                 </div>
               </div>
@@ -396,8 +396,8 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
                 }
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   formData.isPublic
-                    ? "bg-[var(--primary)]"
-                    : "bg-[var(--border)]"
+                    ? "bg-(--primary)"
+                    : "bg-(--border)"
                 }`}
               >
                 <span
@@ -413,7 +413,7 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="order-2 sm:order-1 px-6 py-3 bg-[var(--surface-elevated)] hover:bg-[var(--border)] text-[var(--text-primary)] border border-[var(--border)] rounded-lg font-semibold transition-colors font-inter"
+                className="order-2 sm:order-1 px-6 py-3 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) border border-(--border) rounded-lg font-semibold transition-colors font-inter"
                 disabled={isGenerating}
               >
                 Cancel
@@ -421,7 +421,7 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
               <button
                 type="submit"
                 disabled={isGenerating || !formData.name}
-                className="order-1 sm:order-2 flex-1 px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-colors font-inter flex items-center justify-center gap-2"
+                className="order-1 sm:order-2 flex-1 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-colors font-inter flex items-center justify-center gap-2"
               >
                 {isGenerating ? (
                   <>

@@ -256,26 +256,26 @@ export default function CompetitionOverview() {
       return {
         label: "Cancelled",
         color:
-          "text-[var(--error)] bg-[var(--error)]/10 border-[var(--error)]/30",
+          "text-(--error) bg-(--error)/10 border-(--error)/30",
       };
     }
     if (today >= startDay && today <= endDay) {
       return {
         label: "In Progress",
         color:
-          "text-[var(--success)] bg-[var(--success)]/10 border-[var(--success)]/30",
+          "text-(--success) bg-(--success)/10 border-(--success)/30",
       };
     }
     if (endDay < today) {
       return {
         label: "Completed",
         color:
-          "text-[var(--text-muted)] bg-[var(--surface-elevated)] border-[var(--border)]",
+          "text-(--text-muted) bg-(--surface-elevated) border-(--border)",
       };
     }
     return {
       label: "Upcoming",
-      color: "text-[var(--info)] bg-[var(--info)]/10 border-[var(--info)]/30",
+      color: "text-(--info) bg-(--info)/10 border-(--info)/30",
     };
   };
 
@@ -291,16 +291,16 @@ export default function CompetitionOverview() {
     return (
       <div className="h-full flex items-center justify-center p-4">
         <div className="timer-card text-center max-w-md w-full">
-          <AlertTriangle className="w-12 h-12 text-[var(--error)] mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+          <AlertTriangle className="w-12 h-12 text-(--error) mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-(--text-primary) mb-2">
             Competition Not Found
           </h2>
-          <p className="text-[var(--text-muted)] mb-4">
+          <p className="text-(--text-muted) mb-4">
             {error || "The competition could not be loaded."}
           </p>
           <Link
             href="/cube-lab/competitions"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Competitions
@@ -318,7 +318,7 @@ export default function CompetitionOverview() {
         {/* Back Link */}
         <Link
           href="/cube-lab/competitions"
-          className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-(--text-muted) hover:text-(--primary) transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Competitions
@@ -331,7 +331,7 @@ export default function CompetitionOverview() {
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--text-primary)] font-statement break-words">
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-(--text-primary) font-statement wrap-break-word">
                     {competition.name}
                   </h1>
                   {status && (
@@ -344,7 +344,7 @@ export default function CompetitionOverview() {
                 </div>
 
                 {/* Meta info */}
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--text-muted)]">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-(--text-muted)">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4 shrink-0" />
                     <span className="truncate">
@@ -368,7 +368,7 @@ export default function CompetitionOverview() {
                 </div>
 
                 {competition.venue && (
-                  <p className="mt-2 text-sm text-[var(--text-secondary)] flex items-start gap-1.5">
+                  <p className="mt-2 text-sm text-(--text-secondary) flex items-start gap-1.5">
                     <Building className="w-4 h-4 shrink-0 mt-0.5" />
                     <span>{competition.venue}</span>
                   </p>
@@ -381,7 +381,7 @@ export default function CompetitionOverview() {
                   href={competition.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-3 py-2 text-sm text-[var(--primary)] border border-[var(--primary)] rounded-lg hover:bg-[var(--primary)]/10 transition-colors w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 px-3 py-2 text-sm text-(--primary) border border-(--primary) rounded-lg hover:bg-(--primary)/10 transition-colors w-full sm:w-auto"
                 >
                   <ExternalLink className="w-4 h-4" />
                   <span>View on WCA</span>
@@ -392,14 +392,14 @@ export default function CompetitionOverview() {
         </div>
 
         {/* Tabs - styled like CuberProfile */}
-        <div className="border-b border-[var(--border)] mb-4 sm:mb-6">
+        <div className="border-b border-(--border) mb-4 sm:mb-6">
           <nav className="flex space-x-6 sm:space-x-8 overflow-x-auto">
             <button
               onClick={() => handleTabChange("info")}
               className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                 activeTab === "info"
-                  ? "border-[var(--primary)] text-[var(--primary)]"
-                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
               }`}
             >
               General Info
@@ -408,8 +408,8 @@ export default function CompetitionOverview() {
               onClick={() => handleTabChange("events")}
               className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                 activeTab === "events"
-                  ? "border-[var(--primary)] text-[var(--primary)]"
-                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
               }`}
             >
               Events
@@ -418,8 +418,8 @@ export default function CompetitionOverview() {
               onClick={() => handleTabChange("rules")}
               className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                 activeTab === "rules"
-                  ? "border-[var(--primary)] text-[var(--primary)]"
-                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
               }`}
             >
               Rules
@@ -428,13 +428,13 @@ export default function CompetitionOverview() {
               onClick={() => handleTabChange("history")}
               className={`flex items-center gap-1.5 py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                 activeTab === "history"
-                  ? "border-[var(--primary)] text-[var(--primary)]"
-                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
               }`}
             >
               My Simulations
               {simulations && simulations.length > 0 && (
-                <span className="px-1.5 py-0.5 text-xs bg-[var(--primary)]/20 text-[var(--primary)] rounded-full">
+                <span className="px-1.5 py-0.5 text-xs bg-(--primary)/20 text-(--primary) rounded-full">
                   {simulations.length}
                 </span>
               )}
@@ -443,8 +443,8 @@ export default function CompetitionOverview() {
               onClick={() => handleTabChange("training")}
               className={`flex items-center gap-1.5 py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                 activeTab === "training"
-                  ? "border-[var(--primary)] text-[var(--primary)]"
-                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
               }`}
             >
               Training
@@ -457,15 +457,15 @@ export default function CompetitionOverview() {
           {activeTab === "info" && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] mb-3 sm:mb-4">
+                <h3 className="text-base sm:text-lg font-bold text-(--text-primary) mb-3 sm:mb-4">
                   Competition Details
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg">
-                    <div className="text-xs sm:text-sm text-[var(--text-muted)] mb-1">
+                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg">
+                    <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                       Date
                     </div>
-                    <div className="text-sm sm:text-base text-[var(--text-primary)] font-medium">
+                    <div className="text-sm sm:text-base text-(--text-primary) font-medium">
                       {formatDate(competition.start_date)}
                       {competition.start_date !== competition.end_date && (
                         <>
@@ -477,39 +477,39 @@ export default function CompetitionOverview() {
                       )}
                     </div>
                   </div>
-                  <div className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg">
-                    <div className="text-xs sm:text-sm text-[var(--text-muted)] mb-1">
+                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg">
+                    <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                       Location
                     </div>
-                    <div className="text-sm sm:text-base text-[var(--text-primary)] font-medium">
+                    <div className="text-sm sm:text-base text-(--text-primary) font-medium">
                       {competition.city}, {competition.country_iso2}
                     </div>
                   </div>
                   {competition.venue && (
-                    <div className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg sm:col-span-2">
-                      <div className="text-xs sm:text-sm text-[var(--text-muted)] mb-1">
+                    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg sm:col-span-2">
+                      <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                         Venue
                       </div>
-                      <div className="text-sm sm:text-base text-[var(--text-primary)] font-medium">
+                      <div className="text-sm sm:text-base text-(--text-primary) font-medium">
                         {competition.venue}
                       </div>
                     </div>
                   )}
                   {competition.competitor_limit && (
-                    <div className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg">
-                      <div className="text-xs sm:text-sm text-[var(--text-muted)] mb-1">
+                    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg">
+                      <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                         Competitor Limit
                       </div>
-                      <div className="text-sm sm:text-base text-[var(--text-primary)] font-medium">
+                      <div className="text-sm sm:text-base text-(--text-primary) font-medium">
                         {competition.competitor_limit} competitors
                       </div>
                     </div>
                   )}
-                  <div className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg">
-                    <div className="text-xs sm:text-sm text-[var(--text-muted)] mb-1">
+                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg">
+                    <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                       Number of Events
                     </div>
-                    <div className="text-sm sm:text-base text-[var(--text-primary)] font-medium">
+                    <div className="text-sm sm:text-base text-(--text-primary) font-medium">
                       {competition.event_ids.length} events
                     </div>
                   </div>
@@ -518,10 +518,10 @@ export default function CompetitionOverview() {
 
               {parsedInfo.length > 0 && (
                 <div>
-                  <h4 className="text-sm sm:text-base font-medium text-[var(--text-primary)] mb-2 sm:mb-3">
+                  <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 sm:mb-3">
                     Additional Information
                   </h4>
-                  <div className="space-y-3 text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
+                  <div className="space-y-3 text-xs sm:text-sm text-(--text-secondary) leading-relaxed">
                     {parsedInfo.map((paragraph, idx) => (
                       <p key={idx}>{paragraph}</p>
                     ))}
@@ -533,7 +533,7 @@ export default function CompetitionOverview() {
 
           {activeTab === "events" && (
             <div className="space-y-4 sm:space-y-6">
-              <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)]">
+              <h3 className="text-base sm:text-lg font-bold text-(--text-primary)">
                 Competition Events
               </h3>
               <div className="grid grid-cols-3 xs:grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-2 sm:gap-3">
@@ -542,9 +542,9 @@ export default function CompetitionOverview() {
                   return event ? (
                     <div
                       key={eventId}
-                      className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] hover:border-[var(--primary)]/50 transition-colors"
+                      className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border border-(--border) bg-(--surface-elevated) hover:border-(--primary)/50 transition-colors"
                     >
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg bg-[var(--surface)]">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg bg-(--surface)">
                         <Image
                           src={event.icon}
                           alt={event.name}
@@ -553,7 +553,7 @@ export default function CompetitionOverview() {
                           className="w-5 h-5 sm:w-6 sm:h-6 invert opacity-80"
                         />
                       </div>
-                      <span className="text-[10px] sm:text-xs font-medium text-[var(--text-primary)] text-center leading-tight">
+                      <span className="text-[10px] sm:text-xs font-medium text-(--text-primary) text-center leading-tight">
                         {event.name}
                       </span>
                     </div>
@@ -561,12 +561,12 @@ export default function CompetitionOverview() {
                 })}
               </div>
 
-              <div className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                <h4 className="text-sm sm:text-base font-medium text-[var(--text-primary)] mb-2 flex items-center gap-2">
-                  <Timer className="w-4 h-4 text-[var(--primary)]" />
+              <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
+                  <Timer className="w-4 h-4 text-(--primary)" />
                   Event Format Information
                 </h4>
-                <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                <p className="text-xs sm:text-sm text-(--text-muted) leading-relaxed">
                   Most events use Average of 5 (Ao5) format where you get 5
                   solves and the best and worst are dropped. Some events like
                   6x6, 7x7, and BLD events use Mean of 3 (Mo3) format. Check the
@@ -578,53 +578,53 @@ export default function CompetitionOverview() {
 
           {activeTab === "rules" && (
             <div className="space-y-4 sm:space-y-6">
-              <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)]">
+              <h3 className="text-base sm:text-lg font-bold text-(--text-primary)">
                 Competition Rules
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                  <h4 className="text-sm sm:text-base font-medium text-[var(--text-primary)] mb-2 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-[var(--warning)]" />
+                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                  <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-(--warning)" />
                     Time Limits
                   </h4>
-                  <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                  <p className="text-xs sm:text-sm text-(--text-muted) leading-relaxed">
                     If you reach the time limit during your solve, the judge
                     will stop you and your result will be DNF. Time limits vary
                     by event and are set by the competition organizers.
                   </p>
                 </div>
 
-                <div className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                  <h4 className="text-sm sm:text-base font-medium text-[var(--text-primary)] mb-2 flex items-center gap-2">
-                    <Target className="w-4 h-4 text-[var(--primary)]" />
+                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                  <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
+                    <Target className="w-4 h-4 text-(--primary)" />
                     Cutoffs
                   </h4>
-                  <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                  <p className="text-xs sm:text-sm text-(--text-muted) leading-relaxed">
                     Some rounds have a cutoff. You must beat the cutoff time in
                     your first 1-2 attempts to proceed to the remaining solves
                     in that round.
                   </p>
                 </div>
 
-                <div className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                  <h4 className="text-sm sm:text-base font-medium text-[var(--text-primary)] mb-2 flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-[var(--success)]" />
+                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                  <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-(--success)" />
                     Inspection
                   </h4>
-                  <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                  <p className="text-xs sm:text-sm text-(--text-muted) leading-relaxed">
                     You have 15 seconds to inspect the cube before starting.
                     Going over 15 seconds adds a +2 penalty, and going over 17
                     seconds results in a DNF.
                   </p>
                 </div>
 
-                <div className="p-3 sm:p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                  <h4 className="text-sm sm:text-base font-medium text-[var(--text-primary)] mb-2 flex items-center gap-2">
-                    <Trophy className="w-4 h-4 text-[var(--warning)]" />
+                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                  <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
+                    <Trophy className="w-4 h-4 text-(--warning)" />
                     Advancement
                   </h4>
-                  <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                  <p className="text-xs sm:text-sm text-(--text-muted) leading-relaxed">
                     Competitors are ranked by their average (or mean/single for
                     some events). Top competitors from each round advance to the
                     next round until the final.
@@ -632,13 +632,13 @@ export default function CompetitionOverview() {
                 </div>
               </div>
 
-              <div className="text-xs sm:text-sm text-[var(--text-muted)]">
+              <div className="text-xs sm:text-sm text-(--text-muted)">
                 For complete WCA regulations, visit{" "}
                 <a
                   href="https://www.worldcubeassociation.org/regulations/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[var(--primary)] hover:underline"
+                  className="text-(--primary) hover:underline"
                 >
                   WCA Regulations
                 </a>
@@ -649,22 +649,22 @@ export default function CompetitionOverview() {
           {/* My Simulations Tab */}
           {activeTab === "history" && (
             <div className="space-y-4 sm:space-y-6">
-              <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)]">
+              <h3 className="text-base sm:text-lg font-bold text-(--text-primary)">
                 My Simulations for {competition.name}
               </h3>
 
               {!simulations || simulations.length === 0 ? (
                 <div className="timer-card text-center py-12">
-                  <History className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
-                  <h4 className="text-lg font-medium text-[var(--text-primary)] mb-2">
+                  <History className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
+                  <h4 className="text-lg font-medium text-(--text-primary) mb-2">
                     No Simulations Yet
                   </h4>
-                  <p className="text-sm text-[var(--text-muted)] mb-4">
+                  <p className="text-sm text-(--text-muted) mb-4">
                     Start a simulation to practice for this competition.
                   </p>
                   <button
                     onClick={handleSimulate}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
                   >
                     <Play className="w-4 h-4" />
                     Start Simulation
@@ -689,17 +689,17 @@ export default function CompetitionOverview() {
                       <Link
                         key={sim._id}
                         href={`/cube-lab/competitions/${competitionId}/simulate/${sim._id}`}
-                        className="block p-4 rounded-lg border border-[var(--border)] hover:border-[var(--primary)]/50 bg-[var(--surface)] hover:bg-[var(--surface-elevated)] transition-all"
+                        className="block p-4 rounded-lg border border-(--border) hover:border-(--primary)/50 bg-(--surface) hover:bg-(--surface-elevated) transition-all"
                       >
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-2">
                             <span
                               className={`px-2 py-0.5 text-xs font-medium rounded-full ${
                                 sim.status === "completed"
-                                  ? "bg-[var(--success)]/10 text-[var(--success)]"
+                                  ? "bg-(--success)/10 text-(--success)"
                                   : sim.status === "in-progress"
-                                    ? "bg-[var(--warning)]/10 text-[var(--warning)]"
-                                    : "bg-[var(--text-muted)]/10 text-[var(--text-muted)]"
+                                    ? "bg-(--warning)/10 text-(--warning)"
+                                    : "bg-(--text-muted)/10 text-(--text-muted)"
                               }`}
                             >
                               {sim.status === "completed"
@@ -708,7 +708,7 @@ export default function CompetitionOverview() {
                                   ? "In Progress"
                                   : "Abandoned"}
                             </span>
-                            <span className="text-xs text-[var(--text-muted)]">
+                            <span className="text-xs text-(--text-muted)">
                               {new Date(sim.startedAt).toLocaleDateString(
                                 "en-US",
                                 {
@@ -720,13 +720,13 @@ export default function CompetitionOverview() {
                             </span>
                           </div>
                           {isInProgress && (
-                            <span className="flex items-center gap-2 text-xs text-[var(--primary)]">
+                            <span className="flex items-center gap-2 text-xs text-(--primary)">
                               <Play className="w-3 h-3" />
                               Continue
                             </span>
                           )}
                           {sim.status === "completed" && (
-                            <span className="flex items-center gap-2 text-xs text-[var(--success)]">
+                            <span className="flex items-center gap-2 text-xs text-(--success)">
                               <BarChart3 className="w-3 h-3" />
                               View Results
                             </span>
@@ -736,19 +736,19 @@ export default function CompetitionOverview() {
                         <div className="flex items-center gap-3">
                           <div className="flex-1">
                             <div className="flex items-center justify-between text-sm mb-1">
-                              <span className="text-[var(--text-secondary)]">
+                              <span className="text-(--text-secondary)">
                                 {completedRounds}/{totalRounds} rounds
                               </span>
-                              <span className="text-[var(--text-muted)]">
+                              <span className="text-(--text-muted)">
                                 {progress}%
                               </span>
                             </div>
-                            <div className="w-full h-1.5 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                            <div className="w-full h-1.5 bg-(--surface-elevated) rounded-full overflow-hidden">
                               <div
                                 className={`h-full transition-all ${
                                   sim.status === "completed"
-                                    ? "bg-[var(--success)]"
-                                    : "bg-[var(--primary)]"
+                                    ? "bg-(--success)"
+                                    : "bg-(--primary)"
                                 }`}
                                 style={{ width: `${progress}%` }}
                               />
@@ -771,8 +771,8 @@ export default function CompetitionOverview() {
                                   key={eventId}
                                   className={`p-1 rounded ${
                                     isCompleted
-                                      ? "bg-[var(--success)]/20"
-                                      : "bg-[var(--surface-elevated)]"
+                                      ? "bg-(--success)/20"
+                                      : "bg-(--surface-elevated)"
                                   }`}
                                   title={`${event.name}${isCompleted ? " (completed)" : ""}`}
                                 >
@@ -787,7 +787,7 @@ export default function CompetitionOverview() {
                               ) : null;
                             })}
                           {sim.selectedEvents.length > 8 && (
-                            <span className="px-1.5 text-[10px] text-[var(--text-muted)] bg-[var(--surface-elevated)] rounded flex items-center">
+                            <span className="px-1.5 text-[10px] text-(--text-muted) bg-(--surface-elevated) rounded flex items-center">
                               +{sim.selectedEvents.length - 8}
                             </span>
                           )}
@@ -804,10 +804,10 @@ export default function CompetitionOverview() {
           {activeTab === "training" && (
             <div className="space-y-4 sm:space-y-6">
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] mb-2">
+                <h3 className="text-base sm:text-lg font-bold text-(--text-primary) mb-2">
                   Competition Training Tools
                 </h3>
-                <p className="text-sm text-[var(--text-muted)]">
+                <p className="text-sm text-(--text-muted)">
                   Practice essential competition skills to prepare for{" "}
                   {competition.name}.
                 </p>
@@ -830,20 +830,20 @@ export default function CompetitionOverview() {
 
         {/* Simulate Button Section - only show if no simulations yet */}
         {(!simulations || simulations.length === 0) && (
-          <div className="timer-card border-[var(--primary)]/20">
+          <div className="timer-card border-(--primary)/20">
             <div className="flex flex-col gap-4">
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)]">
+                <h3 className="text-base sm:text-lg font-bold text-(--text-primary)">
                   Practice for this Competition
                 </h3>
-                <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">
+                <p className="text-xs sm:text-sm text-(--text-muted) mt-1">
                   Simulate the competition atmosphere with configurable
                   pressure, noise, and more.
                 </p>
               </div>
               <button
                 onClick={handleSimulate}
-                className="flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto px-6 py-3 sm:py-4 bg-[var(--primary)] text-white text-sm sm:text-lg font-bold rounded-lg sm:rounded-xl hover:bg-[var(--primary-hover)] transition-colors"
+                className="flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto px-6 py-3 sm:py-4 bg-(--primary) text-white text-sm sm:text-lg font-bold rounded-lg sm:rounded-xl hover:bg-(--primary-hover) transition-colors"
               >
                 <Play className="w-5 h-5 sm:w-6 sm:h-6" />
                 Simulate Competition

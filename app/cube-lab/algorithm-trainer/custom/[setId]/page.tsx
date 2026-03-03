@@ -218,10 +218,10 @@ export default function EditCustomSetPage() {
         <CubeLabLayout activeSection="algorithm-trainer">
           <div className="h-full flex items-center justify-center">
             <div className="text-center">
-              <p className="text-[var(--text-muted)]">Custom set not found</p>
+              <p className="text-(--text-muted)">Custom set not found</p>
               <Link
                 href="/cube-lab/algorithm-trainer/custom"
-                className="inline-flex items-center gap-2 mt-4 text-[var(--primary)] text-sm"
+                className="inline-flex items-center gap-2 mt-4 text-(--primary) text-sm"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Custom Sets
@@ -241,7 +241,7 @@ export default function EditCustomSetPage() {
             {/* Navigation */}
             <Link
               href="/cube-lab/algorithm-trainer/custom"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors w-fit"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors w-fit"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Custom Sets
@@ -252,14 +252,14 @@ export default function EditCustomSetPage() {
               {isEditing ? (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-medium text-[var(--text-muted)] mb-1 font-inter">
+                    <label className="block text-xs font-medium text-(--text-muted) mb-1 font-inter">
                       Set Name
                     </label>
                     <input
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      className="w-full text-lg sm:text-xl font-bold bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg px-3 py-2.5 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter"
+                      className="w-full text-lg sm:text-xl font-bold bg-(--surface-elevated) border border-(--border) rounded-lg px-3 py-2.5 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
                       autoFocus
                       maxLength={100}
                       onKeyDown={(e) => {
@@ -270,7 +270,7 @@ export default function EditCustomSetPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-[var(--text-muted)] mb-1 font-inter">
+                    <label className="block text-xs font-medium text-(--text-muted) mb-1 font-inter">
                       Description{" "}
                       <span className="font-normal">(optional)</span>
                     </label>
@@ -279,7 +279,7 @@ export default function EditCustomSetPage() {
                       onChange={(e) => setEditDescription(e.target.value)}
                       placeholder="Add a description..."
                       rows={2}
-                      className="w-full bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg px-3 py-2.5 text-[var(--text-secondary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none transition-all font-inter"
+                      className="w-full bg-(--surface-elevated) border border-(--border) rounded-lg px-3 py-2.5 text-(--text-secondary) text-sm focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
                       maxLength={500}
                     />
                   </div>
@@ -305,12 +305,12 @@ export default function EditCustomSetPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h1 className="text-lg sm:text-2xl font-bold text-[var(--text-primary)] font-statement truncate">
+                        <h1 className="text-lg sm:text-2xl font-bold text-(--text-primary) font-statement truncate">
                           {customSet.name}
                         </h1>
                         <button
                           onClick={handleToggleVisibility}
-                          className="p-1 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors flex-shrink-0"
+                          className="p-1 hover:bg-(--surface-elevated) rounded-lg transition-colors shrink-0"
                           title={
                             customSet.isPublic ? "Make private" : "Make public"
                           }
@@ -318,21 +318,21 @@ export default function EditCustomSetPage() {
                           {customSet.isPublic ? (
                             <Globe className="w-4 h-4 text-green-500" />
                           ) : (
-                            <Lock className="w-4 h-4 text-[var(--text-muted)]" />
+                            <Lock className="w-4 h-4 text-(--text-muted)" />
                           )}
                         </button>
                       </div>
                       {customSet.description && (
-                        <p className="text-sm text-[var(--text-muted)] mb-2">
+                        <p className="text-sm text-(--text-muted) mb-2">
                           {customSet.description}
                         </p>
                       )}
                     </div>
 
-                    <div className="flex gap-2 flex-shrink-0">
+                    <div className="flex gap-2 shrink-0">
                       <button
                         onClick={handleStartEdit}
-                        className="px-3 py-1.5 sm:py-2 border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors text-xs sm:text-sm"
+                        className="px-3 py-1.5 sm:py-2 border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors text-xs sm:text-sm"
                       >
                         Edit
                       </button>
@@ -340,7 +340,7 @@ export default function EditCustomSetPage() {
                   </div>
 
                   {/* Stats row */}
-                  <div className="flex flex-wrap gap-3 text-xs text-[var(--text-muted)] mt-1">
+                  <div className="flex flex-wrap gap-3 text-xs text-(--text-muted) mt-1">
                     <span className="inline-flex items-center gap-1">
                       <Code2 className="w-3 h-3" />
                       {totalCount} algorithm{totalCount !== 1 ? "s" : ""}
@@ -365,23 +365,23 @@ export default function EditCustomSetPage() {
             {/* Practice Modes */}
             {totalCount > 0 && (
               <div>
-                <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-3">
+                <h3 className="text-sm font-semibold text-(--text-secondary) uppercase tracking-wider mb-3">
                   Practice Modes
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <Link
                     href={`/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSet._id}&type=rec`}
-                    className="timer-card hover:border-[var(--primary)] border-2 border-transparent transition-all cursor-pointer group"
+                    className="timer-card hover:border-(--primary) border-2 border-transparent transition-all cursor-pointer group"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 bg-[var(--primary)]/10 rounded-lg flex-shrink-0">
-                        <Brain className="w-5 h-5 text-[var(--primary)]" />
+                      <div className="p-2.5 bg-(--primary)/10 rounded-lg shrink-0">
+                        <Brain className="w-5 h-5 text-(--primary)" />
                       </div>
                       <div className="min-w-0">
-                        <h4 className="text-sm font-bold text-[var(--text-primary)] font-statement">
+                        <h4 className="text-sm font-bold text-(--text-primary) font-statement">
                           Recognition
                         </h4>
-                        <p className="text-xs text-[var(--text-muted)]">
+                        <p className="text-xs text-(--text-muted)">
                           Identify cases quickly
                         </p>
                       </div>
@@ -390,17 +390,17 @@ export default function EditCustomSetPage() {
 
                   <Link
                     href={`/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSet._id}&type=exec`}
-                    className="timer-card hover:border-[var(--primary)] border-2 border-transparent transition-all cursor-pointer group"
+                    className="timer-card hover:border-(--primary) border-2 border-transparent transition-all cursor-pointer group"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 bg-[var(--primary)]/10 rounded-lg flex-shrink-0">
-                        <Flame className="w-5 h-5 text-[var(--primary)]" />
+                      <div className="p-2.5 bg-(--primary)/10 rounded-lg shrink-0">
+                        <Flame className="w-5 h-5 text-(--primary)" />
                       </div>
                       <div className="min-w-0">
-                        <h4 className="text-sm font-bold text-[var(--text-primary)] font-statement">
+                        <h4 className="text-sm font-bold text-(--text-primary) font-statement">
                           Execution
                         </h4>
-                        <p className="text-xs text-[var(--text-muted)]">
+                        <p className="text-xs text-(--text-muted)">
                           Speed up your execution
                         </p>
                       </div>
@@ -409,17 +409,17 @@ export default function EditCustomSetPage() {
 
                   <Link
                     href={`/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSet._id}&type=blind`}
-                    className="timer-card hover:border-[var(--primary)] border-2 border-transparent transition-all cursor-pointer group"
+                    className="timer-card hover:border-(--primary) border-2 border-transparent transition-all cursor-pointer group"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 bg-purple-500/10 rounded-lg flex-shrink-0">
+                      <div className="p-2.5 bg-purple-500/10 rounded-lg shrink-0">
                         <EyeOff className="w-5 h-5 text-purple-500" />
                       </div>
                       <div className="min-w-0">
-                        <h4 className="text-sm font-bold text-[var(--text-primary)] font-statement">
+                        <h4 className="text-sm font-bold text-(--text-primary) font-statement">
                           Blind Recognition
                         </h4>
-                        <p className="text-xs text-[var(--text-muted)]">
+                        <p className="text-xs text-(--text-muted)">
                           Recall from memory
                         </p>
                       </div>
@@ -433,7 +433,7 @@ export default function EditCustomSetPage() {
             <div className="relative">
               <button
                 onClick={() => setShowAddMenu(!showAddMenu)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 border border-dashed border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)] text-[var(--text-muted)] rounded-lg transition-colors w-full justify-center text-sm"
+                className="inline-flex items-center gap-2 px-4 py-2.5 border border-dashed border-(--border) hover:border-(--primary) hover:text-(--primary) text-(--text-muted) rounded-lg transition-colors w-full justify-center text-sm"
               >
                 <Plus className="w-4 h-4" />
                 Add Algorithms
@@ -452,7 +452,7 @@ export default function EditCustomSetPage() {
                       label: "Add Custom Algorithm",
                       description:
                         "Write your own algorithm with name and notation",
-                      icon: <Code2 className="w-4 h-4 text-[var(--primary)]" />,
+                      icon: <Code2 className="w-4 h-4 text-(--primary)" />,
                       onClick: () => {
                         setShowAddCustomAlg(true);
                       },
@@ -461,7 +461,7 @@ export default function EditCustomSetPage() {
                       label: "Add Predefined Cases",
                       description: "Choose from PLL, OLL, F2L, and other sets",
                       icon: (
-                        <BookOpen className="w-4 h-4 text-[var(--primary)]" />
+                        <BookOpen className="w-4 h-4 text-(--primary)" />
                       ),
                       onClick: () => {
                         setShowAddCases(true);
@@ -493,7 +493,7 @@ export default function EditCustomSetPage() {
             {totalCount > 0 && (
               <div className="space-y-3">
                 {/* Tabs */}
-                <div className="flex gap-1 p-1 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg w-fit">
+                <div className="flex gap-1 p-1 bg-(--surface-elevated) border border-(--border) rounded-lg w-fit">
                   {(
                     [
                       { key: "all", label: "All", count: totalCount },
@@ -514,8 +514,8 @@ export default function EditCustomSetPage() {
                       onClick={() => setActiveTab(tab.key)}
                       className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                         activeTab === tab.key
-                          ? "bg-[var(--primary)] text-white"
-                          : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                          ? "bg-(--primary) text-white"
+                          : "text-(--text-muted) hover:text-(--text-primary)"
                       }`}
                     >
                       {tab.label}
@@ -528,13 +528,13 @@ export default function EditCustomSetPage() {
 
                 {/* Search */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search algorithms, names, or notations..."
-                    className="w-full pl-10 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent text-sm transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-sm transition-all"
                   />
                 </div>
               </div>
@@ -543,25 +543,25 @@ export default function EditCustomSetPage() {
             {/* Algorithm List */}
             {totalCount === 0 ? (
               <div className="timer-card text-center py-10">
-                <Code2 className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" />
-                <h3 className="text-base font-bold text-[var(--text-primary)] font-statement mb-1">
+                <Code2 className="w-10 h-10 text-(--text-muted) mx-auto mb-3" />
+                <h3 className="text-base font-bold text-(--text-primary) font-statement mb-1">
                   No Algorithms Yet
                 </h3>
-                <p className="text-sm text-[var(--text-muted)] mb-4 max-w-sm mx-auto">
+                <p className="text-sm text-(--text-muted) mb-4 max-w-sm mx-auto">
                   Add your own custom algorithms or choose from predefined sets
                   to get started.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2 justify-center">
                   <button
                     onClick={() => setShowAddCustomAlg(true)}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors text-sm"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors text-sm"
                   >
                     <Code2 className="w-4 h-4" />
                     Add Custom Algorithm
                   </button>
                   <button
                     onClick={() => setShowAddCases(true)}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors text-sm"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors text-sm"
                   >
                     <BookOpen className="w-4 h-4" />
                     Browse Predefined
@@ -576,8 +576,8 @@ export default function EditCustomSetPage() {
                     <div>
                       {activeTab === "all" && (
                         <div className="flex items-center gap-2 mb-3">
-                          <Code2 className="w-4 h-4 text-[var(--primary)]" />
-                          <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+                          <Code2 className="w-4 h-4 text-(--primary)" />
+                          <h3 className="text-sm font-semibold text-(--text-secondary) uppercase tracking-wider">
                             Custom Algorithms ({filteredCustom.length})
                           </h3>
                         </div>
@@ -605,8 +605,8 @@ export default function EditCustomSetPage() {
                     <div>
                       {activeTab === "all" && (
                         <div className="flex items-center gap-2 mb-3">
-                          <BookOpen className="w-4 h-4 text-[var(--primary)]" />
-                          <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+                          <BookOpen className="w-4 h-4 text-(--primary)" />
+                          <h3 className="text-sm font-semibold text-(--text-secondary) uppercase tracking-wider">
                             Predefined Cases ({filteredPredefined.length})
                           </h3>
                         </div>
@@ -631,23 +631,23 @@ export default function EditCustomSetPage() {
                                 <div className="flex flex-wrap items-center gap-2 mb-1">
                                   <Link
                                     href={`/cube-lab/algorithm-trainer/cases/${c.slug || c.caseId}`}
-                                    className="font-medium text-[var(--text-primary)] hover:text-[var(--primary)] transition-colors text-sm"
+                                    className="font-medium text-(--text-primary) hover:text-(--primary) transition-colors text-sm"
                                   >
                                     {c.caseName}
                                   </Link>
-                                  <span className="text-xs px-2 py-0.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded text-[var(--text-muted)]">
+                                  <span className="text-xs px-2 py-0.5 bg-(--surface-elevated) border border-(--border) rounded text-(--text-muted)">
                                     {c.setName}
                                   </span>
                                 </div>
                                 {c.defaultAlgorithm && (
                                   <div className="mt-1 overflow-hidden">
-                                    <p className="font-mono text-xs text-[var(--text-secondary)] bg-[var(--surface-elevated)] px-2 py-1 rounded border border-[var(--border)] inline-block max-w-full overflow-x-auto whitespace-nowrap">
+                                    <p className="font-mono text-xs text-(--text-secondary) bg-(--surface-elevated) px-2 py-1 rounded border border-(--border) inline-block max-w-full overflow-x-auto whitespace-nowrap">
                                       {c.defaultAlgorithm}
                                     </p>
                                   </div>
                                 )}
                                 {c.algorithmCount > 1 && (
-                                  <p className="text-xs text-[var(--text-muted)] mt-1">
+                                  <p className="text-xs text-(--text-muted) mt-1">
                                     {c.algorithmCount - 1} alternative algorithm
                                     {c.algorithmCount - 1 !== 1 ? "s" : ""}{" "}
                                     available
@@ -656,7 +656,7 @@ export default function EditCustomSetPage() {
                               </div>
                               <button
                                 onClick={() => handleRemoveCase(c.caseId)}
-                                className="hidden sm:block p-2 hover:bg-red-500/10 text-red-500 rounded-lg transition-colors flex-shrink-0"
+                                className="hidden sm:block p-2 hover:bg-red-500/10 text-red-500 rounded-lg transition-colors shrink-0"
                                 title="Remove from set"
                               >
                                 <X className="w-4 h-4" />
@@ -673,8 +673,8 @@ export default function EditCustomSetPage() {
                   filteredPredefined.length === 0 &&
                   filteredCustom.length === 0 && (
                     <div className="timer-card text-center py-8">
-                      <Search className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-2" />
-                      <p className="text-sm text-[var(--text-muted)]">
+                      <Search className="w-8 h-8 text-(--text-muted) mx-auto mb-2" />
+                      <p className="text-sm text-(--text-muted)">
                         No algorithms match &quot;{searchQuery}&quot;
                       </p>
                     </div>
@@ -683,13 +683,13 @@ export default function EditCustomSetPage() {
                 {/* Empty tab states */}
                 {activeTab === "custom" && customAlgorithms.length === 0 && (
                   <div className="timer-card text-center py-8">
-                    <Code2 className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-2" />
-                    <p className="text-sm text-[var(--text-muted)] mb-3">
+                    <Code2 className="w-8 h-8 text-(--text-muted) mx-auto mb-2" />
+                    <p className="text-sm text-(--text-muted) mb-3">
                       No custom algorithms yet
                     </p>
                     <button
                       onClick={() => setShowAddCustomAlg(true)}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors text-sm"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors text-sm"
                     >
                       <Plus className="w-4 h-4" />
                       Add Your First Algorithm
@@ -699,13 +699,13 @@ export default function EditCustomSetPage() {
 
                 {activeTab === "predefined" && predefinedCases.length === 0 && (
                   <div className="timer-card text-center py-8">
-                    <BookOpen className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-2" />
-                    <p className="text-sm text-[var(--text-muted)] mb-3">
+                    <BookOpen className="w-8 h-8 text-(--text-muted) mx-auto mb-2" />
+                    <p className="text-sm text-(--text-muted) mb-3">
                       No predefined cases added
                     </p>
                     <button
                       onClick={() => setShowAddCases(true)}
-                      className="inline-flex items-center gap-2 px-4 py-2 border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors text-sm"
+                      className="inline-flex items-center gap-2 px-4 py-2 border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors text-sm"
                     >
                       <Plus className="w-4 h-4" />
                       Browse Predefined Cases

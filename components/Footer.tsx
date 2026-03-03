@@ -9,6 +9,7 @@ export default function Footer() {
   const logoSrc = useLogo();
 
   const links = [
+    { name: "Help", href: "/help" },
     { name: "Contribute", href: "/contribute" },
     { name: "Credits", href: "/credits" },
     { name: "Privacy", href: "/privacy" },
@@ -21,7 +22,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[var(--surface)] border-t border-[var(--border)] mt-auto">
+    <footer className="bg-(--surface) border-t border-(--border) mt-auto">
       <div className="container-responsive py-8">
         <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
           {/* Logo and tagline */}
@@ -34,11 +35,11 @@ export default function Footer() {
                 height={32}
                 className="w-8 h-8"
               />
-              <span className="font-semibold text-xl text-[var(--text-primary)] group-hover:opacity-80 transition-opacity font-statement">
-                Cube<span className="text-[var(--primary)]">Dev</span>
+              <span className="font-semibold text-xl text-(--text-primary) group-hover:opacity-80 transition-opacity font-statement">
+                Cube<span className="text-(--primary)">Dev</span>
               </span>
             </Link>
-            <span className="text-[var(--text-muted)] text-base text-center sm:text-left font-inter">
+            <span className="text-(--text-muted) text-base text-center sm:text-left font-inter">
               Speedcubing tools for cubers
             </span>
           </div>
@@ -53,7 +54,7 @@ export default function Footer() {
                   target: "_blank",
                   rel: "noopener noreferrer",
                 })}
-                className="text-[var(--text-secondary)] hover:text-[var(--primary)] text-base transition-colors font-button hover:underline decoration-[var(--primary)] underline-offset-4"
+                className="text-(--text-secondary) hover:text-(--primary) text-base transition-colors font-button hover:underline decoration-(--primary) underline-offset-4"
               >
                 {link.name}
                 {link.external && (
@@ -77,8 +78,8 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-6 pt-6 border-t border-[var(--border)] text-center">
-          <p className="text-[var(--text-muted)] text-base font-inter">
+        <div className="mt-6 pt-6 border-t border-(--border) text-center">
+          <p className="text-(--text-muted) text-base font-inter">
             © {currentYear} CubeDev. Built for the speedcubing community.
           </p>
         </div>

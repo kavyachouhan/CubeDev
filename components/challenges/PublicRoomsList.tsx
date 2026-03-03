@@ -50,7 +50,7 @@ export default function PublicRoomsList() {
     return (
       <div className="timer-card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-[var(--text-primary)] font-statement">
+          <h2 className="text-xl font-semibold text-(--text-primary) font-statement">
             Active Public Rooms
           </h2>
         </div>
@@ -58,7 +58,7 @@ export default function PublicRoomsList() {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="p-4 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg animate-pulse"
+              className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg animate-pulse"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -81,18 +81,18 @@ export default function PublicRoomsList() {
     return (
       <div className="timer-card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-[var(--text-primary)] font-statement">
+          <h2 className="text-xl font-semibold text-(--text-primary) font-statement">
             Active Public Rooms
           </h2>
         </div>
-        <div className="p-8 text-center bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg">
-          <div className="w-16 h-16 bg-[var(--primary)]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Trophy className="w-8 h-8 text-[var(--primary)]" />
+        <div className="p-8 text-center bg-(--surface-elevated) border border-(--border) rounded-lg">
+          <div className="w-16 h-16 bg-(--primary)/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Trophy className="w-8 h-8 text-(--primary)" />
           </div>
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement mb-2">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-2">
             No Active Rooms
           </h3>
-          <p className="text-[var(--text-secondary)] font-inter">
+          <p className="text-(--text-secondary) font-inter">
             Be the first to create a public challenge room!
           </p>
         </div>
@@ -103,10 +103,10 @@ export default function PublicRoomsList() {
   return (
     <div className="timer-card">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-[var(--text-primary)] font-statement">
+        <h2 className="text-xl font-semibold text-(--text-primary) font-statement">
           Active Public Rooms
         </h2>
-        <span className="px-3 py-1 bg-[var(--primary)]/10 text-[var(--primary)] text-sm font-medium rounded-full font-inter">
+        <span className="px-3 py-1 bg-(--primary)/10 text-(--primary) text-sm font-medium rounded-full font-inter">
           {publicRooms.length} room{publicRooms.length !== 1 ? "s" : ""}
         </span>
       </div>
@@ -124,12 +124,12 @@ export default function PublicRoomsList() {
             <Link
               key={room._id}
               href={`/cube-lab/challenges/room/${room.roomId}`}
-              className="block p-3 md:p-4 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] hover:border-[var(--primary)] rounded-lg transition-all duration-300 group"
+              className="block p-3 md:p-4 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) rounded-lg transition-all duration-300 group"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   {/* Event Icon */}
-                  <div className="w-8 h-8 md:w-10 md:h-10 bg-[var(--primary)] text-white rounded-lg flex items-center justify-center p-1 flex-shrink-0">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-(--primary) text-white rounded-lg flex items-center justify-center p-1 shrink-0">
                     <Image
                       src={event.icon}
                       alt={event.name}
@@ -143,21 +143,21 @@ export default function PublicRoomsList() {
                   <div className="min-w-0 flex-1">
                     {/* Room Name */}
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <h3 className="font-semibold text-[var(--text-primary)] font-statement group-hover:text-[var(--primary)] transition-colors text-sm md:text-base truncate">
+                      <h3 className="font-semibold text-(--text-primary) font-statement group-hover:text-(--primary) transition-colors text-sm md:text-base truncate">
                         {room.name}
                       </h3>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className="px-2 py-1 bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-medium rounded font-inter">
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="px-2 py-1 bg-(--primary)/10 text-(--primary) text-xs font-medium rounded font-inter">
                           {room.format.toUpperCase()}
                         </span>
-                        <span className="hidden sm:inline px-2 py-1 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs font-medium rounded font-inter">
+                        <span className="hidden sm:inline px-2 py-1 bg-(--surface) border border-(--border) text-(--text-secondary) text-xs font-medium rounded font-inter">
                           {event.name}
                         </span>
                       </div>
                     </div>
 
                     {/* Room Stats */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs md:text-sm text-[var(--text-secondary)] font-inter">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs md:text-sm text-(--text-secondary) font-inter">
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1">
                           <Users className="w-3 h-3 md:w-4 md:h-4" />
@@ -182,21 +182,21 @@ export default function PublicRoomsList() {
 
                     {/* Room Description */}
                     {room.description && (
-                      <p className="hidden md:block text-sm text-[var(--text-secondary)] font-inter line-clamp-1 mt-1">
+                      <p className="hidden md:block text-sm text-(--text-secondary) font-inter line-clamp-1 mt-1">
                         {room.description}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                <div className="flex items-center gap-2 md:gap-3 shrink-0">
                   {/* Room Creator */}
                   {room.creator && (
                     <div className="hidden lg:block text-right text-sm">
-                      <p className="text-[var(--text-muted)] font-inter text-xs">
+                      <p className="text-(--text-muted) font-inter text-xs">
                         by
                       </p>
-                      <p className="font-medium text-[var(--text-secondary)] font-inter">
+                      <p className="font-medium text-(--text-secondary) font-inter">
                         {room.creator.isDeleted
                           ? "Deleted User"
                           : room.creator.name}
@@ -204,7 +204,7 @@ export default function PublicRoomsList() {
                     </div>
                   )}
 
-                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors" />
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-(--text-muted) group-hover:text-(--primary) transition-colors" />
                 </div>
               </div>
             </Link>

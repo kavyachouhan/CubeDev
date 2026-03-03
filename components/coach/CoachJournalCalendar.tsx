@@ -77,19 +77,19 @@ const moodIcons: Record<string, React.ElementType> = {
 };
 
 const moodColors: Record<string, string> = {
-  great: "text-[var(--success)]",
-  good: "text-[var(--primary)]",
-  okay: "text-[var(--warning)]",
-  frustrated: "text-[var(--error)]",
-  tired: "text-[var(--text-muted)]",
+  great: "text-(--success)",
+  good: "text-(--primary)",
+  okay: "text-(--warning)",
+  frustrated: "text-(--error)",
+  tired: "text-(--text-muted)",
 };
 
 const moodBgColors: Record<string, string> = {
-  great: "bg-[var(--success)]/10",
-  good: "bg-[var(--primary)]/10",
-  okay: "bg-[var(--warning)]/10",
-  frustrated: "bg-[var(--error)]/10",
-  tired: "bg-[var(--surface-elevated)]",
+  great: "bg-(--success)/10",
+  good: "bg-(--primary)/10",
+  okay: "bg-(--warning)/10",
+  frustrated: "bg-(--error)/10",
+  tired: "bg-(--surface-elevated)",
 };
 
 const moodLabels: Record<string, string> = {
@@ -333,21 +333,21 @@ export default function CoachJournalCalendar({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 sm:gap-4">
             {/* Date Icon */}
-            <div className="flex flex-col items-center overflow-hidden rounded-lg border border-[var(--border)] w-12 sm:w-14 flex-shrink-0">
-              <div className="flex h-5 sm:h-6 w-full items-center justify-center bg-[var(--primary)] text-center text-xs font-semibold text-white uppercase">
+            <div className="flex flex-col items-center overflow-hidden rounded-lg border border-(--border) w-12 sm:w-14 shrink-0">
+              <div className="flex h-5 sm:h-6 w-full items-center justify-center bg-(--primary) text-center text-xs font-semibold text-white uppercase">
                 {format(currentDate, "MMM")}
               </div>
-              <div className="flex w-full items-center justify-center text-base sm:text-lg font-bold text-[var(--text-primary)]">
+              <div className="flex w-full items-center justify-center text-base sm:text-lg font-bold text-(--text-primary)">
                 {format(currentDate, "dd")}
               </div>
             </div>
 
             {/* Title */}
             <div>
-              <h2 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] font-statement">
+              <h2 className="text-base sm:text-lg font-semibold text-(--text-primary) font-statement">
                 {format(currentDate, "MMMM yyyy")}
               </h2>
-              <span className="text-xs text-[var(--text-muted)]">
+              <span className="text-xs text-(--text-muted)">
                 {monthEntryCount} {monthEntryCount === 1 ? "entry" : "entries"}
               </span>
             </div>
@@ -359,7 +359,7 @@ export default function CoachJournalCalendar({
             <div className="flex items-center gap-2">
               <button
                 onClick={handleToday}
-                className="px-3 py-1.5 text-sm border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)] transition-colors"
+                className="px-3 py-1.5 text-sm border border-(--border) rounded-lg text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
                 aria-label="Today"
                 title="Jump to Today"
               >
@@ -367,7 +367,7 @@ export default function CoachJournalCalendar({
               </button>
               <button
                 onClick={handlePreviousMonth}
-                className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                className="p-1.5 rounded-lg hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--text-primary) transition-colors"
                 aria-label="Previous month"
                 title="Previous month"
               >
@@ -375,7 +375,7 @@ export default function CoachJournalCalendar({
               </button>
               <button
                 onClick={handleNextMonth}
-                className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                className="p-1.5 rounded-lg hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--text-primary) transition-colors"
                 aria-label="Next month"
                 title="Next month"
               >
@@ -384,13 +384,13 @@ export default function CoachJournalCalendar({
             </div>
 
             {/* View Mode Toggle */}
-            <div className="flex items-center border border-[var(--border)] rounded-lg overflow-hidden">
+            <div className="flex items-center border border-(--border) rounded-lg overflow-hidden">
               <button
                 onClick={() => setViewMode("month")}
                 className={`p-2 transition-colors ${
                   viewMode === "month"
-                    ? "bg-[var(--primary)] text-white"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                    ? "bg-(--primary) text-white"
+                    : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
                 }`}
                 aria-label="Month view"
                 title="Month view"
@@ -401,8 +401,8 @@ export default function CoachJournalCalendar({
                 onClick={() => setViewMode("list")}
                 className={`p-2 transition-colors ${
                   viewMode === "list"
-                    ? "bg-[var(--primary)] text-white"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                    ? "bg-(--primary) text-white"
+                    : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
                 }`}
                 aria-label="List view"
                 title="List view"
@@ -418,7 +418,7 @@ export default function CoachJournalCalendar({
           <div className="flex items-center gap-2">
             <button
               onClick={handleToday}
-              className="px-3 py-1.5 text-sm border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)] transition-colors"
+              className="px-3 py-1.5 text-sm border border-(--border) rounded-lg text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
               aria-label="Today"
               title="Jump to Today"
             >
@@ -426,7 +426,7 @@ export default function CoachJournalCalendar({
             </button>
             <button
               onClick={handlePreviousMonth}
-              className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--text-primary) transition-colors"
               aria-label="Previous month"
               title="Previous month"
             >
@@ -434,7 +434,7 @@ export default function CoachJournalCalendar({
             </button>
             <button
               onClick={handleNextMonth}
-              className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--text-primary) transition-colors"
               aria-label="Next month"
               title="Next month"
             >
@@ -443,13 +443,13 @@ export default function CoachJournalCalendar({
           </div>
 
           {/* Mobile View Toggle */}
-          <div className="flex items-center border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="flex items-center border border-(--border) rounded-lg overflow-hidden">
             <button
               onClick={() => setViewMode("month")}
               className={`p-2 transition-colors ${
                 viewMode === "month"
-                  ? "bg-[var(--primary)] text-white"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                  ? "bg-(--primary) text-white"
+                  : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
               }`}
               aria-label="Month view"
               title="Month view"
@@ -460,8 +460,8 @@ export default function CoachJournalCalendar({
               onClick={() => setViewMode("list")}
               className={`p-2 transition-colors ${
                 viewMode === "list"
-                  ? "bg-[var(--primary)] text-white"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                  ? "bg-(--primary) text-white"
+                  : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
               }`}
               aria-label="List view"
               title="List view"
@@ -473,45 +473,45 @@ export default function CoachJournalCalendar({
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-          <div className="p-3 bg-[var(--surface-elevated)] rounded-lg">
+          <div className="p-3 bg-(--surface-elevated) rounded-lg">
             <div className="flex items-center gap-2 mb-1">
-              <CalendarIcon className="w-4 h-4 text-[var(--primary)]" />
-              <span className="text-xs text-[var(--text-muted)]">
+              <CalendarIcon className="w-4 h-4 text-(--primary)" />
+              <span className="text-xs text-(--text-muted)">
                 Active Days
               </span>
             </div>
-            <p className="text-xl font-bold text-[var(--text-primary)]">
+            <p className="text-xl font-bold text-(--text-primary)">
               {activeDaysCount}
             </p>
           </div>
-          <div className="p-3 bg-[var(--surface-elevated)] rounded-lg">
+          <div className="p-3 bg-(--surface-elevated) rounded-lg">
             <div className="flex items-center gap-2 mb-1">
-              <Target className="w-4 h-4 text-[var(--primary)]" />
-              <span className="text-xs text-[var(--text-muted)]">Entries</span>
+              <Target className="w-4 h-4 text-(--primary)" />
+              <span className="text-xs text-(--text-muted)">Entries</span>
             </div>
-            <p className="text-xl font-bold text-[var(--text-primary)]">
+            <p className="text-xl font-bold text-(--text-primary)">
               {monthEntryCount}
             </p>
           </div>
-          <div className="p-3 bg-[var(--surface-elevated)] rounded-lg">
+          <div className="p-3 bg-(--surface-elevated) rounded-lg">
             <div className="flex items-center gap-2 mb-1">
-              <Clock className="w-4 h-4 text-[var(--primary)]" />
-              <span className="text-xs text-[var(--text-muted)]">
+              <Clock className="w-4 h-4 text-(--primary)" />
+              <span className="text-xs text-(--text-muted)">
                 Total Time
               </span>
             </div>
-            <p className="text-xl font-bold text-[var(--text-primary)]">
+            <p className="text-xl font-bold text-(--text-primary)">
               {formatDuration(monthTotalTime)}
             </p>
           </div>
-          <div className="p-3 bg-[var(--surface-elevated)] rounded-lg">
+          <div className="p-3 bg-(--surface-elevated) rounded-lg">
             <div className="flex items-center gap-2 mb-1">
-              <div className="w-4 h-4 text-[var(--primary)] flex items-center justify-center font-bold text-sm">
+              <div className="w-4 h-4 text-(--primary) flex items-center justify-center font-bold text-sm">
                 #
               </div>
-              <span className="text-xs text-[var(--text-muted)]">Solves</span>
+              <span className="text-xs text-(--text-muted)">Solves</span>
             </div>
-            <p className="text-xl font-bold text-[var(--text-primary)]">
+            <p className="text-xl font-bold text-(--text-primary)">
               {monthTotalSolves}
             </p>
           </div>
@@ -527,12 +527,12 @@ export default function CoachJournalCalendar({
               {/* Month Grid */}
               <div className="flex-1">
                 {/* Day Headers */}
-                <div className="grid grid-cols-7 border-b border-[var(--border)] mb-1">
+                <div className="grid grid-cols-7 border-b border-(--border) mb-1">
                   {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
                     (day) => (
                       <div
                         key={day}
-                        className="py-2 text-center text-xs font-medium text-[var(--text-muted)] uppercase"
+                        className="py-2 text-center text-xs font-medium text-(--text-muted) uppercase"
                       >
                         {day}
                       </div>
@@ -541,7 +541,7 @@ export default function CoachJournalCalendar({
                 </div>
 
                 {/* Calendar Grid */}
-                <div className="grid grid-cols-7 gap-px bg-[var(--border)]">
+                <div className="grid grid-cols-7 gap-px bg-(--border)">
                   {calendarDays.map((day) => {
                     const dayStr = format(day, "yyyy-MM-dd");
                     const entries = getEntriesForDate(day);
@@ -558,17 +558,17 @@ export default function CoachJournalCalendar({
                         key={dayStr}
                         onClick={() => handleDateClick(day)}
                         className={`
-                          min-h-[100px] p-2 bg-[var(--surface)] cursor-pointer transition-colors
-                          ${!isCurrentMonth ? "bg-[var(--surface-elevated)]/50" : ""}
-                          ${isSelected ? "ring-2 ring-[var(--primary)] ring-inset" : "hover:bg-[var(--surface-elevated)]"}
+                          min-h-[100px] p-2 bg-(--surface) cursor-pointer transition-colors
+                          ${!isCurrentMonth ? "bg-(--surface-elevated)/50" : ""}
+                          ${isSelected ? "ring-2 ring-(--primary) ring-inset" : "hover:bg-(--surface-elevated)"}
                         `}
                       >
                         {/* Date Number */}
                         <div
                           className={`
                             text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full mb-1
-                            ${isToday ? "bg-[var(--primary)] text-white" : ""}
-                            ${!isCurrentMonth ? "text-[var(--text-muted)]" : "text-[var(--text-primary)]"}
+                            ${isToday ? "bg-(--primary) text-white" : ""}
+                            ${!isCurrentMonth ? "text-(--text-muted)" : "text-(--text-primary)"}
                           `}
                         >
                           {format(day, "d")}
@@ -579,7 +579,7 @@ export default function CoachJournalCalendar({
                           <div
                             className={`
                               text-xs px-1.5 py-1 rounded cursor-pointer relative
-                              border border-[var(--border)] ${moodBgColors[entry.mood]}
+                              border border-(--border) ${moodBgColors[entry.mood]}
                             `}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -587,7 +587,7 @@ export default function CoachJournalCalendar({
                             }}
                           >
                             {entryCount > 1 && (
-                              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[var(--primary)] text-white text-[10px] flex items-center justify-center font-medium">
+                              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-(--primary) text-white text-[10px] flex items-center justify-center font-medium">
                                 {entryCount}
                               </span>
                             )}
@@ -597,12 +597,12 @@ export default function CoachJournalCalendar({
                                   className={`w-3 h-3 ${moodColors[entry.mood]}`}
                                 />
                               )}
-                              <span className="text-[var(--text-secondary)] truncate">
+                              <span className="text-(--text-secondary) truncate">
                                 {moodLabels[entry.mood]}
                               </span>
                             </div>
                             {entry.practiceMinutes && (
-                              <div className="text-[var(--text-muted)] mt-0.5">
+                              <div className="text-(--text-muted) mt-0.5">
                                 {entry.practiceMinutes}min
                               </div>
                             )}
@@ -616,14 +616,14 @@ export default function CoachJournalCalendar({
 
               {/* Selected Day Details Panel */}
               {selectedDate && (
-                <div className="lg:w-80 border-t lg:border-t-0 lg:border-l border-[var(--border)] pt-4 lg:pt-0 lg:pl-4">
+                <div className="lg:w-80 border-t lg:border-t-0 lg:border-l border-(--border) pt-4 lg:pt-0 lg:pl-4">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-medium text-[var(--text-primary)]">
+                    <h3 className="font-medium text-(--text-primary)">
                       {format(selectedDate, "EEEE, MMM d")}
                     </h3>
                     <button
                       onClick={() => onAddEntry(selectedDate)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[var(--primary)] text-white rounded-lg"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-(--primary) text-white rounded-lg"
                       aria-label="Add entry for this day"
                       title="Add entry for this day"
                     >
@@ -634,13 +634,13 @@ export default function CoachJournalCalendar({
 
                   {selectedDateEntries.length === 0 ? (
                     <div className="text-center py-8">
-                      <CalendarIcon className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-2" />
-                      <p className="text-sm text-[var(--text-muted)]">
+                      <CalendarIcon className="w-10 h-10 text-(--text-muted) mx-auto mb-2" />
+                      <p className="text-sm text-(--text-muted)">
                         No entry for this day
                       </p>
                       <button
                         onClick={() => onAddEntry(selectedDate)}
-                        className="mt-3 text-sm text-[var(--primary)] hover:underline"
+                        className="mt-3 text-sm text-(--primary) hover:underline"
                       >
                         Add an entry
                       </button>
@@ -650,7 +650,7 @@ export default function CoachJournalCalendar({
                       {selectedDateEntries.map((entry, index) => (
                         <div key={entry._id} className="relative">
                           {selectedDateEntries.length > 1 && (
-                            <span className="absolute -top-2 -left-3 w-5 h-5 rounded-full bg-[var(--primary)] text-white text-xs flex items-center justify-center font-medium z-10">
+                            <span className="absolute -top-2 -left-3 w-5 h-5 rounded-full bg-(--primary) text-white text-xs flex items-center justify-center font-medium z-10">
                               {index + 1}
                             </span>
                           )}
@@ -693,9 +693,9 @@ export default function CoachJournalCalendar({
                       onClick={() => handleDateClick(day)}
                       className={`
                         flex flex-col items-center p-2 rounded-lg min-w-[44px] transition-colors
-                        ${isSelected ? "bg-[var(--primary)] text-white" : ""}
-                        ${!isSelected && isToday ? "bg-[var(--primary)]/10 text-[var(--primary)]" : ""}
-                        ${!isSelected && !isToday ? "hover:bg-[var(--surface-elevated)]" : ""}
+                        ${isSelected ? "bg-(--primary) text-white" : ""}
+                        ${!isSelected && isToday ? "bg-(--primary)/10 text-(--primary)" : ""}
+                        ${!isSelected && !isToday ? "hover:bg-(--surface-elevated)" : ""}
                       `}
                     >
                       <span className="text-[10px] uppercase opacity-70">
@@ -707,7 +707,7 @@ export default function CoachJournalCalendar({
                       {hasEntry && (
                         <span
                           className={`w-1.5 h-1.5 rounded-full mt-1 ${
-                            isSelected ? "bg-white" : "bg-[var(--primary)]"
+                            isSelected ? "bg-white" : "bg-(--primary)"
                           }`}
                         />
                       )}
@@ -721,12 +721,12 @@ export default function CoachJournalCalendar({
             {selectedDate ? (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-medium text-[var(--text-primary)]">
+                  <h3 className="font-medium text-(--text-primary)">
                     {format(selectedDate, "EEEE, MMMM d")}
                   </h3>
                   <button
                     onClick={() => onAddEntry(selectedDate)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-[var(--primary)] text-white rounded-lg"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-(--primary) text-white rounded-lg"
                     aria-label="Add entry for this day"
                     title="Add entry for this day"
                   >
@@ -736,15 +736,15 @@ export default function CoachJournalCalendar({
                 </div>
 
                 {selectedDateEntries.length === 0 ? (
-                  <div className="text-center py-12 bg-[var(--surface-elevated)] rounded-lg">
+                  <div className="text-center py-12 bg-(--surface-elevated) rounded-lg">
                     <CalendarIcon
-                      className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3"
+                      className="w-12 h-12 text-(--text-muted) mx-auto mb-3"
                       aria-hidden="true"
                     />
-                    <p className="text-[var(--text-secondary)] font-medium">
+                    <p className="text-(--text-secondary) font-medium">
                       No entry logged
                     </p>
-                    <p className="text-sm text-[var(--text-muted)] mt-1">
+                    <p className="text-sm text-(--text-muted) mt-1">
                       Tap &quot;Add&quot; to log your practice
                     </p>
                   </div>
@@ -753,7 +753,7 @@ export default function CoachJournalCalendar({
                     {selectedDateEntries.map((entry, index) => (
                       <div key={entry._id} className="relative">
                         {selectedDateEntries.length > 1 && (
-                          <span className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-[var(--primary)] text-white text-xs flex items-center justify-center font-medium z-10">
+                          <span className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-(--primary) text-white text-xs flex items-center justify-center font-medium z-10">
                             {index + 1}
                           </span>
                         )}
@@ -768,7 +768,7 @@ export default function CoachJournalCalendar({
                 )}
               </div>
             ) : (
-              <div className="text-center py-8 text-[var(--text-muted)]">
+              <div className="text-center py-8 text-(--text-muted)">
                 Select a date to view entry
               </div>
             )}
@@ -796,13 +796,13 @@ export default function CoachJournalCalendar({
                     <div
                       className={`
                         text-sm font-medium px-2 py-0.5 rounded
-                        ${isToday ? "bg-[var(--primary)] text-white" : "text-[var(--text-secondary)]"}
+                        ${isToday ? "bg-(--primary) text-white" : "text-(--text-secondary)"}
                       `}
                     >
                       {format(day, "EEE, MMM d")}
                     </div>
                     {entries.length > 1 && (
-                      <span className="text-xs text-[var(--text-muted)]">
+                      <span className="text-xs text-(--text-muted)">
                         ({entries.length} entries)
                       </span>
                     )}
@@ -811,7 +811,7 @@ export default function CoachJournalCalendar({
                     {entries.map((entry, index) => (
                       <div key={entry._id} className="relative">
                         {entries.length > 1 && (
-                          <span className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-[var(--primary)] text-white text-[10px] flex items-center justify-center font-medium z-10">
+                          <span className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-(--primary) text-white text-[10px] flex items-center justify-center font-medium z-10">
                             {index + 1}
                           </span>
                         )}
@@ -833,16 +833,16 @@ export default function CoachJournalCalendar({
             return entries.length > 0 && isSameMonth(day, currentDate);
           }) && (
             <div className="text-center py-12">
-              <CalendarIcon className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-              <p className="text-[var(--text-secondary)] font-medium">
+              <CalendarIcon className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
+              <p className="text-(--text-secondary) font-medium">
                 No entries this month
               </p>
-              <p className="text-sm text-[var(--text-muted)] mt-1">
+              <p className="text-sm text-(--text-muted) mt-1">
                 Start logging your practice sessions
               </p>
               <button
                 onClick={() => onAddEntry(today)}
-                className="flex items-center gap-2 mx-auto mt-4 px-4 py-2 bg-[var(--primary)] text-white rounded-lg font-medium hover:bg-[var(--primary-hover)] transition-colors"
+                className="flex items-center gap-2 mx-auto mt-4 px-4 py-2 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Add Entry
@@ -871,21 +871,21 @@ function EntryCard({ entry, onClick, expanded }: EntryCardProps) {
   return (
     <div
       onClick={onClick}
-      className="p-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg hover:border-[var(--primary)]/50 transition-colors cursor-pointer"
+      className="p-3 bg-(--surface-elevated) border border-(--border) rounded-lg hover:border-(--primary)/50 transition-colors cursor-pointer"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${moodBgColors[entry.mood]}`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${moodBgColors[entry.mood]}`}
             >
               <MoodIcon className={`w-4 h-4 ${moodColors[entry.mood]}`} />
             </div>
-            <span className="font-medium text-[var(--text-primary)] text-sm">
+            <span className="font-medium text-(--text-primary) text-sm">
               {moodLabels[entry.mood]}
             </span>
           </div>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 text-xs text-[var(--text-muted)]">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 text-xs text-(--text-muted)">
             {entry.practiceMinutes && (
               <span className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
@@ -899,7 +899,7 @@ function EntryCard({ entry, onClick, expanded }: EntryCardProps) {
               </span>
             )}
             {displayAverage && (
-              <span className="font-medium text-[var(--primary)]">
+              <span className="font-medium text-(--primary)">
                 Avg: {formatTime(displayAverage)}
               </span>
             )}
@@ -909,7 +909,7 @@ function EntryCard({ entry, onClick, expanded }: EntryCardProps) {
               {entry.focusAreas.map((area) => (
                 <span
                   key={area}
-                  className="px-1.5 py-0.5 text-xs bg-[var(--primary)]/10 text-[var(--primary)] rounded"
+                  className="px-1.5 py-0.5 text-xs bg-(--primary)/10 text-(--primary) rounded"
                 >
                   {area}
                 </span>
@@ -917,7 +917,7 @@ function EntryCard({ entry, onClick, expanded }: EntryCardProps) {
             </div>
           )}
           {expanded && entry.wentWell && (
-            <p className="text-sm text-[var(--text-secondary)] mt-2 line-clamp-2">
+            <p className="text-sm text-(--text-secondary) mt-2 line-clamp-2">
               {entry.wentWell}
             </p>
           )}

@@ -431,7 +431,7 @@ export default function ManualTimerCore({
 
       {/* Inspection Display */}
       {isInspecting && (
-        <div className="text-center p-6 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+        <div className="text-center p-6 bg-(--surface-elevated) rounded-lg border border-(--border)">
           <div
             className={`text-6xl font-bold font-mono mb-2 transition-colors ${
               inspectionTime <= 3
@@ -443,12 +443,12 @@ export default function ManualTimerCore({
           >
             {inspectionTime.toFixed(2)}
           </div>
-          <div className="text-sm text-[var(--text-muted)]">
+          <div className="text-sm text-(--text-muted)">
             Inspection time remaining
           </div>
           <button
             onClick={handleStopInspection}
-            className="mt-4 px-4 py-2 bg-[var(--error)] hover:bg-[var(--error)]/80 text-white rounded-lg font-medium transition-colors"
+            className="mt-4 px-4 py-2 bg-(--error) hover:bg-(--error)/80 text-white rounded-lg font-medium transition-colors"
           >
             Stop Inspection
           </button>
@@ -460,7 +460,7 @@ export default function ManualTimerCore({
         <div className="space-y-4">
           {/* Time Input */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+            <label className="block text-sm font-medium text-(--text-secondary) mb-2">
               Enter Time
             </label>
             <input
@@ -469,54 +469,54 @@ export default function ManualTimerCore({
               onChange={(e) => handleInputChange(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="e.g., 12.34 or 1:23.45 or DNF"
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-mono bg-[var(--background)] border-2 border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--primary)] text-[var(--text-primary)] transition-colors"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-mono bg-(--background) border-2 border-(--border) rounded-lg focus:outline-none focus:border-(--primary) text-(--text-primary) transition-colors"
               autoFocus
             />
 
             {/* Format hints */}
-            <div className="mt-2 text-xs text-[var(--text-muted)] space-y-1">
+            <div className="mt-2 text-xs text-(--text-muted) space-y-1">
               <div>Formats: 12.34, 1:23.45, 1234, DNF, 12.34+2</div>
             </div>
 
             {/* Error message */}
             {error && (
-              <div className="mt-2 text-sm text-[var(--error)]">{error}</div>
+              <div className="mt-2 text-sm text-(--error)">{error}</div>
             )}
           </div>
 
           {/* Preview */}
           {parsedTime !== null && !error && (
-            <div className="bg-[var(--surface-elevated)] rounded-lg p-4 border border-[var(--border)]">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide mb-2">
+            <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
+              <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-2">
                 Preview
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-[var(--text-secondary)]">
+                  <span className="text-(--text-secondary)">
                     Raw Time:
                   </span>
-                  <span className="font-mono text-[var(--text-primary)]">
+                  <span className="font-mono text-(--text-primary)">
                     {parsedTime === 0 && penalty === "DNF"
                       ? "DNF"
                       : formatTimeDisplay(parsedTime, "none")}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-[var(--text-secondary)]">Penalty:</span>
+                  <span className="text-(--text-secondary)">Penalty:</span>
                   <span
                     className={`font-mono ${
                       penalty === "+2"
                         ? "text-yellow-400"
                         : penalty === "DNF"
                           ? "text-red-400"
-                          : "text-[var(--text-primary)]"
+                          : "text-(--text-primary)"
                     }`}
                   >
                     {penalty === "none" ? "None" : penalty}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm border-t border-[var(--border)] pt-2">
-                  <span className="text-[var(--text-secondary)] font-semibold">
+                <div className="flex justify-between text-sm border-t border-(--border) pt-2">
+                  <span className="text-(--text-secondary) font-semibold">
                     Final Time:
                   </span>
                   <span
@@ -525,7 +525,7 @@ export default function ManualTimerCore({
                         ? "text-yellow-400"
                         : penalty === "DNF" || parsedTime === 0
                           ? "text-red-400"
-                          : "text-[var(--text-primary)]"
+                          : "text-(--text-primary)"
                     }`}
                   >
                     {formatTimeDisplay(getFinalTime(), penalty)}
@@ -537,7 +537,7 @@ export default function ManualTimerCore({
 
           {/* Penalty Buttons */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+            <label className="block text-sm font-medium text-(--text-secondary) mb-2">
               Penalty
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -545,8 +545,8 @@ export default function ManualTimerCore({
                 onClick={() => setPenalty("none")}
                 className={`px-3 sm:px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
                   penalty === "none"
-                    ? "bg-[var(--primary)] text-white"
-                    : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)] border border-[var(--border)]"
+                    ? "bg-(--primary) text-white"
+                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
                 }`}
               >
                 OK
@@ -555,8 +555,8 @@ export default function ManualTimerCore({
                 onClick={() => setPenalty("+2")}
                 className={`px-3 sm:px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
                   penalty === "+2"
-                    ? "bg-[var(--warning)] text-white"
-                    : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)] border border-[var(--border)]"
+                    ? "bg-(--warning) text-white"
+                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
                 }`}
               >
                 +2
@@ -565,8 +565,8 @@ export default function ManualTimerCore({
                 onClick={() => setPenalty("DNF")}
                 className={`px-3 sm:px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
                   penalty === "DNF"
-                    ? "bg-[var(--error)] text-white"
-                    : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)] border border-[var(--border)]"
+                    ? "bg-(--error) text-white"
+                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
                 }`}
               >
                 DNF
@@ -579,7 +579,7 @@ export default function ManualTimerCore({
             {inspectionEnabled && (
               <button
                 onClick={handleStartInspection}
-                className="flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-[var(--surface-elevated)] hover:bg-[var(--border)] text-[var(--text-primary)] rounded-lg font-medium transition-colors border border-[var(--border)]"
+                className="flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) rounded-lg font-medium transition-colors border border-(--border)"
               >
                 <span className="text-sm sm:text-base">Start Inspection</span>
               </button>
@@ -587,7 +587,7 @@ export default function ManualTimerCore({
             <button
               onClick={handleSubmit}
               disabled={!!error || !timeInput.trim()}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[var(--primary)]"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-(--primary)"
             >
               <Plus className="w-4 h-4" />
               <span className="text-sm sm:text-base">Add Solve</span>

@@ -142,6 +142,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
+  // Help Center pages
+  const helpPages = [
+    {
+      url: `${baseUrl}/help`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    },
+  ];
+
   return [
     ...staticPages,
     ...cubeLabPages,
@@ -149,5 +159,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...coachPages,
     ...cuberPages,
     ...wcaStatsPages,
+    ...helpPages,
   ];
 }

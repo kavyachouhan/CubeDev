@@ -4,15 +4,15 @@ import Footer from "@/components/Footer";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="min-h-screen bg-(--background)">
       <Header />
       <div className="container-responsive py-8 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-4 font-statement">
-            About <span className="text-[var(--primary)]">CubeDev</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-(--text-primary) mb-4 font-statement">
+            About <span className="text-(--primary)">CubeDev</span>
           </h1>
-          <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto font-inter">
+          <p className="text-xl text-(--text-secondary) max-w-2xl mx-auto font-inter">
             Built by cubers, for speedcubers. A platform to help
             the global cubing community improve their skills and connect with
             fellow cubers.
@@ -23,7 +23,7 @@ export default function AboutPage() {
         <div className="timer-card mb-8">
           <div className="flex flex-col lg:flex-row items-center gap-8">
             {/* WCA Avatar */}
-            <div className="w-32 h-32 rounded-full overflow-hidden flex-shrink-0 border-4 border-[var(--primary)]/20">
+            <div className="w-32 h-32 rounded-full overflow-hidden shrink-0 border-4 border-(--primary)/20">
               <img
                 src="https://avatars.worldcubeassociation.org/uploads/user/avatar/2022CHOU06/1715086963.jpg"
                 alt="Kavya Chouhan"
@@ -33,13 +33,13 @@ export default function AboutPage() {
 
             {/* Creator Info */}
             <div className="flex-1 text-center lg:text-left">
-              <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-2 font-statement">
+              <h2 className="text-3xl font-bold text-(--text-primary) mb-2 font-statement">
                 Kavya Chouhan
               </h2>
-              <div className="text-lg text-[var(--primary)] font-semibold mb-4 font-inter">
+              <div className="text-lg text-(--primary) font-semibold mb-4 font-inter">
                 WCA ID: 2022CHOU06
               </div>
-              <p className="text-[var(--text-secondary)] font-inter leading-relaxed mb-6">
+              <p className="text-(--text-secondary) font-inter leading-relaxed mb-6">
                 I'm a passionate speedcuber and developer who created CubeDev to
                 fill the gaps I experienced in the cubing. As someone
                 who's been both competing and coding for years, I wanted to
@@ -53,7 +53,7 @@ export default function AboutPage() {
                   href="https://github.com/kavyachouhan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-primary)] rounded-lg transition-all duration-200 font-inter"
+                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-inter"
                 >
                   <Github className="w-5 h-5" />
                   GitHub
@@ -64,7 +64,7 @@ export default function AboutPage() {
                   href="https://kavyachouhan.xyz"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-primary)] rounded-lg transition-all duration-200 font-inter"
+                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-inter"
                 >
                   <Globe className="w-5 h-5" />
                   Website
@@ -75,7 +75,7 @@ export default function AboutPage() {
                   href="https://linkedin.com/in/kavya-chouhan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-primary)] rounded-lg transition-all duration-200 font-inter"
+                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-inter"
                 >
                   <Linkedin className="w-5 h-5" />
                   LinkedIn
@@ -86,7 +86,7 @@ export default function AboutPage() {
                   href="https://www.worldcubeassociation.org/persons/2022CHOU06"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-all duration-200 font-inter"
+                  className="flex items-center gap-2 px-4 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-all duration-200 font-inter"
                 >
                   <img src="/wca_logo.png" alt="WCA" className="w-5 h-5" />
                   WCA Profile
@@ -99,10 +99,10 @@ export default function AboutPage() {
 
         {/* Mission Statement */}
         <div className="timer-card mb-8">
-          <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6 font-statement">
+          <h2 className="text-2xl font-bold text-(--text-primary) mb-6 font-statement">
             Our Mission
           </h2>
-          <div className="space-y-4 text-[var(--text-secondary)] font-inter leading-relaxed">
+          <div className="space-y-4 text-(--text-secondary) font-inter leading-relaxed">
             <p>
               CubeDev was born from the realization that the speedcubing
               community needed better tools to track progress, analyze
@@ -121,10 +121,10 @@ export default function AboutPage() {
 
         {/* Future Vision */}
         <div className="timer-card mb-8">
-          <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6 font-statement">
+          <h2 className="text-2xl font-bold text-(--text-primary) mb-6 font-statement">
             Future Vision
           </h2>
-          <div className="space-y-4 text-[var(--text-secondary)] font-inter leading-relaxed">
+          <div className="space-y-4 text-(--text-secondary) font-inter leading-relaxed">
             <p>
               CubeDev is currently in beta, and we're continuously adding new
               features based on community feedback. Our roadmap includes
@@ -141,17 +141,17 @@ export default function AboutPage() {
 
         {/* Contact Section */}
         <div className="timer-card text-center">
-          <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4 font-statement">
+          <h2 className="text-2xl font-bold text-(--text-primary) mb-4 font-statement">
             Get in Touch
           </h2>
-          <p className="text-[var(--text-secondary)] font-inter mb-6 max-w-2xl mx-auto">
+          <p className="text-(--text-secondary) font-inter mb-6 max-w-2xl mx-auto">
             Have feedback, suggestions, or just want to chat about cubing? I'd
             love to hear from you! The best way to reach me is through the
             contact form.
           </p>
           <a
             href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-all duration-200 font-button"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-all duration-200 font-button"
           >
             Contact Me
             <ExternalLink className="w-4 h-4" />

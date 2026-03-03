@@ -37,10 +37,10 @@ export default function PhaseResults({
   return (
     <div className={`timer-card ${className}`}>
       <div className="flex items-center gap-2 mb-3">
-        <h4 className="text-m font-semibold text-[var(--text-primary)] font-statement">
+        <h4 className="text-m font-semibold text-(--text-primary) font-statement">
           Phase Breakdown
         </h4>
-        <span className="text-sm text-[var(--text-muted)]">{method.name}</span>
+        <span className="text-sm text-(--text-muted)">{method.name}</span>
       </div>
 
       {/* Phase Times Grid */}
@@ -52,10 +52,10 @@ export default function PhaseResults({
           return (
             <div
               key={phase.phase}
-              className={`p-2 bg-[var(--surface-elevated)] rounded border ${
+              className={`p-2 bg-(--surface-elevated) rounded border ${
                 isLargestStall
                   ? "border-orange-400/50 bg-orange-400/10"
-                  : "border-[var(--border)]"
+                  : "border-(--border)"
               }`}
             >
               <div className="flex items-center gap-1 mb-1">
@@ -64,14 +64,14 @@ export default function PhaseResults({
                     methodPhase?.color?.replace("text-", "bg-") || "bg-gray-400"
                   }`}
                 />
-                <span className="text-xs font-medium text-[var(--text-primary)]">
+                <span className="text-xs font-medium text-(--text-primary)">
                   {methodPhase?.name || phase.phase}
                 </span>
                 {isLargestStall && (
                   <AlertTriangle className="w-3 h-3 text-orange-500" />
                 )}
               </div>
-              <div className="text-sm font-bold font-mono text-[var(--text-primary)]">
+              <div className="text-sm font-bold font-mono text-(--text-primary)">
                 {formatPhaseTime(phase.duration)}s
               </div>
             </div>
@@ -83,7 +83,7 @@ export default function PhaseResults({
       {largestStall && (
         <div className="flex items-center gap-2 p-2 bg-orange-400/10 border border-orange-400/30 rounded text-xs">
           <TrendingUp className="w-3 h-3 text-orange-500" />
-          <span className="text-[var(--text-primary)]">
+          <span className="text-(--text-primary)">
             <strong>Largest stall:</strong>{" "}
             {method.phases.find((p) => p.id === largestStall.phase)?.name ||
               largestStall.phase}{" "}

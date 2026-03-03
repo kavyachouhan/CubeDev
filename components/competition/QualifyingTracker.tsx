@@ -263,24 +263,24 @@ export default function QualifyingTracker() {
       <div className="timer-card">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-[var(--text-primary)]">
+            <h2 className="text-xl font-bold text-(--text-primary)">
               Qualifying Time Tracker
             </h2>
-            <p className="text-sm text-[var(--text-muted)] mt-1">
+            <p className="text-sm text-(--text-muted) mt-1">
               Set goals for competition cutoffs and track your progress.
             </p>
           </div>
           <div className="flex gap-2">
             <button
               onClick={() => setShowPBForm(true)}
-              className="px-4 py-2 text-sm font-medium border border-[var(--border)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--surface-elevated)] transition-colors flex items-center gap-2"
+              className="px-4 py-2 text-sm font-medium border border-(--border) text-(--text-primary) rounded-lg hover:bg-(--surface-elevated) transition-colors flex items-center gap-2"
             >
               <Clock className="w-4 h-4" />
               Set PBs
             </button>
             <button
               onClick={() => setShowAddForm(true)}
-              className="px-4 py-2 text-sm font-medium bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors flex items-center gap-2"
+              className="px-4 py-2 text-sm font-medium bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               Add Goal
@@ -292,7 +292,7 @@ export default function QualifyingTracker() {
       {/* Personal Bests Summary */}
       {personalBests.length > 0 && (
         <div className="timer-card">
-          <h3 className="font-bold text-[var(--text-primary)] mb-4">
+          <h3 className="font-bold text-(--text-primary) mb-4">
             Your Personal Bests
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -301,7 +301,7 @@ export default function QualifyingTracker() {
               return (
                 <div
                   key={pb.eventId}
-                  className="flex items-center gap-3 p-3 bg-[var(--surface-elevated)] rounded-lg"
+                  className="flex items-center gap-3 p-3 bg-(--surface-elevated) rounded-lg"
                 >
                   {event && (
                     <Image
@@ -313,10 +313,10 @@ export default function QualifyingTracker() {
                     />
                   )}
                   <div>
-                    <div className="text-xs text-[var(--text-muted)]">
+                    <div className="text-xs text-(--text-muted)">
                       {event?.name || pb.eventId}
                     </div>
-                    <div className="font-mono text-sm font-medium text-[var(--text-primary)]">
+                    <div className="font-mono text-sm font-medium text-(--text-primary)">
                       {pb.average > 0
                         ? formatTime(pb.average)
                         : formatTime(pb.single)}
@@ -332,16 +332,16 @@ export default function QualifyingTracker() {
       {/* Goals List */}
       {goals.length === 0 ? (
         <div className="timer-card text-center py-12">
-          <Target className="w-16 h-16 text-[var(--text-muted)] mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+          <Target className="w-16 h-16 text-(--text-muted) mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-(--text-primary) mb-2">
             No Goals Set
           </h3>
-          <p className="text-[var(--text-muted)] mb-6">
+          <p className="text-(--text-muted) mb-6">
             Add a qualifying time goal to start tracking your progress.
           </p>
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+            className="px-6 py-3 bg-(--primary) text-white font-medium rounded-lg hover:bg-(--primary-hover) transition-colors"
           >
             Add Your First Goal
           </button>
@@ -358,7 +358,7 @@ export default function QualifyingTracker() {
             return (
               <div
                 key={goal.id}
-                className={`timer-card ${achieved ? "border-[var(--success)]/50" : ""}`}
+                className={`timer-card ${achieved ? "border-(--success)/50" : ""}`}
               >
                 <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                   {/* Event Icon */}
@@ -366,8 +366,8 @@ export default function QualifyingTracker() {
                     <div
                       className={`p-3 rounded-lg ${
                         achieved
-                          ? "bg-[var(--success)]/10"
-                          : "bg-[var(--surface-elevated)]"
+                          ? "bg-(--success)/10"
+                          : "bg-(--surface-elevated)"
                       }`}
                     >
                       {event && (
@@ -383,22 +383,22 @@ export default function QualifyingTracker() {
                     {/* Goal Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-[var(--text-primary)]">
+                        <h3 className="font-bold text-(--text-primary)">
                           {goal.competitionName}
                         </h3>
                         {achieved && (
-                          <span className="flex items-center gap-1 px-2 py-0.5 text-xs bg-[var(--success)]/10 text-[var(--success)] rounded">
+                          <span className="flex items-center gap-1 px-2 py-0.5 text-xs bg-(--success)/10 text-(--success) rounded">
                             <Check className="w-3 h-3" />
                             Achieved
                           </span>
                         )}
                       </div>
-                      <div className="text-sm text-[var(--text-muted)] mt-1">
+                      <div className="text-sm text-(--text-muted) mt-1">
                         {event?.name} • Target: {formatTime(goal.targetTime)}
                         {goal.cutoff && ` • Cutoff: ${formatTime(goal.cutoff)}`}
                       </div>
                       {daysUntil > 0 && (
-                        <div className="text-sm text-[var(--text-muted)] mt-1">
+                        <div className="text-sm text-(--text-muted) mt-1">
                           {daysUntil} days until competition
                         </div>
                       )}
@@ -408,26 +408,26 @@ export default function QualifyingTracker() {
                   {/* Progress */}
                   <div className="flex-1 lg:max-w-xs">
                     <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-[var(--text-muted)]">Progress</span>
-                      <span className="text-[var(--text-primary)]">
+                      <span className="text-(--text-muted)">Progress</span>
+                      <span className="text-(--text-primary)">
                         {Math.round(progress)}%
                       </span>
                     </div>
-                    <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                    <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                       <div
                         className={`h-full transition-all ${
                           achieved
-                            ? "bg-[var(--success)]"
-                            : "bg-[var(--primary)]"
+                            ? "bg-(--success)"
+                            : "bg-(--primary)"
                         }`}
                         style={{ width: `${progress}%` }}
                       />
                     </div>
                     {pb && (
-                      <div className="text-xs text-[var(--text-muted)] mt-1">
+                      <div className="text-xs text-(--text-muted) mt-1">
                         Current PB: {formatTime(pb.average || pb.single)}
                         {pb.average && pb.average > goal.targetTime && (
-                          <span className="text-[var(--error)] ml-2">
+                          <span className="text-(--error) ml-2">
                             ({formatTime(pb.average - goal.targetTime)} to go)
                           </span>
                         )}
@@ -439,14 +439,14 @@ export default function QualifyingTracker() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => startEditGoal(goal)}
-                      className="p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                      className="p-2 text-(--text-muted) hover:text-(--text-primary) transition-colors"
                       title="Edit goal"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => deleteGoal(goal.id)}
-                      className="p-2 text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
+                      className="p-2 text-(--text-muted) hover:text-(--error) transition-colors"
                       title="Delete goal"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -455,7 +455,7 @@ export default function QualifyingTracker() {
                 </div>
 
                 {goal.notes && (
-                  <div className="mt-3 pt-3 border-t border-[var(--border)] text-sm text-[var(--text-muted)]">
+                  <div className="mt-3 pt-3 border-t border-(--border) text-sm text-(--text-muted)">
                     {goal.notes}
                   </div>
                 )}
@@ -468,14 +468,14 @@ export default function QualifyingTracker() {
       {/* Add/Edit Goal Modal */}
       {showAddForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-[var(--surface)] border-b border-[var(--border)] p-4 flex items-center justify-between">
-              <h3 className="font-bold text-[var(--text-primary)]">
+          <div className="bg-(--surface) border border-(--border) rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-(--surface) border-b border-(--border) p-4 flex items-center justify-between">
+              <h3 className="font-bold text-(--text-primary)">
                 {editingGoal ? "Edit Goal" : "Add Qualifying Goal"}
               </h3>
               <button
                 onClick={resetForm}
-                className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -483,13 +483,13 @@ export default function QualifyingTracker() {
             <div className="p-4 space-y-4">
               {/* Event Select */}
               <div>
-                <label className="text-sm text-[var(--text-secondary)] block mb-2">
+                <label className="text-sm text-(--text-secondary) block mb-2">
                   Event
                 </label>
                 <select
                   value={formEvent}
                   onChange={(e) => setFormEvent(e.target.value)}
-                  className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                  className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
                 >
                   {WCA_EVENTS.map((event) => (
                     <option key={event.id} value={event.id}>
@@ -501,7 +501,7 @@ export default function QualifyingTracker() {
 
               {/* Target Time */}
               <div>
-                <label className="text-sm text-[var(--text-secondary)] block mb-2">
+                <label className="text-sm text-(--text-secondary) block mb-2">
                   Target Time
                 </label>
                 <div className="flex gap-2">
@@ -512,9 +512,9 @@ export default function QualifyingTracker() {
                     value={formTargetMinutes}
                     onChange={(e) => setFormTargetMinutes(e.target.value)}
                     placeholder="min"
-                    className="w-20 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
                   />
-                  <span className="flex items-center text-[var(--text-muted)]">
+                  <span className="flex items-center text-(--text-muted)">
                     :
                   </span>
                   <input
@@ -524,9 +524,9 @@ export default function QualifyingTracker() {
                     value={formTargetSeconds}
                     onChange={(e) => setFormTargetSeconds(e.target.value)}
                     placeholder="sec"
-                    className="w-20 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
                   />
-                  <span className="flex items-center text-[var(--text-muted)]">
+                  <span className="flex items-center text-(--text-muted)">
                     .
                   </span>
                   <input
@@ -536,14 +536,14 @@ export default function QualifyingTracker() {
                     value={formTargetMs}
                     onChange={(e) => setFormTargetMs(e.target.value)}
                     placeholder="ms"
-                    className="w-20 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
                   />
                 </div>
               </div>
 
               {/* Competition Name */}
               <div>
-                <label className="text-sm text-[var(--text-secondary)] block mb-2">
+                <label className="text-sm text-(--text-secondary) block mb-2">
                   Competition Name
                 </label>
                 <input
@@ -551,26 +551,26 @@ export default function QualifyingTracker() {
                   value={formCompetitionName}
                   onChange={(e) => setFormCompetitionName(e.target.value)}
                   placeholder="e.g., World Championship 2025"
-                  className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                  className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary)"
                 />
               </div>
 
               {/* Competition Date */}
               <div>
-                <label className="text-sm text-[var(--text-secondary)] block mb-2">
+                <label className="text-sm text-(--text-secondary) block mb-2">
                   Competition Date
                 </label>
                 <input
                   type="date"
                   value={formCompetitionDate}
                   onChange={(e) => setFormCompetitionDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                  className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
                 />
               </div>
 
               {/* Cutoff */}
               <div>
-                <label className="text-sm text-[var(--text-secondary)] block mb-2">
+                <label className="text-sm text-(--text-secondary) block mb-2">
                   Cutoff Time (optional)
                 </label>
                 <div className="flex gap-2">
@@ -581,9 +581,9 @@ export default function QualifyingTracker() {
                     value={formCutoffMinutes}
                     onChange={(e) => setFormCutoffMinutes(e.target.value)}
                     placeholder="min"
-                    className="w-20 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
                   />
-                  <span className="flex items-center text-[var(--text-muted)]">
+                  <span className="flex items-center text-(--text-muted)">
                     :
                   </span>
                   <input
@@ -593,14 +593,14 @@ export default function QualifyingTracker() {
                     value={formCutoffSeconds}
                     onChange={(e) => setFormCutoffSeconds(e.target.value)}
                     placeholder="sec"
-                    className="w-20 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
                   />
                 </div>
               </div>
 
               {/* Notes */}
               <div>
-                <label className="text-sm text-[var(--text-secondary)] block mb-2">
+                <label className="text-sm text-(--text-secondary) block mb-2">
                   Notes (optional)
                 </label>
                 <textarea
@@ -608,7 +608,7 @@ export default function QualifyingTracker() {
                   onChange={(e) => setFormNotes(e.target.value)}
                   placeholder="Any additional notes..."
                   rows={2}
-                  className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none"
+                  className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) resize-none"
                 />
               </div>
 
@@ -616,13 +616,13 @@ export default function QualifyingTracker() {
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={resetForm}
-                  className="flex-1 px-4 py-2 border border-[var(--border)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+                  className="flex-1 px-4 py-2 border border-(--border) text-(--text-primary) rounded-lg hover:bg-(--surface-elevated) transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={saveGoal}
-                  className="flex-1 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+                  className="flex-1 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
                 >
                   {editingGoal ? "Update Goal" : "Add Goal"}
                 </button>
@@ -635,14 +635,14 @@ export default function QualifyingTracker() {
       {/* PB Form Modal */}
       {showPBForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl max-w-md w-full">
-            <div className="border-b border-[var(--border)] p-4 flex items-center justify-between">
-              <h3 className="font-bold text-[var(--text-primary)]">
+          <div className="bg-(--surface) border border-(--border) rounded-xl max-w-md w-full">
+            <div className="border-b border-(--border) p-4 flex items-center justify-between">
+              <h3 className="font-bold text-(--text-primary)">
                 Set Personal Best
               </h3>
               <button
                 onClick={() => setShowPBForm(false)}
-                className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -650,13 +650,13 @@ export default function QualifyingTracker() {
             <div className="p-4 space-y-4">
               {/* Event */}
               <div>
-                <label className="text-sm text-[var(--text-secondary)] block mb-2">
+                <label className="text-sm text-(--text-secondary) block mb-2">
                   Event
                 </label>
                 <select
                   value={pbEvent}
                   onChange={(e) => setPbEvent(e.target.value)}
-                  className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                  className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
                 >
                   {WCA_EVENTS.map((event) => (
                     <option key={event.id} value={event.id}>
@@ -668,7 +668,7 @@ export default function QualifyingTracker() {
 
               {/* Single PB */}
               <div>
-                <label className="text-sm text-[var(--text-secondary)] block mb-2">
+                <label className="text-sm text-(--text-secondary) block mb-2">
                   Single PB
                 </label>
                 <div className="flex gap-2">
@@ -678,9 +678,9 @@ export default function QualifyingTracker() {
                     value={pbSingleMinutes}
                     onChange={(e) => setPbSingleMinutes(e.target.value)}
                     placeholder="min"
-                    className="w-20 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
                   />
-                  <span className="flex items-center text-[var(--text-muted)]">
+                  <span className="flex items-center text-(--text-muted)">
                     :
                   </span>
                   <input
@@ -690,9 +690,9 @@ export default function QualifyingTracker() {
                     value={pbSingleSeconds}
                     onChange={(e) => setPbSingleSeconds(e.target.value)}
                     placeholder="sec"
-                    className="w-20 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
                   />
-                  <span className="flex items-center text-[var(--text-muted)]">
+                  <span className="flex items-center text-(--text-muted)">
                     .
                   </span>
                   <input
@@ -702,14 +702,14 @@ export default function QualifyingTracker() {
                     value={pbSingleMs}
                     onChange={(e) => setPbSingleMs(e.target.value)}
                     placeholder="ms"
-                    className="w-20 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
                   />
                 </div>
               </div>
 
               {/* Average PB */}
               <div>
-                <label className="text-sm text-[var(--text-secondary)] block mb-2">
+                <label className="text-sm text-(--text-secondary) block mb-2">
                   Average PB
                 </label>
                 <div className="flex gap-2">
@@ -719,9 +719,9 @@ export default function QualifyingTracker() {
                     value={pbAvgMinutes}
                     onChange={(e) => setPbAvgMinutes(e.target.value)}
                     placeholder="min"
-                    className="w-20 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
                   />
-                  <span className="flex items-center text-[var(--text-muted)]">
+                  <span className="flex items-center text-(--text-muted)">
                     :
                   </span>
                   <input
@@ -731,9 +731,9 @@ export default function QualifyingTracker() {
                     value={pbAvgSeconds}
                     onChange={(e) => setPbAvgSeconds(e.target.value)}
                     placeholder="sec"
-                    className="w-20 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
                   />
-                  <span className="flex items-center text-[var(--text-muted)]">
+                  <span className="flex items-center text-(--text-muted)">
                     .
                   </span>
                   <input
@@ -743,7 +743,7 @@ export default function QualifyingTracker() {
                     value={pbAvgMs}
                     onChange={(e) => setPbAvgMs(e.target.value)}
                     placeholder="ms"
-                    className="w-20 px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
                   />
                 </div>
               </div>
@@ -752,13 +752,13 @@ export default function QualifyingTracker() {
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={() => setShowPBForm(false)}
-                  className="flex-1 px-4 py-2 border border-[var(--border)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+                  className="flex-1 px-4 py-2 border border-(--border) text-(--text-primary) rounded-lg hover:bg-(--surface-elevated) transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={savePB}
-                  className="flex-1 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+                  className="flex-1 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
                 >
                   Save PB
                 </button>

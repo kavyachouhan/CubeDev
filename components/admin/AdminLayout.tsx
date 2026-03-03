@@ -20,6 +20,7 @@ import {
   GraduationCap,
   Medal,
   Timer,
+  HelpCircle,
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import SidebarUserDropdown from "@/components/SidebarUserDropdown";
@@ -134,13 +135,20 @@ export default function AdminLayout({
       description: "Challenge room stats",
       href: "/admin/challenges",
     },
+    {
+      id: "faq",
+      name: "FAQ / Help",
+      icon: HelpCircle,
+      description: "Help center articles",
+      href: "/admin/faq",
+    },
   ];
 
   return (
-    <div className="flex h-screen bg-[var(--background)]">
+    <div className="flex h-screen bg-(--background)">
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 bg-[var(--surface)] border-r border-[var(--border)] transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col ${
+        className={`fixed inset-y-0 left-0 z-50 bg-(--surface) border-r border-(--border) transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col ${
           sidebarOpen
             ? "translate-x-0 w-[80vw] max-w-64"
             : "-translate-x-full w-[80vw] max-w-64"
@@ -150,7 +158,7 @@ export default function AdminLayout({
       >
         {/* Sidebar Header */}
         <div
-          className={`flex flex-col px-6 py-4 border-b border-[var(--border)] ${isCollapsed ? "lg:px-3" : ""}`}
+          className={`flex flex-col px-6 py-4 border-b border-(--border) ${isCollapsed ? "lg:px-3" : ""}`}
         >
           {/* Logo and Title */}
           {isCollapsed && (
@@ -158,7 +166,7 @@ export default function AdminLayout({
               {/* Expand Button */}
               <button
                 onClick={toggleSidebarCollapse}
-                className="p-2 text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                className="p-2 text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
                 title="Expand sidebar"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -184,14 +192,14 @@ export default function AdminLayout({
                   width={32}
                   height={32}
                 />
-                <h1 className="text-xl font-bold text-[var(--text-primary)] font-statement">
-                  Admin <span className="text-[var(--primary)]">Panel</span>
+                <h1 className="text-xl font-bold text-(--text-primary) font-statement">
+                  Admin <span className="text-(--primary)">Panel</span>
                 </h1>
               </Link>
               {/* Collapse Button */}
               <button
                 onClick={toggleSidebarCollapse}
-                className="hidden lg:block p-2 text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                className="hidden lg:block p-2 text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
                 title="Collapse sidebar"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -199,7 +207,7 @@ export default function AdminLayout({
               {/* Mobile Close Button */}
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="lg:hidden p-2 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+                className="lg:hidden p-2 text-(--text-secondary) hover:text-(--primary) transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -209,9 +217,9 @@ export default function AdminLayout({
           {/* Admin Badge */}
           {!isCollapsed && (
             <div className="mt-3 lg:mt-3 mb-3 lg:mb-0 flex items-center">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[var(--error)]/10 border border-[var(--error)]/20 rounded-full">
-                <Shield className="w-3 h-3 text-[var(--error)]" />
-                <span className="text-xs font-medium text-[var(--error)] font-inter">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-(--error)/10 border border-(--error)/20 rounded-full">
+                <Shield className="w-3 h-3 text-(--error)" />
+                <span className="text-xs font-medium text-(--error) font-inter">
                   Admin
                 </span>
               </div>
@@ -239,24 +247,24 @@ export default function AdminLayout({
                     : "gap-3 px-4 py-3"
                 } ${
                   isActive
-                    ? "bg-[var(--primary)] text-white active"
-                    : "text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)] hover:text-[var(--primary)]"
+                    ? "bg-(--primary) text-white active"
+                    : "text-(--text-secondary) hover:bg-(--surface-elevated) hover:text-(--primary)"
                 }`}
               >
-                <div className="relative flex-shrink-0">
+                <div className="relative shrink-0">
                   <Icon
-                    className={`w-5 h-5 ${isActive ? "text-white" : "text-[var(--primary)]"}`}
+                    className={`w-5 h-5 ${isActive ? "text-white" : "text-(--primary)"}`}
                   />
                 </div>
                 {!isCollapsed && (
                   <div className="flex-1 min-w-0">
                     <div
-                      className={`font-semibold font-statement truncate ${isActive ? "text-white" : "text-[var(--text-primary)]"}`}
+                      className={`font-semibold font-statement truncate ${isActive ? "text-white" : "text-(--text-primary)"}`}
                     >
                       {section.name}
                     </div>
                     <div
-                      className={`text-xs ${isActive ? "text-white/70" : "text-[var(--text-muted)]"} font-inter`}
+                      className={`text-xs ${isActive ? "text-white/70" : "text-(--text-muted)"} font-inter`}
                     >
                       {section.description}
                     </div>
@@ -269,12 +277,12 @@ export default function AdminLayout({
 
         {/* Sidebar Footer */}
         <div
-          className={`mt-auto p-4 border-t border-[var(--border)] space-y-4 sidebar-footer ${isCollapsed ? "lg:p-2 lg:space-y-2" : ""}`}
+          className={`mt-auto p-4 border-t border-(--border) space-y-4 sidebar-footer ${isCollapsed ? "lg:p-2 lg:space-y-2" : ""}`}
         >
           {/* Back to Cube Lab */}
           <Link
             href="/cube-lab/timer"
-            className={`flex items-center gap-2 px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors ${isCollapsed ? "lg:justify-center lg:px-2" : ""}`}
+            className={`flex items-center gap-2 px-3 py-2 text-sm text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-lg transition-colors ${isCollapsed ? "lg:justify-center lg:px-2" : ""}`}
             title={isCollapsed ? "Back to Cube Lab" : undefined}
           >
             <ChevronLeft className="w-4 h-4" />
@@ -296,7 +304,7 @@ export default function AdminLayout({
 
           {/* Footer Text */}
           {!isCollapsed && (
-            <div className="text-[9px] text-[var(--text-muted)] text-center font-inter">
+            <div className="text-[9px] text-(--text-muted) text-center font-inter">
               © {currentYear} CubeDev Admin Panel
             </div>
           )}
@@ -314,14 +322,14 @@ export default function AdminLayout({
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
         {/* Mobile Header */}
-        <div className="lg:hidden flex items-center justify-between h-16 px-4 bg-[var(--surface)] border-b border-[var(--border)]">
+        <div className="lg:hidden flex items-center justify-between h-16 px-4 bg-(--surface) border-b border-(--border)">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+            className="p-2 text-(--text-secondary) hover:text-(--primary) transition-colors"
           >
             <Menu className="w-6 h-6" />
           </button>
-          <h1 className="text-lg font-bold text-[var(--text-primary)] font-statement">
+          <h1 className="text-lg font-bold text-(--text-primary) font-statement">
             {sections.find((s) => s.id === activeSection)?.name || "Admin"}
           </h1>
           <div className="flex items-center gap-2">
@@ -329,7 +337,7 @@ export default function AdminLayout({
             {user && user.avatar && (
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="p-1 rounded-full hover:bg-[var(--surface-elevated)] transition-colors"
+                className="p-1 rounded-full hover:bg-(--surface-elevated) transition-colors"
                 title={`${user.name} - Tap to open menu`}
               >
                 <Image
@@ -337,7 +345,7 @@ export default function AdminLayout({
                   alt={`${user.name}'s avatar`}
                   width={32}
                   height={32}
-                  className="w-8 h-8 rounded-full object-cover border border-[var(--primary)]/50"
+                  className="w-8 h-8 rounded-full object-cover border border-(--primary)/50"
                 />
               </button>
             )}

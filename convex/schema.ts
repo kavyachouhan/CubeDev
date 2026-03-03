@@ -384,8 +384,8 @@ export default defineSchema({
           notation: v.string(), // Move notation (e.g., "R U R' U' R' F R2 U' R' U' R U R' F'")
           notes: v.optional(v.string()), // Optional notes
           createdAt: v.number(),
-        })
-      )
+        }),
+      ),
     ),
     isPublic: v.boolean(), // Whether shared publicly
     createdAt: v.number(),
@@ -824,4 +824,58 @@ export default defineSchema({
     .index("by_profile", ["profileId"])
     .index("by_user_status", ["userId", "status"])
     .index("by_end_date", ["endDate"]),
+
+  // FAQ Categories - high-level categories for help center articles
+  faqCategories: defineTable({
+    name: v.string(), // Category name (e.g., "Getting Started", "Timer")
+    slug: v.string(), // URL-friendly slug
+    description: v.string(), // Short description of the category
+    icon: v.string(), // Lucide icon name (e.g., "Timer", "BarChart3")
+    order: v.number(), // Display order
+    isPublished: v.boolean(), // Whether the category is visible to users
+    articleCount: v.optional(v.number()), // Cached count of published articles
+
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_order", ["order"])
+    .index("by_published", ["isPublished"]),
+
+  // FAQ Articles - individual help articles with step-by-step guides
+  faqArticles: defineTable({
+    categoryId: v.id("faqCategories"), // Reference to category
+    title: v.string(), // Article title / question
+    slug: v.string(), // URL-friendly slug
+    summary: v.string(), // Short answer / preview text
+    content: v.string(), // Full article content (markdown)
+    steps: v.optional(
+      v.array(
+        v.object({
+          stepNumber: v.number(), // Step order
+          title: v.string(), // Step title
+          description: v.string(), // Step description
+          imageUrl: v.optional(v.string()), // Optional screenshot URL
+          imageAlt: v.optional(v.string()), // Image alt text
+        }),
+      ),
+    ), // Optional step-by-step instructions
+    searchTags: v.optional(v.array(v.string())), // Tags for search
+    order: v.number(), // Display order within category
+    isPublished: v.boolean(), // Whether article is visible
+    isFeatured: v.optional(v.boolean()), // Show in featured/popular section
+    viewCount: v.optional(v.number()), // Track article views
+    helpfulYes: v.optional(v.number()), // "Was this helpful?" yes count
+    helpfulNo: v.optional(v.number()), // "Was this helpful?" no count
+
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_category", ["categoryId"])
+    .index("by_slug", ["slug"])
+    .index("by_category_order", ["categoryId", "order"])
+    .index("by_published", ["isPublished"])
+    .index("by_featured", ["isFeatured"]),
 });

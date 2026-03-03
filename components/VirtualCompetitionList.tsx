@@ -66,14 +66,14 @@ export default function VirtualCompetitionList({
             {visibleCompetitions.map((competition) => (
               <div
                 key={competition.id}
-                className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]"
+                className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)"
               >
                 <div className="flex items-start justify-between">
                   <div className="min-w-0 flex-1">
-                    <h4 className="font-medium text-[var(--text-primary)] font-inter mb-1">
+                    <h4 className="font-medium text-(--text-primary) font-inter mb-1">
                       {competition.name}
                     </h4>
-                    <div className="flex items-center gap-4 text-sm text-[var(--text-muted)] mb-2">
+                    <div className="flex items-center gap-4 text-sm text-(--text-muted) mb-2">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
                         <span>
@@ -94,7 +94,7 @@ export default function VirtualCompetitionList({
                     href={`https://www.worldcubeassociation.org/competitions/${competition.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ml-3 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 rounded-lg transition-colors"
+                    className="ml-3 p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 rounded-lg transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </a>

@@ -752,7 +752,7 @@ export default function ChatInterface({
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-[var(--background)]">
+    <div className="flex flex-col h-full bg-(--background)">
       {/* Chat Header - Hidden on mobile */}
       <div className="hidden md:block">
         <ChatHeader
@@ -803,12 +803,12 @@ export default function ChatInterface({
             ))}
             {isLoading && agentStatus && (
               <div className="flex items-start gap-2 md:gap-3">
-                <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center">
-                  <Loader2 className="w-4 h-4 md:w-5 md:h-5 text-[var(--accent)] animate-spin" />
+                <div className="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-(--accent)/10 border border-(--accent)/20 flex items-center justify-center">
+                  <Loader2 className="w-4 h-4 md:w-5 md:h-5 text-(--accent) animate-spin" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border)]">
-                    <p className="font-inter text-sm md:text-base text-[var(--text-secondary)]">
+                  <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-(--surface-elevated) border border-(--border)">
+                    <p className="font-inter text-sm md:text-base text-(--text-secondary)">
                       {agentStatus}
                     </p>
                   </div>
@@ -822,14 +822,14 @@ export default function ChatInterface({
 
       {/* Error Display */}
       {error && (
-        <div className="mx-3 md:mx-4 lg:mx-6 mb-3 md:mb-4 px-3 md:px-4 py-2 md:py-3 bg-[var(--error)]/10 border border-[var(--error)]/20 rounded-lg flex items-center gap-2 text-[var(--error)]">
-          <AlertCircle className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
+        <div className="mx-3 md:mx-4 lg:mx-6 mb-3 md:mb-4 px-3 md:px-4 py-2 md:py-3 bg-(--error)/10 border border-(--error)/20 rounded-lg flex items-center gap-2 text-(--error)">
+          <AlertCircle className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
           <span className="font-inter text-xs md:text-sm">{error}</span>
         </div>
       )}
 
       {/* Input Area */}
-      <div className="border-t border-[var(--border)] bg-[var(--surface)] px-3 md:px-4 lg:px-6 py-3 md:py-4 shrink-0">
+      <div className="border-t border-(--border) bg-(--surface) px-3 md:px-4 lg:px-6 py-3 md:py-4 shrink-0">
         <div className="max-w-4xl mx-auto">
           <div className="relative flex items-end">
             <textarea
@@ -848,11 +848,11 @@ export default function ChatInterface({
               onKeyDown={handleKeyDown}
               placeholder="Ask Cubie anything about cubing..."
               rows={1}
-              className={`w-full pl-4 pr-14 md:pr-16 py-3 md:py-3.5 bg-[var(--surface-elevated)] border ${
+              className={`w-full pl-4 pr-14 md:pr-16 py-3 md:py-3.5 bg-(--surface-elevated) border ${
                 inputValue.length > MAX_INPUT_LENGTH * 0.9
-                  ? "border-[var(--warning)]"
-                  : "border-[var(--border)]"
-              } hover:border-[var(--border-hover)] focus:border-[var(--primary)] focus:outline-none rounded-2xl resize-none text-sm md:text-base text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-inter transition-all duration-200 ease-in-out scrollbar-thin scrollbar-thumb-[var(--border)] scrollbar-track-transparent hover:scrollbar-thumb-[var(--border-hover)]`}
+                  ? "border-(--warning)"
+                  : "border-(--border)"
+              } hover:border-(--border-hover) focus:border-(--primary) focus:outline-none rounded-2xl resize-none text-sm md:text-base text-(--text-primary) placeholder:text-(--text-muted) font-inter transition-all duration-200 ease-in-out scrollbar-thin scrollbar-thumb-(--border) scrollbar-track-transparent hover:scrollbar-thumb-(--border-hover)`}
               disabled={isLoading}
               style={{ minHeight: "48px", maxHeight: "120px" }}
               maxLength={MAX_INPUT_LENGTH}
@@ -864,7 +864,7 @@ export default function ChatInterface({
                 isLoading ||
                 inputValue.length > MAX_INPUT_LENGTH
               }
-              className="absolute right-2 bottom-2 w-8 h-8 md:w-9 md:h-9 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:bg-[var(--surface-elevated)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 ease-in-out flex items-center justify-center shrink-0 disabled:opacity-50"
+              className="absolute right-2 bottom-2 w-8 h-8 md:w-9 md:h-9 bg-(--primary) hover:bg-(--primary-hover) disabled:bg-(--surface-elevated) disabled:text-(--text-muted) disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 ease-in-out flex items-center justify-center shrink-0 disabled:opacity-50"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
@@ -878,14 +878,14 @@ export default function ChatInterface({
               <p
                 className={`text-xs font-inter text-right sm:absolute sm:-top-1 sm:right-0 ${
                   inputValue.length > MAX_INPUT_LENGTH * 0.95
-                    ? "text-[var(--error)]"
-                    : "text-[var(--text-muted)]"
+                    ? "text-(--error)"
+                    : "text-(--text-muted)"
                 }`}
               >
                 {inputValue.length}/{MAX_INPUT_LENGTH}
               </p>
             )}
-            <p className="text-xs text-[var(--text-muted)] text-center font-inter">
+            <p className="text-xs text-(--text-muted) text-center font-inter">
               Cubie can make mistakes. Please verify important information.
             </p>
           </div>

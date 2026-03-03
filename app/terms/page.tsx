@@ -5,7 +5,7 @@ export default function TermsPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[var(--background)]">
+      <main className="flex-1 bg-(--background)">
         <div className="container-responsive py-12 md:py-16">
           <div className="max-w-4xl mx-auto">
             <div className="timer-card">

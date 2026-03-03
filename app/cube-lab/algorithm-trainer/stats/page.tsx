@@ -65,17 +65,17 @@ export default function AlgorithmStatsPage() {
         <CubeLabLayout activeSection="algorithm-trainer">
           <div className="h-full flex items-center justify-center p-4">
             <div className="timer-card max-w-md text-center">
-              <BarChart3 className="w-16 h-16 text-[var(--text-muted)] mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-[var(--text-primary)] font-statement mb-4">
+              <BarChart3 className="w-16 h-16 text-(--text-muted) mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-(--text-primary) font-statement mb-4">
                 No Statistics Yet
               </h2>
-              <p className="text-[var(--text-muted)] mb-6">
+              <p className="text-(--text-muted) mb-6">
                 Start learning algorithm cases or practicing custom sets to see
                 your analytics and progress tracking here.
               </p>
               <Link
                 href="/cube-lab/algorithm-trainer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors"
               >
                 Browse Algorithm Sets
               </Link>
@@ -95,12 +95,12 @@ export default function AlgorithmStatsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <Link
                 href="/cube-lab/algorithm-trainer"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors w-fit"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors w-fit"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Algorithm Trainer
               </Link>
-              <h1 className="text-2xl font-bold text-[var(--text-primary)] font-statement">
+              <h1 className="text-2xl font-bold text-(--text-primary) font-statement">
                 Algorithm Trainer Statistics
               </h1>
             </div>

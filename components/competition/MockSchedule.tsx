@@ -221,37 +221,37 @@ export default function MockSchedule({
         className="flex items-center justify-between w-full"
       >
         <div className="flex items-center gap-3">
-          <Calendar className="w-5 h-5 text-[var(--primary)]" />
+          <Calendar className="w-5 h-5 text-(--primary)" />
           <div className="text-left">
-            <h3 className="font-bold text-[var(--text-primary)]">
+            <h3 className="font-bold text-(--text-primary)">
               Competition Schedule
             </h3>
-            <p className="text-xs text-[var(--text-muted)]">
+            <p className="text-xs text-(--text-muted)">
               {schedule.length} blocks - {formatDuration(totalDuration)} total
             </p>
           </div>
         </div>
         {isExpanded ? (
-          <ChevronUp className="w-5 h-5 text-[var(--text-muted)]" />
+          <ChevronUp className="w-5 h-5 text-(--text-muted)" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-[var(--text-muted)]" />
+          <ChevronDown className="w-5 h-5 text-(--text-muted)" />
         )}
       </button>
 
       {isExpanded && (
         <div className="mt-4 space-y-4">
           {/* Settings Row */}
-          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 sm:gap-4 p-3 bg-[var(--surface-elevated)] rounded-lg">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 sm:gap-4 p-3 bg-(--surface-elevated) rounded-lg">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-[var(--text-muted)]" />
-              <label className="text-sm text-[var(--text-secondary)]">
+              <Clock className="w-4 h-4 text-(--text-muted)" />
+              <label className="text-sm text-(--text-secondary)">
                 Start:
               </label>
               <input
                 type="time"
                 value={competitionStartTime}
                 onChange={(e) => setCompetitionStartTime(e.target.value)}
-                className="px-2 py-1 bg-[var(--surface)] border border-[var(--border)] rounded text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="px-2 py-1 bg-(--surface) border border-(--border) rounded text-sm text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
                 disabled={isRunning}
               />
             </div>
@@ -259,8 +259,8 @@ export default function MockSchedule({
               onClick={() => setSoundEnabled(!soundEnabled)}
               className={`flex items-center gap-1 px-2 py-1 rounded border transition-colors ${
                 soundEnabled
-                  ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
-                  : "border-[var(--border)] text-[var(--text-muted)]"
+                  ? "border-(--primary) bg-(--primary)/10 text-(--primary)"
+                  : "border-(--border) text-(--text-muted)"
               }`}
             >
               {soundEnabled ? (
@@ -288,15 +288,15 @@ export default function MockSchedule({
                   <div
                     className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-all ${
                       isActive
-                        ? "border-[var(--primary)] bg-[var(--primary)]/10"
+                        ? "border-(--primary) bg-(--primary)/10"
                         : isPast
-                          ? "border-[var(--success)]/50 bg-[var(--success)]/5"
-                          : "border-[var(--border)] bg-[var(--surface)]"
+                          ? "border-(--success)/50 bg-(--success)/5"
+                          : "border-(--border) bg-(--surface)"
                     }`}
                   >
                     {/* Time */}
                     <div className="w-10 sm:w-14 text-center shrink-0">
-                      <span className="text-xs sm:text-sm font-mono text-[var(--text-secondary)]">
+                      <span className="text-xs sm:text-sm font-mono text-(--text-secondary)">
                         {block.startTime}
                       </span>
                     </div>
@@ -305,12 +305,12 @@ export default function MockSchedule({
                     <div
                       className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 ${
                         block.type === "break"
-                          ? "bg-[var(--warning)]/20"
-                          : "bg-[var(--primary)]/20"
+                          ? "bg-(--warning)/20"
+                          : "bg-(--primary)/20"
                       }`}
                     >
                       {block.type === "break" ? (
-                        <Coffee className="w-3 h-3 sm:w-4 sm:h-4 text-[var(--warning)]" />
+                        <Coffee className="w-3 h-3 sm:w-4 sm:h-4 text-(--warning)" />
                       ) : event ? (
                         <Image
                           src={event.icon}
@@ -320,26 +320,26 @@ export default function MockSchedule({
                           className="invert opacity-80 w-3 h-3 sm:w-4 sm:h-4"
                         />
                       ) : (
-                        <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-[var(--primary)]" />
+                        <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                       )}
                     </div>
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-[var(--text-primary)] text-xs sm:text-sm truncate">
+                      <div className="font-medium text-(--text-primary) text-xs sm:text-sm truncate">
                         {block.title}
                       </div>
                       {isActive && (
                         <div className="flex items-center gap-2 mt-1">
-                          <div className="flex-1 h-1 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                          <div className="flex-1 h-1 bg-(--surface-elevated) rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-[var(--primary)] transition-all"
+                              className="h-full bg-(--primary) transition-all"
                               style={{
                                 width: `${(elapsedTime / (block.duration * 60)) * 100}%`,
                               }}
                             />
                           </div>
-                          <span className="text-xs font-mono text-[var(--text-muted)]">
+                          <span className="text-xs font-mono text-(--text-muted)">
                             {formatElapsed(elapsedTime)} /{" "}
                             {formatElapsed(block.duration * 60)}
                           </span>
@@ -348,7 +348,7 @@ export default function MockSchedule({
                     </div>
 
                     {/* Duration */}
-                    <div className="text-[10px] sm:text-xs text-[var(--text-muted)] shrink-0">
+                    <div className="text-[10px] sm:text-xs text-(--text-muted) shrink-0">
                       {formatDuration(block.duration)}
                     </div>
 
@@ -358,20 +358,20 @@ export default function MockSchedule({
                         <button
                           onClick={() => moveBlock(index, "up")}
                           disabled={index === 0}
-                          className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-30"
+                          className="p-1 text-(--text-muted) hover:text-(--text-primary) disabled:opacity-30"
                         >
                           <ChevronUp className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => moveBlock(index, "down")}
                           disabled={index === schedule.length - 1}
-                          className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-30"
+                          className="p-1 text-(--text-muted) hover:text-(--text-primary) disabled:opacity-30"
                         >
                           <ChevronDown className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => removeBlock(index)}
-                          className="p-1 text-[var(--error)]/70 hover:text-[var(--error)]"
+                          className="p-1 text-(--error)/70 hover:text-(--error)"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -385,14 +385,14 @@ export default function MockSchedule({
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => addBlock("event", index)}
-                          className="flex items-center gap-1 px-2 py-0.5 text-xs text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 rounded transition-colors"
+                          className="flex items-center gap-1 px-2 py-0.5 text-xs text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 rounded transition-colors"
                         >
                           <Plus className="w-3 h-3" />
                           Event
                         </button>
                         <button
                           onClick={() => addBlock("break", index)}
-                          className="flex items-center gap-1 px-2 py-0.5 text-xs text-[var(--text-muted)] hover:text-[var(--warning)] hover:bg-[var(--warning)]/10 rounded transition-colors"
+                          className="flex items-center gap-1 px-2 py-0.5 text-xs text-(--text-muted) hover:text-(--warning) hover:bg-(--warning)/10 rounded transition-colors"
                         >
                           <Coffee className="w-3 h-3" />
                           Break
@@ -406,8 +406,8 @@ export default function MockSchedule({
           </div>
 
           {/* Controls */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-[var(--border)]">
-            <div className="text-xs sm:text-sm text-[var(--text-muted)]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-(--border)">
+            <div className="text-xs sm:text-sm text-(--text-muted)">
               {totalHours > 0 ? `${totalHours}h ` : ""}
               {totalMinutes > 0 ? `${totalMinutes}m ` : ""}
               total
@@ -417,7 +417,7 @@ export default function MockSchedule({
                 <>
                   <button
                     onClick={togglePause}
-                    className="flex items-center gap-2 px-3 py-1.5 border border-[var(--border)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 border border-(--border) text-(--text-primary) rounded-lg hover:bg-(--surface-elevated) transition-colors"
                   >
                     {isRunning ? (
                       <>
@@ -433,7 +433,7 @@ export default function MockSchedule({
                   </button>
                   <button
                     onClick={resetSchedule}
-                    className="flex items-center gap-2 px-3 py-1.5 text-[var(--error)] border border-[var(--error)]/50 rounded-lg hover:bg-[var(--error)]/10 transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 text-(--error) border border-(--error)/50 rounded-lg hover:bg-(--error)/10 transition-colors"
                   >
                     <RotateCcw className="w-4 h-4" />
                     Reset
@@ -442,7 +442,7 @@ export default function MockSchedule({
               ) : (
                 <button
                   onClick={startSchedule}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
                 >
                   <Play className="w-4 h-4" />
                   Start Day

@@ -250,10 +250,10 @@ function PracticePageContent() {
                   <X className="w-16 h-16 text-red-500 mx-auto" />
                 )}
               </div>
-              <h2 className="text-2xl font-bold text-[var(--text-primary)] font-statement mb-4">
+              <h2 className="text-2xl font-bold text-(--text-primary) font-statement mb-4">
                 {mode === "srs" ? "All Caught Up" : "No Cases to Practice"}
               </h2>
-              <p className="text-[var(--text-muted)] mb-6">
+              <p className="text-(--text-muted) mb-6">
                 {mode === "srs"
                   ? "You don't have any reviews due right now. Great job!"
                   : "You haven't started learning any cases yet."}
@@ -262,14 +262,14 @@ function PracticePageContent() {
                 {mode === "srs" && (
                   <Link
                     href="/cube-lab/algorithm-trainer/practice?mode=drill&type=rec"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors"
                   >
                     Start Drill Practice
                   </Link>
                 )}
                 <Link
                   href="/cube-lab/algorithm-trainer"
-                  className="inline-flex items-center gap-2 justify-center px-6 py-3 border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors"
+                  className="inline-flex items-center gap-2 justify-center px-6 py-3 border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors"
                 >
                   <ArrowLeft className="w-5 h-5" />
                   Back to Algorithm Trainer
@@ -312,10 +312,10 @@ function PracticePageContent() {
           <div className="h-full flex items-center justify-center p-4">
             <div className="timer-card max-w-2xl w-full text-center">
               <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-6" />
-              <h2 className="text-2xl font-bold text-[var(--text-primary)] font-statement mb-2">
+              <h2 className="text-2xl font-bold text-(--text-primary) font-statement mb-2">
                 {mode === "srs" ? "Review Complete" : "Session Complete"}
               </h2>
-              <p className="text-[var(--text-muted)] mb-8">
+              <p className="text-(--text-muted) mb-8">
                 {mode === "srs"
                   ? "All due reviews completed! Come back later for more."
                   : "Great work! You've completed your practice session."}
@@ -324,11 +324,11 @@ function PracticePageContent() {
               {/* Stats Grid - Different for each mode */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
                 {/* Cases Reviewed - Always show */}
-                <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
-                  <div className="text-2xl font-bold text-[var(--primary)] font-statement">
+                <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="text-2xl font-bold text-(--primary) font-statement">
                     {totalCases}
                   </div>
-                  <div className="text-sm text-[var(--text-muted)] mt-1">
+                  <div className="text-sm text-(--text-muted) mt-1">
                     Cases
                   </div>
                 </div>
@@ -337,11 +337,11 @@ function PracticePageContent() {
                 {(drillType === "pattern" ||
                   drillType === "blind" ||
                   mode === "srs") && (
-                  <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
                     <div className="text-2xl font-bold text-green-500 font-statement">
                       {accuracyRate.toFixed(0)}%
                     </div>
-                    <div className="text-sm text-[var(--text-muted)] mt-1">
+                    <div className="text-sm text-(--text-muted) mt-1">
                       Accuracy
                     </div>
                   </div>
@@ -350,33 +350,33 @@ function PracticePageContent() {
                 {/* Avg Time - Show for execution and recognition */}
                 {(drillType === "exec" || drillType === "rec") &&
                   sessionStats.times.length > 0 && (
-                    <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+                    <div className="p-4 bg-(--surface-elevated) rounded-lg">
                       <div className="text-2xl font-bold text-blue-500 font-statement">
                         {avgTime}s
                       </div>
-                      <div className="text-sm text-[var(--text-muted)] mt-1">
+                      <div className="text-sm text-(--text-muted) mt-1">
                         Avg Time
                       </div>
                     </div>
                   )}
 
                 {/* Session Duration - Always show */}
-                <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+                <div className="p-4 bg-(--surface-elevated) rounded-lg">
                   <div className="text-2xl font-bold text-orange-500 font-statement">
                     {totalTimeStr}
                   </div>
-                  <div className="text-sm text-[var(--text-muted)] mt-1">
+                  <div className="text-sm text-(--text-muted) mt-1">
                     Duration
                   </div>
                 </div>
 
                 {/* Correct Count - Show for SRS */}
                 {mode === "srs" && (
-                  <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
                     <div className="text-2xl font-bold text-green-500 font-statement">
                       {sessionStats.correct}
                     </div>
-                    <div className="text-sm text-[var(--text-muted)] mt-1">
+                    <div className="text-sm text-(--text-muted) mt-1">
                       Remembered
                     </div>
                   </div>
@@ -390,7 +390,7 @@ function PracticePageContent() {
                       ? `/cube-lab/algorithm-trainer/custom/${customSetId}`
                       : "/cube-lab/algorithm-trainer"
                   }
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-medium"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium"
                 >
                   {mode === "custom" ? "Back to Custom Set" : "Back to Trainer"}
                 </Link>
@@ -408,7 +408,7 @@ function PracticePageContent() {
                       times: [],
                     });
                   }}
-                  className="flex-1 px-6 py-3 border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors font-medium"
+                  className="flex-1 px-6 py-3 border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors font-medium"
                 >
                   Practice Again
                 </button>
@@ -433,7 +433,7 @@ function PracticePageContent() {
                     ? `/cube-lab/algorithm-trainer/custom/${customSetId}`
                     : "/cube-lab/algorithm-trainer"
                 }
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors w-fit mb-4"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors w-fit mb-4"
               >
                 <ArrowLeft className="w-4 h-4" />
                 {mode === "custom"
@@ -443,7 +443,7 @@ function PracticePageContent() {
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] font-statement mb-2">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-(--text-primary) font-statement mb-2">
                     {mode === "srs"
                       ? "SRS Review"
                       : mode === "infinite"
@@ -452,7 +452,7 @@ function PracticePageContent() {
                           ? "Custom Set Practice"
                           : "Drill Practice"}
                   </h1>
-                  <p className="text-[var(--text-muted)]">
+                  <p className="text-(--text-muted)">
                     {mode === "infinite"
                       ? `Drilling: ${casesToReview[0]?.case?.caseName || "Loading..."}`
                       : mode === "srs"
@@ -471,7 +471,7 @@ function PracticePageContent() {
                 {(mode === "drill" || mode === "custom") && !hasStarted && (
                   <div className="flex flex-col gap-3 w-full sm:w-auto">
                     {/* Recognition/Execution/Blind Toggle */}
-                    <div className="inline-flex rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1 w-full sm:w-auto flex-wrap">
+                    <div className="inline-flex rounded-lg border border-(--border) bg-(--surface) p-1 w-full sm:w-auto flex-wrap">
                       <Link
                         href={
                           mode === "custom"
@@ -480,8 +480,8 @@ function PracticePageContent() {
                         }
                         className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "rec"
-                            ? "bg-[var(--primary)] text-white"
-                            : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                            ? "bg-(--primary) text-white"
+                            : "text-(--text-muted) hover:text-(--text-primary)"
                         }`}
                       >
                         Recognition
@@ -494,8 +494,8 @@ function PracticePageContent() {
                         }
                         className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "exec"
-                            ? "bg-[var(--primary)] text-white"
-                            : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                            ? "bg-(--primary) text-white"
+                            : "text-(--text-muted) hover:text-(--text-primary)"
                         }`}
                       >
                         Execution
@@ -508,8 +508,8 @@ function PracticePageContent() {
                         }
                         className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "blind"
-                            ? "bg-[var(--primary)] text-white"
-                            : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                            ? "bg-(--primary) text-white"
+                            : "text-(--text-muted) hover:text-(--text-primary)"
                         }`}
                       >
                         Blind
@@ -526,8 +526,8 @@ function PracticePageContent() {
                         }
                         className={`inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors border w-full sm:w-auto ${
                           drillType === "pattern"
-                            ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-                            : "border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                            ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
+                            : "border-(--border) text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
                         }`}
                       >
                         {drillType === "pattern" && (
@@ -546,17 +546,17 @@ function PracticePageContent() {
               {isInfiniteMode ? (
                 <>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-[var(--text-primary)]">
+                    <span className="text-sm font-medium text-(--text-primary)">
                       Infinite Drill
                     </span>
                     <div className="flex items-center gap-2">
-                      <RotateCcw className="w-4 h-4 text-[var(--primary)]" />
-                      <span className="text-sm text-[var(--text-muted)]">
+                      <RotateCcw className="w-4 h-4 text-(--primary)" />
+                      <span className="text-sm text-(--text-muted)">
                         {infiniteRepeatCount} repetitions
                       </span>
                     </div>
                   </div>
-                  <p className="text-xs text-[var(--text-muted)]">
+                  <p className="text-xs text-(--text-muted)">
                     Keep practicing until you feel confident. Use the back
                     button to exit.
                   </p>
@@ -564,16 +564,16 @@ function PracticePageContent() {
               ) : (
                 <>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-[var(--text-primary)]">
+                    <span className="text-sm font-medium text-(--text-primary)">
                       Progress
                     </span>
-                    <span className="text-sm text-[var(--text-muted)]">
+                    <span className="text-sm text-(--text-muted)">
                       {currentIndex + 1} / {casesToReview.length}
                     </span>
                   </div>
-                  <div className="h-3 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                  <div className="h-3 bg-(--surface-elevated) rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[var(--primary)] transition-all duration-300"
+                      className="h-full bg-(--primary) transition-all duration-300"
                       style={{ width: `${progressPercentage}%` }}
                     />
                   </div>
@@ -584,14 +584,14 @@ function PracticePageContent() {
                 <div
                   className={`grid gap-4 mt-4 ${drillType === "rec" && !isInfiniteMode ? "grid-cols-1" : "grid-cols-2"}`}
                 >
-                  <div className="text-center p-3 rounded-lg bg-[var(--surface-elevated)]">
+                  <div className="text-center p-3 rounded-lg bg-(--surface-elevated)">
                     <div className="flex items-center justify-center gap-1 mb-1">
                       <CheckCircle2 className="w-4 h-4 text-green-500" />
                       <span className="text-xl font-bold text-green-500 font-statement">
                         {sessionStats.correct}
                       </span>
                     </div>
-                    <div className="text-xs text-[var(--text-muted)]">
+                    <div className="text-xs text-(--text-muted)">
                       {drillType === "rec" && !isInfiniteMode
                         ? "Completed"
                         : "Correct"}
@@ -601,22 +601,22 @@ function PracticePageContent() {
                   {(drillType === "pattern" ||
                     drillType === "blind" ||
                     isInfiniteMode) && (
-                    <div className="text-center p-3 rounded-lg bg-[var(--surface-elevated)]">
+                    <div className="text-center p-3 rounded-lg bg-(--surface-elevated)">
                       <div className="flex items-center justify-center gap-1 mb-1">
                         <X className="w-4 h-4 text-red-500" />
                         <span className="text-xl font-bold text-red-500 font-statement">
                           {sessionStats.incorrect}
                         </span>
                       </div>
-                      <div className="text-xs text-[var(--text-muted)]">
+                      <div className="text-xs text-(--text-muted)">
                         Incorrect
                       </div>
                     </div>
                   )}
 
                   {drillType === "exec" && sessionStats.times.length > 0 && (
-                    <div className="text-center p-3 rounded-lg bg-[var(--surface-elevated)]">
-                      <div className="text-xl font-bold text-[var(--primary)] font-statement mb-1">
+                    <div className="text-center p-3 rounded-lg bg-(--surface-elevated)">
+                      <div className="text-xl font-bold text-(--primary) font-statement mb-1">
                         {(
                           sessionStats.times.reduce((a, b) => a + b, 0) /
                           sessionStats.times.length /
@@ -624,7 +624,7 @@ function PracticePageContent() {
                         ).toFixed(1)}
                         s
                       </div>
-                      <div className="text-xs text-[var(--text-muted)]">
+                      <div className="text-xs text-(--text-muted)">
                         Avg Time
                       </div>
                     </div>

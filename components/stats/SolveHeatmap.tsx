@@ -357,7 +357,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
 
   const getIntensityColor = (level: number, isHovered: boolean = false) => {
     const baseColors = {
-      0: "bg-[var(--surface)] border-[var(--border)]",
+      0: "bg-(--surface) border-(--border)",
       1: "bg-emerald-100 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800",
       2: "bg-emerald-300 dark:bg-emerald-700/50 border-emerald-400 dark:border-emerald-600",
       3: "bg-emerald-500 dark:bg-emerald-600/70 border-emerald-600 dark:border-emerald-500",
@@ -366,7 +366,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
     };
 
     const hoverEffects = isHovered
-      ? " ring-2 ring-[var(--primary)] ring-opacity-50 scale-110 z-10"
+      ? " ring-2 ring-(--primary) ring-opacity-50 scale-110 z-10"
       : "";
     return `${baseColors[level as keyof typeof baseColors] || baseColors[0]}${hoverEffects}`;
   };
@@ -405,10 +405,10 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowHeatmap(!showHeatmap)}
-            className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+            className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
             title={showHeatmap ? "Hide solve activity" : "Show solve activity"}
           >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             Solve Activity
           </h3>
           {showHeatmap ? (
@@ -419,7 +419,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
           </button>
           <button
             onClick={() => setShowHeatmap(!showHeatmap)}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={showHeatmap ? "Hide solve activity" : "Show solve activity"}
           >
             {showHeatmap ? (
@@ -431,7 +431,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
         </div>
 
         {showHeatmap && (
-          <div className="flex items-center gap-1 p-1 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] sm:overflow-x-auto">
+          <div className="flex items-center gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border) sm:overflow-x-auto">
             {(
               [
                 ["3m", "3 months"],
@@ -444,8 +444,8 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
                 onClick={() => setSelectedPeriod(period)}
                 className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap flex-1 sm:flex-none ${
                   selectedPeriod === period
-                    ? "bg-[var(--primary)] text-white shadow-sm"
-                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)]"
+                    ? "bg-(--primary) text-white shadow-sm"
+                    : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface)"
                 }`}
               >
                 {label}
@@ -459,34 +459,34 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
         <>
           {/* Stats Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
                   <Target className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                     Total Solves
                   </div>
-                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
                     {stats.totalSolves.toLocaleString()}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-1.5 sm:p-2 bg-emerald-500/10 rounded-lg">
                   <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                     Active Days
                   </div>
-                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
                     {stats.activeDays}{" "}
-                    <span className="text-xs sm:text-sm text-[var(--text-muted)] font-normal">
+                    <span className="text-xs sm:text-sm text-(--text-muted) font-normal">
                       / {stats.totalDays}
                     </span>
                   </div>
@@ -494,18 +494,18 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
               </div>
             </div>
 
-            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-1.5 sm:p-2 bg-orange-500/10 rounded-lg">
                   <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                     Current Streak
                   </div>
-                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
                     {stats.currentStreak}{" "}
-                    <span className="text-xs sm:text-sm text-[var(--text-muted)] font-normal">
+                    <span className="text-xs sm:text-sm text-(--text-muted) font-normal">
                       days
                     </span>
                   </div>
@@ -513,16 +513,16 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
               </div>
             </div>
 
-            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-1.5 sm:p-2 bg-purple-500/10 rounded-lg">
                   <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                     Daily Average
                   </div>
-                  <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
+                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
                     {stats.averagePerDay.toFixed(1)}
                   </div>
                 </div>
@@ -531,18 +531,18 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
           </div>
 
           {/* Heatmap */}
-          <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-6 border border-[var(--border)] relative heatmap-container">
+          <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-6 border border-(--border) relative heatmap-container">
             <div className="overflow-x-auto">
               <div className="inline-block min-w-full">
                 {/* Month labels */}
                 <div className="flex mb-3 sm:mb-4">
-                  <div className="w-8 sm:w-8 flex-shrink-0"></div>
+                  <div className="w-8 sm:w-8 shrink-0"></div>
                   <div className="flex-1 relative">
                     {weeks.map((week) =>
                       week.monthStart ? (
                         <div
                           key={`month-${week.weekNumber}`}
-                          className="absolute text-xs font-medium text-[var(--text-muted)]"
+                          className="absolute text-xs font-medium text-(--text-muted)"
                           style={{
                             left: `${week.weekNumber * (typeof window !== "undefined" && window.innerWidth < 640 ? 14 : 16) + 2}px`,
                             top: "-2px",
@@ -562,7 +562,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
                     {DAYS.map((day, index) => (
                       <div
                         key={`day-${index}`}
-                        className="w-4 h-3 sm:h-3 flex items-center justify-center text-xs font-medium text-[var(--text-muted)]"
+                        className="w-4 h-3 sm:h-3 flex items-center justify-center text-xs font-medium text-(--text-muted)"
                       >
                         {index % 2 === 1 ? day.charAt(0) : ""}
                       </div>
@@ -675,7 +675,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
                               }}
                             >
                               {dayData.isToday && (
-                                <div className="absolute -inset-0.5 rounded-sm border-2 border-[var(--primary)] animate-pulse" />
+                                <div className="absolute -inset-0.5 rounded-sm border-2 border-(--primary) animate-pulse" />
                               )}
                             </div>
                           );
@@ -686,8 +686,8 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
                 </div>
 
                 {/* Legend */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-[var(--border)] gap-3 sm:gap-0">
-                  <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-(--border) gap-3 sm:gap-0">
+                  <div className="flex items-center gap-2 text-xs text-(--text-muted)">
                     <span>Less</span>
                     <div className="flex items-center gap-1">
                       {[0, 1, 2, 3, 4, 5].map((level) => (
@@ -700,9 +700,9 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
                     <span>More</span>
                   </div>
 
-                  <div className="text-xs text-[var(--text-muted)]">
+                  <div className="text-xs text-(--text-muted)">
                     Longest streak:{" "}
-                    <span className="font-medium text-[var(--text-primary)]">
+                    <span className="font-medium text-(--text-primary)">
                       {stats.longestStreak} days
                     </span>
                   </div>
@@ -713,22 +713,22 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
             {/* Tooltip */}
             {(hoveredDay || clickedDay) && (
               <div
-                className="absolute bg-[var(--surface)] border border-[var(--border)] rounded-lg p-3 shadow-xl z-50 pointer-events-none max-w-xs text-sm"
+                className="absolute bg-(--surface) border border-(--border) rounded-lg p-3 shadow-xl z-50 pointer-events-none max-w-xs text-sm"
                 style={{
                   left: tooltipPosition.x,
                   top: tooltipPosition.y,
                   transform: "translateX(-50%) translateY(-100%)",
                 }}
               >
-                <div className="text-sm font-medium text-[var(--text-primary)]">
+                <div className="text-sm font-medium text-(--text-primary)">
                   {formatTooltip(hoveredDay || clickedDay!).date}
                 </div>
-                <div className="text-xs text-[var(--text-secondary)] mt-1">
+                <div className="text-xs text-(--text-secondary) mt-1">
                   {formatTooltip(hoveredDay || clickedDay!).count} •{" "}
                   {formatTooltip(hoveredDay || clickedDay!).intensity}
                 </div>
                 {clickedDay && (
-                  <div className="text-xs text-[var(--text-muted)] mt-1">
+                  <div className="text-xs text-(--text-muted) mt-1">
                     Tap to close
                   </div>
                 )}

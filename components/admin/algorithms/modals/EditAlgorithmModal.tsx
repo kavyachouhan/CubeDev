@@ -97,21 +97,21 @@ export function EditAlgorithmModal({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
       <div className="timer-card max-w-lg w-full my-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+          <h2 className="text-xl font-bold text-(--text-primary) font-statement">
             {isNew ? "New Algorithm" : "Edit Algorithm"}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+            className="p-2 hover:bg-(--surface-elevated) rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-[var(--text-muted)]" />
+            <X className="w-5 h-5 text-(--text-muted)" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Notation */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] font-inter mb-1.5">
+            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
               Notation *
             </label>
             <input
@@ -119,7 +119,7 @@ export function EditAlgorithmModal({
               value={formData.notation}
               onChange={(e) => handleNotationChange(e.target.value)}
               required
-              className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-mono text-sm"
+              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-mono text-sm"
               placeholder="R U R' U R U2 R'"
             />
           </div>
@@ -127,7 +127,7 @@ export function EditAlgorithmModal({
           {/* Move Count with Auto-calculate toggle */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-sm font-medium text-[var(--text-secondary)] font-inter">
+              <label className="text-sm font-medium text-(--text-secondary) font-inter">
                 Move Count
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
@@ -141,9 +141,9 @@ export function EditAlgorithmModal({
                       setFormData((prev) => ({ ...prev, moveCount: count }));
                     }
                   }}
-                  className="w-3.5 h-3.5 rounded border-[var(--border)] bg-[var(--surface-elevated)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                  className="w-3.5 h-3.5 rounded border-(--border) bg-(--surface-elevated) text-(--primary) focus:ring-(--primary)"
                 />
-                <span className="text-xs text-[var(--text-muted)] font-inter">
+                <span className="text-xs text-(--text-muted) font-inter">
                   Auto
                 </span>
               </label>
@@ -154,13 +154,13 @@ export function EditAlgorithmModal({
               value={formData.moveCount}
               onChange={(e) => handleMoveCountChange(e.target.value)}
               disabled={autoMoveCount}
-              className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm disabled:opacity-60"
+              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm disabled:opacity-60"
             />
           </div>
 
           {/* Finger Tricks */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] font-inter mb-1.5">
+            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
               Finger Tricks
             </label>
             <input
@@ -169,7 +169,7 @@ export function EditAlgorithmModal({
               onChange={(e) =>
                 setFormData({ ...formData, fingerTricks: e.target.value })
               }
-              className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
+              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               placeholder="e.g., Push with right index, pull with left thumb"
             />
           </div>
@@ -182,9 +182,9 @@ export function EditAlgorithmModal({
               onChange={(e) =>
                 setFormData({ ...formData, isDefault: e.target.checked })
               }
-              className="w-4 h-4 rounded border-[var(--border)] bg-[var(--surface-elevated)] text-[var(--primary)] focus:ring-[var(--primary)]"
+              className="w-4 h-4 rounded border-(--border) bg-(--surface-elevated) text-(--primary) focus:ring-(--primary)"
             />
-            <span className="text-sm text-[var(--text-primary)] font-inter">
+            <span className="text-sm text-(--text-primary) font-inter">
               Default algorithm for this case
             </span>
           </label>
@@ -194,7 +194,7 @@ export function EditAlgorithmModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 bg-[var(--surface-elevated)] hover:bg-[var(--border)] text-[var(--text-primary)] font-medium rounded-lg transition-colors font-inter text-sm order-2 sm:order-1"
+              className="flex-1 px-4 py-2.5 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-lg transition-colors font-inter text-sm order-2 sm:order-1"
               disabled={isSubmitting}
             >
               Cancel
@@ -202,7 +202,7 @@ export function EditAlgorithmModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-medium rounded-lg transition-colors font-inter text-sm disabled:opacity-50 order-1 sm:order-2"
+              className="flex-1 px-4 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white font-medium rounded-lg transition-colors font-inter text-sm disabled:opacity-50 order-1 sm:order-2"
             >
               {isSubmitting ? "Saving..." : isNew ? "Add" : "Save Changes"}
             </button>

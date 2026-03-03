@@ -143,7 +143,7 @@ export default function CustomAlgorithmCard({
     return (
       <div className="timer-card space-y-3">
         <div>
-          <label className="block text-xs font-medium text-[var(--text-muted)] mb-1 font-inter">
+          <label className="block text-xs font-medium text-(--text-muted) mb-1 font-inter">
             Name
           </label>
           <input
@@ -151,13 +151,13 @@ export default function CustomAlgorithmCard({
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent text-sm font-inter transition-all"
+            className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-sm font-inter transition-all"
             autoFocus
             maxLength={100}
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-[var(--text-muted)] mb-1 font-inter">
+          <label className="block text-xs font-medium text-(--text-muted) mb-1 font-inter">
             Notation
           </label>
           <textarea
@@ -165,12 +165,12 @@ export default function CustomAlgorithmCard({
             onChange={(e) => setEditNotation(e.target.value)}
             onKeyDown={handleKeyDown}
             rows={2}
-            className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent text-sm resize-none transition-all"
+            className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) font-mono focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-sm resize-none transition-all"
             maxLength={500}
           />
           {hasEditInvalidMoves && (
             <div className="flex items-start gap-2 mt-1.5 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-              <AlertTriangle className="w-3.5 h-3.5 text-yellow-500 flex-shrink-0 mt-0.5" />
+              <AlertTriangle className="w-3.5 h-3.5 text-yellow-500 shrink-0 mt-0.5" />
               <p className="text-xs text-yellow-500/80 font-inter">
                 Non-standard notation:{" "}
                 {editInvalidMoves.map((m) => `"${m}"`).join(", ")}
@@ -179,7 +179,7 @@ export default function CustomAlgorithmCard({
           )}
         </div>
         <div>
-          <label className="block text-xs font-medium text-[var(--text-muted)] mb-1 font-inter">
+          <label className="block text-xs font-medium text-(--text-muted) mb-1 font-inter">
             Notes <span className="font-normal">(optional)</span>
           </label>
           <textarea
@@ -187,7 +187,7 @@ export default function CustomAlgorithmCard({
             onChange={(e) => setEditNotes(e.target.value)}
             rows={2}
             placeholder="Finger tricks, tips..."
-            className="w-full px-3 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent text-sm resize-none transition-all font-inter"
+            className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-sm resize-none transition-all font-inter"
             maxLength={500}
           />
         </div>
@@ -213,10 +213,10 @@ export default function CustomAlgorithmCard({
         {/* Main content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h4 className="text-sm font-semibold text-[var(--text-primary)] truncate font-inter">
+            <h4 className="text-sm font-semibold text-(--text-primary) truncate font-inter">
               {algorithm.name}
             </h4>
-            <span className="text-xs text-[var(--text-muted)] flex-shrink-0 font-inter">
+            <span className="text-xs text-(--text-muted) shrink-0 font-inter">
               {moveCount} move{moveCount !== 1 ? "s" : ""}
             </span>
           </div>
@@ -224,7 +224,7 @@ export default function CustomAlgorithmCard({
           {/* Notation display */}
           <div className="overflow-hidden mt-1">
             <div
-              className="font-mono text-xs text-[var(--text-secondary)] bg-[var(--surface-elevated)] px-2.5 py-1.5 rounded border border-[var(--border)] inline-block max-w-full overflow-x-auto whitespace-nowrap cursor-pointer select-all"
+              className="font-mono text-xs text-(--text-secondary) bg-(--surface-elevated) px-2.5 py-1.5 rounded border border-(--border) inline-block max-w-full overflow-x-auto whitespace-nowrap cursor-pointer select-all"
               title="Click to select"
             >
               {algorithm.notation}
@@ -235,7 +235,7 @@ export default function CustomAlgorithmCard({
           {algorithm.notes && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center gap-1 mt-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors font-inter"
+              className="flex items-center gap-1 mt-2 text-xs text-(--text-muted) hover:text-(--text-secondary) transition-colors font-inter"
             >
               <StickyNote className="w-3 h-3" />
               {isExpanded ? "Hide notes" : "Show notes"}
@@ -249,24 +249,24 @@ export default function CustomAlgorithmCard({
 
           {/* Notes content */}
           {isExpanded && algorithm.notes && (
-            <p className="mt-2 text-xs text-[var(--text-muted)] bg-[var(--surface-elevated)] border border-[var(--border)] rounded p-2 font-inter">
+            <p className="mt-2 text-xs text-(--text-muted) bg-(--surface-elevated) border border-(--border) rounded p-2 font-inter">
               {algorithm.notes}
             </p>
           )}
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={() => setIsEditing(true)}
-            className="p-2 hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-lg transition-colors"
+            className="p-2 hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--text-primary) rounded-lg transition-colors"
             title="Edit algorithm"
           >
             <Edit2 className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleRemove}
-            className="p-2 hover:bg-red-500/10 text-[var(--text-muted)] hover:text-red-500 rounded-lg transition-colors"
+            className="p-2 hover:bg-red-500/10 text-(--text-muted) hover:text-red-500 rounded-lg transition-colors"
             title="Remove from set"
           >
             <Trash2 className="w-3.5 h-3.5" />

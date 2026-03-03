@@ -213,7 +213,7 @@ export default function CustomSetsPage() {
             <div>
               <Link
                 href="/cube-lab/algorithm-trainer"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors w-fit mb-4"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors w-fit mb-4"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Algorithm Trainer
@@ -221,10 +221,10 @@ export default function CustomSetsPage() {
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] font-statement mb-1">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-(--text-primary) font-statement mb-1">
                     Custom Algorithm Sets
                   </h1>
-                  <p className="text-sm text-[var(--text-muted)]">
+                  <p className="text-sm text-(--text-muted)">
                     Build your own algorithm collections for focused practice
                   </p>
                 </div>
@@ -232,14 +232,14 @@ export default function CustomSetsPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowImportModal(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors"
                   >
                     <Upload className="w-4 h-4" />
                     <span className="sm:inline">Import</span>
                   </button>
                   <button
                     onClick={() => setShowCreateModal(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     New Set
@@ -252,31 +252,31 @@ export default function CustomSetsPage() {
             {customSets.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div className="timer-card text-center">
-                  <p className="text-2xl font-bold text-[var(--primary)] font-statement">
+                  <p className="text-2xl font-bold text-(--primary) font-statement">
                     {customSets.length}
                   </p>
-                  <p className="text-xs text-[var(--text-muted)]">Total Sets</p>
+                  <p className="text-xs text-(--text-muted)">Total Sets</p>
                 </div>
                 <div className="timer-card text-center">
-                  <p className="text-2xl font-bold text-[var(--text-primary)] font-statement">
+                  <p className="text-2xl font-bold text-(--text-primary) font-statement">
                     {customSets.reduce(
                       (acc: number, s: any) => acc + getTotalAlgorithmCount(s),
                       0,
                     )}
                   </p>
-                  <p className="text-xs text-[var(--text-muted)]">
+                  <p className="text-xs text-(--text-muted)">
                     Total Algorithms
                   </p>
                 </div>
                 <div className="timer-card text-center col-span-2 sm:col-span-1">
-                  <p className="text-2xl font-bold text-[var(--text-primary)] font-statement">
+                  <p className="text-2xl font-bold text-(--text-primary) font-statement">
                     {customSets.reduce(
                       (acc: number, s: any) =>
                         acc + (s.customAlgorithms?.length || 0),
                       0,
                     )}
                   </p>
-                  <p className="text-xs text-[var(--text-muted)]">
+                  <p className="text-xs text-(--text-muted)">
                     Custom Algorithms
                   </p>
                 </div>
@@ -286,13 +286,13 @@ export default function CustomSetsPage() {
             {/* Search */}
             {customSets.length > 0 && (
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search your sets..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent text-sm transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-sm transition-all"
                 />
               </div>
             )}
@@ -300,17 +300,17 @@ export default function CustomSetsPage() {
             {/* Custom Sets List */}
             {customSets.length === 0 ? (
               <div className="timer-card text-center py-12">
-                <FolderOpen className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
-                <h3 className="text-lg font-bold text-[var(--text-primary)] font-statement mb-2">
+                <FolderOpen className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-(--text-primary) font-statement mb-2">
                   No Custom Sets Yet
                 </h3>
-                <p className="text-sm text-[var(--text-muted)] mb-6 max-w-sm mx-auto">
+                <p className="text-sm text-(--text-muted) mb-6 max-w-sm mx-auto">
                   Create a custom set to organize algorithms your way. Add
                   predefined cases or write your own algorithms from scratch.
                 </p>
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors text-sm"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors text-sm"
                 >
                   <Plus className="w-4 h-4" />
                   Create Your First Set
@@ -318,8 +318,8 @@ export default function CustomSetsPage() {
               </div>
             ) : filteredSets && filteredSets.length === 0 ? (
               <div className="timer-card text-center py-8">
-                <Search className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" />
-                <p className="text-sm text-[var(--text-muted)]">
+                <Search className="w-10 h-10 text-(--text-muted) mx-auto mb-3" />
+                <p className="text-sm text-(--text-muted)">
                   No sets match &quot;{searchQuery}&quot;
                 </p>
               </div>
@@ -352,7 +352,7 @@ export default function CustomSetsPage() {
                                 `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${set._id}&type=rec`,
                               )
                             }
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors text-xs sm:text-sm"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors text-xs sm:text-sm"
                           >
                             <Play className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">Practice</span>
@@ -369,7 +369,7 @@ export default function CustomSetsPage() {
                                 openMenuId === set._id ? null : set._id,
                               );
                             }}
-                            className="p-1.5 hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] rounded-lg transition-colors"
+                            className="p-1.5 hover:bg-(--surface-elevated) text-(--text-muted) rounded-lg transition-colors"
                           >
                             <MoreVertical className="w-4 h-4" />
                           </button>
@@ -384,7 +384,7 @@ export default function CustomSetsPage() {
                                   setOpenMenuId(null);
                                 }}
                               />
-                              <div className="absolute right-0 top-full mt-1 w-44 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-50 py-1 overflow-hidden">
+                              <div className="absolute right-0 top-full mt-1 w-44 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-50 py-1 overflow-hidden">
                                 <button
                                   onClick={(e) => {
                                     e.preventDefault();
@@ -392,7 +392,7 @@ export default function CustomSetsPage() {
                                     handleExportSet(set);
                                     setOpenMenuId(null);
                                   }}
-                                  className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors"
+                                  className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-(--text-primary) hover:bg-(--surface-elevated) transition-colors"
                                 >
                                   <Download className="w-4 h-4" />
                                   Export JSON
@@ -417,23 +417,23 @@ export default function CustomSetsPage() {
                       {/* Set Info */}
                       <div className="pr-24 sm:pr-36">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-base font-bold text-[var(--text-primary)] font-statement truncate">
+                          <h3 className="text-base font-bold text-(--text-primary) font-statement truncate">
                             {set.name}
                           </h3>
                           {set.isPublic ? (
-                            <Globe className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
+                            <Globe className="w-3.5 h-3.5 text-green-500 shrink-0" />
                           ) : (
-                            <Lock className="w-3.5 h-3.5 text-[var(--text-muted)] flex-shrink-0" />
+                            <Lock className="w-3.5 h-3.5 text-(--text-muted) shrink-0" />
                           )}
                         </div>
                         {set.description && (
-                          <p className="text-sm text-[var(--text-muted)] mb-2 line-clamp-1">
+                          <p className="text-sm text-(--text-muted) mb-2 line-clamp-1">
                             {set.description}
                           </p>
                         )}
 
                         {/* Meta Info */}
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--text-muted)]">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-(--text-muted)">
                           <span className="inline-flex items-center gap-1">
                             <Code2 className="w-3 h-3" />
                             {totalAlgs} algorithm{totalAlgs !== 1 ? "s" : ""}
@@ -464,13 +464,13 @@ export default function CustomSetsPage() {
                               .map((alg: any) => (
                                 <span
                                   key={alg.id}
-                                  className="inline-block px-2 py-0.5 text-xs font-mono bg-[var(--surface-elevated)] border border-[var(--border)] rounded text-[var(--text-secondary)] truncate max-w-[160px] sm:max-w-[200px]"
+                                  className="inline-block px-2 py-0.5 text-xs font-mono bg-(--surface-elevated) border border-(--border) rounded text-(--text-secondary) truncate max-w-[160px] sm:max-w-[200px]"
                                 >
                                   {alg.notation}
                                 </span>
                               ))}
                             {customCount > 3 && (
-                              <span className="inline-block px-2 py-0.5 text-xs text-[var(--text-muted)]">
+                              <span className="inline-block px-2 py-0.5 text-xs text-(--text-muted)">
                                 +{customCount - 3} more
                               </span>
                             )}
@@ -493,12 +493,12 @@ export default function CustomSetsPage() {
                   className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement mb-4">
+                  <h2 className="text-xl font-bold text-(--text-primary) font-statement mb-4">
                     Create Custom Set
                   </h2>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1 font-inter">
+                      <label className="block text-sm font-medium text-(--text-secondary) mb-1 font-inter">
                         Set Name
                       </label>
                       <input
@@ -506,7 +506,7 @@ export default function CustomSetsPage() {
                         value={newSetName}
                         onChange={(e) => setNewSetName(e.target.value)}
                         placeholder="e.g., My Weak OLLs, Speed PLLs"
-                        className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent text-sm font-inter transition-all"
+                        className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-sm font-inter transition-all"
                         autoFocus
                         maxLength={100}
                         onKeyDown={(e) => {
@@ -517,9 +517,9 @@ export default function CustomSetsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1 font-inter">
+                      <label className="block text-sm font-medium text-(--text-secondary) mb-1 font-inter">
                         Description{" "}
-                        <span className="text-[var(--text-muted)] font-normal">
+                        <span className="text-(--text-muted) font-normal">
                           (optional)
                         </span>
                       </label>
@@ -528,7 +528,7 @@ export default function CustomSetsPage() {
                         onChange={(e) => setNewSetDescription(e.target.value)}
                         placeholder="What algorithms will this set contain?"
                         rows={2}
-                        className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none text-sm font-inter transition-all"
+                        className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none text-sm font-inter transition-all"
                         maxLength={500}
                       />
                     </div>
@@ -566,7 +566,7 @@ export default function CustomSetsPage() {
                   className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement mb-4">
+                  <h2 className="text-xl font-bold text-(--text-primary) font-statement mb-4">
                     Import Algorithm Set
                   </h2>
                   <div className="space-y-4">
@@ -574,8 +574,8 @@ export default function CustomSetsPage() {
                     <div
                       className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
                         isDragOver
-                          ? "border-[var(--primary)] bg-[var(--primary)]/5"
-                          : "border-[var(--border)] hover:border-[var(--text-muted)]"
+                          ? "border-(--primary) bg-(--primary)/5"
+                          : "border-(--border) hover:border-(--text-muted)"
                       }`}
                       onDragOver={(e) => {
                         e.preventDefault();
@@ -595,21 +595,21 @@ export default function CustomSetsPage() {
                           if (file) handleFileSelect(file);
                         }}
                       />
-                      <File className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-2" />
-                      <p className="text-sm text-[var(--text-secondary)]">
+                      <File className="w-8 h-8 text-(--text-muted) mx-auto mb-2" />
+                      <p className="text-sm text-(--text-secondary)">
                         Drop a JSON file here or click to browse
                       </p>
-                      <p className="text-xs text-[var(--text-muted)] mt-1">
+                      <p className="text-xs text-(--text-muted) mt-1">
                         Supports .json files
                       </p>
                     </div>
 
                     <div className="relative flex items-center gap-4">
-                      <div className="flex-1 border-t border-[var(--border)]" />
-                      <span className="text-xs text-[var(--text-muted)]">
+                      <div className="flex-1 border-t border-(--border)" />
+                      <span className="text-xs text-(--text-muted)">
                         or paste JSON
                       </span>
-                      <div className="flex-1 border-t border-[var(--border)]" />
+                      <div className="flex-1 border-t border-(--border)" />
                     </div>
 
                     <textarea
@@ -617,14 +617,14 @@ export default function CustomSetsPage() {
                       onChange={(e) => processImportData(e.target.value)}
                       placeholder='{"name": "My Set", "caseIds": [...], ...}'
                       rows={4}
-                      className="w-full px-4 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none"
+                      className="w-full px-4 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) font-mono text-sm focus:outline-none focus:ring-2 focus:ring-(--primary) resize-none"
                     />
 
                     {importError && (
                       <p className="text-sm text-red-500">{importError}</p>
                     )}
 
-                    <p className="text-xs text-[var(--text-muted)]">
+                    <p className="text-xs text-(--text-muted)">
                       Import an algorithm set exported from CubeDev.
                     </p>
                     <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">

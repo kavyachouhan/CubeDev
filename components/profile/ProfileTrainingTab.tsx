@@ -169,14 +169,14 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
       <div className="timer-card">
         <div className="text-center py-8 sm:py-12">
           <div className="flex justify-center mb-4">
-            <div className="p-3 sm:p-4 bg-[var(--primary)]/10 rounded-full">
-              <Target className="w-6 h-6 sm:w-8 sm:h-8 text-[var(--primary)]" />
+            <div className="p-3 sm:p-4 bg-(--primary)/10 rounded-full">
+              <Target className="w-6 h-6 sm:w-8 sm:h-8 text-(--primary)" />
             </div>
           </div>
-          <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] mb-2">
+          <h3 className="text-base sm:text-lg font-semibold text-(--text-primary) mb-2">
             No Training Goals Set
           </h3>
-          <p className="text-sm text-[var(--text-secondary)] max-w-md mx-auto px-4">
+          <p className="text-sm text-(--text-secondary) max-w-md mx-auto px-4">
             This cuber hasn&apos;t set up their training goals yet. When they
             do, you&apos;ll be able to see their progress and cheer them on!
           </p>
@@ -223,21 +223,21 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
     switch (status) {
       case "achieved":
         return (
-          <span className="flex items-center gap-1.5 text-xs sm:text-sm text-[var(--success)] px-2 sm:px-3 py-1 sm:py-1.5 bg-[var(--success)]/10 rounded-full border border-[var(--success)]/20">
+          <span className="flex items-center gap-1.5 text-xs sm:text-sm text-(--success) px-2 sm:px-3 py-1 sm:py-1.5 bg-(--success)/10 rounded-full border border-(--success)/20">
             <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">Goal </span>Achieved
           </span>
         );
       case "expired":
         return (
-          <span className="flex items-center gap-1.5 text-xs sm:text-sm text-[var(--warning)] px-2 sm:px-3 py-1 sm:py-1.5 bg-[var(--warning)]/10 rounded-full border border-[var(--warning)]/20">
+          <span className="flex items-center gap-1.5 text-xs sm:text-sm text-(--warning) px-2 sm:px-3 py-1 sm:py-1.5 bg-(--warning)/10 rounded-full border border-(--warning)/20">
             <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             Overdue
           </span>
         );
       default:
         return (
-          <span className="flex items-center gap-1.5 text-xs sm:text-sm text-[var(--primary)] px-2 sm:px-3 py-1 sm:py-1.5 bg-[var(--primary)]/10 rounded-full border border-[var(--primary)]/20">
+          <span className="flex items-center gap-1.5 text-xs sm:text-sm text-(--primary) px-2 sm:px-3 py-1 sm:py-1.5 bg-(--primary)/10 rounded-full border border-(--primary)/20">
             <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">In </span>Progress
           </span>
@@ -251,10 +251,10 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
         {/* Header - Title on left, badge + share on right */}
         <div className="flex items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
           <div className="min-w-0">
-            <h2 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] font-statement">
+            <h2 className="text-base sm:text-lg font-semibold text-(--text-primary) font-statement">
               Current Goal
             </h2>
-            <p className="text-xs sm:text-sm text-[var(--text-muted)]">
+            <p className="text-xs sm:text-sm text-(--text-muted)">
               {firstName}&apos;s training journey
             </p>
           </div>
@@ -275,17 +275,17 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
         </div>
 
         {/* Goal Target Display */}
-        <div className="bg-[var(--surface-elevated)] rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 border border-[var(--border)]">
+        <div className="bg-(--surface-elevated) rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 border border-(--border)">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             {/* Target Info */}
             <div className="text-center lg:text-left">
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide mb-1">
+              <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
                 Target
               </div>
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--primary)]">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-(--primary)">
                 {getGoalDisplay()}
               </div>
-              <div className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1">
+              <div className="text-xs sm:text-sm text-(--text-secondary) mt-1">
                 {EVENT_NAMES[coachData.primaryEvent] || coachData.primaryEvent}
               </div>
             </div>
@@ -293,34 +293,34 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
             {/* Time Stats */}
             <div className="flex items-center justify-center gap-3 sm:gap-4 text-center">
               <div className="px-2 sm:px-4">
-                <div className="text-[10px] sm:text-xs text-[var(--text-muted)] uppercase tracking-wide mb-1">
+                <div className="text-[10px] sm:text-xs text-(--text-muted) uppercase tracking-wide mb-1">
                   Started At
                 </div>
-                <div className="text-base sm:text-xl font-semibold text-[var(--text-primary)] font-mono">
+                <div className="text-base sm:text-xl font-semibold text-(--text-primary) font-mono">
                   {formatTime(startingAverage)}
                 </div>
               </div>
-              <div className="w-px h-8 sm:h-10 bg-[var(--border)]" />
+              <div className="w-px h-8 sm:h-10 bg-(--border)" />
               <div className="px-2 sm:px-4">
-                <div className="text-[10px] sm:text-xs text-[var(--text-muted)] uppercase tracking-wide mb-1">
+                <div className="text-[10px] sm:text-xs text-(--text-muted) uppercase tracking-wide mb-1">
                   Current
                 </div>
                 <div
                   className={`text-base sm:text-xl font-semibold font-mono ${
                     status === "achieved"
-                      ? "text-[var(--success)]"
-                      : "text-[var(--primary)]"
+                      ? "text-(--success)"
+                      : "text-(--primary)"
                   }`}
                 >
                   {formatTime(currentAverage)}
                 </div>
               </div>
-              <div className="w-px h-8 sm:h-10 bg-[var(--border)]" />
+              <div className="w-px h-8 sm:h-10 bg-(--border)" />
               <div className="px-2 sm:px-4">
-                <div className="text-[10px] sm:text-xs text-[var(--text-muted)] uppercase tracking-wide mb-1">
+                <div className="text-[10px] sm:text-xs text-(--text-muted) uppercase tracking-wide mb-1">
                   Goal
                 </div>
-                <div className="text-base sm:text-xl font-semibold text-[var(--success)] font-mono">
+                <div className="text-base sm:text-xl font-semibold text-(--success) font-mono">
                   {formatTime(targetTime)}
                 </div>
               </div>
@@ -331,28 +331,28 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
         {/* Progress Bar */}
         <div className="mb-4 sm:mb-6">
           <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
-            <span className="text-[var(--text-muted)]">Progress</span>
+            <span className="text-(--text-muted)">Progress</span>
             <span
               className={`font-bold text-base sm:text-lg ${
                 status === "achieved"
-                  ? "text-[var(--success)]"
-                  : "text-[var(--primary)]"
+                  ? "text-(--success)"
+                  : "text-(--primary)"
               }`}
             >
               {progressPercentage.toFixed(0)}%
             </span>
           </div>
-          <div className="relative h-3 sm:h-4 bg-[var(--surface-elevated)] rounded-full overflow-hidden border border-[var(--border)]">
+          <div className="relative h-3 sm:h-4 bg-(--surface-elevated) rounded-full overflow-hidden border border-(--border)">
             <div
               className={`absolute h-full transition-all duration-500 rounded-full ${
                 status === "achieved"
-                  ? "bg-[var(--success)]"
-                  : "bg-[var(--primary)]"
+                  ? "bg-(--success)"
+                  : "bg-(--primary)"
               }`}
               style={{ width: `${Math.min(100, progressPercentage)}%` }}
             />
           </div>
-          <div className="flex justify-between text-[10px] sm:text-xs text-[var(--text-muted)] mt-1 font-mono">
+          <div className="flex justify-between text-[10px] sm:text-xs text-(--text-muted) mt-1 font-mono">
             <span>{formatTime(startingAverage)}</span>
             <span>{formatTime(targetTime)}</span>
           </div>
@@ -371,7 +371,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
                 : formatTime(Math.abs(improvement))
             }
             valueColor={
-              improvement > 0 ? "text-[var(--success)]" : "text-[var(--error)]"
+              improvement > 0 ? "text-(--success)" : "text-(--error)"
             }
           />
           <StatCard
@@ -397,7 +397,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
                   : `${daysRemaining}d`
             }
             valueColor={
-              status === "expired" ? "text-[var(--warning)]" : undefined
+              status === "expired" ? "text-(--warning)" : undefined
             }
           />
           <StatCard
@@ -424,7 +424,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
       {/* Training Statistics */}
       {progressStats && (
         <div className="timer-card">
-          <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] font-statement mb-4">
+          <h3 className="text-base sm:text-lg font-semibold text-(--text-primary) font-statement mb-4">
             Training Statistics
           </h3>
 
@@ -463,36 +463,36 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
 
           {/* Weekly Activity */}
           {progressStats.weekly && (
-            <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
-              <h4 className="text-xs sm:text-sm font-medium text-[var(--text-primary)] mb-3">
+            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+              <h4 className="text-xs sm:text-sm font-medium text-(--text-primary) mb-3">
                 This Week
               </h4>
               <div className="flex items-center justify-center text-center">
                 <div className="flex-1 px-2 sm:px-4">
-                  <div className="text-lg sm:text-2xl font-bold text-[var(--text-primary)]">
+                  <div className="text-lg sm:text-2xl font-bold text-(--text-primary)">
                     {progressStats.weekly.activeDays || 0}
                   </div>
-                  <div className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+                  <div className="text-[10px] sm:text-xs text-(--text-muted)">
                     Active Days
                   </div>
                 </div>
-                <div className="w-px h-10 sm:h-12 bg-[var(--border)]" />
+                <div className="w-px h-10 sm:h-12 bg-(--border)" />
                 <div className="flex-1 px-2 sm:px-4">
-                  <div className="text-lg sm:text-2xl font-bold text-[var(--text-primary)]">
+                  <div className="text-lg sm:text-2xl font-bold text-(--text-primary)">
                     {progressStats.weekly.solves?.toLocaleString() || 0}
                   </div>
-                  <div className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+                  <div className="text-[10px] sm:text-xs text-(--text-muted)">
                     Solves
                   </div>
                 </div>
-                <div className="w-px h-10 sm:h-12 bg-[var(--border)]" />
+                <div className="w-px h-10 sm:h-12 bg-(--border)" />
                 <div className="flex-1 px-2 sm:px-4">
-                  <div className="text-lg sm:text-2xl font-bold text-[var(--text-primary)] font-mono">
+                  <div className="text-lg sm:text-2xl font-bold text-(--text-primary) font-mono">
                     {progressStats.weekly.average
                       ? formatTime(progressStats.weekly.average)
                       : "--"}
                   </div>
-                  <div className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+                  <div className="text-[10px] sm:text-xs text-(--text-muted)">
                     Avg Time
                   </div>
                 </div>
@@ -504,13 +504,13 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
 
       {/* Goal Timeline */}
       <div className="timer-card">
-        <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] font-statement mb-4">
+        <h3 className="text-base sm:text-lg font-semibold text-(--text-primary) font-statement mb-4">
           Goal Timeline
         </h3>
 
         <div className="relative">
           {/* Timeline line */}
-          <div className="absolute left-3 sm:left-4 top-0 bottom-0 w-0.5 bg-[var(--border)]" />
+          <div className="absolute left-3 sm:left-4 top-0 bottom-0 w-0.5 bg-(--border)" />
 
           {/* Current Goal */}
           <TimelineItem
@@ -592,8 +592,8 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
 
           {/* Empty state */}
           {(!goalHistory || goalHistory.length === 0) && (
-            <div className="ml-10 sm:ml-12 mt-2 p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-              <div className="flex items-center gap-2 text-[var(--text-muted)]">
+            <div className="ml-10 sm:ml-12 mt-2 p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="flex items-center gap-2 text-(--text-muted)">
                 <History className="w-4 h-4" />
                 <span className="text-xs sm:text-sm">
                   Past goals will appear here as they are completed
@@ -607,7 +607,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
       {/* Motivation Message */}
       <div className="timer-card">
         <div className="text-center py-2">
-          <p className="text-xs sm:text-sm text-[var(--text-secondary)]">
+          <p className="text-xs sm:text-sm text-(--text-secondary)">
             {status === "achieved" ? (
               <>Congratulations! {firstName} achieved their goal!</>
             ) : status === "expired" ? (
@@ -649,18 +649,18 @@ function StatCard({
   valueColor,
 }: StatCardProps) {
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-xl p-2.5 sm:p-3 md:p-4 border border-[var(--border)]">
+    <div className="bg-(--surface-elevated) rounded-xl p-2.5 sm:p-3 md:p-4 border border-(--border)">
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className={`p-1.5 sm:p-2 ${bgColor} rounded-lg flex-shrink-0`}>
+        <div className={`p-1.5 sm:p-2 ${bgColor} rounded-lg shrink-0`}>
           <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-[10px] sm:text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+          <div className="text-[10px] sm:text-xs text-(--text-muted) uppercase tracking-wide truncate">
             {label}
           </div>
           <div
             className={`text-sm sm:text-lg font-bold truncate ${
-              valueColor || "text-[var(--text-primary)]"
+              valueColor || "text-(--text-primary)"
             }`}
           >
             {value}
@@ -707,10 +707,10 @@ function TimelineItem({
         : Target;
   const statusColor =
     status === "achieved"
-      ? "text-[var(--success)] bg-[var(--success)]"
+      ? "text-(--success) bg-(--success)"
       : status === "expired"
-        ? "text-[var(--warning)] bg-[var(--warning)]"
-        : "text-[var(--primary)] bg-[var(--primary)]";
+        ? "text-(--warning) bg-(--warning)"
+        : "text-(--primary) bg-(--primary)";
 
   // Calculate duration
   const durationMs = (endDate || Date.now()) - startDate;
@@ -726,7 +726,7 @@ function TimelineItem({
     <div className="relative flex gap-3 sm:gap-4 pb-4">
       {/* Timeline dot */}
       <div
-        className={`relative z-10 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${statusColor.split(" ")[1]}/20`}
+        className={`relative z-10 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 ${statusColor.split(" ")[1]}/20`}
       >
         <StatusIcon
           className={`w-3 h-3 sm:w-4 sm:h-4 ${statusColor.split(" ")[0]}`}
@@ -737,19 +737,19 @@ function TimelineItem({
       <button
         type="button"
         onClick={onClick}
-        className="flex-1 min-w-0 bg-[var(--surface-elevated)] rounded-lg p-3 sm:p-4 border border-[var(--border)] text-left hover:border-[var(--primary)]/40 hover:bg-[var(--surface-elevated)]/80 transition-all cursor-pointer group"
+        className="flex-1 min-w-0 bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border) text-left hover:border-(--primary)/40 hover:bg-(--surface-elevated)/80 transition-all cursor-pointer group"
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-2">
           <div className="min-w-0">
-            <span className="font-semibold text-sm sm:text-base text-[var(--text-primary)] truncate block">
+            <span className="font-semibold text-sm sm:text-base text-(--text-primary) truncate block">
               {title}
             </span>
             <div className="flex items-center justify-between sm:justify-start gap-2">
-              <span className="text-xs sm:text-sm text-[var(--text-muted)]">
+              <span className="text-xs sm:text-sm text-(--text-muted)">
                 {event}
               </span>
               {isCurrent && (
-                <span className="sm:hidden text-[10px] text-[var(--primary)] bg-[var(--primary)]/10 px-2 py-0.5 rounded-full border border-[var(--primary)]/20 flex-shrink-0">
+                <span className="sm:hidden text-[10px] text-(--primary) bg-(--primary)/10 px-2 py-0.5 rounded-full border border-(--primary)/20 shrink-0">
                   Current
                 </span>
               )}
@@ -757,29 +757,29 @@ function TimelineItem({
           </div>
           <div className="hidden sm:flex items-center gap-2">
             {isCurrent && (
-              <span className="text-xs text-[var(--primary)] bg-[var(--primary)]/10 px-2 py-0.5 rounded-full border border-[var(--primary)]/20 flex-shrink-0">
+              <span className="text-xs text-(--primary) bg-(--primary)/10 px-2 py-0.5 rounded-full border border-(--primary)/20 shrink-0">
                 Current
               </span>
             )}
-            <Eye className="w-3.5 h-3.5 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Eye className="w-3.5 h-3.5 text-(--text-muted) opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         </div>
 
         {/* Dates row */}
-        <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 text-[10px] sm:text-xs text-[var(--text-muted)]">
+        <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 text-[10px] sm:text-xs text-(--text-muted)">
           <span>Started: {formatDate(startDate)}</span>
           <span>Target: {formatDate(targetDate)}</span>
           {endDate && !isCurrent && <span>Ended: {formatDate(endDate)}</span>}
         </div>
 
         {/* Stats row */}
-        <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 mt-1.5 text-[10px] sm:text-xs text-[var(--text-muted)]">
+        <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 mt-1.5 text-[10px] sm:text-xs text-(--text-muted)">
           <span className="flex items-center gap-1">
             <Clock className="w-3 h-3" />
             {durationDays}d
           </span>
           <span
-            className={status === "achieved" ? "text-[var(--success)]" : ""}
+            className={status === "achieved" ? "text-(--success)" : ""}
           >
             Progress: {progress.toFixed(0)}%
           </span>
@@ -787,8 +787,8 @@ function TimelineItem({
             <span
               className={`flex items-center gap-1 ${
                 improvement > 0
-                  ? "text-[var(--success)]"
-                  : "text-[var(--error)]"
+                  ? "text-(--success)"
+                  : "text-(--error)"
               }`}
             >
               <TrendingDown className="w-3 h-3" />
@@ -826,19 +826,19 @@ function ProfileTrainingTabSkeleton() {
         </div>
 
         {/* Target & Progress Section */}
-        <div className="skeleton-box-subtle rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 border border-[var(--border)]">
+        <div className="skeleton-box-subtle rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 border border-(--border)">
           <div className="flex items-center justify-center flex-wrap gap-4 sm:gap-8 mb-4">
             <div className="text-center">
               <div className="h-3 skeleton-box rounded w-12 mx-auto mb-2" />
               <div className="h-8 sm:h-10 skeleton-box rounded w-20 sm:w-24" />
               <div className="h-3 skeleton-box rounded w-16 mx-auto mt-1" />
             </div>
-            <div className="w-px h-12 bg-[var(--border)]" />
+            <div className="w-px h-12 bg-(--border)" />
             <div className="text-center">
               <div className="h-3 skeleton-box rounded w-16 mx-auto mb-2" />
               <div className="h-6 sm:h-8 skeleton-box rounded w-16 sm:w-20" />
             </div>
-            <div className="w-px h-12 bg-[var(--border)]" />
+            <div className="w-px h-12 bg-(--border)" />
             <div className="text-center">
               <div className="h-3 skeleton-box rounded w-20 mx-auto mb-2" />
               <div className="h-6 sm:h-8 skeleton-box rounded w-12 sm:w-16" />
@@ -857,10 +857,10 @@ function ProfileTrainingTabSkeleton() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="skeleton-box-subtle rounded-xl p-2.5 sm:p-3 md:p-4 border border-[var(--border)]"
+              className="skeleton-box-subtle rounded-xl p-2.5 sm:p-3 md:p-4 border border-(--border)"
             >
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 skeleton-box rounded-lg flex-shrink-0" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 skeleton-box rounded-lg shrink-0" />
                 <div className="min-w-0 flex-1">
                   <div className="h-2.5 sm:h-3 skeleton-box rounded w-14 sm:w-16 mb-1.5" />
                   <div className="h-4 sm:h-5 skeleton-box rounded w-10 sm:w-12" />
@@ -874,18 +874,18 @@ function ProfileTrainingTabSkeleton() {
       {/* This Week Stats Skeleton */}
       <div className="timer-card">
         <div className="h-5 sm:h-6 skeleton-box rounded w-28 sm:w-32 mb-4" />
-        <div className="skeleton-box-subtle rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+        <div className="skeleton-box-subtle rounded-xl p-3 sm:p-4 border border-(--border)">
           <div className="flex items-center justify-center gap-4 sm:gap-8">
             <div className="text-center">
               <div className="h-6 sm:h-8 skeleton-box rounded w-8 sm:w-10 mb-1" />
               <div className="h-3 skeleton-box rounded w-12 sm:w-14" />
             </div>
-            <div className="w-px h-10 sm:h-12 bg-[var(--border)]" />
+            <div className="w-px h-10 sm:h-12 bg-(--border)" />
             <div className="text-center">
               <div className="h-6 sm:h-8 skeleton-box rounded w-8 sm:w-10 mb-1" />
               <div className="h-3 skeleton-box rounded w-10 sm:w-12" />
             </div>
-            <div className="w-px h-10 sm:h-12 bg-[var(--border)]" />
+            <div className="w-px h-10 sm:h-12 bg-(--border)" />
             <div className="text-center">
               <div className="h-6 sm:h-8 skeleton-box rounded w-12 sm:w-16 mb-1" />
               <div className="h-3 skeleton-box rounded w-14 sm:w-16" />
@@ -898,10 +898,10 @@ function ProfileTrainingTabSkeleton() {
       <div className="timer-card">
         <div className="h-5 sm:h-6 skeleton-box rounded w-28 sm:w-36 mb-4" />
         <div className="relative">
-          <div className="absolute left-3 sm:left-4 top-0 bottom-0 w-0.5 bg-[var(--border)]" />
+          <div className="absolute left-3 sm:left-4 top-0 bottom-0 w-0.5 bg-(--border)" />
           <div className="relative flex gap-3 sm:gap-4 pb-4">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 skeleton-box rounded-full flex-shrink-0" />
-            <div className="flex-1 skeleton-box-subtle rounded-lg p-3 sm:p-4 border border-[var(--border)]">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 skeleton-box rounded-full shrink-0" />
+            <div className="flex-1 skeleton-box-subtle rounded-lg p-3 sm:p-4 border border-(--border)">
               <div className="h-4 sm:h-5 skeleton-box rounded w-24 sm:w-32 mb-2" />
               <div className="flex items-center gap-2 mb-2">
                 <div className="h-3 skeleton-box rounded w-10" />

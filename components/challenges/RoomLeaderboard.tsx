@@ -55,11 +55,11 @@ export default function RoomLeaderboard({
     <div className="timer-card">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
         <div className="flex items-center gap-3">
-          <h3 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+          <h3 className="text-xl font-bold text-(--text-primary) font-statement">
             Leaderboard
           </h3>
         </div>
-        <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] font-inter bg-[var(--surface-elevated)] px-3 py-1.5 rounded-full">
+        <div className="flex items-center gap-2 text-sm text-(--text-muted) font-inter bg-(--surface-elevated) px-3 py-1.5 rounded-full">
           {participants.length} participant
           {participants.length !== 1 ? "s" : ""}
         </div>
@@ -71,7 +71,7 @@ export default function RoomLeaderboard({
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-1 h-4 bg-green-500 rounded-full"></div>
-              <h4 className="text-sm font-semibold text-[var(--text-primary)] font-inter">
+              <h4 className="text-sm font-semibold text-(--text-primary) font-inter">
                 Completed ({completedParticipants.length})
               </h4>
             </div>
@@ -87,7 +87,7 @@ export default function RoomLeaderboard({
                         ? "bg-gray-50 border-gray-200 dark:bg-gray-900/20 dark:border-gray-700/50"
                         : participant.finalRank === 3
                           ? "bg-orange-50 border-orange-200 dark:bg-orange-900/20 dark:border-orange-700/50"
-                          : "bg-[var(--surface-elevated)] border-[var(--border)]"
+                          : "bg-(--surface-elevated) border-(--border)"
                   }`}
                 >
                   {/* Rank Badge */}
@@ -105,7 +105,7 @@ export default function RoomLeaderboard({
                     {participant.finalRank}
                   </div>
                   {/* User Avatar */}
-                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-[var(--primary)] text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-white font-bold text-sm">
                     {participant.user?.avatar &&
                     !participant.user?.isDeleted &&
                     !participant.wasDeletedWhenJoined ? (
@@ -137,7 +137,7 @@ export default function RoomLeaderboard({
                     </span>
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <div className="font-semibold text-[var(--text-primary)] font-inter text-base">
+                    <div className="font-semibold text-(--text-primary) font-inter text-base">
                       {participant.user?.isDeleted ||
                       participant.wasDeletedWhenJoined
                         ? "Deleted User"
@@ -146,18 +146,18 @@ export default function RoomLeaderboard({
                     {participant.user?.wcaId &&
                       !participant.user?.isDeleted &&
                       !participant.wasDeletedWhenJoined && (
-                        <div className="text-xs text-[var(--text-muted)] font-inter bg-[var(--surface-elevated)]/50 px-2 py-0.5 rounded-full inline-block mt-1">
+                        <div className="text-xs text-(--text-muted) font-inter bg-(--surface-elevated)/50 px-2 py-0.5 rounded-full inline-block mt-1">
                           {participant.user.wcaId}
                         </div>
                       )}
                   </div>
                   <div className="text-right">
-                    <div className="font-mono text-lg font-bold text-[var(--text-primary)] mb-1">
+                    <div className="font-mono text-lg font-bold text-(--text-primary) mb-1">
                       {participant.average
                         ? formatTime(participant.average)
                         : "DNF"}
                     </div>
-                    <div className="text-xs text-[var(--text-muted)] font-inter">
+                    <div className="text-xs text-(--text-muted) font-inter">
                       Best:{" "}
                       <span className="font-mono">
                         {participant.bestSingle
@@ -177,7 +177,7 @@ export default function RoomLeaderboard({
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-1 h-4 bg-blue-500 rounded-full"></div>
-              <h4 className="text-sm font-semibold text-[var(--text-primary)] font-inter">
+              <h4 className="text-sm font-semibold text-(--text-primary) font-inter">
                 In Progress ({inProgressParticipants.length})
               </h4>
             </div>
@@ -186,10 +186,10 @@ export default function RoomLeaderboard({
                 <button
                   key={participant._id}
                   onClick={() => setSelectedParticipant(participant)}
-                  className="w-full flex items-center gap-3 p-4 rounded-xl border transition-all duration-200 cursor-pointer bg-[var(--surface-elevated)] border-[var(--border)]/50 hover:border-blue-500/30"
+                  className="w-full flex items-center gap-3 p-4 rounded-xl border transition-all duration-200 cursor-pointer bg-(--surface-elevated) border-(--border)/50 hover:border-blue-500/30"
                 >
                   {/* User Avatar */}
-                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-[var(--primary)] text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-white font-bold text-sm">
                     {participant.user?.avatar &&
                     !participant.user?.isDeleted &&
                     !participant.wasDeletedWhenJoined ? (
@@ -221,7 +221,7 @@ export default function RoomLeaderboard({
                     </span>
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <div className="font-semibold text-[var(--text-primary)] font-inter text-base">
+                    <div className="font-semibold text-(--text-primary) font-inter text-base">
                       {participant.user?.isDeleted ||
                       participant.wasDeletedWhenJoined
                         ? "Deleted User"
@@ -230,13 +230,13 @@ export default function RoomLeaderboard({
                     {participant.user?.wcaId &&
                       !participant.user?.isDeleted &&
                       !participant.wasDeletedWhenJoined && (
-                        <div className="text-xs text-[var(--text-muted)] font-inter bg-[var(--surface-elevated)]/50 px-2 py-0.5 rounded-full inline-block mt-1">
+                        <div className="text-xs text-(--text-muted) font-inter bg-(--surface-elevated)/50 px-2 py-0.5 rounded-full inline-block mt-1">
                           {participant.user.wcaId}
                         </div>
                       )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="text-sm font-medium font-inter px-3 py-1 rounded-full text-[var(--text-primary)] bg-blue-500/10">
+                    <div className="text-sm font-medium font-inter px-3 py-1 rounded-full text-(--text-primary) bg-blue-500/10">
                       {participant.solvesCompleted} / {participant.totalSolves}
                     </div>
                   </div>
@@ -248,10 +248,10 @@ export default function RoomLeaderboard({
 
         {participants.length === 0 && (
           <div className="text-center py-12">
-            <h4 className="text-lg font-semibold text-[var(--text-primary)] font-statement mb-2">
+            <h4 className="text-lg font-semibold text-(--text-primary) font-statement mb-2">
               No participants yet
             </h4>
-            <p className="text-[var(--text-secondary)] font-inter">
+            <p className="text-(--text-secondary) font-inter">
               Share the room code to invite others!
             </p>
           </div>

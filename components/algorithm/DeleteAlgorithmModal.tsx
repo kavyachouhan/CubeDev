@@ -44,12 +44,12 @@ export default function DeleteAlgorithmModal({
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+          <h2 className="text-xl font-bold text-(--text-primary) font-statement">
             Delete Algorithm
           </h2>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -57,14 +57,14 @@ export default function DeleteAlgorithmModal({
 
         {/* Warning */}
         <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-lg mb-6">
-          <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium text-red-500 font-inter">
               This action cannot be undone
             </p>
-            <p className="text-sm text-[var(--text-muted)] mt-1 font-inter">
+            <p className="text-sm text-(--text-muted) mt-1 font-inter">
               Are you sure you want to delete{" "}
-              <span className="font-semibold text-[var(--text-primary)]">
+              <span className="font-semibold text-(--text-primary)">
                 {algorithmName}
               </span>{" "}
               from this set?

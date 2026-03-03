@@ -83,7 +83,7 @@ export default function GoalProgressCard({
   const getStatusBadge = () => {
     if (status === "achieved") {
       return (
-        <span className="flex items-center gap-1 text-xs sm:text-sm text-[var(--success)] px-1.5 sm:px-2 py-0.5 sm:py-1 bg-[var(--success)]/10 rounded-full whitespace-nowrap shrink-0">
+        <span className="flex items-center gap-1 text-xs sm:text-sm text-(--success) px-1.5 sm:px-2 py-0.5 sm:py-1 bg-(--success)/10 rounded-full whitespace-nowrap shrink-0">
           <Trophy className="w-3 h-3 sm:w-4 sm:h-4" />
           <span className="hidden sm:inline">Goal </span>Achieved
         </span>
@@ -91,7 +91,7 @@ export default function GoalProgressCard({
     }
     if (status === "expired") {
       return (
-        <span className="flex items-center gap-1 text-xs sm:text-sm text-[var(--warning)] px-1.5 sm:px-2 py-0.5 sm:py-1 bg-[var(--warning)]/10 rounded-full whitespace-nowrap shrink-0">
+        <span className="flex items-center gap-1 text-xs sm:text-sm text-(--warning) px-1.5 sm:px-2 py-0.5 sm:py-1 bg-(--warning)/10 rounded-full whitespace-nowrap shrink-0">
           <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4" />
           Overdue
         </span>
@@ -99,14 +99,14 @@ export default function GoalProgressCard({
     }
     if (isOnTrack) {
       return (
-        <span className="flex items-center gap-1 text-xs sm:text-sm text-[var(--success)] px-1.5 sm:px-2 py-0.5 sm:py-1 bg-[var(--success)]/10 rounded-full whitespace-nowrap shrink-0">
+        <span className="flex items-center gap-1 text-xs sm:text-sm text-(--success) px-1.5 sm:px-2 py-0.5 sm:py-1 bg-(--success)/10 rounded-full whitespace-nowrap shrink-0">
           <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
           On Track
         </span>
       );
     }
     return (
-      <span className="flex items-center gap-1 text-xs sm:text-sm text-[var(--warning)] px-1.5 sm:px-2 py-0.5 sm:py-1 bg-[var(--warning)]/10 rounded-full whitespace-nowrap shrink-0">
+      <span className="flex items-center gap-1 text-xs sm:text-sm text-(--warning) px-1.5 sm:px-2 py-0.5 sm:py-1 bg-(--warning)/10 rounded-full whitespace-nowrap shrink-0">
         <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />
         <span className="hidden sm:inline">Needs </span>Focus
       </span>
@@ -148,20 +148,20 @@ export default function GoalProgressCard({
                 e.stopPropagation();
                 setShowEditModal(true);
               }}
-              className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-(--surface-elevated) transition-colors"
               title="Edit goal"
             >
-              <Pencil className="w-4 h-4 text-[var(--text-muted)] hover:text-[var(--primary)]" />
+              <Pencil className="w-4 h-4 text-(--text-muted) hover:text-(--primary)" />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setShowNewGoalModal(true);
               }}
-              className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-(--surface-elevated) transition-colors"
               title="Set new goal"
             >
-              <Plus className="w-4 h-4 text-[var(--text-muted)] hover:text-[var(--primary)]" />
+              <Plus className="w-4 h-4 text-(--text-muted) hover:text-(--primary)" />
             </button>
           </div>
         }
@@ -169,7 +169,7 @@ export default function GoalProgressCard({
         <div className="space-y-4">
           {/* Target and Status Badge - same line, responsive */}
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs sm:text-sm text-[var(--text-muted)] truncate">
+            <span className="text-xs sm:text-sm text-(--text-muted) truncate">
               Target:{" "}
               {profile.goalType === "custom"
                 ? `CUSTOM (${formatTime(targetTime)})`
@@ -181,34 +181,34 @@ export default function GoalProgressCard({
           {/* Progress Bar */}
           <div>
             <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-[var(--text-muted)] text-xs sm:text-sm">
+              <span className="text-(--text-muted) text-xs sm:text-sm">
                 Start: {formatTime(startingAverage)}
               </span>
               <span
-                className={`font-bold text-base sm:text-lg ${status === "achieved" ? "text-[var(--success)]" : "text-[var(--primary)]"}`}
+                className={`font-bold text-base sm:text-lg ${status === "achieved" ? "text-(--success)" : "text-(--primary)"}`}
               >
                 {progressPercentage.toFixed(0)}%
               </span>
-              <span className="text-[var(--success)] text-xs sm:text-sm">
+              <span className="text-(--success) text-xs sm:text-sm">
                 Goal: {formatTime(targetTime)}
               </span>
             </div>
-            <div className="relative h-3 sm:h-4 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+            <div className="relative h-3 sm:h-4 bg-(--surface-elevated) rounded-full overflow-hidden">
               <div
-                className={`absolute h-full transition-all duration-500 rounded-full ${status === "achieved" ? "bg-[var(--success)]" : "bg-[var(--primary)]"}`}
+                className={`absolute h-full transition-all duration-500 rounded-full ${status === "achieved" ? "bg-(--success)" : "bg-(--primary)"}`}
                 style={{ width: `${Math.min(100, progressPercentage)}%` }}
               />
               {/* Expected progress marker - only show when active */}
               {status === "active" && (
                 <div
-                  className="absolute top-0 h-full w-0.5 bg-[var(--text-muted)]"
+                  className="absolute top-0 h-full w-0.5 bg-(--text-muted)"
                   style={{ left: `${Math.min(100, expectedProgress)}%` }}
                   title={`Expected: ${expectedProgress.toFixed(0)}%`}
                 />
               )}
             </div>
             {status === "active" && (
-              <div className="flex justify-between text-xs text-[var(--text-muted)] mt-1">
+              <div className="flex justify-between text-xs text-(--text-muted) mt-1">
                 <span>Progress: {progressPercentage.toFixed(1)}%</span>
                 <span>Expected: {expectedProgress.toFixed(1)}%</span>
               </div>
@@ -219,30 +219,30 @@ export default function GoalProgressCard({
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
             <StatCard
               icon={Target}
-              iconColor="bg-[var(--primary)]/10 text-[var(--primary)]"
+              iconColor="bg-(--primary)/10 text-(--primary)"
               label="Current"
               value={formatTime(currentAverage)}
-              valueColor="text-[var(--primary)]"
+              valueColor="text-(--primary)"
             />
             <StatCard
               icon={TrendingDown}
-              iconColor="bg-[var(--success)]/10 text-[var(--success)]"
+              iconColor="bg-(--success)/10 text-(--success)"
               label="Improved"
               value={`${improvement > 0 ? "-" : "+"}${formatTime(Math.abs(improvement))}`}
               valueColor={
                 improvement > 0
-                  ? "text-[var(--success)]"
-                  : "text-[var(--error)]"
+                  ? "text-(--success)"
+                  : "text-(--error)"
               }
             />
             <StatCard
               icon={Calendar}
               iconColor={
                 status === "expired"
-                  ? "bg-[var(--warning)]/10 text-[var(--warning)]"
+                  ? "bg-(--warning)/10 text-(--warning)"
                   : status === "achieved"
-                    ? "bg-[var(--success)]/10 text-[var(--success)]"
-                    : "bg-[var(--warning)]/10 text-[var(--warning)]"
+                    ? "bg-(--success)/10 text-(--success)"
+                    : "bg-(--warning)/10 text-(--warning)"
               }
               label={
                 status === "expired"
@@ -254,18 +254,18 @@ export default function GoalProgressCard({
               value={getDaysLeftDisplay()}
               valueColor={
                 status === "expired"
-                  ? "text-[var(--warning)]"
+                  ? "text-(--warning)"
                   : status === "achieved"
-                    ? "text-[var(--success)]"
+                    ? "text-(--success)"
                     : undefined
               }
             />
             <StatCard
               icon={Zap}
-              iconColor="bg-[var(--accent)]/10 text-[var(--accent)]"
+              iconColor="bg-(--accent)/10 text-(--accent)"
               label="To Go"
               value={timeToGo > 0 ? `-${formatTime(timeToGo)}` : "Done!"}
-              valueColor={timeToGo <= 0 ? "text-[var(--success)]" : undefined}
+              valueColor={timeToGo <= 0 ? "text-(--success)" : undefined}
             />
           </div>
         </div>

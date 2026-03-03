@@ -263,11 +263,11 @@ export default function ExecutionPracticeCard({
       case "ready":
         return "text-green-500";
       case "running":
-        return "text-[var(--primary)]";
+        return "text-(--primary)";
       case "finished":
         return "text-green-500";
       default:
-        return "text-[var(--text-muted)]";
+        return "text-(--text-muted)";
     }
   };
 
@@ -294,17 +294,17 @@ export default function ExecutionPracticeCard({
         {/* Start Practice Prompt */}
         {!hasStarted && onStart && (
           <div className="text-center py-12">
-            <Play className="w-16 h-16 text-[var(--primary)] mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-[var(--text-primary)] font-statement mb-2">
+            <Play className="w-16 h-16 text-(--primary) mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-(--text-primary) font-statement mb-2">
               Execution Drill
             </h3>
-            <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
+            <p className="text-(--text-muted) mb-6 max-w-md mx-auto">
               Practice executing algorithms as fast as possible. Focus on smooth
               fingertricks and muscle memory.
             </p>
             <button
               onClick={onStart}
-              className="px-8 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-medium text-lg"
+              className="px-8 py-4 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium text-lg"
             >
               Start Execution Drill
             </button>
@@ -316,14 +316,14 @@ export default function ExecutionPracticeCard({
           <>
             {/* Case Info */}
             <div className="text-center mb-6">
-              <h3 className="text-3xl font-bold text-[var(--primary)] font-statement mb-2">
+              <h3 className="text-3xl font-bold text-(--primary) font-statement mb-2">
                 {caseName}
               </h3>
-              <div className="inline-block px-4 py-2 bg-[var(--surface-elevated)] rounded-lg">
-                <p className="text-sm text-[var(--text-muted)] mb-1">
+              <div className="inline-block px-4 py-2 bg-(--surface-elevated) rounded-lg">
+                <p className="text-sm text-(--text-muted) mb-1">
                   Algorithm
                 </p>
-                <p className="text-lg font-mono text-[var(--text-primary)]">
+                <p className="text-lg font-mono text-(--text-primary)">
                   {algorithm}
                 </p>
               </div>
@@ -340,17 +340,17 @@ export default function ExecutionPracticeCard({
                   height="300px"
                 />
               ) : (
-                <div className="bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] p-6 min-h-[250px] flex flex-col items-center justify-center">
+                <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-6 min-h-[250px] flex flex-col items-center justify-center">
                   <div className="flex items-center gap-2 mb-4">
                     <AlertTriangle className="w-4 h-4 text-yellow-500" />
                     <span className="text-xs text-yellow-500/80">
                       Non-standard notation
                     </span>
                   </div>
-                  <p className="font-mono text-lg text-[var(--text-primary)] text-center break-all leading-relaxed">
+                  <p className="font-mono text-lg text-(--text-primary) text-center break-all leading-relaxed">
                     {setupMoves}
                   </p>
-                  <p className="text-xs text-[var(--text-muted)] mt-4 text-center">
+                  <p className="text-xs text-(--text-muted) mt-4 text-center">
                     3D preview unavailable - practice by executing the algorithm
                     above
                   </p>
@@ -391,7 +391,7 @@ export default function ExecutionPracticeCard({
                         : "0.00"}
                 </div>
 
-                <p className="text-sm text-[var(--text-secondary)] mb-4">
+                <p className="text-sm text-(--text-secondary) mb-4">
                   {getStatusText()}
                 </p>
 
@@ -400,7 +400,7 @@ export default function ExecutionPracticeCard({
                   <div className="flex gap-2 justify-center mt-4">
                     <button
                       onClick={handleNext}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-medium"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium"
                     >
                       Next Case
                     </button>
@@ -411,11 +411,11 @@ export default function ExecutionPracticeCard({
 
             {/* Tips */}
             {timerState === "idle" && (
-              <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
-                <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
+              <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                <h4 className="text-sm font-semibold text-(--text-primary) mb-2">
                   Tips:
                 </h4>
-                <ul className="space-y-1 text-sm text-[var(--text-secondary)]">
+                <ul className="space-y-1 text-sm text-(--text-secondary)">
                   <li>• Focus on smooth fingertricks and muscle memory</li>
                   <li>• Try to minimize pauses between moves</li>
                   <li>• Practice until you can execute without thinking</li>
