@@ -1185,7 +1185,7 @@ function ArticleModal({
                     onChange={(e) =>
                       setFormData({ ...formData, content: e.target.value })
                     }
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-y min-h-[120px] transition-all font-inter"
+                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-y min-h-30 transition-all font-inter"
                     rows={6}
                     placeholder="Detailed article content..."
                     required

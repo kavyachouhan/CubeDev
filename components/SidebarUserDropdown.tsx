@@ -9,8 +9,10 @@ import {
   Settings,
   LogOut,
   ChevronUp,
+  ChevronRight,
   Home,
   Mail,
+  HelpCircle,
 } from "lucide-react";
 
 interface SidebarUserDropdownProps {
@@ -29,6 +31,8 @@ export default function SidebarUserDropdown({
   collapsed = false,
 }: SidebarUserDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -47,6 +51,31 @@ export default function SidebarUserDropdown({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    const handleMediaChange = (event: MediaQueryListEvent) => {
+      setIsDesktop(event.matches);
+      setIsMoreOpen(false);
+    };
+
+    setIsDesktop(mediaQuery.matches);
+    mediaQuery.addEventListener("change", handleMediaChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleMediaChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setIsMoreOpen(false);
+    }
+  }, [isOpen]);
 
   return (
     <div
@@ -102,14 +131,17 @@ export default function SidebarUserDropdown({
       {/* Dropdown Menu */}
       {isOpen && (
         <div
-          className={`absolute bottom-full mb-2 bg-(--background) border border-(--border) rounded-lg shadow-lg z-50 py-2 ${collapsed ? "left-0 min-w-[200px]" : "left-0 right-0"}`}
+          className={`absolute bottom-full mb-2 bg-(--background) border border-(--border) rounded-lg shadow-lg z-50 py-2 ${collapsed ? "left-0 min-w-50" : "left-0 right-0"}`}
         >
           {/* Menu Items */}
           <div className="py-1">
             <Link
               href="/"
               className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                setIsMoreOpen(false);
+                setIsOpen(false);
+              }}
             >
               <Home className="w-4 h-4" />
               Home
@@ -119,7 +151,10 @@ export default function SidebarUserDropdown({
               <Link
                 href={`/cuber/${user.wcaId}`}
                 className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setIsMoreOpen(false);
+                  setIsOpen(false);
+                }}
               >
                 <User className="w-4 h-4" />
                 Public Profile
@@ -129,29 +164,93 @@ export default function SidebarUserDropdown({
             <Link
               href="/cuber"
               className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                setIsMoreOpen(false);
+                setIsOpen(false);
+              }}
             >
               <Users className="w-4 h-4" />
               Cubers
             </Link>
 
-            <Link
-              href="/contact"
-              className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
-              onClick={() => setIsOpen(false)}
+            <div
+              className="relative"
+              onMouseEnter={() => {
+                if (isDesktop) {
+                  setIsMoreOpen(true);
+                }
+              }}
+              onMouseLeave={() => {
+                if (isDesktop) {
+                  setIsMoreOpen(false);
+                }
+              }}
             >
-              <Mail className="w-4 h-4" />
-              Contact
-            </Link>
+              <button
+                onClick={() => {
+                  if (!isDesktop) {
+                    setIsMoreOpen((prev) => !prev);
+                  }
+                }}
+                className="flex items-center justify-between w-full px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
+                aria-expanded={isMoreOpen}
+                aria-label="Open more links"
+              >
+                <span className="flex items-center gap-3">
+                  <HelpCircle className="w-4 h-4" />
+                  More
+                </span>
+                <ChevronRight
+                  className={`w-4 h-4 transition-transform duration-200 ${isMoreOpen ? "rotate-90" : "rotate-0"}`}
+                />
+              </button>
 
-            <Link
-              href="/me"
-              className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
-              onClick={() => setIsOpen(false)}
-            >
-              <Settings className="w-4 h-4" />
-              Settings
-            </Link>
+              {isMoreOpen && (
+                <div
+                  className={
+                    isDesktop
+                      ? `absolute top-0 ${collapsed ? "left-full ml-1" : "left-full ml-2"} min-w-44 bg-(--background) border border-(--border) rounded-lg shadow-lg py-2 z-10`
+                      : "mt-1 mx-2 bg-(--background-subtle) border border-(--border) rounded-lg py-2"
+                  }
+                >
+                  <Link
+                    href="/contact"
+                    className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
+                    onClick={() => {
+                      setIsMoreOpen(false);
+                      setIsOpen(false);
+                    }}
+                  >
+                    <Mail className="w-4 h-4" />
+                    Contact
+                  </Link>
+
+                  <Link
+                    href="/me"
+                    className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
+                    onClick={() => {
+                      setIsMoreOpen(false);
+                      setIsOpen(false);
+                    }}
+                  >
+                    <Settings className="w-4 h-4" />
+                    Settings
+                  </Link>
+
+                  <Link
+                    href="/help"
+                    className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
+                    onClick={() => {
+                      setIsMoreOpen(false);
+                      setIsOpen(false);
+                    }}
+                  >
+                    <HelpCircle className="w-4 h-4" />
+                    Help
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Sign Out */}
@@ -159,6 +258,7 @@ export default function SidebarUserDropdown({
             <button
               onClick={() => {
                 onSignOut();
+                setIsMoreOpen(false);
                 setIsOpen(false);
               }}
               className="flex items-center gap-3 px-4 py-2 w-full text-left text-(--text-secondary) hover:text-red-500 hover:bg-(--surface-elevated) transition-colors font-inter"

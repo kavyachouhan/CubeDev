@@ -69,12 +69,20 @@ const CATEGORIES = [
     order: 6,
   },
   {
+    name: "Cubers & Profiles",
+    slug: "cubers-profiles",
+    description:
+      "Learn how to find cubers, view profiles, understand stats, and manage profile visibility.",
+    icon: "User",
+    order: 7,
+  },
+  {
     name: "Account & Settings",
     slug: "account-settings",
     description:
       "Manage your profile, theme, privacy settings, and linked WCA account.",
     icon: "Settings",
-    order: 7,
+    order: 8,
   },
   {
     name: "Cubie AI",
@@ -82,7 +90,7 @@ const CATEGORIES = [
     description:
       "Learn about Cubie, the AI assistant that helps you improve your cubing skills.",
     icon: "MessageSquare",
-    order: 8,
+    order: 9,
   },
 ];
 
@@ -209,6 +217,44 @@ const GETTING_STARTED_ARTICLES = [
       "CubeDev is 100% free to use. All features — the timer, statistics, algorithm trainer, coach, competitions, and challenge rooms — are available to every user at no cost. There are no premium tiers or paywalls. CubeDev is built by cubers, for the cubing community.\n\nIf you'd like to support the project, you can contribute on GitHub or share CubeDev with your cubing friends!",
     searchTags: ["free", "cost", "price", "premium", "paid", "subscription"],
     order: 3,
+    isFeatured: false,
+  },
+  {
+    title: "How do I restart feature tours and walkthrough guides?",
+    slug: "restart-feature-tours",
+    summary:
+      "Use the Help or Guide buttons inside feature pages to reopen walkthroughs whenever you need a refresher.",
+    content:
+      "CubeDev walkthroughs can always be revisited. Most feature pages show a floating Help or Guide button after your first completion, so you can replay onboarding anytime.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open the Feature Page",
+        description:
+          "Go to Coach, Competitions, Challenge Rooms, or Algorithm Trainer from the Cube Lab sidebar.",
+      },
+      {
+        stepNumber: 2,
+        title: "Find the Help Button",
+        description:
+          'Look for a floating "Help" or "Guide" button near the bottom-right corner.',
+      },
+      {
+        stepNumber: 3,
+        title: "Replay the Walkthrough",
+        description:
+          "Click the button to restart the walkthrough and go step-by-step through key actions again.",
+      },
+    ],
+    searchTags: [
+      "tour",
+      "walkthrough",
+      "guide",
+      "help",
+      "onboarding",
+      "restart",
+    ],
+    order: 4,
     isFeatured: false,
   },
 ];
@@ -474,6 +520,319 @@ const TIMER_ARTICLES = [
     order: 8,
     isFeatured: false,
   },
+  {
+    title: "How do I switch timer modes?",
+    slug: "switch-timer-modes",
+    summary:
+      "Choose between Normal Timer, Manual Entry, and Stackmat mode from the Timer settings panel.",
+    content:
+      "CubeDev supports three timer modes so you can practice with your preferred setup. Normal mode uses spacebar/tap timing, Manual mode lets you type times, and Stackmat mode reads hardware input through your microphone.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Timer Settings",
+        description:
+          "Go to Cube Lab > Timer and click the settings/gear button near the timer controls.",
+      },
+      {
+        stepNumber: 2,
+        title: "Open Timer Mode",
+        description: "In settings, open the Timer Mode dropdown.",
+      },
+      {
+        stepNumber: 3,
+        title: "Choose a Mode",
+        description:
+          "Select Normal Timer, Manual Entry, or Stackmat Timer. Your selection applies immediately.",
+      },
+    ],
+    searchTags: [
+      "timer mode",
+      "normal",
+      "manual",
+      "stackmat",
+      "switch",
+      "settings",
+    ],
+    order: 9,
+    isFeatured: true,
+  },
+  {
+    title: "How do I configure keyboard shortcuts?",
+    slug: "configure-keyboard-shortcuts",
+    summary:
+      "Customize timer shortcuts in Settings so event switching and timer actions match your workflow.",
+    content:
+      "You can fully customize keyboard shortcuts for timer actions such as event switching, scramble navigation, session controls, and penalties.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Settings",
+        description:
+          "From Cube Lab, open your user menu and navigate to Settings.",
+      },
+      {
+        stepNumber: 2,
+        title: "Expand Keyboard Shortcuts",
+        description:
+          "Find the Keyboard Shortcuts section and enable shortcuts if they are currently disabled.",
+      },
+      {
+        stepNumber: 3,
+        title: "Edit a Shortcut",
+        description:
+          "Click the shortcut you want to change, then press the new key combination.",
+      },
+      {
+        stepNumber: 4,
+        title: "Save Changes",
+        description:
+          "Confirm and save. The new shortcut applies on the Timer page.",
+      },
+    ],
+    searchTags: [
+      "keyboard",
+      "shortcuts",
+      "hotkeys",
+      "settings",
+      "timer controls",
+      "customize",
+    ],
+    order: 10,
+    isFeatured: true,
+  },
+  {
+    title: "Why are my keyboard shortcuts not working?",
+    slug: "shortcuts-not-working",
+    summary:
+      "Shortcuts only work on the Timer page and require a physical keyboard with shortcuts enabled.",
+    content:
+      "If shortcuts are not responding, check where you are in the app and confirm shortcut settings. On mobile devices, keyboard shortcuts are disabled unless you use a physical keyboard.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Go to Timer Page",
+        description:
+          "Open Cube Lab > Timer. Shortcuts are scoped to the Timer page.",
+      },
+      {
+        stepNumber: 2,
+        title: "Enable Shortcuts",
+        description:
+          "In Settings > Keyboard Shortcuts, make sure the enable toggle is turned on.",
+      },
+      {
+        stepNumber: 3,
+        title: "Check for Conflicts",
+        description:
+          "If a shortcut conflicts with another action, update one of them to a unique key combination.",
+      },
+      {
+        stepNumber: 4,
+        title: "Verify Device Type",
+        description:
+          "On phones/tablets without a physical keyboard, use on-screen controls instead of keyboard shortcuts.",
+      },
+    ],
+    searchTags: [
+      "keyboard",
+      "shortcut",
+      "not working",
+      "timer page",
+      "mobile",
+      "conflict",
+    ],
+    order: 11,
+    isFeatured: false,
+  },
+  {
+    title: "How do I enable and use inspection time?",
+    slug: "enable-inspection-time",
+    summary:
+      "Turn on Inspection Time in Timer settings to use a 15-second pre-solve countdown.",
+    content:
+      "Inspection mode adds a 15-second countdown before your solve begins. This helps you practice WCA-style starts.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Timer Settings",
+        description: "In Cube Lab > Timer, click the settings panel.",
+      },
+      {
+        stepNumber: 2,
+        title: "Enable Inspection Time",
+        description: "Toggle Inspection Time on.",
+      },
+      {
+        stepNumber: 3,
+        title: "Start a Solve",
+        description:
+          "Hold the timer to arm it, then release to begin the inspection countdown.",
+      },
+      {
+        stepNumber: 4,
+        title: "Begin Solving",
+        description:
+          "Start solving before inspection expires and stop as usual when finished.",
+      },
+    ],
+    searchTags: [
+      "inspection",
+      "15 seconds",
+      "WCA",
+      "countdown",
+      "timer settings",
+    ],
+    order: 12,
+    isFeatured: false,
+  },
+  {
+    title: "How do I use Focus Mode on the timer?",
+    slug: "use-focus-mode",
+    summary:
+      "Enable Focus Mode in Timer settings for a cleaner, distraction-reduced timing experience.",
+    content:
+      "Focus Mode is designed for uninterrupted practice by minimizing distractions in the timer interface.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Timer Settings",
+        description: "Go to Cube Lab > Timer and open settings.",
+      },
+      {
+        stepNumber: 2,
+        title: "Enable Focus Mode",
+        description: "Toggle Focus Mode on to simplify the active timer view.",
+      },
+      {
+        stepNumber: 3,
+        title: "Practice in Focus",
+        description:
+          "Run solves normally. Turn Focus Mode off anytime to return to the full interface.",
+      },
+    ],
+    searchTags: [
+      "focus mode",
+      "timer",
+      "distraction",
+      "clean view",
+      "settings",
+    ],
+    order: 13,
+    isFeatured: false,
+  },
+  {
+    title: "How do I turn on phase splits?",
+    slug: "turn-on-phase-splits",
+    summary:
+      "Enable Phase Splits in Timer settings to track stage-by-stage timing during solves.",
+    content:
+      "Phase splits help you analyze where time is spent in your solve. You can pair splits with your preferred solving method.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Timer Settings",
+        description: "Go to the Timer page and open settings.",
+      },
+      {
+        stepNumber: 2,
+        title: "Enable Phase Splits",
+        description: "Turn on the Phase Splits toggle.",
+      },
+      {
+        stepNumber: 3,
+        title: "Select a Split Method",
+        description:
+          "Pick a method such as CFOP, Roux, ZZ, Petrus, or another available split preset.",
+      },
+      {
+        stepNumber: 4,
+        title: "Record and Review",
+        description:
+          "Complete solves and review per-phase timing to identify your slowest stages.",
+      },
+    ],
+    searchTags: ["phase splits", "splits", "CFOP", "Roux", "ZZ", "analysis"],
+    order: 14,
+    isFeatured: false,
+  },
+  {
+    title: "How do I choose the right split method?",
+    slug: "choose-split-method",
+    summary:
+      "Use a split preset that matches your solving method so phase data is meaningful.",
+    content:
+      "Choose the split method that mirrors your real solve structure. This gives you clean phase comparisons and better improvement insights.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Split Method Menu",
+        description:
+          "With Phase Splits enabled, open the split method dropdown in Timer settings.",
+      },
+      {
+        stepNumber: 2,
+        title: "Match Your Method",
+        description:
+          "Select CFOP, Roux, ZZ, Petrus, Mehta, OLL-only, PLL-only, or another preset that matches your solve flow.",
+      },
+      {
+        stepNumber: 3,
+        title: "Test for a Few Sessions",
+        description:
+          "Use the method for multiple solves, then compare phase consistency and adjust if needed.",
+      },
+    ],
+    searchTags: [
+      "split method",
+      "phase",
+      "CFOP",
+      "Roux",
+      "Petrus",
+      "Mehta",
+      "settings",
+    ],
+    order: 15,
+    isFeatured: false,
+  },
+  {
+    title: "How do I change timer sounds or mute PB sounds?",
+    slug: "timer-sounds-and-pb-mute",
+    summary:
+      "Use Timer settings to choose sound style and control personal-best sound playback.",
+    content:
+      "CubeDev lets you customize timer audio feedback so it matches your practice setup. You can switch sound presets and mute PB celebration sound when needed.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Timer Settings",
+        description: "Go to Cube Lab > Timer and open settings.",
+      },
+      {
+        stepNumber: 2,
+        title: "Open Sound Options",
+        description:
+          "Find the sound section and choose your preferred option (for example beep, tick, or wood).",
+      },
+      {
+        stepNumber: 3,
+        title: "Adjust PB Sound",
+        description:
+          "Turn PB sound off if you want a quieter session, or keep it on for milestone feedback.",
+      },
+    ],
+    searchTags: [
+      "timer sound",
+      "audio",
+      "pb sound",
+      "mute",
+      "settings",
+      "beep",
+      "tick",
+    ],
+    order: 16,
+    isFeatured: false,
+  },
 ];
 
 const STATISTICS_ARTICLES = [
@@ -642,6 +1001,62 @@ const ALGORITHM_TRAINER_ARTICLES = [
     order: 2,
     isFeatured: false,
   },
+  {
+    title: "How do I use recognition, execution, and blind practice modes?",
+    slug: "algorithm-practice-modes",
+    summary:
+      "Pick a practice mode based on your goal: case identification, execution speed, or memory-based recall.",
+    content:
+      "Algorithm Trainer includes multiple drill styles so you can train different skills, from recognizing cases quickly to executing with better speed and consistency.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Algorithm Trainer",
+        description:
+          "Go to Cube Lab > Algorithm Trainer and open an algorithm set.",
+      },
+      {
+        stepNumber: 2,
+        title: "Open Practice Modes",
+        description:
+          "Choose Recognition Drill, Execution Drill, or Blind Recognition.",
+      },
+      {
+        stepNumber: 3,
+        title: "Run Focused Sessions",
+        description:
+          "Use recognition to improve case ID, execution to improve speed, and blind mode to strengthen memory and pattern intuition.",
+      },
+    ],
+    searchTags: [
+      "algorithm trainer",
+      "practice modes",
+      "recognition",
+      "execution",
+      "blind recognition",
+      "drills",
+    ],
+    order: 3,
+    isFeatured: false,
+  },
+  {
+    title: "What do mastery, due reviews, and heatmap activity mean?",
+    slug: "mastery-due-reviews-heatmap",
+    summary:
+      "Mastery tracks learned stability, due reviews show what to practice today, and the heatmap shows consistency over time.",
+    content:
+      "These indicators are your daily training dashboard:\n\n• Mastery count: cases you consistently recall correctly\n• Due reviews: cases scheduled for today by spaced repetition\n• Activity heatmap: your review consistency across days\n\nUse all three together to keep progress steady instead of cramming long sessions.",
+    searchTags: [
+      "mastery",
+      "due reviews",
+      "heatmap",
+      "spaced repetition",
+      "daily practice",
+      "algorithm progress",
+    ],
+    order: 4,
+    isFeatured: false,
+  },
 ];
 
 const COACH_ARTICLES = [
@@ -707,6 +1122,62 @@ const COACH_ARTICLES = [
     order: 1,
     isFeatured: false,
   },
+  {
+    title: "How do I use Coach tabs (Plan, Journal, Progress)?",
+    slug: "use-coach-tabs",
+    summary:
+      "Coach tabs separate planning, daily logging, and long-term progress so you can improve systematically.",
+    content:
+      "Coach is designed as a workflow: plan your week, log your practice, then review progress. Using all three tabs gives the best results.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Training Plan",
+        description:
+          "Use Training Plan to view weekly activities and complete daily tasks.",
+      },
+      {
+        stepNumber: 2,
+        title: "Log Sessions in Journal",
+        description:
+          "Use Journal to record what you practiced, your mood, and notes about what worked.",
+      },
+      {
+        stepNumber: 3,
+        title: "Review Progress",
+        description:
+          "Open Progress to check streaks, goal movement, and improvement trends.",
+      },
+    ],
+    searchTags: [
+      "coach tabs",
+      "training plan",
+      "journal",
+      "progress",
+      "workflow",
+      "coach",
+    ],
+    order: 2,
+    isFeatured: false,
+  },
+  {
+    title: "How does Coach create smart recommendations?",
+    slug: "coach-smart-recommendations",
+    summary:
+      "Coach analyzes your solve patterns and goal timeline to suggest practice that targets weak areas.",
+    content:
+      "Smart recommendations adapt based on your recent solves, consistency patterns, and remaining time to your goal. This helps you focus effort where it has the highest impact.",
+    searchTags: [
+      "coach",
+      "recommendations",
+      "weak areas",
+      "goal planning",
+      "training",
+      "improvement",
+    ],
+    order: 3,
+    isFeatured: false,
+  },
 ];
 
 const COMPETITIONS_ARTICLES = [
@@ -752,6 +1223,82 @@ const COMPETITIONS_ARTICLES = [
       "round",
     ],
     order: 0,
+    isFeatured: false,
+  },
+  {
+    title: "How do I filter competitions by event, region, or date?",
+    slug: "filter-competitions",
+    summary:
+      "Use competition filters to quickly find events by puzzle, location, and timeframe.",
+    content:
+      "Competition browsing includes smart filtering so you can target the kinds of events you care about before running simulations.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Competitions",
+        description: "Go to Cube Lab > Competitions.",
+      },
+      {
+        stepNumber: 2,
+        title: "Set Filter Values",
+        description:
+          "Choose event type, region, and time range using the filter controls.",
+      },
+      {
+        stepNumber: 3,
+        title: "Refine by Search",
+        description:
+          "Use search terms like city or competition name to narrow results further.",
+      },
+    ],
+    searchTags: [
+      "competitions",
+      "filter",
+      "region",
+      "event",
+      "date",
+      "search",
+      "simulation",
+    ],
+    order: 1,
+    isFeatured: false,
+  },
+  {
+    title: "How do I review simulation history and performance analytics?",
+    slug: "simulation-history-analytics",
+    summary:
+      "After simulations, open history and analytics to track averages, consistency, and trends over time.",
+    content:
+      "Simulation history helps you compare sessions, while analytics highlights consistency and trend direction so you can practice with intent.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Complete Simulations",
+        description:
+          "Run one or more simulated rounds in the Competitions section.",
+      },
+      {
+        stepNumber: 2,
+        title: "Open History",
+        description:
+          "View your simulation history list to compare recent rounds.",
+      },
+      {
+        stepNumber: 3,
+        title: "Inspect Analytics",
+        description:
+          "Review averages, consistency signals, and trend charts to decide what to improve next.",
+      },
+    ],
+    searchTags: [
+      "simulation history",
+      "analytics",
+      "competition",
+      "trend",
+      "consistency",
+      "averages",
+    ],
+    order: 2,
     isFeatured: false,
   },
 ];
@@ -810,6 +1357,122 @@ const CHALLENGES_ARTICLES = [
       "When you complete a solve in a Challenge Room, your time is immediately added to the room's leaderboard. The leaderboard shows:\n\n• All participants ranked by time (fastest first)\n• DNF results at the bottom\n• Your position highlighted\n• Total number of participants\n\nEach round uses a new scramble, and the leaderboard resets for each round. Your overall Challenge Room statistics (total rooms, wins, average placement) are tracked on your profile.",
     searchTags: ["leaderboard", "ranking", "position", "challenge", "results"],
     order: 1,
+    isFeatured: false,
+  },
+  {
+    title: "How do I create a Challenge Room?",
+    slug: "create-challenge-room",
+    summary:
+      "Create a room from Quick Action, choose event and format, then share it publicly or privately.",
+    content:
+      "Creating a room is the fastest way to start a live challenge with friends or the wider CubeDev community.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Challenge Rooms",
+        description: "Go to Cube Lab > Challenge Rooms.",
+      },
+      {
+        stepNumber: 2,
+        title: "Select Create Room",
+        description: "Use Quick Action and choose Create Room.",
+      },
+      {
+        stepNumber: 3,
+        title: "Set Room Options",
+        description:
+          "Pick event, format (Ao5 or Ao12), and choose whether the room is public or private.",
+      },
+      {
+        stepNumber: 4,
+        title: "Launch and Share",
+        description:
+          "Create the room and share the link or code so others can join.",
+      },
+    ],
+    searchTags: [
+      "challenge room",
+      "create",
+      "Ao5",
+      "Ao12",
+      "public",
+      "private",
+      "quick action",
+    ],
+    order: 2,
+    isFeatured: true,
+  },
+  {
+    title: "How do I join a room by code or from active public rooms?",
+    slug: "join-room-by-code-or-public",
+    summary:
+      "Join private rooms with a code or jump into open public rooms from the active list.",
+    content:
+      "Challenge Rooms support both invite-based and open participation so you can compete with friends or meet new cubers.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Join Room",
+        description: "From Quick Action, choose Join Room.",
+      },
+      {
+        stepNumber: 2,
+        title: "Use a Room Code",
+        description: "Enter the room code if the room is private.",
+      },
+      {
+        stepNumber: 3,
+        title: "Or Browse Public Rooms",
+        description:
+          "Use Active Public Rooms to join open challenges instantly.",
+      },
+    ],
+    searchTags: [
+      "join room",
+      "room code",
+      "public rooms",
+      "private room",
+      "challenge",
+      "quick action",
+    ],
+    order: 3,
+    isFeatured: false,
+  },
+  {
+    title: "How do room rankings and 48-hour expiry work?",
+    slug: "challenge-room-ranking-and-expiry",
+    summary:
+      "Rooms stay active for 48 hours, rankings update live, and final reports are available after closure.",
+    content:
+      "Challenge Rooms keep leaderboards live during the room window. When the room reaches its end, final results remain available for review.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Compete During Active Window",
+        description: "Submit your solves while the room is active.",
+      },
+      {
+        stepNumber: 2,
+        title: "Track Live Ranking",
+        description:
+          "Watch positions update in real time as participants finish.",
+      },
+      {
+        stepNumber: 3,
+        title: "Review Final Results",
+        description:
+          "After 48 hours, the room closes and final ranking/statistics are locked in the results view.",
+      },
+    ],
+    searchTags: [
+      "ranking",
+      "leaderboard",
+      "expiry",
+      "48 hours",
+      "challenge room",
+      "results",
+    ],
+    order: 4,
     isFeatured: false,
   },
 ];
@@ -905,6 +1568,209 @@ const ACCOUNT_SETTINGS_ARTICLES = [
     order: 3,
     isFeatured: false,
   },
+  {
+    title: "How do I reset keyboard shortcuts to default?",
+    slug: "reset-shortcuts-default",
+    summary:
+      "Use the Keyboard Shortcuts settings panel to reset one shortcut or all shortcuts back to defaults.",
+    content:
+      "If your custom keybinds become confusing, you can safely revert to CubeDev defaults.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Keyboard Shortcuts",
+        description: "Go to Settings > Keyboard Shortcuts.",
+      },
+      {
+        stepNumber: 2,
+        title: "Choose Reset Type",
+        description:
+          "Use reset for one action or reset all shortcuts depending on what you need.",
+      },
+      {
+        stepNumber: 3,
+        title: "Confirm Reset",
+        description: "Confirm the reset and test shortcuts on the Timer page.",
+      },
+    ],
+    searchTags: [
+      "keyboard",
+      "shortcuts",
+      "reset",
+      "default",
+      "keybind",
+      "settings",
+    ],
+    order: 4,
+    isFeatured: false,
+  },
+  {
+    title: "How do I export and import solve data from Settings?",
+    slug: "settings-export-import-solves",
+    summary:
+      "Use Data Management in Settings to export backups and import solve files from supported timers.",
+    content:
+      "Data Management helps you back up your progress and migrate solve history from other tools.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Settings",
+        description: "Go to your Cube Lab settings page.",
+      },
+      {
+        stepNumber: 2,
+        title: "Find Data Management",
+        description: "Open the import/export section in settings.",
+      },
+      {
+        stepNumber: 3,
+        title: "Export or Import",
+        description:
+          "Choose Export Solves for a backup file, or Import Solves to upload supported solve data.",
+      },
+    ],
+    searchTags: [
+      "export",
+      "import",
+      "solves",
+      "backup",
+      "data management",
+      "settings",
+      "cstimer",
+    ],
+    order: 5,
+    isFeatured: false,
+  },
+];
+
+const CUBERS_PROFILES_ARTICLES = [
+  {
+    title: "How do I find cubers in the Cubers directory?",
+    slug: "find-cubers-directory",
+    summary:
+      "Open the Cubers page to browse registered members, countries, and profile cards.",
+    content:
+      "The Cubers directory is the public community list where you can discover active CubeDev members and open their profiles.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open Cubers Directory",
+        description: "Navigate to the Cubers page from the main navigation.",
+      },
+      {
+        stepNumber: 2,
+        title: "Browse User Cards",
+        description:
+          "Scroll through profile cards showing names, WCA IDs, and country.",
+      },
+      {
+        stepNumber: 3,
+        title: "Open a Profile",
+        description: "Click any card to view that cuber's full profile page.",
+      },
+    ],
+    searchTags: [
+      "cubers",
+      "directory",
+      "find users",
+      "profiles",
+      "community",
+      "browse",
+    ],
+    order: 0,
+    isFeatured: true,
+  },
+  {
+    title: "How do I search cubers by name, WCA ID, or country?",
+    slug: "search-cubers",
+    summary:
+      "Use the search bar on the Cubers page to filter results by name, WCA ID, or country code.",
+    content:
+      "Search is instant in the directory, making it easy to locate specific cubers quickly.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open the Cubers Page",
+        description: "Navigate to the Cubers directory.",
+      },
+      {
+        stepNumber: 2,
+        title: "Type a Search Term",
+        description:
+          "Enter a name, WCA ID, or country code in the search field.",
+      },
+      {
+        stepNumber: 3,
+        title: "Open Matching Profile",
+        description: "Select a result card to open the cuber profile.",
+      },
+    ],
+    searchTags: [
+      "search",
+      "cubers",
+      "WCA ID",
+      "country",
+      "directory filter",
+      "profiles",
+    ],
+    order: 1,
+    isFeatured: false,
+  },
+  {
+    title: "How do I use cuber profile tabs and stats sections?",
+    slug: "use-cuber-profile-tabs",
+    summary:
+      "Cuber profiles include CubeDev stats, WCA stats, and training-related views depending on available data.",
+    content:
+      "Profiles are organized into tabs so you can quickly switch between platform stats and WCA competition data.",
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Open a Cuber Profile",
+        description: "From the directory, click a user card.",
+      },
+      {
+        stepNumber: 2,
+        title: "Switch Tabs",
+        description:
+          "Use profile tabs to move between CubeDev data, WCA data, and other available sections.",
+      },
+      {
+        stepNumber: 3,
+        title: "Compare Insights",
+        description:
+          "Use CubeDev trends for training patterns and WCA sections for official competition history.",
+      },
+    ],
+    searchTags: [
+      "cuber profile",
+      "tabs",
+      "CubeDev stats",
+      "WCA stats",
+      "training",
+      "profile view",
+    ],
+    order: 2,
+    isFeatured: false,
+  },
+  {
+    title: "Why is a cuber profile hidden or unavailable?",
+    slug: "cuber-profile-hidden-unavailable",
+    summary:
+      "A profile may be hidden due to privacy settings, account status, or because the user is not publicly registered.",
+    content:
+      "Not all profiles are always visible. Users can hide their profile, and unavailable accounts may no longer appear publicly.",
+    searchTags: [
+      "profile hidden",
+      "unavailable",
+      "privacy",
+      "cubers directory",
+      "not found",
+      "public profile",
+    ],
+    order: 3,
+    isFeatured: false,
+  },
 ];
 
 const CUBIE_AI_ARTICLES = [
@@ -974,6 +1840,7 @@ export const seedFAQ = mutation({
         coach: COACH_ARTICLES,
         competitions: COMPETITIONS_ARTICLES,
         "challenge-rooms": CHALLENGES_ARTICLES,
+        "cubers-profiles": CUBERS_PROFILES_ARTICLES,
         "account-settings": ACCOUNT_SETTINGS_ARTICLES,
         "cubie-ai": CUBIE_AI_ARTICLES,
       };

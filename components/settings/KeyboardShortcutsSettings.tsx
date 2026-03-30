@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
-  Keyboard,
   RotateCcw,
   AlertTriangle,
   Check,
@@ -47,13 +46,13 @@ export default function KeyboardShortcutsSettings() {
   const [hasConflict, setHasConflict] = useState(false);
   const inputRef = useRef<HTMLDivElement>(null);
 
-  // Check for mobile on mount
+  // Detect mobile device for warning message
   const [showMobileWarning, setShowMobileWarning] = useState(false);
   useEffect(() => {
     setShowMobileWarning(isMobileDevice());
   }, []);
 
-  // Group shortcuts by category
+  // Categorize shortcuts for display
   const shortcutCategories = [
     {
       name: "Cube Events",
@@ -89,7 +88,7 @@ export default function KeyboardShortcutsSettings() {
     },
   ];
 
-  // Check for conflicts when editing
+  // Check for conflicts with existing shortcuts
   const checkConflict = useCallback(
     (newConfig: EditingShortcut): boolean => {
       return shortcuts.some(
@@ -104,7 +103,7 @@ export default function KeyboardShortcutsSettings() {
     [shortcuts]
   );
 
-  // Handle key capture for editing
+  // Handle key capture when editing a shortcut
   const handleKeyCapture = useCallback(
     (e: KeyboardEvent) => {
       if (!editingAction) return;
@@ -112,12 +111,12 @@ export default function KeyboardShortcutsSettings() {
       e.preventDefault();
       e.stopPropagation();
 
-      // Ignore modifier-only keys
+      // Ignore pure modifier keys
       if (["Control", "Alt", "Shift", "Meta"].includes(e.key)) {
         return;
       }
 
-      // Cancel on Escape
+      // Allow exiting edit mode with Escape
       if (e.key === "Escape") {
         setEditingAction(null);
         setEditingShortcut(null);
@@ -140,7 +139,7 @@ export default function KeyboardShortcutsSettings() {
     [editingAction, checkConflict]
   );
 
-  // Add/remove key listener when editing
+  // Add/remove keydown listener when editing
   useEffect(() => {
     if (editingAction) {
       window.addEventListener("keydown", handleKeyCapture);
@@ -148,14 +147,14 @@ export default function KeyboardShortcutsSettings() {
     }
   }, [editingAction, handleKeyCapture]);
 
-  // Focus ref when editing starts
+  // Focus the input when starting to edit
   useEffect(() => {
     if (editingAction && inputRef.current) {
       inputRef.current.focus();
     }
   }, [editingAction]);
 
-  // Save shortcut
+  // Save the edited shortcut
   const handleSaveShortcut = () => {
     if (!editingShortcut || hasConflict) return;
 
@@ -191,7 +190,7 @@ export default function KeyboardShortcutsSettings() {
     setHasConflict(false);
   };
 
-  // Format display for editing shortcut
+  // Format the shortcut for display in the button
   const formatEditingShortcut = (config: EditingShortcut): string => {
     const parts: string[] = [];
     if (config.ctrl) parts.push("Ctrl");
@@ -209,7 +208,7 @@ export default function KeyboardShortcutsSettings() {
     return parts.join(" + ");
   };
 
-  // Check if shortcut is modified from default
+  // Check if the shortcut has been modified from the default
   const isModified = (shortcut: ShortcutConfig): boolean => {
     const defaultShortcut = DEFAULT_SHORTCUTS.find(
       (s) => s.action === shortcut.action
@@ -439,19 +438,6 @@ export default function KeyboardShortcutsSettings() {
                       </div>
                     </div>
                   )}
-
-                  {/* Tips */}
-                  <div className="p-3 sm:p-4 rounded-lg bg-(--surface) border border-(--border)">
-                    <h4 className="text-sm font-medium text-(--text-primary) mb-2">
-                      Tips
-                    </h4>
-                    <ul className="space-y-1.5 text-xs text-(--text-muted)">
-                      <li>- Click a shortcut key to customize it</li>
-                      <li>- Press Escape to cancel editing</li>
-                      <li>- Shortcuts are disabled while timer is running</li>
-                      <li>- Use Ctrl, Alt, or Shift for unique combinations</li>
-                    </ul>
-                  </div>
                 </div>
               )}
             </>

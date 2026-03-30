@@ -238,7 +238,7 @@ export default function CubeLabLayout({
                 key={section.id}
                 href={section.href}
                 onClick={() => setSidebarOpen(false)}
-                title={isCollapsed ? section.name : undefined}
+                title={section.name}
                 className={`w-full group sidebar-nav-item flex items-center rounded-lg text-left transition-all relative ${
                   isCollapsed
                     ? "lg:justify-center lg:px-0 lg:py-3"
