@@ -44,6 +44,7 @@ import {
   AlertCircle,
   Zap,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { AdminSelect } from "./AdminDropdown";
 
 // Register ChartJS components
