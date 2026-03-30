@@ -20,7 +20,7 @@ export default function CreditsPage() {
       maintainer: "StoreMyAPI",
       website: "https://storemyapi.dev/",
       usage: "Secure API key management",
-      icon: <Lock className="w-6 h-6 text-(--primary)" />,
+      icon: <Lock className="w-6 h-6 text-[var(--primary)]" />,
     },
     {
       name: "cubing/twisty",

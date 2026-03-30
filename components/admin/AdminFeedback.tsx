@@ -41,6 +41,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { AdminSelect } from "./AdminDropdown";
 
 // Register Chart.js components
 ChartJS.register(
@@ -1333,18 +1334,18 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
               <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                 Survey Type
               </label>
-              <select
+              <AdminSelect
                 value={surveyType}
-                onChange={(e) => setSurveyType(e.target.value)}
-                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) font-inter focus:outline-none focus:ring-2 focus:ring-(--primary)"
-              >
-                {SURVEY_TYPES.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-                <option value="__custom">Custom Type...</option>
-              </select>
+                onChange={(val) => setSurveyType(val)}
+                options={[
+                  ...SURVEY_TYPES.map((type) => ({
+                    value: type.value,
+                    label: type.label,
+                  })),
+                  { value: "__custom", label: "Custom Type..." },
+                ]}
+                fullWidth
+              />
               {surveyType === "__custom" && (
                 <input
                   type="text"
@@ -1542,18 +1543,16 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
               <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                 Most Useful Feature
               </label>
-              <select
+              <AdminSelect
                 value={mostUsefulFeature}
-                onChange={(e) => setMostUsefulFeature(e.target.value)}
-                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) font-inter focus:outline-none focus:ring-2 focus:ring-(--primary)"
-              >
-                <option value="">Select a feature...</option>
-                {allFeatures.map((feature) => (
-                  <option key={feature.key} value={feature.key}>
-                    {feature.label}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => setMostUsefulFeature(val)}
+                options={allFeatures.map((feature) => ({
+                  value: feature.key,
+                  label: feature.label,
+                }))}
+                placeholder="Select a feature..."
+                fullWidth
+              />
             </div>
           )}
 
@@ -1639,21 +1638,20 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
 
                     {/* Question Type & Required */}
                     <div className="flex flex-col xs:flex-row gap-2 items-stretch xs:items-center">
-                      <select
+                      <AdminSelect
                         value={question.type}
-                        onChange={(e) =>
+                        onChange={(val) =>
                           updateCustomQuestion(question.id, {
-                            type: e.target.value as CustomQuestionType,
+                            type: val as CustomQuestionType,
                           })
                         }
-                        className="flex-1 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) font-inter focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                      >
-                        {QUESTION_TYPES.map((t) => (
-                          <option key={t.value} value={t.value}>
-                            {t.label}
-                          </option>
-                        ))}
-                      </select>
+                        options={QUESTION_TYPES.map((t) => ({
+                          value: t.value,
+                          label: t.label,
+                        }))}
+                        className="flex-1"
+                        compact
+                      />
                       <button
                         type="button"
                         onClick={() =>
@@ -1765,24 +1763,23 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                           </div>
                         )}
                         {question.type === "select" && (
-                          <select
-                            value={(customAnswers[question.id] as string) || ""}
-                            onChange={(e) =>
-                              updateCustomAnswer(question.id, e.target.value)
+                          <AdminSelect
+                            value={((customAnswers[question.id] as string) || "")}
+                            onChange={(val) =>
+                              updateCustomAnswer(question.id, val)
                             }
-                            className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) font-inter focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                          >
-                            <option value="">Select...</option>
-                            {question.options
+                            options={question.options
                               .split(",")
                               .map((opt) => opt.trim())
                               .filter(Boolean)
-                              .map((opt) => (
-                                <option key={opt} value={opt}>
-                                  {opt}
-                                </option>
-                              ))}
-                          </select>
+                              .map((opt) => ({
+                                value: opt,
+                                label: opt,
+                              }))}
+                            placeholder="Select..."
+                            fullWidth
+                            compact
+                          />
                         )}
                       </div>
                     )}
@@ -1900,18 +1897,18 @@ export default function AdminFeedback() {
             <span className="text-sm text-(--text-secondary) font-inter">
               Survey Type:
             </span>
-            <select
+            <AdminSelect
               value={surveyTypeFilter}
-              onChange={(e) => setSurveyTypeFilter(e.target.value)}
-              className="px-3 py-1.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-sm text-(--text-primary) font-inter focus:outline-none focus:border-(--primary)"
-            >
-              <option value="all">All Types</option>
-              {allSurveyTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setSurveyTypeFilter(val)}
+              options={[
+                { value: "all", label: "All Types" },
+                ...allSurveyTypes.map((type) => ({
+                  value: type,
+                  label: type.charAt(0).toUpperCase() + type.slice(1),
+                })),
+              ]}
+              compact
+            />
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
