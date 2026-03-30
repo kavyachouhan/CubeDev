@@ -42,10 +42,10 @@ function Toggle({
   return (
     <button
       onClick={() => onChange(!enabled)}
-      className={`w-11 h-6 rounded-full transition-colors flex items-center flex-shrink-0 ${
+      className={`w-11 h-6 rounded-full transition-colors flex items-center shrink-0 ${
         enabled
-          ? "bg-[var(--primary)] justify-end"
-          : "bg-[var(--border)] justify-start"
+          ? "bg-(--primary) justify-end"
+          : "bg-(--border) justify-start"
       }`}
     >
       <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
@@ -268,25 +268,25 @@ export default function InspectionViolationTrainer({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "perfect":
-        return "text-[var(--success)]";
+        return "text-(--success)";
       case "early":
-        return "text-[var(--info)]";
+        return "text-(--info)";
       case "+2":
-        return "text-[var(--warning)]";
+        return "text-(--warning)";
       case "DNF":
-        return "text-[var(--error)]";
+        return "text-(--error)";
       default:
-        return "text-[var(--text-primary)]";
+        return "text-(--text-primary)";
     }
   };
 
   // Get dynamic timer color based on elapsed time
   const getTimerColor = () => {
-    if (elapsedTime >= 17) return "text-[var(--error)]";
-    if (elapsedTime >= 15) return "text-[var(--warning)]";
-    if (elapsedTime >= 12) return "text-[var(--success)]";
-    if (elapsedTime >= 8) return "text-[var(--warning)]";
-    return "text-[var(--text-primary)]";
+    if (elapsedTime >= 17) return "text-(--error)";
+    if (elapsedTime >= 15) return "text-(--warning)";
+    if (elapsedTime >= 12) return "text-(--success)";
+    if (elapsedTime >= 8) return "text-(--warning)";
+    return "text-(--text-primary)";
   };
 
   const getStatusLabel = (status: string) => {
@@ -316,23 +316,23 @@ export default function InspectionViolationTrainer({
         className="flex items-center justify-between w-full"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[var(--warning)]/20 text-[var(--warning)] rounded-lg flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-(--warning)/20 text-(--warning) rounded-lg flex items-center justify-center shrink-0">
             <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="text-left min-w-0">
-            <h3 className="font-bold text-[var(--text-primary)] text-sm sm:text-base">
+            <h3 className="font-bold text-(--text-primary) text-sm sm:text-base">
               Inspection Trainer
             </h3>
-            <p className="text-xs text-[var(--text-muted)] truncate">
+            <p className="text-xs text-(--text-muted) truncate">
               Practice your 15-second inspection timing
             </p>
           </div>
         </div>
-        <div className="flex-shrink-0 ml-2">
+        <div className="shrink-0 ml-2">
           {isExpanded ? (
-            <ChevronUp className="w-5 h-5 text-[var(--text-muted)]" />
+            <ChevronUp className="w-5 h-5 text-(--text-muted)" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-[var(--text-muted)]" />
+            <ChevronDown className="w-5 h-5 text-(--text-muted)" />
           )}
         </div>
       </button>
@@ -341,35 +341,35 @@ export default function InspectionViolationTrainer({
         <div className="mt-4 space-y-4">
           {/* Stats Overview */}
           <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
-            <div className="p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg text-center">
-              <div className="text-base sm:text-xl font-bold text-[var(--success)]">
+            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg text-center">
+              <div className="text-base sm:text-xl font-bold text-(--success)">
                 {stats.perfectStops}
               </div>
-              <div className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <div className="text-[10px] sm:text-xs text-(--text-muted)">
                 Perfect
               </div>
             </div>
-            <div className="p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg text-center">
-              <div className="text-base sm:text-xl font-bold text-[var(--info)]">
+            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg text-center">
+              <div className="text-base sm:text-xl font-bold text-(--info)">
                 {stats.earlyStops}
               </div>
-              <div className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <div className="text-[10px] sm:text-xs text-(--text-muted)">
                 Early
               </div>
             </div>
-            <div className="p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg text-center">
-              <div className="text-base sm:text-xl font-bold text-[var(--warning)]">
+            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg text-center">
+              <div className="text-base sm:text-xl font-bold text-(--warning)">
                 {stats.plus2s}
               </div>
-              <div className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <div className="text-[10px] sm:text-xs text-(--text-muted)">
                 +2
               </div>
             </div>
-            <div className="p-2 sm:p-3 bg-[var(--surface-elevated)] rounded-lg text-center">
-              <div className="text-base sm:text-xl font-bold text-[var(--error)]">
+            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg text-center">
+              <div className="text-base sm:text-xl font-bold text-(--error)">
                 {stats.dnfs}
               </div>
-              <div className="text-[10px] sm:text-xs text-[var(--text-muted)]">
+              <div className="text-[10px] sm:text-xs text-(--text-muted)">
                 DNF
               </div>
             </div>
@@ -379,15 +379,15 @@ export default function InspectionViolationTrainer({
           <div
             className={`rounded-xl border-2 transition-all cursor-pointer select-none ${
               isRunning
-                ? "border-[var(--warning)] bg-[var(--warning)]/5"
+                ? "border-(--warning) bg-(--warning)/5"
                 : showResult
                   ? lastResult?.status === "perfect"
-                    ? "border-[var(--success)] bg-[var(--success)]/5"
+                    ? "border-(--success) bg-(--success)/5"
                     : lastResult?.status === "+2" ||
                         lastResult?.status === "DNF"
-                      ? "border-[var(--error)] bg-[var(--error)]/5"
-                      : "border-[var(--border)] bg-[var(--surface)]"
-                  : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--primary)]"
+                      ? "border-(--error) bg-(--error)/5"
+                      : "border-(--border) bg-(--surface)"
+                  : "border-(--border) bg-(--surface) hover:border-(--primary)"
             }`}
             onClick={() => {
               if (isRunning) {
@@ -417,7 +417,7 @@ export default function InspectionViolationTrainer({
                       {elapsedTime.toFixed(2)}s
                     </div>
                   )}
-                  <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-2">
+                  <p className="text-xs sm:text-sm text-(--text-muted) mt-2">
                     Tap or press Space to stop
                   </p>
                   {showWarnings && (
@@ -425,8 +425,8 @@ export default function InspectionViolationTrainer({
                       <span
                         className={`text-[10px] sm:text-xs px-2 py-1 rounded-full border ${
                           elapsedTime >= 8
-                            ? "bg-[var(--warning)]/10 border-[var(--warning)]/30 text-[var(--warning)]"
-                            : "bg-[var(--surface-elevated)] border-[var(--border)] text-[var(--text-muted)]"
+                            ? "bg-(--warning)/10 border-(--warning)/30 text-(--warning)"
+                            : "bg-(--surface-elevated) border-(--border) text-(--text-muted)"
                         }`}
                       >
                         8s
@@ -434,8 +434,8 @@ export default function InspectionViolationTrainer({
                       <span
                         className={`text-[10px] sm:text-xs px-2 py-1 rounded-full border ${
                           elapsedTime >= 12
-                            ? "bg-[var(--error)]/10 border-[var(--error)]/30 text-[var(--error)]"
-                            : "bg-[var(--surface-elevated)] border-[var(--border)] text-[var(--text-muted)]"
+                            ? "bg-(--error)/10 border-(--error)/30 text-(--error)"
+                            : "bg-(--surface-elevated) border-(--border) text-(--text-muted)"
                         }`}
                       >
                         12s
@@ -462,16 +462,16 @@ export default function InspectionViolationTrainer({
                       {getStatusLabel(lastResult.status)}
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-3">
+                  <p className="text-xs sm:text-sm text-(--text-muted) mt-3">
                     Tap or press Space to try again
                   </p>
                 </>
               ) : (
                 <>
-                  <div className="text-3xl sm:text-5xl font-mono font-bold text-[var(--text-muted)]">
+                  <div className="text-3xl sm:text-5xl font-mono font-bold text-(--text-muted)">
                     0.00s
                   </div>
-                  <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-2">
+                  <p className="text-xs sm:text-sm text-(--text-muted) mt-2">
                     Tap or press Space to start
                   </p>
                 </>
@@ -481,65 +481,65 @@ export default function InspectionViolationTrainer({
             {/* Progress Bar */}
             <div className="px-3 sm:px-4 pb-3 sm:pb-4">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] sm:text-xs text-[var(--text-muted)] w-5 sm:w-6 text-center flex-shrink-0">
+                <span className="text-[10px] sm:text-xs text-(--text-muted) w-5 sm:w-6 text-center shrink-0">
                   0s
                 </span>
-                <div className="flex-1 h-2.5 sm:h-3 bg-[var(--surface-elevated)] rounded-full overflow-hidden relative">
+                <div className="flex-1 h-2.5 sm:h-3 bg-(--surface-elevated) rounded-full overflow-hidden relative">
                   {/* Early zone: 0-12s = 70.6% of 17s */}
                   <div
-                    className="absolute h-full bg-[var(--info)]/40"
+                    className="absolute h-full bg-(--info)/40"
                     style={{ left: "0%", width: "70.6%" }}
                   />
                   {/* Perfect zone: 12-15s = 17.6% of 17s */}
                   <div
-                    className="absolute h-full bg-[var(--success)]/50"
+                    className="absolute h-full bg-(--success)/50"
                     style={{ left: "70.6%", width: "17.6%" }}
                   />
                   {/* +2 zone: 15-17s = 11.8% of 17s */}
                   <div
-                    className="absolute h-full bg-[var(--warning)]/50"
+                    className="absolute h-full bg-(--warning)/50"
                     style={{ left: "88.2%", width: "11.8%" }}
                   />
                   {/* 8s marker line */}
                   <div
-                    className="absolute top-0 w-px h-full bg-[var(--text-muted)]/40"
+                    className="absolute top-0 w-px h-full bg-(--text-muted)/40"
                     style={{ left: "47%" }}
                   />
                   {/* Current position indicator */}
                   {isRunning && (
                     <div
-                      className="absolute top-0 w-0.5 sm:w-1 h-full bg-[var(--text-primary)] rounded-full transition-all"
+                      className="absolute top-0 w-0.5 sm:w-1 h-full bg-(--text-primary) rounded-full transition-all"
                       style={{
                         left: `${Math.min((elapsedTime / 17) * 100, 100)}%`,
                       }}
                     />
                   )}
                 </div>
-                <span className="text-[10px] sm:text-xs text-[var(--error)] w-5 sm:w-6 text-center flex-shrink-0">
+                <span className="text-[10px] sm:text-xs text-(--error) w-5 sm:w-6 text-center shrink-0">
                   DNF
                 </span>
               </div>
               {/* Zone Labels - aligned with progress bar zones */}
               <div className="flex items-center mt-1.5">
-                <span className="text-[10px] sm:text-xs w-5 sm:w-6 flex-shrink-0"></span>
+                <span className="text-[10px] sm:text-xs w-5 sm:w-6 shrink-0"></span>
                 <div className="flex-1 relative h-4">
                   {/* 8s at 47% - where the marker line is */}
                   <span
-                    className="absolute text-[9px] sm:text-[10px] text-[var(--text-muted)] -translate-x-1/2"
+                    className="absolute text-[9px] sm:text-[10px] text-(--text-muted) -translate-x-1/2"
                     style={{ left: "46%" }}
                   >
                     8s
                   </span>
                   {/* 12-15s centered in green zone */}
                   <span
-                    className="absolute text-[9px] sm:text-[10px] text-[var(--success)] -translate-x-1/2"
+                    className="absolute text-[9px] sm:text-[10px] text-(--success) -translate-x-1/2"
                     style={{ left: "72%" }}
                   >
                     12-15s
                   </span>
                   {/* +2 centered in yellow zone */}
                   <span
-                    className="absolute text-[9px] sm:text-[10px] text-[var(--warning)] -translate-x-1/2"
+                    className="absolute text-[9px] sm:text-[10px] text-(--warning) -translate-x-1/2"
                     style={{ left: "88%" }}
                   >
                     +2
@@ -550,10 +550,10 @@ export default function InspectionViolationTrainer({
           </div>
 
           {/* Settings Section */}
-          <div className="border-t border-[var(--border)] pt-4">
+          <div className="border-t border-(--border) pt-4">
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              className="flex items-center gap-2 text-sm text-(--text-secondary) hover:text-(--text-primary) transition-colors"
             >
               <Settings className="w-4 h-4" />
               <span>Settings</span>
@@ -569,14 +569,14 @@ export default function InspectionViolationTrainer({
                 {/* Hide Timer Toggle */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center shrink-0">
                       <Eye className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <span className="text-sm font-medium text-[var(--text-primary)]">
+                      <span className="text-sm font-medium text-(--text-primary)">
                         Hide Timer
                       </span>
-                      <p className="text-xs text-[var(--text-muted)]">
+                      <p className="text-xs text-(--text-muted)">
                         Hide time while running
                       </p>
                     </div>
@@ -587,14 +587,14 @@ export default function InspectionViolationTrainer({
                 {/* Random Start Toggle */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center shrink-0">
                       <Timer className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <span className="text-sm font-medium text-[var(--text-primary)]">
+                      <span className="text-sm font-medium text-(--text-primary)">
                         Random Delay
                       </span>
-                      <p className="text-xs text-[var(--text-muted)]">
+                      <p className="text-xs text-(--text-muted)">
                         0-2s delay before start
                       </p>
                     </div>
@@ -605,14 +605,14 @@ export default function InspectionViolationTrainer({
                 {/* Show Warnings Toggle */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center shrink-0">
                       <Volume2 className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <span className="text-sm font-medium text-[var(--text-primary)]">
+                      <span className="text-sm font-medium text-(--text-primary)">
                         Audio Warnings
                       </span>
-                      <p className="text-xs text-[var(--text-muted)]">
+                      <p className="text-xs text-(--text-muted)">
                         Play 8s and 12s alerts
                       </p>
                     </div>
@@ -624,8 +624,8 @@ export default function InspectionViolationTrainer({
           </div>
 
           {/* Footer with stats summary */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-[var(--border)]">
-            <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-[var(--text-muted)]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-(--border)">
+            <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-(--text-muted)">
               <span className="flex items-center gap-1">
                 <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 {perfectRate}% perfect
@@ -640,7 +640,7 @@ export default function InspectionViolationTrainer({
             {stats.totalAttempts > 0 && (
               <button
                 onClick={resetStats}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[var(--error)] hover:bg-[var(--error)]/10 rounded-lg transition-colors self-start sm:self-auto"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-(--error) hover:bg-(--error)/10 rounded-lg transition-colors self-start sm:self-auto"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 Reset Stats

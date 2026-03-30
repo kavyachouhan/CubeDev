@@ -39,7 +39,7 @@ export default function RoomHeader({
       <div className="flex items-center justify-between mb-4">
         <Link
           href="/cube-lab/challenges"
-          className="inline-flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors font-inter text-sm"
+          className="inline-flex items-center gap-2 text-(--text-secondary) hover:text-(--primary) transition-colors font-inter text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Challenges
@@ -50,7 +50,7 @@ export default function RoomHeader({
           {canEdit && onEdit && (
             <button
               onClick={onEdit}
-              className="inline-flex items-center gap-2 px-3 py-1.5 bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg transition-all duration-200 font-inter text-sm"
+              className="inline-flex items-center gap-2 px-3 py-1.5 bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg transition-all duration-200 font-inter text-sm"
               title="Edit room settings"
             >
               <Edit3 className="w-4 h-4" />
@@ -59,7 +59,7 @@ export default function RoomHeader({
           )}
           <button
             onClick={onShare}
-            className="inline-flex items-center gap-2 px-3 py-1.5 bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] rounded-lg transition-all duration-200 font-inter text-sm hover:scale-105"
+            className="inline-flex items-center gap-2 px-3 py-1.5 bg-(--primary) text-white hover:bg-(--primary-hover) rounded-lg transition-all duration-200 font-inter text-sm hover:scale-105"
             title="Share room link"
           >
             {copied ? (
@@ -79,7 +79,7 @@ export default function RoomHeader({
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="flex items-start gap-4">
             {/* Event Icon */}
-            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[var(--primary)] rounded-xl flex items-center justify-center border border-[var(--primary)]/20">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-(--primary) rounded-xl flex items-center justify-center border border-(--primary)/20">
               <Image
                 src={event.icon}
                 alt={event.name}
@@ -91,24 +91,24 @@ export default function RoomHeader({
 
             {/* Room Details */}
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] font-statement mb-2 line-clamp-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement mb-2 line-clamp-2">
                 {room.name}
               </h1>
 
               {/* Room Metadata */}
-              <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--text-secondary)] font-inter mb-3">
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg">
-                  <Goal className="w-3.5 h-3.5 text-[var(--primary)]" />
+              <div className="flex flex-wrap items-center gap-3 text-sm text-(--text-secondary) font-inter mb-3">
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-(--surface-elevated) border border-(--border) rounded-lg">
+                  <Goal className="w-3.5 h-3.5 text-(--primary)" />
                   <span className="font-medium">{event.name}</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg">
-                  <Trophy className="w-3.5 h-3.5 text-[var(--primary)]" />
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-(--surface-elevated) border border-(--border) rounded-lg">
+                  <Trophy className="w-3.5 h-3.5 text-(--primary)" />
                   <span className="font-medium">
                     {room.format.toUpperCase()}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg">
-                  <Users className="w-3.5 h-3.5 text-[var(--primary)]" />
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-(--surface-elevated) border border-(--border) rounded-lg">
+                  <Users className="w-3.5 h-3.5 text-(--primary)" />
                   <span className="font-medium">
                     {room.participantCount || 0} participants
                   </span>
@@ -117,14 +117,14 @@ export default function RoomHeader({
 
               {/* Room Description */}
               {room.description && (
-                <p className="text-sm text-[var(--text-secondary)] font-inter line-clamp-2">
+                <p className="text-sm text-(--text-secondary) font-inter line-clamp-2">
                   {room.description}
                 </p>
               )}
             </div>
           </div>
 
-          <div className="text-left sm:text-right flex-shrink-0">
+          <div className="text-left sm:text-right shrink-0">
             {/* Room Status */}
             <div className="mb-3">
               <div className="flex items-center gap-2 justify-start sm:justify-end mb-1">
@@ -144,21 +144,21 @@ export default function RoomHeader({
 
             {/* Room Creator */}
             <div className="flex items-center gap-2 justify-start sm:justify-end">
-              <div className="text-xs text-[var(--text-muted)] font-inter">
+              <div className="text-xs text-(--text-muted) font-inter">
                 Created by{" "}
                 {room.creator?.isDeleted ? (
-                  <span className="font-medium text-[var(--text-secondary)]">
+                  <span className="font-medium text-(--text-secondary)">
                     Deleted User
                   </span>
                 ) : room.creator?.wcaId ? (
                   <Link
                     href={`/cuber/${room.creator.wcaId}`}
-                    className="font-medium text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+                    className="font-medium text-(--text-secondary) hover:text-(--primary) transition-colors"
                   >
                     {room.creator?.name || "Unknown"}
                   </Link>
                 ) : (
-                  <span className="font-medium text-[var(--text-secondary)]">
+                  <span className="font-medium text-(--text-secondary)">
                     {room.creator?.name || "Unknown"}
                   </span>
                 )}

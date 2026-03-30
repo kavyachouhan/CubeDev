@@ -88,11 +88,11 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
   if (!competition) {
     return (
       <div className="timer-card text-center py-12">
-        <FileText className="w-16 h-16 text-[var(--text-muted)] mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+        <FileText className="w-16 h-16 text-(--text-muted) mx-auto mb-4" />
+        <h3 className="text-xl font-bold text-(--text-primary) mb-2">
           No Results Yet
         </h3>
-        <p className="text-[var(--text-muted)] mb-2">
+        <p className="text-(--text-muted) mb-2">
           Complete a simulation to generate your WCA-style result card.
         </p>
       </div>
@@ -102,11 +102,11 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
   if (results.length === 0) {
     return (
       <div className="timer-card text-center py-12">
-        <Trophy className="w-16 h-16 text-[var(--text-muted)] mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+        <Trophy className="w-16 h-16 text-(--text-muted) mx-auto mb-4" />
+        <h3 className="text-xl font-bold text-(--text-primary) mb-2">
           Complete a Simulation First
         </h3>
-        <p className="text-[var(--text-muted)]">
+        <p className="text-(--text-muted)">
           Your simulation results will appear here as a WCA-style result card.
         </p>
       </div>
@@ -117,12 +117,12 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
     <div className="space-y-6">
       {/* Card Customization */}
       <div className="timer-card">
-        <h3 className="font-bold text-[var(--text-primary)] mb-4">
+        <h3 className="font-bold text-(--text-primary) mb-4">
           Customize Your Card
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-sm text-[var(--text-secondary)] block mb-2">
+            <label className="text-sm text-(--text-secondary) block mb-2">
               Competitor Name
             </label>
             <input
@@ -130,17 +130,17 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
               value={competitorName}
               onChange={(e) => setCompetitorName(e.target.value)}
               placeholder="Your name"
-              className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary)"
             />
           </div>
           <div>
-            <label className="text-sm text-[var(--text-secondary)] block mb-2">
+            <label className="text-sm text-(--text-secondary) block mb-2">
               Round Name
             </label>
             <select
               value={roundName}
               onChange={(e) => setRoundName(e.target.value)}
-              className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
             >
               <option value="First Round">First Round</option>
               <option value="Second Round">Second Round</option>
@@ -154,15 +154,15 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
       {/* Result Card Preview */}
       <div
         ref={cardRef}
-        className="timer-card bg-[var(--surface)] border-2 border-[var(--primary)]/30"
+        className="timer-card bg-(--surface) border-2 border-(--primary)/30"
       >
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-[var(--border)] pb-4 mb-4">
+        <div className="flex items-start justify-between border-b border-(--border) pb-4 mb-4">
           <div>
-            <h2 className="text-xl font-bold text-[var(--text-primary)]">
+            <h2 className="text-xl font-bold text-(--text-primary)">
               {competition.name}
             </h2>
-            <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-[var(--text-muted)]">
+            <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-(--text-muted)">
               <span className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 {new Date(competition.start_date).toLocaleDateString("en-US", {
@@ -178,9 +178,9 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
             </div>
           </div>
           {event && (
-            <div className="flex items-center gap-2 px-3 py-2 bg-[var(--surface-elevated)] rounded-lg">
+            <div className="flex items-center gap-2 px-3 py-2 bg-(--surface-elevated) rounded-lg">
               <Image src={event.icon} alt={event.name} width={24} height={24} />
-              <span className="font-medium text-[var(--text-primary)]">
+              <span className="font-medium text-(--text-primary)">
                 {event.name}
               </span>
             </div>
@@ -190,16 +190,16 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
         {/* Competitor Info */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <div className="text-xs text-[var(--text-muted)] mb-1">
+            <div className="text-xs text-(--text-muted) mb-1">
               Competitor
             </div>
-            <div className="font-medium text-[var(--text-primary)]">
+            <div className="font-medium text-(--text-primary)">
               {competitorName || "Anonymous"}
             </div>
           </div>
           <div>
-            <div className="text-xs text-[var(--text-muted)] mb-1">Round</div>
-            <div className="font-medium text-[var(--text-primary)]">
+            <div className="text-xs text-(--text-muted) mb-1">Round</div>
+            <div className="font-medium text-(--text-primary)">
               {roundName}
             </div>
           </div>
@@ -207,7 +207,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
 
         {/* Times */}
         <div className="mb-6">
-          <div className="text-xs text-[var(--text-muted)] mb-2">
+          <div className="text-xs text-(--text-muted) mb-2">
             Solve Times
           </div>
           <div className="flex flex-wrap gap-2">
@@ -220,13 +220,13 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
                   key={idx}
                   className={`px-4 py-2 rounded-lg font-mono ${
                     isBest
-                      ? "bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/30"
+                      ? "bg-(--success)/10 text-(--success) border border-(--success)/30"
                       : isWorst
-                        ? "bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30"
-                        : "bg-[var(--surface-elevated)] text-[var(--text-primary)]"
+                        ? "bg-(--error)/10 text-(--error) border border-(--error)/30"
+                        : "bg-(--surface-elevated) text-(--text-primary)"
                   }`}
                 >
-                  <span className="text-xs text-[var(--text-muted)] mr-2">
+                  <span className="text-xs text-(--text-muted) mr-2">
                     {idx + 1}.
                   </span>
                   {formatTime(time)}
@@ -238,28 +238,28 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
 
         {/* Statistics */}
         {stats && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-[var(--border)]">
-            <div className="text-center p-3 bg-[var(--success)]/5 rounded-lg">
-              <div className="text-xs text-[var(--text-muted)] mb-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-(--border)">
+            <div className="text-center p-3 bg-(--success)/5 rounded-lg">
+              <div className="text-xs text-(--text-muted) mb-1">
                 Best Single
               </div>
-              <div className="text-xl font-mono font-bold text-[var(--success)]">
+              <div className="text-xl font-mono font-bold text-(--success)">
                 {formatTime(stats.best)}
               </div>
             </div>
-            <div className="text-center p-3 bg-[var(--primary)]/5 rounded-lg">
-              <div className="text-xs text-[var(--text-muted)] mb-1">
+            <div className="text-center p-3 bg-(--primary)/5 rounded-lg">
+              <div className="text-xs text-(--text-muted) mb-1">
                 {results.length >= 5 ? "Average" : "Mean"}
               </div>
-              <div className="text-xl font-mono font-bold text-[var(--primary)]">
+              <div className="text-xl font-mono font-bold text-(--primary)">
                 {stats.average > 0 ? formatTime(stats.average) : "N/A"}
               </div>
             </div>
-            <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg sm:col-span-1 col-span-2">
-              <div className="text-xs text-[var(--text-muted)] mb-1">
+            <div className="text-center p-3 bg-(--surface-elevated) rounded-lg sm:col-span-1 col-span-2">
+              <div className="text-xs text-(--text-muted) mb-1">
                 Worst Single
               </div>
-              <div className="text-xl font-mono font-bold text-[var(--text-secondary)]">
+              <div className="text-xl font-mono font-bold text-(--text-secondary)">
                 {formatTime(stats.worst)}
               </div>
             </div>
@@ -267,8 +267,8 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
         )}
 
         {/* Footer */}
-        <div className="mt-6 pt-4 border-t border-[var(--border)] text-center">
-          <p className="text-xs text-[var(--text-muted)]">
+        <div className="mt-6 pt-4 border-t border-(--border) text-center">
+          <p className="text-xs text-(--text-muted)">
             Simulated result • Generated by CubeDev Competition Simulator
           </p>
         </div>
@@ -278,11 +278,11 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
       <div className="flex flex-wrap justify-center gap-4">
         <button
           onClick={copyResults}
-          className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--border)] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) text-(--text-primary) rounded-lg hover:bg-(--border) transition-colors"
         >
           {copied ? (
             <>
-              <Check className="w-4 h-4 text-[var(--success)]" />
+              <Check className="w-4 h-4 text-(--success)" />
               Copied!
             </>
           ) : (
@@ -294,7 +294,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
         </button>
         <button
           onClick={downloadCard}
-          className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
         >
           <Download className="w-4 h-4" />
           Download Card

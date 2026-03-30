@@ -85,7 +85,7 @@ export default function NotificationBell({
   return (
     <button
       onClick={onClick}
-      className={`relative p-2 text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors ${
+      className={`relative p-2 text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-lg transition-colors ${
         collapsed ? "w-full flex justify-center" : ""
       }`}
       title={`${notificationCount} notification${notificationCount !== 1 ? "s" : ""}`}
@@ -94,7 +94,7 @@ export default function NotificationBell({
       <Bell className="w-5 h-5" />
       {hasNotifications && (
         <span
-          className={`absolute flex items-center justify-center bg-[var(--error)] text-white text-[10px] font-bold rounded-full font-inter ${
+          className={`absolute flex items-center justify-center bg-(--error) text-white text-[10px] font-bold rounded-full font-inter ${
             collapsed
               ? "top-0.5 right-0.5 min-w-[16px] h-[16px] px-1"
               : "top-0.5 right-0.5 min-w-[18px] h-[18px] px-1"

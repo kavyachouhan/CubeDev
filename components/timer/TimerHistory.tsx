@@ -20,8 +20,8 @@ import dynamic from "next/dynamic";
 // Dynamically import ScramblePreview to avoid loading heavy 3D library on initial load
 const ScramblePreview = dynamic(() => import("./ScramblePreview"), {
   loading: () => (
-    <div className="w-full h-32 bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
-      <div className="text-sm text-[var(--text-muted)]">Loading preview...</div>
+    <div className="w-full h-32 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
+      <div className="text-sm text-(--text-muted)">Loading preview...</div>
     </div>
   ),
   ssr: false,
@@ -275,15 +275,15 @@ function SolveDetailsModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-(--surface) border border-(--border) rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <div className="flex items-center justify-between p-4 border-b border-(--border)">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
             Solve Details
           </h3>
           <button
             onClick={onClose}
-            className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+            className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -300,7 +300,7 @@ function SolveDetailsModal({
                     ? "text-yellow-400"
                     : solve.penalty === "DNF"
                       ? "text-red-400"
-                      : "text-[var(--text-primary)]"
+                      : "text-(--text-primary)"
                 }`}
               >
                 {formatTime(solve.finalTime, solve.penalty)}
@@ -308,7 +308,7 @@ function SolveDetailsModal({
               </div>
               <button
                 onClick={() => setShowEditModal(true)}
-                className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+                className="p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
                 title="Edit solve time"
               >
                 <Pencil className="w-4 h-4" />
@@ -317,7 +317,7 @@ function SolveDetailsModal({
               <div className="relative" ref={shareMenuRef}>
                 <button
                   onClick={() => setShareMenuOpen(!shareMenuOpen)}
-                  className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+                  className="p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
                   title="Share solve"
                 >
                   {copySuccess ? (
@@ -335,23 +335,23 @@ function SolveDetailsModal({
                         className="absolute inset-0 bg-black/50"
                         onClick={() => setShareMenuOpen(false)}
                       />
-                      <div className="absolute bottom-0 left-0 right-0 bg-[var(--surface)] border-t border-[var(--border)] rounded-t-2xl shadow-lg">
+                      <div className="absolute bottom-0 left-0 right-0 bg-(--surface) border-t border-(--border) rounded-t-2xl shadow-lg">
                         <div className="flex justify-center pt-3 pb-2">
-                          <div className="w-10 h-1 bg-[var(--border)] rounded-full" />
+                          <div className="w-10 h-1 bg-(--border) rounded-full" />
                         </div>
-                        <div className="px-4 pb-3 border-b border-[var(--border)]">
-                          <h3 className="text-base font-semibold text-[var(--text-primary)] text-center">
+                        <div className="px-4 pb-3 border-b border-(--border)">
+                          <h3 className="text-base font-semibold text-(--text-primary) text-center">
                             Share Solve
                           </h3>
                         </div>
                         <div className="p-4">
                           <button
                             onClick={handleCopySolve}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-xl transition-colors mb-2"
+                            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-(--text-primary) hover:bg-(--surface-elevated) rounded-xl transition-colors mb-2"
                           >
-                            <div className="w-10 h-10 rounded-full bg-[var(--surface-elevated)] border border-[var(--border)] flex items-center justify-center text-[var(--text-primary)]">
+                            <div className="w-10 h-10 rounded-full bg-(--surface-elevated) border border-(--border) flex items-center justify-center text-(--text-primary)">
                               {copySuccess ? (
-                                <CircleCheck className="w-5 h-5 text-[var(--success)]" />
+                                <CircleCheck className="w-5 h-5 text-(--success)" />
                               ) : (
                                 <Link className="w-5 h-5" />
                               )}
@@ -385,9 +385,9 @@ function SolveDetailsModal({
                                     setShareMenuOpen(false);
                                   } catch (e) {}
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-xl transition-colors mb-4"
+                                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-(--text-primary) hover:bg-(--surface-elevated) rounded-xl transition-colors mb-4"
                               >
-                                <div className="w-10 h-10 rounded-full bg-[var(--primary)] flex items-center justify-center text-white">
+                                <div className="w-10 h-10 rounded-full bg-(--primary) flex items-center justify-center text-white">
                                   <Share2 className="w-5 h-5" />
                                 </div>
                                 <span className="font-medium">
@@ -430,7 +430,7 @@ function SolveDetailsModal({
                                   >
                                     {option.icon}
                                   </div>
-                                  <span className="text-[10px] text-[var(--text-muted)]">
+                                  <span className="text-[10px] text-(--text-muted)">
                                     {option.name}
                                   </span>
                                 </button>
@@ -442,17 +442,17 @@ function SolveDetailsModal({
                     </div>
 
                     {/* Desktop: Dropdown menu */}
-                    <div className="hidden sm:block absolute top-full mt-2 right-0 w-56 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-lg z-[100] overflow-hidden">
-                      <div className="p-3 border-b border-[var(--border)]">
+                    <div className="hidden sm:block absolute top-full mt-2 right-0 w-56 bg-(--surface) border border-(--border) rounded-xl shadow-lg z-[100] overflow-hidden">
+                      <div className="p-3 border-b border-(--border)">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-[var(--text-primary)]">
+                          <span className="text-sm font-medium text-(--text-primary)">
                             Share Solve
                           </span>
                           <button
                             onClick={() => setShareMenuOpen(false)}
-                            className="p-1 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                            className="p-1 hover:bg-(--surface-elevated) rounded-lg transition-colors"
                           >
-                            <X className="w-4 h-4 text-[var(--text-muted)]" />
+                            <X className="w-4 h-4 text-(--text-muted)" />
                           </button>
                         </div>
                       </div>
@@ -482,9 +482,9 @@ function SolveDetailsModal({
                                   setShareMenuOpen(false);
                                 } catch (e) {}
                               }}
-                              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
                             >
-                              <div className="w-8 h-8 rounded-full bg-[var(--primary)] flex items-center justify-center text-white">
+                              <div className="w-8 h-8 rounded-full bg-(--primary) flex items-center justify-center text-white">
                                 <Share2 className="w-4 h-4" />
                               </div>
                               <span>Share via...</span>
@@ -492,11 +492,11 @@ function SolveDetailsModal({
                           )}
                         <button
                           onClick={handleCopySolve}
-                          className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                          className="w-full flex items-center gap-3 px-3 py-2 text-sm text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
                         >
-                          <div className="w-8 h-8 rounded-full bg-[var(--surface-elevated)] border border-[var(--border)] flex items-center justify-center text-[var(--text-primary)]">
+                          <div className="w-8 h-8 rounded-full bg-(--surface-elevated) border border-(--border) flex items-center justify-center text-(--text-primary)">
                             {copySuccess ? (
-                              <CircleCheck className="w-4 h-4 text-[var(--success)]" />
+                              <CircleCheck className="w-4 h-4 text-(--success)" />
                             ) : (
                               <Link className="w-4 h-4" />
                             )}
@@ -505,7 +505,7 @@ function SolveDetailsModal({
                             {copySuccess ? "Copied!" : "Copy to Clipboard"}
                           </span>
                         </button>
-                        <div className="my-2 border-t border-[var(--border)]" />
+                        <div className="my-2 border-t border-(--border)" />
                         <div className="grid grid-cols-4 gap-2 p-2">
                           {SHARE_OPTIONS.map((option) => {
                             const eventName = getEventName(solve.event);
@@ -548,7 +548,7 @@ function SolveDetailsModal({
                 )}
               </div>
             </div>
-            <div className="text-sm text-[var(--text-muted)] font-inter mt-2">
+            <div className="text-sm text-(--text-muted) font-inter mt-2">
               {getEventName(solve.event)} • {solve.timestamp.toLocaleString()}
               {solve.timerMode && solve.timerMode !== "normal" && (
                 <>
@@ -568,36 +568,36 @@ function SolveDetailsModal({
           </div>
 
           {/* Time Breakdown */}
-          <div className="bg-[var(--surface-elevated)] rounded-lg p-3">
-            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-2">
+          <div className="bg-(--surface-elevated) rounded-lg p-3">
+            <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-2">
               Time Breakdown
             </div>
             <div className="space-y-1 text-sm font-mono">
               <div className="flex justify-between">
-                <span className="text-[var(--text-secondary)]">Raw Time:</span>
-                <span className="text-[var(--text-primary)]">
+                <span className="text-(--text-secondary)">Raw Time:</span>
+                <span className="text-(--text-primary)">
                   {formatTime(solve.time, "none")}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[var(--text-secondary)]">Penalty:</span>
+                <span className="text-(--text-secondary)">Penalty:</span>
                 <span
                   className={
                     solve.penalty === "+2"
                       ? "text-yellow-400"
                       : solve.penalty === "DNF"
                         ? "text-red-400"
-                        : "text-[var(--text-primary)]"
+                        : "text-(--text-primary)"
                   }
                 >
                   {solve.penalty === "none" ? "None" : solve.penalty}
                 </span>
               </div>
-              <div className="flex justify-between border-t border-[var(--border)] pt-1">
-                <span className="text-[var(--text-secondary)] font-semibold">
+              <div className="flex justify-between border-t border-(--border) pt-1">
+                <span className="text-(--text-secondary) font-semibold">
                   Final Time:
                 </span>
-                <span className="text-[var(--text-primary)] font-semibold">
+                <span className="text-(--text-primary) font-semibold">
                   {formatTime(solve.finalTime, solve.penalty)}
                 </span>
               </div>
@@ -606,15 +606,15 @@ function SolveDetailsModal({
 
           {/* Scramble */}
           <div>
-            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-2">
+            <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-2">
               Scramble
             </div>
-            <div className="text-sm font-mono text-[var(--text-secondary)] bg-[var(--background)] p-3 rounded border border-[var(--border)] mb-3">
+            <div className="text-sm font-mono text-(--text-secondary) bg-(--background) p-3 rounded border border-(--border) mb-3">
               {solve.scramble}
             </div>
 
             {/* Scramble Preview */}
-            <div className="bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-lg border border-(--border)">
               <ScramblePreview scramble={solve.scramble} event={solve.event} />
             </div>
           </div>
@@ -624,12 +624,12 @@ function SolveDetailsModal({
             {/* Notes Section */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
                   Notes
                 </div>
                 <button
                   onClick={() => setEditingNotes(!editingNotes)}
-                  className="text-xs text-[var(--primary)] hover:text-[var(--primary-hover)] font-medium"
+                  className="text-xs text-(--primary) hover:text-(--primary-hover) font-medium"
                 >
                   {editingNotes ? "Cancel" : "Edit"}
                 </button>
@@ -640,7 +640,7 @@ function SolveDetailsModal({
                     value={notesValue}
                     onChange={(e) => setNotesValue(e.target.value)}
                     placeholder="Add notes about this solve..."
-                    className="w-full p-3 text-sm bg-[var(--background)] border border-[var(--border)] rounded resize-none focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                    className="w-full p-3 text-sm bg-(--background) border border-(--border) rounded resize-none focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
                     rows={3}
                     onKeyDown={(e) => {
                       if (e.key === "Escape") {
@@ -666,7 +666,7 @@ function SolveDetailsModal({
                         );
                         setEditingNotes(false);
                       }}
-                      className="px-3 py-1 text-xs bg-[var(--primary)] text-white rounded hover:bg-[var(--primary-hover)] font-medium"
+                      className="px-3 py-1 text-xs bg-(--primary) text-white rounded hover:bg-(--primary-hover) font-medium"
                     >
                       Save
                     </button>
@@ -675,16 +675,16 @@ function SolveDetailsModal({
                         setNotesValue(solve.notes || "");
                         setEditingNotes(false);
                       }}
-                      className="px-3 py-1 text-xs bg-[var(--surface-elevated)] text-[var(--text-secondary)] rounded hover:bg-[var(--border)] font-medium"
+                      className="px-3 py-1 text-xs bg-(--surface-elevated) text-(--text-secondary) rounded hover:bg-(--border) font-medium"
                     >
                       Cancel
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="text-sm text-[var(--text-secondary)] bg-[var(--background)] p-3 rounded border border-[var(--border)] min-h-[60px]">
+                <div className="text-sm text-(--text-secondary) bg-(--background) p-3 rounded border border-(--border) min-h-[60px]">
                   {solve.notes || (
-                    <span className="text-[var(--text-muted)] italic">
+                    <span className="text-(--text-muted) italic">
                       No notes added
                     </span>
                   )}
@@ -695,12 +695,12 @@ function SolveDetailsModal({
             {/* Tags Section */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
                   Tags
                 </div>
                 <button
                   onClick={() => setEditingTags(!editingTags)}
-                  className="text-xs text-[var(--primary)] hover:text-[var(--primary-hover)] font-medium"
+                  className="text-xs text-(--primary) hover:text-(--primary-hover) font-medium"
                 >
                   {editingTags ? "Cancel" : "Edit"}
                 </button>
@@ -712,7 +712,7 @@ function SolveDetailsModal({
                     value={tagsValue}
                     onChange={(e) => setTagsValue(e.target.value)}
                     placeholder="Add tags separated by commas..."
-                    className="w-full p-3 text-sm bg-[var(--background)] border border-[var(--border)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                    className="w-full p-3 text-sm bg-(--background) border border-(--border) rounded focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -737,7 +737,7 @@ function SolveDetailsModal({
                       }
                     }}
                   />
-                  <div className="text-xs text-[var(--text-muted)]">
+                  <div className="text-xs text-(--text-muted)">
                     Separate tags with commas (e.g., "good scramble, new PB,
                     lucky")
                   </div>
@@ -754,7 +754,7 @@ function SolveDetailsModal({
                         );
                         setEditingTags(false);
                       }}
-                      className="px-3 py-1 text-xs bg-[var(--primary)] text-white rounded hover:bg-[var(--primary-hover)] font-medium"
+                      className="px-3 py-1 text-xs bg-(--primary) text-white rounded hover:bg-(--primary-hover) font-medium"
                     >
                       Save
                     </button>
@@ -763,27 +763,27 @@ function SolveDetailsModal({
                         setTagsValue(solve.tags?.join(", ") || "");
                         setEditingTags(false);
                       }}
-                      className="px-3 py-1 text-xs bg-[var(--surface-elevated)] text-[var(--text-secondary)] rounded hover:bg-[var(--border)] font-medium"
+                      className="px-3 py-1 text-xs bg-(--surface-elevated) text-(--text-secondary) rounded hover:bg-(--border) font-medium"
                     >
                       Cancel
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="bg-[var(--background)] p-3 rounded border border-[var(--border)] min-h-[40px]">
+                <div className="bg-(--background) p-3 rounded border border-(--border) min-h-[40px]">
                   {solve.tags && solve.tags.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
                       {solve.tags.map((tag, index) => (
                         <span
                           key={index}
-                          className="px-2 py-1 text-xs bg-[var(--primary)] bg-opacity-20 text-[var(--foregoround)] rounded-full font-medium"
+                          className="px-2 py-1 text-xs bg-(--primary) bg-opacity-20 text-(--foregoround) rounded-full font-medium"
                         >
                           {tag}
                         </span>
                       ))}
                     </div>
                   ) : (
-                    <span className="text-[var(--text-muted)] italic text-sm">
+                    <span className="text-(--text-muted) italic text-sm">
                       No tags added
                     </span>
                   )}
@@ -795,7 +795,7 @@ function SolveDetailsModal({
           {/* Actions */}
           <div className="flex flex-col gap-3">
             <div>
-              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-2">
+              <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-2">
                 Penalty
               </div>
               <div className="flex gap-2">
@@ -803,8 +803,8 @@ function SolveDetailsModal({
                   onClick={() => onApplyPenalty(solve.id, "none")}
                   className={`flex-1 px-3 py-2 text-sm rounded font-medium transition-colors ${
                     solve.penalty === "none"
-                      ? "bg-[var(--primary)] text-white"
-                      : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
+                      ? "bg-(--primary) text-white"
+                      : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border)"
                   }`}
                 >
                   OK
@@ -813,8 +813,8 @@ function SolveDetailsModal({
                   onClick={() => onApplyPenalty(solve.id, "+2")}
                   className={`flex-1 px-3 py-2 text-sm rounded font-medium transition-colors ${
                     solve.penalty === "+2"
-                      ? "bg-[var(--warning)] text-white"
-                      : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
+                      ? "bg-(--warning) text-white"
+                      : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border)"
                   }`}
                 >
                   +2
@@ -823,8 +823,8 @@ function SolveDetailsModal({
                   onClick={() => onApplyPenalty(solve.id, "DNF")}
                   className={`flex-1 px-3 py-2 text-sm rounded font-medium transition-colors ${
                     solve.penalty === "DNF"
-                      ? "bg-[var(--error)] text-white"
-                      : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
+                      ? "bg-(--error) text-white"
+                      : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border)"
                   }`}
                 >
                   DNF
@@ -837,7 +837,7 @@ function SolveDetailsModal({
                 onDeleteSolve(solve.id);
                 onClose();
               }}
-              className="w-full px-3 py-2 bg-[var(--error)] hover:bg-red-600 text-white text-sm rounded font-medium transition-colors"
+              className="w-full px-3 py-2 bg-(--error) hover:bg-red-600 text-white text-sm rounded font-medium transition-colors"
             >
               Delete Solve
             </button>
@@ -1009,10 +1009,10 @@ export default function TimerHistory({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowHistory(!showHistory)}
-                className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+                className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
                 title={showHistory ? "Hide recent times" : "Show recent times"}
               >
-                <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+                <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
                   Recent Times
                 </h3>
                 {showHistory ? (
@@ -1027,7 +1027,7 @@ export default function TimerHistory({
             {eventHistory.length > 0 && (
               <button
                 onClick={onClearHistory}
-                className="p-1 text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
+                className="p-1 text-(--text-muted) hover:text-(--error) transition-colors"
                 title="Clear all times"
               >
                 <Trash2 className="w-4 h-4" />
@@ -1035,7 +1035,7 @@ export default function TimerHistory({
             )}
             <button
               onClick={() => setShowHistory(!showHistory)}
-              className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+              className="p-2 text-(--text-muted) hover:text-(--primary) transition-colors"
               title={showHistory ? "Hide recent times" : "Show recent times"}
             >
               {showHistory ? (
@@ -1060,15 +1060,15 @@ export default function TimerHistory({
               return (
                 <div
                   key={record.id}
-                  className="bg-[var(--surface-elevated)] rounded border border-[var(--border)] p-2 sm:p-3 hover:bg-[var(--surface-elevated)]/80 transition-colors"
+                  className="bg-(--surface-elevated) rounded border border-(--border) p-2 sm:p-3 hover:bg-(--surface-elevated)/80 transition-colors"
                 >
                   <div className="flex justify-between items-center gap-2 overflow-x-auto">
                     {/* Solve number and time */}
                     <div
-                      className="flex items-center gap-2 sm:gap-3 cursor-pointer flex-shrink-0"
+                      className="flex items-center gap-2 sm:gap-3 cursor-pointer shrink-0"
                       onClick={() => handleSolveClick(record)}
                     >
-                      <span className="text-xs sm:text-sm text-[var(--text-muted)] font-inter flex-shrink-0">
+                      <span className="text-xs sm:text-sm text-(--text-muted) font-inter shrink-0">
                         #{solveNumber}
                       </span>
                       <span
@@ -1077,7 +1077,7 @@ export default function TimerHistory({
                             ? "text-yellow-400"
                             : record.penalty === "DNF"
                               ? "text-red-400"
-                              : "text-[var(--text-primary)]"
+                              : "text-(--text-primary)"
                         }`}
                       >
                         {formatTime(record.finalTime, record.penalty)}
@@ -1086,7 +1086,7 @@ export default function TimerHistory({
                       {/* Timer Mode Badge */}
                       {record.timerMode && record.timerMode !== "normal" && (
                         <span
-                          className={`text-xs px-2 py-0.5 rounded font-medium whitespace-nowrap flex-shrink-0 ${
+                          className={`text-xs px-2 py-0.5 rounded font-medium whitespace-nowrap shrink-0 ${
                             record.timerMode === "manual"
                               ? "bg-blue-500/10 text-blue-500 border border-blue-500/30"
                               : "bg-purple-500/10 text-purple-500 border border-purple-500/30"
@@ -1100,13 +1100,13 @@ export default function TimerHistory({
                     </div>
 
                     {/* Inline action buttons */}
-                    <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
+                    <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setEditingSolveId(record.id);
                         }}
-                        className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+                        className="p-1 text-(--text-muted) hover:text-(--primary) transition-colors"
                         title="Edit solve time"
                       >
                         <Pencil className="w-3 h-3" />
@@ -1121,8 +1121,8 @@ export default function TimerHistory({
                         }}
                         className={`px-1.5 sm:px-2 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${
                           record.penalty === "+2"
-                            ? "bg-[var(--warning)] text-white"
-                            : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
+                            ? "bg-(--warning) text-white"
+                            : "bg-(--surface) text-(--text-secondary) hover:bg-(--border)"
                         }`}
                         title="Toggle +2 penalty"
                       >
@@ -1138,8 +1138,8 @@ export default function TimerHistory({
                         }}
                         className={`px-1.5 sm:px-2 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${
                           record.penalty === "DNF"
-                            ? "bg-[var(--error)] text-white"
-                            : "bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]"
+                            ? "bg-(--error) text-white"
+                            : "bg-(--surface) text-(--text-secondary) hover:bg-(--border)"
                         }`}
                         title="Toggle DNF penalty"
                       >
@@ -1150,7 +1150,7 @@ export default function TimerHistory({
                           e.stopPropagation();
                           onDeleteSolve(record.id);
                         }}
-                        className="p-1 text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
+                        className="p-1 text-(--text-muted) hover:text-(--error) transition-colors"
                         title="Delete solve"
                       >
                         <X className="w-3 h-3" />
@@ -1164,7 +1164,7 @@ export default function TimerHistory({
             {/* Loading indicator */}
             {isLoading && (
               <div className="text-center py-2">
-                <div className="text-sm text-[var(--text-muted)] font-inter">
+                <div className="text-sm text-(--text-muted) font-inter">
                   Loading more solves...
                 </div>
               </div>
@@ -1172,8 +1172,8 @@ export default function TimerHistory({
 
             {/* Show count info if there are more solves */}
             {displayCount < eventHistory.length && !isLoading && (
-              <div className="text-center py-2 border-t border-[var(--border)]">
-                <div className="text-xs text-[var(--text-muted)] font-inter">
+              <div className="text-center py-2 border-t border-(--border)">
+                <div className="text-xs text-(--text-muted) font-inter">
                   Showing {displayCount} of {eventHistory.length} solves •
                   Scroll down for more
                 </div>
@@ -1181,7 +1181,7 @@ export default function TimerHistory({
             )}
 
             {eventHistory.length === 0 && (
-              <div className="text-center py-4 text-[var(--text-muted)] font-inter">
+              <div className="text-center py-4 text-(--text-muted) font-inter">
                 No solves yet for {getEventName(selectedEvent)}
               </div>
             )}

@@ -144,23 +144,23 @@ export default function ProgressHistoryCard({
 
         {/* Snapshot List */}
         <div className="space-y-2 mt-4">
-          <div className="text-sm font-medium text-[var(--text-primary)] border-b border-[var(--border)] pb-2">
+          <div className="text-sm font-medium text-(--text-primary) border-b border-(--border) pb-2">
             Weekly Snapshots
           </div>
           {snapshots.slice(0, 5).map((snapshot) => (
             <div
               key={snapshot._id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] gap-2"
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border) gap-2"
             >
               <div className="flex items-center gap-3">
-                <span className="text-sm text-[var(--text-muted)]">
+                <span className="text-sm text-(--text-muted)">
                   Week {snapshot.weekNumber}
                 </span>
-                <span className="font-bold text-[var(--primary)] font-mono">
+                <span className="font-bold text-(--primary) font-mono">
                   {formatTime(snapshot.averageTime)}
                 </span>
               </div>
-              <div className="flex items-center gap-3 text-xs text-[var(--text-muted)]">
+              <div className="flex items-center gap-3 text-xs text-(--text-muted)">
                 <span>{snapshot.totalSolves} solves</span>
                 <span>{snapshot.journalEntries} entries</span>
               </div>

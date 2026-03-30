@@ -21,36 +21,36 @@ export default function PracticeStreakCard({
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         <StatCard
           icon={Flame}
-          iconColor="bg-[var(--warning)]/10 text-[var(--warning)]"
+          iconColor="bg-(--warning)/10 text-(--warning)"
           label="Current"
           value={`${progressStats.currentStreak} days`}
-          valueColor="text-[var(--warning)]"
+          valueColor="text-(--warning)"
           subtitle={
             progressStats.currentStreak > 0 ? "Keep it going!" : "Start today"
           }
         />
         <StatCard
           icon={Award}
-          iconColor="bg-[var(--success)]/10 text-[var(--success)]"
+          iconColor="bg-(--success)/10 text-(--success)"
           label="Longest"
           value={`${progressStats.longestStreak} days`}
-          valueColor="text-[var(--success)]"
+          valueColor="text-(--success)"
           subtitle="Personal best"
         />
         <StatCard
           icon={Calendar}
-          iconColor="bg-[var(--primary)]/10 text-[var(--primary)]"
+          iconColor="bg-(--primary)/10 text-(--primary)"
           label="This Week"
           value={`${progressStats.weekly.activeDays}/7`}
-          valueColor="text-[var(--primary)]"
+          valueColor="text-(--primary)"
           subtitle={`${progressStats.weekly.entries} entries`}
         />
         <StatCard
           icon={CheckCircle2}
-          iconColor="bg-[var(--accent)]/10 text-[var(--accent)]"
+          iconColor="bg-(--accent)/10 text-(--accent)"
           label="Completion"
           value={`${progressStats.completionRate.toFixed(0)}%`}
-          valueColor="text-[var(--accent)]"
+          valueColor="text-(--accent)"
           subtitle={`${progressStats.completedPlans} plans done`}
         />
       </div>

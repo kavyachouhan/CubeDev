@@ -151,8 +151,8 @@ export default function NotificationSettings() {
     <button
       type="button"
       onClick={onToggle}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 ${
-        enabled ? "bg-[var(--primary)]" : "bg-[var(--border)]"
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0 ${
+        enabled ? "bg-(--primary)" : "bg-(--border)"
       }`}
     >
       <span
@@ -168,10 +168,10 @@ export default function NotificationSettings() {
       {/* Header */}
       <div className="flex items-start gap-3 mb-6">
         <div className="flex-1">
-          <h2 className="text-lg font-bold text-[var(--text-primary)] mb-1 font-statement">
+          <h2 className="text-lg font-bold text-(--text-primary) mb-1 font-statement">
             Notifications
           </h2>
-          <p className="text-sm text-[var(--text-muted)] font-inter">
+          <p className="text-sm text-(--text-muted) font-inter">
             Manage your notification preferences
           </p>
         </div>
@@ -180,23 +180,23 @@ export default function NotificationSettings() {
       <div className="space-y-4">
         {/* Error Message */}
         {error && (
-          <div className="p-3 bg-[var(--error)]/10 border border-[var(--error)]/20 rounded-lg flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-[var(--error)] flex-shrink-0" />
-            <span className="text-sm text-[var(--error)]">{error}</span>
+          <div className="p-3 bg-(--error)/10 border border-(--error)/20 rounded-lg flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-(--error) shrink-0" />
+            <span className="text-sm text-(--error)">{error}</span>
           </div>
         )}
 
         {/* Enable Notifications Button */}
         {!notificationsEnabled && (
-          <div className="p-4 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg">
+          <div className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg">
             {isDenied ? (
               <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-[var(--warning)]" />
+                <AlertCircle className="w-5 h-5 text-(--warning)" />
                 <div>
-                  <p className="text-sm font-medium text-[var(--text-primary)]">
+                  <p className="text-sm font-medium text-(--text-primary)">
                     Notifications Blocked
                   </p>
-                  <p className="text-xs text-[var(--text-muted)]">
+                  <p className="text-xs text-(--text-muted)">
                     Please enable notifications in your browser settings.
                   </p>
                 </div>
@@ -204,17 +204,17 @@ export default function NotificationSettings() {
             ) : (
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-[var(--text-primary)]">
+                  <p className="text-sm font-medium text-(--text-primary)">
                     Enable Notifications
                   </p>
-                  <p className="text-xs text-[var(--text-muted)]">
+                  <p className="text-xs text-(--text-muted)">
                     Get reminders for practice, algorithms, and progress
                   </p>
                 </div>
                 <button
                   onClick={handleEnableNotifications}
                   disabled={isEnabling}
-                  className="px-4 py-2 bg-[var(--primary)] text-white text-sm font-semibold rounded-lg hover:bg-[var(--primary-hover)] transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="px-4 py-2 bg-(--primary) text-white text-sm font-semibold rounded-lg hover:bg-(--primary-hover) transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
                   {isEnabling ? (
                     <>
@@ -234,20 +234,20 @@ export default function NotificationSettings() {
         {notificationsEnabled && (
           <div className="space-y-4">
             {/* Status Badge */}
-            <div className="flex items-center gap-2 p-3 bg-[var(--success)]/10 border border-[var(--success)]/20 rounded-lg">
-              <CheckCircle2 className="w-4 h-4 text-[var(--success)]" />
-              <span className="text-sm font-medium text-[var(--text-primary)]">
+            <div className="flex items-center gap-2 p-3 bg-(--success)/10 border border-(--success)/20 rounded-lg">
+              <CheckCircle2 className="w-4 h-4 text-(--success)" />
+              <span className="text-sm font-medium text-(--text-primary)">
                 Notifications enabled
               </span>
             </div>
 
             {/* Algorithm Trainer Section */}
-            <div className="p-4 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg">
+            <div className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg">
               <div className="flex items-center gap-2 mb-4">
-                <div className="p-1.5 bg-[var(--primary)]/10 rounded">
-                  <GraduationCap className="w-4 h-4 text-[var(--primary)]" />
+                <div className="p-1.5 bg-(--primary)/10 rounded">
+                  <GraduationCap className="w-4 h-4 text-(--primary)" />
                 </div>
-                <span className="text-sm font-semibold text-[var(--text-primary)]">
+                <span className="text-sm font-semibold text-(--text-primary)">
                   Algorithm Trainer
                 </span>
               </div>
@@ -255,10 +255,10 @@ export default function NotificationSettings() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0 pr-4">
-                    <div className="text-sm font-medium text-[var(--text-primary)]">
+                    <div className="text-sm font-medium text-(--text-primary)">
                       Algorithm Reminders
                     </div>
-                    <div className="text-xs text-[var(--text-muted)]">
+                    <div className="text-xs text-(--text-muted)">
                       Get notified when algorithms are due for review
                     </div>
                   </div>
@@ -271,12 +271,12 @@ export default function NotificationSettings() {
             </div>
 
             {/* Coaching Section */}
-            <div className="p-4 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg">
+            <div className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg">
               <div className="flex items-center gap-2 mb-4">
-                <div className="p-1.5 bg-[var(--accent)]/10 rounded">
-                  <Compass className="w-4 h-4 text-[var(--accent)]" />
+                <div className="p-1.5 bg-(--accent)/10 rounded">
+                  <Compass className="w-4 h-4 text-(--accent)" />
                 </div>
-                <span className="text-sm font-semibold text-[var(--text-primary)]">
+                <span className="text-sm font-semibold text-(--text-primary)">
                   Coaching Reminders
                 </span>
               </div>
@@ -287,11 +287,11 @@ export default function NotificationSettings() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0 pr-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-[var(--text-primary)]">
+                        <span className="text-sm font-medium text-(--text-primary)">
                           Daily Practice Reminder
                         </span>
                       </div>
-                      <div className="text-xs text-[var(--text-muted)] mt-0.5">
+                      <div className="text-xs text-(--text-muted) mt-0.5">
                         Remind me to practice at a specific time
                       </div>
                     </div>
@@ -306,7 +306,7 @@ export default function NotificationSettings() {
                   {/* Time Picker */}
                   {coachingPrefs.dailyPracticeReminder && (
                     <div className="flex items-center gap-2 ml-5">
-                      <span className="text-xs text-[var(--text-muted)]">
+                      <span className="text-xs text-(--text-muted)">
                         Reminder time:
                       </span>
                       <input
@@ -315,7 +315,7 @@ export default function NotificationSettings() {
                         onChange={(e) =>
                           handleUpdateReminderTime(e.target.value)
                         }
-                        className="px-2 py-1 text-sm bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                        className="px-2 py-1 text-sm bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-1 focus:ring-(--primary)"
                       />
                     </div>
                   )}
@@ -325,11 +325,11 @@ export default function NotificationSettings() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0 pr-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-[var(--text-primary)]">
+                      <span className="text-sm font-medium text-(--text-primary)">
                         Streak Alerts
                       </span>
                     </div>
-                    <div className="text-xs text-[var(--text-muted)] mt-0.5">
+                    <div className="text-xs text-(--text-muted) mt-0.5">
                       Alert when your practice streak is at risk
                     </div>
                   </div>
@@ -345,11 +345,11 @@ export default function NotificationSettings() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0 pr-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-[var(--text-primary)]">
+                      <span className="text-sm font-medium text-(--text-primary)">
                         Weekly Summary
                       </span>
                     </div>
-                    <div className="text-xs text-[var(--text-muted)] mt-0.5">
+                    <div className="text-xs text-(--text-muted) mt-0.5">
                       Get a weekly recap of your practice stats
                     </div>
                   </div>
@@ -365,11 +365,11 @@ export default function NotificationSettings() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0 pr-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-[var(--text-primary)]">
+                      <span className="text-sm font-medium text-(--text-primary)">
                         Goal Progress Updates
                       </span>
                     </div>
-                    <div className="text-xs text-[var(--text-muted)] mt-0.5">
+                    <div className="text-xs text-(--text-muted) mt-0.5">
                       Get notified when you reach goal milestones
                     </div>
                   </div>

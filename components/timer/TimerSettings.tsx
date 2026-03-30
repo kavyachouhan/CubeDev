@@ -135,19 +135,19 @@ export default function TimerSettings({
   if (!showSettings) return null;
 
   return (
-    <div className="mb-4 p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+    <div className="mb-4 p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
       <div className="space-y-3">
         {/* Timer Mode Selection */}
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center">
               <Timer className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+              <span className="text-sm font-medium text-(--text-primary) font-inter">
                 Timer Mode
               </span>
-              <p className="text-xs text-[var(--text-muted)] font-inter">
+              <p className="text-xs text-(--text-muted) font-inter">
                 Choose how you want to time your solves
               </p>
             </div>
@@ -156,7 +156,7 @@ export default function TimerSettings({
           <div className="relative ml-11" ref={timerModeDropdownRef}>
             <button
               onClick={() => setShowTimerModeDropdown(!showTimerModeDropdown)}
-              className="w-full flex items-center justify-between p-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)] transition-colors"
+              className="w-full flex items-center justify-between p-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
             >
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 {(() => {
@@ -164,29 +164,29 @@ export default function TimerSettings({
                     timerModeOptions.find((opt) => opt.value === timerMode)
                       ?.icon || Timer;
                   return (
-                    <Icon className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+                    <Icon className="w-4 h-4 text-(--primary) shrink-0" />
                   );
                 })()}
                 <div className="text-left min-w-0 flex-1">
-                  <div className="font-medium text-[var(--text-primary)] font-statement truncate text-sm">
+                  <div className="font-medium text-(--text-primary) font-statement truncate text-sm">
                     {timerModeOptions.find((opt) => opt.value === timerMode)
                       ?.label || "Normal Timer"}
                   </div>
-                  <div className="text-xs text-[var(--text-muted)] font-inter truncate">
+                  <div className="text-xs text-(--text-muted) font-inter truncate">
                     {timerModeOptions.find((opt) => opt.value === timerMode)
                       ?.description || "Traditional spacebar timer"}
                   </div>
                 </div>
               </div>
               <ChevronDown
-                className={`w-4 h-4 text-[var(--text-secondary)] transition-transform flex-shrink-0 ${
+                className={`w-4 h-4 text-(--text-secondary) transition-transform shrink-0 ${
                   showTimerModeDropdown ? "rotate-180" : ""
                 }`}
               />
             </button>
 
             {showTimerModeDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-[9999] max-h-60 overflow-hidden">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-60 overflow-hidden">
                 <div className="max-h-56 overflow-y-auto">
                   {timerModeOptions.map((option) => {
                     const Icon = option.icon;
@@ -197,38 +197,38 @@ export default function TimerSettings({
                           setTimerMode(option.value);
                           setShowTimerModeDropdown(false);
                         }}
-                        className={`w-full text-left p-3 hover:bg-[var(--surface-elevated)] transition-colors border-b border-[var(--border)]/50 last:border-b-0 ${
+                        className={`w-full text-left p-3 hover:bg-(--surface-elevated) transition-colors border-b border-(--border)/50 last:border-b-0 ${
                           timerMode === option.value
-                            ? "bg-[var(--primary)]/20"
+                            ? "bg-(--primary)/20"
                             : ""
                         }`}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 min-w-0 flex-1">
                             <Icon
-                              className={`w-4 h-4 flex-shrink-0 ${
+                              className={`w-4 h-4 shrink-0 ${
                                 timerMode === option.value
-                                  ? "text-[var(--primary)]"
-                                  : "text-[var(--text-secondary)]"
+                                  ? "text-(--primary)"
+                                  : "text-(--text-secondary)"
                               }`}
                             />
                             <div className="min-w-0 flex-1">
                               <div
                                 className={`font-medium text-sm ${
                                   timerMode === option.value
-                                    ? "text-[var(--primary)]"
-                                    : "text-[var(--text-primary)]"
+                                    ? "text-(--primary)"
+                                    : "text-(--text-primary)"
                                 }`}
                               >
                                 {option.label}
                               </div>
-                              <div className="text-xs text-[var(--text-muted)] mt-1">
+                              <div className="text-xs text-(--text-muted) mt-1">
                                 {option.description}
                               </div>
                             </div>
                           </div>
                           {timerMode === option.value && (
-                            <Check className="w-4 h-4 text-[var(--primary)] flex-shrink-0 ml-2" />
+                            <Check className="w-4 h-4 text-(--primary) shrink-0 ml-2" />
                           )}
                         </div>
                       </button>
@@ -243,14 +243,14 @@ export default function TimerSettings({
         {/* Inspection Time Toggle */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center">
               <span className="text-xs font-bold">15</span>
             </div>
             <div>
-              <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+              <span className="text-sm font-medium text-(--text-primary) font-inter">
                 Inspection Time
               </span>
-              <p className="text-xs text-[var(--text-muted)] font-inter">
+              <p className="text-xs text-(--text-muted) font-inter">
                 15-second inspection before solving
               </p>
             </div>
@@ -259,8 +259,8 @@ export default function TimerSettings({
             onClick={() => setInspectionEnabled(!inspectionEnabled)}
             className={`w-11 h-6 rounded-full transition-colors flex items-center ${
               inspectionEnabled
-                ? "bg-[var(--primary)] justify-end"
-                : "bg-[var(--border)] justify-start"
+                ? "bg-(--primary) justify-end"
+                : "bg-(--border) justify-start"
             }`}
           >
             <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
@@ -270,14 +270,14 @@ export default function TimerSettings({
         {/* Focus Mode Toggle */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center">
               <Eye className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+              <span className="text-sm font-medium text-(--text-primary) font-inter">
                 Focus Mode
               </span>
-              <p className="text-xs text-[var(--text-muted)] font-inter">
+              <p className="text-xs text-(--text-muted) font-inter">
                 Blur other areas during solve
               </p>
             </div>
@@ -286,8 +286,8 @@ export default function TimerSettings({
             onClick={() => setFocusModeEnabled(!focusModeEnabled)}
             className={`w-11 h-6 rounded-full transition-colors flex items-center ${
               focusModeEnabled
-                ? "bg-[var(--primary)] justify-end"
-                : "bg-[var(--border)] justify-start"
+                ? "bg-(--primary) justify-end"
+                : "bg-(--border) justify-start"
             }`}
           >
             <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
@@ -297,14 +297,14 @@ export default function TimerSettings({
         {/* Mute PB Sound Toggle */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center">
               <VolumeX className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+              <span className="text-sm font-medium text-(--text-primary) font-inter">
                 Mute PB Sound
               </span>
-              <p className="text-xs text-[var(--text-muted)] font-inter">
+              <p className="text-xs text-(--text-muted) font-inter">
                 Silence sound when achieving a personal best
               </p>
             </div>
@@ -313,8 +313,8 @@ export default function TimerSettings({
             onClick={() => setMutePbSound(!mutePbSound)}
             className={`w-11 h-6 rounded-full transition-colors flex items-center ${
               mutePbSound
-                ? "bg-[var(--primary)] justify-end"
-                : "bg-[var(--border)] justify-start"
+                ? "bg-(--primary) justify-end"
+                : "bg-(--border) justify-start"
             }`}
           >
             <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
@@ -332,14 +332,14 @@ export default function TimerSettings({
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center">
                 <Zap className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                <span className="text-sm font-medium text-(--text-primary) font-inter">
                   Phase Split Timer
                 </span>
-                <p className="text-xs text-[var(--text-muted)] font-inter">
+                <p className="text-xs text-(--text-muted) font-inter">
                   Track solve phases with spacebar presses
                 </p>
               </div>
@@ -352,8 +352,8 @@ export default function TimerSettings({
               disabled={timerMode !== "normal"}
               className={`w-11 h-6 rounded-full transition-colors flex items-center ${
                 phaseSplitsEnabled
-                  ? "bg-[var(--primary)] justify-end"
-                  : "bg-[var(--border)] justify-start"
+                  ? "bg-(--primary) justify-end"
+                  : "bg-(--border) justify-start"
               } ${timerMode !== "normal" ? "cursor-not-allowed" : ""}`}
             >
               <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
@@ -363,9 +363,9 @@ export default function TimerSettings({
 
         {/* Split Method Selection */}
         {phaseSplitsEnabled && timerMode === "normal" && (
-          <div className="ml-11 pl-3 border-l border-[var(--border)]">
+          <div className="ml-11 pl-3 border-l border-(--border)">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-[var(--text-primary)] font-inter">
+              <span className="text-sm text-(--text-primary) font-inter">
                 Split Method
               </span>
             </div>
@@ -375,29 +375,29 @@ export default function TimerSettings({
                 onClick={() =>
                   setShowSplitMethodDropdown(!showSplitMethodDropdown)
                 }
-                className="w-full flex items-center justify-between p-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)] transition-colors"
+                className="w-full flex items-center justify-between p-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
               >
                 <div className="flex items-center gap-2 min-w-0 flex-1">
                   <div className="text-left min-w-0 flex-1">
-                    <div className="font-medium text-[var(--text-primary)] font-statement truncate text-sm">
+                    <div className="font-medium text-(--text-primary) font-statement truncate text-sm">
                       {getSplitMethod(selectedSplitMethod)?.name ||
                         "Select Method"}
                     </div>
-                    <div className="text-xs text-[var(--text-muted)] font-inter truncate">
+                    <div className="text-xs text-(--text-muted) font-inter truncate">
                       {getSplitMethod(selectedSplitMethod)?.description ||
                         "Choose a splitting method"}
                     </div>
                   </div>
                 </div>
                 <ChevronDown
-                  className={`w-4 h-4 text-[var(--text-secondary)] transition-transform flex-shrink-0 ${
+                  className={`w-4 h-4 text-(--text-secondary) transition-transform shrink-0 ${
                     showSplitMethodDropdown ? "rotate-180" : ""
                   }`}
                 />
               </button>
 
               {showSplitMethodDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-[9999] max-h-60 overflow-hidden">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-60 overflow-hidden">
                   <div className="max-h-56 overflow-y-auto">
                     {SPLIT_METHODS.map((method) => (
                       <button
@@ -406,9 +406,9 @@ export default function TimerSettings({
                           setSelectedSplitMethod(method.id);
                           setShowSplitMethodDropdown(false);
                         }}
-                        className={`w-full text-left p-3 hover:bg-[var(--surface-elevated)] transition-colors border-b border-[var(--border)]/50 last:border-b-0 ${
+                        className={`w-full text-left p-3 hover:bg-(--surface-elevated) transition-colors border-b border-(--border)/50 last:border-b-0 ${
                           selectedSplitMethod === method.id
-                            ? "bg-[var(--primary)]/20"
+                            ? "bg-(--primary)/20"
                             : ""
                         }`}
                       >
@@ -417,21 +417,21 @@ export default function TimerSettings({
                             <div
                               className={`font-medium text-sm ${
                                 selectedSplitMethod === method.id
-                                  ? "text-[var(--primary)]"
-                                  : "text-[var(--text-primary)]"
+                                  ? "text-(--primary)"
+                                  : "text-(--text-primary)"
                               }`}
                             >
                               {method.name}
                             </div>
-                            <div className="text-xs text-[var(--text-muted)] mt-1">
+                            <div className="text-xs text-(--text-muted) mt-1">
                               {method.description}
                             </div>
-                            <div className="text-xs text-[var(--text-muted)] mt-1">
+                            <div className="text-xs text-(--text-muted) mt-1">
                               {method.phases.length} phases
                             </div>
                           </div>
                           {selectedSplitMethod === method.id && (
-                            <Check className="w-4 h-4 text-[var(--primary)] flex-shrink-0 ml-2" />
+                            <Check className="w-4 h-4 text-(--primary) shrink-0 ml-2" />
                           )}
                         </div>
                       </button>
@@ -454,14 +454,14 @@ export default function TimerSettings({
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center">
                 <Volume2 className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                <span className="text-sm font-medium text-(--text-primary) font-inter">
                   Consistency Coach
                 </span>
-                <p className="text-xs text-[var(--text-muted)] font-inter">
+                <p className="text-xs text-(--text-muted) font-inter">
                   Soft metronome for pacing practice
                 </p>
               </div>
@@ -477,8 +477,8 @@ export default function TimerSettings({
               disabled={timerMode === "manual"}
               className={`w-11 h-6 rounded-full transition-colors flex items-center ${
                 consistencyCoach.enabled
-                  ? "bg-[var(--primary)] justify-end"
-                  : "bg-[var(--border)] justify-start"
+                  ? "bg-(--primary) justify-end"
+                  : "bg-(--border) justify-start"
               } ${timerMode === "manual" ? "cursor-not-allowed" : ""}`}
             >
               <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
@@ -488,10 +488,10 @@ export default function TimerSettings({
 
         {/* Consistency Coach Settings */}
         {consistencyCoach.enabled && timerMode !== "manual" && (
-          <div className="ml-11 pl-3 border-l border-[var(--border)] space-y-2">
+          <div className="ml-11 pl-3 border-l border-(--border) space-y-2">
             {/* BPM Setting */}
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--text-primary)] font-inter">
+              <span className="text-sm text-(--text-primary) font-inter">
                 BPM
               </span>
               <div className="flex items-center gap-2">
@@ -506,9 +506,9 @@ export default function TimerSettings({
                       bpm: parseInt(e.target.value),
                     }))
                   }
-                  className="w-16 h-1 bg-[var(--border)] rounded-full appearance-none cursor-pointer"
+                  className="w-16 h-1 bg-(--border) rounded-full appearance-none cursor-pointer"
                 />
-                <span className="text-xs text-[var(--text-muted)] w-8">
+                <span className="text-xs text-(--text-muted) w-8">
                   {consistencyCoach.bpm}
                 </span>
               </div>
@@ -516,7 +516,7 @@ export default function TimerSettings({
 
             {/* Volume Setting */}
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--text-primary)] font-inter">
+              <span className="text-sm text-(--text-primary) font-inter">
                 Volume
               </span>
               <div className="flex items-center gap-2">
@@ -531,9 +531,9 @@ export default function TimerSettings({
                       volume: parseInt(e.target.value),
                     }))
                   }
-                  className="w-16 h-1 bg-[var(--border)] rounded-full appearance-none cursor-pointer"
+                  className="w-16 h-1 bg-(--border) rounded-full appearance-none cursor-pointer"
                 />
-                <span className="text-xs text-[var(--text-muted)] w-8">
+                <span className="text-xs text-(--text-muted) w-8">
                   {consistencyCoach.volume}
                 </span>
               </div>
@@ -541,7 +541,7 @@ export default function TimerSettings({
 
             {/* Sound Selection */}
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-[var(--text-primary)] font-inter">
+              <span className="text-sm text-(--text-primary) font-inter">
                 Sound
               </span>
             </div>
@@ -549,17 +549,17 @@ export default function TimerSettings({
             <div className="relative" ref={soundDropdownRef}>
               <button
                 onClick={() => setShowSoundDropdown(!showSoundDropdown)}
-                className="w-full flex items-center justify-between p-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)] transition-colors"
+                className="w-full flex items-center justify-between p-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
               >
                 <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <Volume2 className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+                  <Volume2 className="w-4 h-4 text-(--primary) shrink-0" />
                   <div className="text-left min-w-0 flex-1">
-                    <div className="font-medium text-[var(--text-primary)] font-statement truncate text-sm">
+                    <div className="font-medium text-(--text-primary) font-statement truncate text-sm">
                       {soundOptions.find(
                         (opt) => opt.value === consistencyCoach.sound
                       )?.label || "Beep"}
                     </div>
-                    <div className="text-xs text-[var(--text-muted)] font-inter truncate">
+                    <div className="text-xs text-(--text-muted) font-inter truncate">
                       {soundOptions.find(
                         (opt) => opt.value === consistencyCoach.sound
                       )?.description || "Sound type"}
@@ -567,14 +567,14 @@ export default function TimerSettings({
                   </div>
                 </div>
                 <ChevronDown
-                  className={`w-4 h-4 text-[var(--text-secondary)] transition-transform flex-shrink-0 ${
+                  className={`w-4 h-4 text-(--text-secondary) transition-transform shrink-0 ${
                     showSoundDropdown ? "rotate-180" : ""
                   }`}
                 />
               </button>
 
               {showSoundDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-[9999] max-h-60 overflow-hidden">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-60 overflow-hidden">
                   <div className="max-h-56 overflow-y-auto">
                     {soundOptions.map((option) => (
                       <button
@@ -586,9 +586,9 @@ export default function TimerSettings({
                           }));
                           setShowSoundDropdown(false);
                         }}
-                        className={`w-full text-left p-3 hover:bg-[var(--surface-elevated)] transition-colors border-b border-[var(--border)]/50 last:border-b-0 ${
+                        className={`w-full text-left p-3 hover:bg-(--surface-elevated) transition-colors border-b border-(--border)/50 last:border-b-0 ${
                           consistencyCoach.sound === option.value
-                            ? "bg-[var(--primary)]/20"
+                            ? "bg-(--primary)/20"
                             : ""
                         }`}
                       >
@@ -597,18 +597,18 @@ export default function TimerSettings({
                             <div
                               className={`font-medium text-sm ${
                                 consistencyCoach.sound === option.value
-                                  ? "text-[var(--primary)]"
-                                  : "text-[var(--text-primary)]"
+                                  ? "text-(--primary)"
+                                  : "text-(--text-primary)"
                               }`}
                             >
                               {option.label}
                             </div>
-                            <div className="text-xs text-[var(--text-muted)] mt-1">
+                            <div className="text-xs text-(--text-muted) mt-1">
                               {option.description}
                             </div>
                           </div>
                           {consistencyCoach.sound === option.value && (
-                            <Check className="w-4 h-4 text-[var(--primary)] flex-shrink-0 ml-2" />
+                            <Check className="w-4 h-4 text-(--primary) shrink-0 ml-2" />
                           )}
                         </div>
                       </button>

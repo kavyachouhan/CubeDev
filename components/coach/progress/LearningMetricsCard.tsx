@@ -44,28 +44,28 @@ export default function LearningMetricsCard({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
           {/* Learning Velocity */}
           {hasLearningVelocity && (
-            <div className="bg-[var(--surface-elevated)] rounded-lg p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 mb-2">
-                <div className="p-1.5 bg-[var(--primary)]/10 rounded">
-                  <Zap className="w-4 h-4 text-[var(--primary)]" />
+                <div className="p-1.5 bg-(--primary)/10 rounded">
+                  <Zap className="w-4 h-4 text-(--primary)" />
                 </div>
-                <span className="text-sm text-[var(--text-muted)]">
+                <span className="text-sm text-(--text-muted)">
                   Learning Velocity
                 </span>
               </div>
               <p
                 className={`text-xl sm:text-2xl font-bold font-mono ${
                   progressStats.learningVelocity! > 0
-                    ? "text-[var(--success)]"
+                    ? "text-(--success)"
                     : progressStats.learningVelocity! < 0
-                      ? "text-[var(--error)]"
-                      : "text-[var(--text-primary)]"
+                      ? "text-(--error)"
+                      : "text-(--text-primary)"
                 }`}
               >
                 {progressStats.learningVelocity! > 0 ? "-" : "+"}
                 {formatTime(Math.abs(progressStats.learningVelocity!))}
               </p>
-              <p className="text-xs text-[var(--text-muted)] mt-1">
+              <p className="text-xs text-(--text-muted) mt-1">
                 per month -{" "}
                 {progressStats.learningVelocity! > 0
                   ? "Improving!"
@@ -76,28 +76,28 @@ export default function LearningMetricsCard({
 
           {/* Consistency */}
           {hasConsistency && (
-            <div className="bg-[var(--surface-elevated)] rounded-lg p-3 sm:p-4 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 mb-2">
-                <div className="p-1.5 bg-[var(--accent)]/10 rounded">
-                  <TrendingUp className="w-4 h-4 text-[var(--accent)]" />
+                <div className="p-1.5 bg-(--accent)/10 rounded">
+                  <TrendingUp className="w-4 h-4 text-(--accent)" />
                 </div>
-                <span className="text-sm text-[var(--text-muted)]">
+                <span className="text-sm text-(--text-muted)">
                   Consistency Trend
                 </span>
               </div>
               <p
                 className={`text-xl sm:text-2xl font-bold font-mono ${
                   progressStats.consistencyImprovement! > 0
-                    ? "text-[var(--success)]"
+                    ? "text-(--success)"
                     : progressStats.consistencyImprovement! < 0
-                      ? "text-[var(--error)]"
-                      : "text-[var(--text-primary)]"
+                      ? "text-(--error)"
+                      : "text-(--text-primary)"
                 }`}
               >
                 {progressStats.consistencyImprovement! > 0 ? "+" : ""}
                 {progressStats.consistencyImprovement!.toFixed(1)}%
               </p>
-              <p className="text-xs text-[var(--text-muted)] mt-1">
+              <p className="text-xs text-(--text-muted) mt-1">
                 {progressStats.consistencyImprovement! > 0
                   ? "More consistent!"
                   : "More variable times"}
@@ -110,24 +110,24 @@ export default function LearningMetricsCard({
       {/* Comparison Stats */}
       {(hasMonthlyComparison || hasYearlyComparison) && (
         <div className="mt-4 space-y-2">
-          <div className="text-sm font-medium text-[var(--text-primary)] border-b border-[var(--border)] pb-2">
+          <div className="text-sm font-medium text-(--text-primary) border-b border-(--border) pb-2">
             Comparison Stats
           </div>
 
           {hasMonthlyComparison && (
-            <div className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-              <span className="text-sm text-[var(--text-secondary)]">
+            <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <span className="text-sm text-(--text-secondary)">
                 vs Last Month
               </span>
               <div className="flex items-center gap-2">
-                <span className="font-medium text-[var(--text-primary)] font-mono text-sm">
+                <span className="font-medium text-(--text-primary) font-mono text-sm">
                   {formatTime(progressStats.monthly.average!)}
                 </span>
                 <span
                   className={`text-xs px-1.5 py-0.5 rounded font-mono ${
                     progressStats.comparison.monthlyImprovement! > 0
-                      ? "bg-[var(--success)]/10 text-[var(--success)]"
-                      : "bg-[var(--error)]/10 text-[var(--error)]"
+                      ? "bg-(--success)/10 text-(--success)"
+                      : "bg-(--error)/10 text-(--error)"
                   }`}
                 >
                   {progressStats.comparison.monthlyImprovement! > 0 ? "-" : "+"}
@@ -140,19 +140,19 @@ export default function LearningMetricsCard({
           )}
 
           {hasYearlyComparison && (
-            <div className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-              <span className="text-sm text-[var(--text-secondary)]">
+            <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <span className="text-sm text-(--text-secondary)">
                 vs Last Year
               </span>
               <div className="flex items-center gap-2">
-                <span className="font-medium text-[var(--text-primary)] font-mono text-sm">
+                <span className="font-medium text-(--text-primary) font-mono text-sm">
                   {formatTime(progressStats.monthly.average!)}
                 </span>
                 <span
                   className={`text-xs px-1.5 py-0.5 rounded font-mono ${
                     progressStats.comparison.yearlyImprovement! > 0
-                      ? "bg-[var(--success)]/10 text-[var(--success)]"
-                      : "bg-[var(--error)]/10 text-[var(--error)]"
+                      ? "bg-(--success)/10 text-(--success)"
+                      : "bg-(--error)/10 text-(--error)"
                   }`}
                 >
                   {progressStats.comparison.yearlyImprovement! > 0 ? "-" : "+"}

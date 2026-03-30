@@ -281,25 +281,25 @@ export default function ConfettiCelebration({
             "celebration-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
         }}
       >
-        <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl bg-[var(--surface)] border border-[var(--primary)] shadow-lg">
+        <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl bg-(--surface) border border-(--primary) shadow-lg">
           <div className="flex items-center gap-2">
             {achievementType === "single" ? (
               <Zap
-                className="w-5 h-5 text-[var(--primary)]"
+                className="w-5 h-5 text-(--primary)"
                 strokeWidth={2.5}
               />
             ) : (
               <Trophy
-                className="w-5 h-5 text-[var(--primary)]"
+                className="w-5 h-5 text-(--primary)"
                 strokeWidth={2.5}
               />
             )}
-            <span className="text-lg font-bold text-[var(--primary)] font-statement">
+            <span className="text-lg font-bold text-(--primary) font-statement">
               {getAchievementText()}
             </span>
           </div>
           {timeValue && (
-            <span className="text-2xl font-bold text-[var(--text-primary)] font-mono">
+            <span className="text-2xl font-bold text-(--text-primary) font-mono">
               {timeValue}
             </span>
           )}

@@ -357,28 +357,28 @@ export default function SimulationMode({
   // Get timer color
   const getTimerColor = () => {
     if (state === "inspection") {
-      if (inspectionTime <= 3) return "text-[var(--error)]";
-      if (inspectionTime <= 8) return "text-[var(--warning)]";
-      return "text-[var(--timer-inspection)]";
+      if (inspectionTime <= 3) return "text-(--error)";
+      if (inspectionTime <= 8) return "text-(--warning)";
+      return "text-(--timer-inspection)";
     }
-    if (state === "ready") return "text-[var(--timer-ready)]";
-    if (state === "running") return "text-[var(--timer-running)]";
-    return "text-[var(--text-primary)]";
+    if (state === "ready") return "text-(--timer-ready)";
+    if (state === "running") return "text-(--timer-running)";
+    return "text-(--text-primary)";
   };
 
   if (!competition) {
     return (
       <div className="timer-card text-center py-12">
-        <Trophy className="w-16 h-16 text-[var(--text-muted)] mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+        <Trophy className="w-16 h-16 text-(--text-muted) mx-auto mb-4" />
+        <h3 className="text-xl font-bold text-(--text-primary) mb-2">
           No Competition Selected
         </h3>
-        <p className="text-[var(--text-muted)] mb-6">
+        <p className="text-(--text-muted) mb-6">
           Select a competition to start your simulation practice.
         </p>
         <button
           onClick={onSelectCompetition}
-          className="px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+          className="px-6 py-3 bg-(--primary) text-white font-medium rounded-lg hover:bg-(--primary-hover) transition-colors"
         >
           Browse Competitions
         </button>
@@ -393,7 +393,7 @@ export default function SimulationMode({
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {event && (
-              <div className="p-3 bg-[var(--surface-elevated)] rounded-lg">
+              <div className="p-3 bg-(--surface-elevated) rounded-lg">
                 <Image
                   src={event.icon}
                   alt={event.name}
@@ -403,10 +403,10 @@ export default function SimulationMode({
               </div>
             )}
             <div>
-              <h2 className="text-lg font-bold text-[var(--text-primary)]">
+              <h2 className="text-lg font-bold text-(--text-primary)">
                 {competition.name}
               </h2>
-              <p className="text-sm text-[var(--text-muted)]">
+              <p className="text-sm text-(--text-muted)">
                 {event?.name} • {competition.city}, {competition.country_iso2}
               </p>
             </div>
@@ -414,7 +414,7 @@ export default function SimulationMode({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
-              className="p-2 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)] transition-colors"
+              className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
               title={soundEnabled ? "Mute sounds" : "Enable sounds"}
             >
               {soundEnabled ? (
@@ -425,13 +425,13 @@ export default function SimulationMode({
             </button>
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="p-2 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)] transition-colors"
+              className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
             >
               <Settings className="w-4 h-4" />
             </button>
             <button
               onClick={resetSimulation}
-              className="p-2 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)] transition-colors"
+              className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
               title="Reset simulation"
             >
               <RotateCcw className="w-4 h-4" />
@@ -443,13 +443,13 @@ export default function SimulationMode({
       {/* Settings Panel */}
       {showSettings && (
         <div className="timer-card">
-          <h3 className="font-bold text-[var(--text-primary)] mb-4">
+          <h3 className="font-bold text-(--text-primary) mb-4">
             Simulation Settings
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Pressure Level */}
             <div>
-              <label className="text-sm text-[var(--text-secondary)] block mb-2">
+              <label className="text-sm text-(--text-secondary) block mb-2">
                 Pressure Level
               </label>
               <select
@@ -457,7 +457,7 @@ export default function SimulationMode({
                 onChange={(e) =>
                   setPressureLevel(e.target.value as PressureLevel)
                 }
-                className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
               >
                 {Object.entries(PRESSURE_CONFIGS).map(([key, config]) => (
                   <option key={key} value={key}>
@@ -469,13 +469,13 @@ export default function SimulationMode({
 
             {/* Solves per round */}
             <div>
-              <label className="text-sm text-[var(--text-secondary)] block mb-2">
+              <label className="text-sm text-(--text-secondary) block mb-2">
                 Solves per Round
               </label>
               <select
                 value={solvesPerRound}
                 onChange={(e) => setSolvesPerRound(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
               >
                 <option value={3}>3 solves (Mean of 3)</option>
                 <option value={5}>5 solves (Average of 5)</option>
@@ -484,7 +484,7 @@ export default function SimulationMode({
 
             {/* Inspection Time */}
             <div>
-              <label className="text-sm text-[var(--text-secondary)] block mb-2">
+              <label className="text-sm text-(--text-secondary) block mb-2">
                 Inspection Time (seconds)
               </label>
               <input
@@ -495,7 +495,7 @@ export default function SimulationMode({
                 onChange={(e) =>
                   setCustomInspectionTime(Number(e.target.value))
                 }
-                className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
               />
             </div>
 
@@ -506,9 +506,9 @@ export default function SimulationMode({
                   type="checkbox"
                   checked={judgeErrorsEnabled}
                   onChange={(e) => setJudgeErrorsEnabled(e.target.checked)}
-                  className="w-4 h-4 rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                  className="w-4 h-4 rounded border-(--border) text-(--primary) focus:ring-(--primary)"
                 />
-                <span className="text-sm text-[var(--text-secondary)]">
+                <span className="text-sm text-(--text-secondary)">
                   Simulate judge errors (random +2s)
                 </span>
               </label>
@@ -519,9 +519,9 @@ export default function SimulationMode({
                   onChange={(e) =>
                     setInspectionViolationsEnabled(e.target.checked)
                   }
-                  className="w-4 h-4 rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                  className="w-4 h-4 rounded border-(--border) text-(--primary) focus:ring-(--primary)"
                 />
-                <span className="text-sm text-[var(--text-secondary)]">
+                <span className="text-sm text-(--text-secondary)">
                   Enforce inspection violations
                 </span>
               </label>
@@ -534,7 +534,7 @@ export default function SimulationMode({
       <div className="timer-card">
         {/* Round Progress */}
         <div className="flex items-center justify-between mb-6">
-          <div className="text-sm text-[var(--text-muted)]">
+          <div className="text-sm text-(--text-muted)">
             Solve {Math.min(currentSolve + 1, solvesPerRound)} of{" "}
             {solvesPerRound}
           </div>
@@ -545,13 +545,13 @@ export default function SimulationMode({
                 className={`w-8 h-2 rounded-full ${
                   i < results.length
                     ? results[i].penalty === "DNF"
-                      ? "bg-[var(--error)]"
+                      ? "bg-(--error)"
                       : results[i].penalty === "+2"
-                        ? "bg-[var(--warning)]"
-                        : "bg-[var(--success)]"
+                        ? "bg-(--warning)"
+                        : "bg-(--success)"
                     : i === currentSolve && state !== "idle"
-                      ? "bg-[var(--primary)]"
-                      : "bg-[var(--border)]"
+                      ? "bg-(--primary)"
+                      : "bg-(--border)"
                 }`}
               />
             ))}
@@ -562,10 +562,10 @@ export default function SimulationMode({
         <div className="text-center py-8">
           {state === "completed" ? (
             <div>
-              <div className="text-6xl sm:text-8xl font-bold font-mono text-[var(--success)] mb-4">
+              <div className="text-6xl sm:text-8xl font-bold font-mono text-(--success) mb-4">
                 Done!
               </div>
-              <p className="text-[var(--text-muted)]">Round completed</p>
+              <p className="text-(--text-muted)">Round completed</p>
             </div>
           ) : (
             <>
@@ -575,25 +575,25 @@ export default function SimulationMode({
                 {getDisplayTime()}
               </div>
               {state === "inspection" && (
-                <p className="text-[var(--text-muted)] mt-2">Inspection</p>
+                <p className="text-(--text-muted) mt-2">Inspection</p>
               )}
               {state === "ready" && isSpacePressed && (
-                <p className="text-[var(--timer-ready)] mt-2">
+                <p className="text-(--timer-ready) mt-2">
                   Hold to start...
                 </p>
               )}
               {state === "idle" && (
-                <p className="text-[var(--text-muted)] mt-2">
+                <p className="text-(--text-muted) mt-2">
                   Press Space to start inspection
                 </p>
               )}
               {state === "running" && (
-                <p className="text-[var(--text-muted)] mt-2">
+                <p className="text-(--text-muted) mt-2">
                   Press Space to stop
                 </p>
               )}
               {state === "stopped" && (
-                <p className="text-[var(--text-muted)] mt-2">
+                <p className="text-(--text-muted) mt-2">
                   Press Space for next solve
                 </p>
               )}
@@ -608,8 +608,8 @@ export default function SimulationMode({
               onClick={() => applyPenalty("+2")}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 results[results.length - 1]?.penalty === "+2"
-                  ? "bg-[var(--warning)] text-white"
-                  : "border border-[var(--warning)] text-[var(--warning)] hover:bg-[var(--warning)]/10"
+                  ? "bg-(--warning) text-white"
+                  : "border border-(--warning) text-(--warning) hover:bg-(--warning)/10"
               }`}
             >
               +2
@@ -618,8 +618,8 @@ export default function SimulationMode({
               onClick={() => applyPenalty("DNF")}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 results[results.length - 1]?.penalty === "DNF"
-                  ? "bg-[var(--error)] text-white"
-                  : "border border-[var(--error)] text-[var(--error)] hover:bg-[var(--error)]/10"
+                  ? "bg-(--error) text-white"
+                  : "border border-(--error) text-(--error) hover:bg-(--error)/10"
               }`}
             >
               DNF
@@ -630,7 +630,7 @@ export default function SimulationMode({
         {/* Inspection Violation Warning */}
         {results.length > 0 &&
           results[results.length - 1]?.inspectionViolation && (
-            <div className="flex items-center justify-center gap-2 text-[var(--warning)] mb-4">
+            <div className="flex items-center justify-center gap-2 text-(--warning) mb-4">
               <AlertTriangle className="w-4 h-4" />
               <span className="text-sm">
                 Inspection violation:{" "}
@@ -641,7 +641,7 @@ export default function SimulationMode({
 
         {/* Judge Error Notification */}
         {results.length > 0 && results[results.length - 1]?.judgeError && (
-          <div className="flex items-center justify-center gap-2 text-[var(--warning)] mb-4">
+          <div className="flex items-center justify-center gap-2 text-(--warning) mb-4">
             <AlertTriangle className="w-4 h-4" />
             <span className="text-sm">
               Simulated judge error - practice handling penalties!
@@ -653,11 +653,11 @@ export default function SimulationMode({
       {/* Results Table */}
       {results.length > 0 && (
         <div className="timer-card">
-          <h3 className="font-bold text-[var(--text-primary)] mb-4">Results</h3>
+          <h3 className="font-bold text-(--text-primary) mb-4">Results</h3>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="text-left text-sm text-[var(--text-muted)] border-b border-[var(--border)]">
+                <tr className="text-left text-sm text-(--text-muted) border-b border-(--border)">
                   <th className="pb-2 pr-4">#</th>
                   <th className="pb-2 pr-4">Time</th>
                   <th className="pb-2 pr-4">Penalty</th>
@@ -668,26 +668,26 @@ export default function SimulationMode({
                 {results.map((result, idx) => (
                   <tr
                     key={idx}
-                    className="border-b border-[var(--border)] last:border-0"
+                    className="border-b border-(--border) last:border-0"
                   >
-                    <td className="py-2 pr-4 text-[var(--text-secondary)]">
+                    <td className="py-2 pr-4 text-(--text-secondary)">
                       {idx + 1}
                     </td>
-                    <td className="py-2 pr-4 font-mono text-[var(--text-primary)]">
+                    <td className="py-2 pr-4 font-mono text-(--text-primary)">
                       {formatTime(result.time)}
                     </td>
                     <td className="py-2 pr-4">
                       {result.penalty === "+2" && (
-                        <span className="text-[var(--warning)]">+2</span>
+                        <span className="text-(--warning)">+2</span>
                       )}
                       {result.penalty === "DNF" && (
-                        <span className="text-[var(--error)]">DNF</span>
+                        <span className="text-(--error)">DNF</span>
                       )}
                       {result.penalty === "none" && (
-                        <span className="text-[var(--text-muted)]">-</span>
+                        <span className="text-(--text-muted)">-</span>
                       )}
                     </td>
-                    <td className="py-2 font-mono font-medium text-[var(--text-primary)]">
+                    <td className="py-2 font-mono font-medium text-(--text-primary)">
                       {result.penalty === "DNF"
                         ? "DNF"
                         : formatTime(
@@ -702,36 +702,36 @@ export default function SimulationMode({
 
           {/* Statistics */}
           {stats && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-4 border-t border-[var(--border)]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-4 border-t border-(--border)">
               <div>
-                <div className="text-xs text-[var(--text-muted)] mb-1">
+                <div className="text-xs text-(--text-muted) mb-1">
                   Best
                 </div>
-                <div className="font-mono font-bold text-[var(--success)]">
+                <div className="font-mono font-bold text-(--success)">
                   {formatTime(stats.best)}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-[var(--text-muted)] mb-1">
+                <div className="text-xs text-(--text-muted) mb-1">
                   Worst
                 </div>
-                <div className="font-mono font-bold text-[var(--error)]">
+                <div className="font-mono font-bold text-(--error)">
                   {formatTime(stats.worst)}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-[var(--text-muted)] mb-1">
+                <div className="text-xs text-(--text-muted) mb-1">
                   Average
                 </div>
-                <div className="font-mono font-bold text-[var(--primary)]">
+                <div className="font-mono font-bold text-(--primary)">
                   {stats.average > 0 ? formatTime(stats.average) : "-"}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-[var(--text-muted)] mb-1">
+                <div className="text-xs text-(--text-muted) mb-1">
                   DNFs
                 </div>
-                <div className="font-mono font-bold text-[var(--text-primary)]">
+                <div className="font-mono font-bold text-(--text-primary)">
                   {stats.dnfCount}
                 </div>
               </div>
@@ -745,14 +745,14 @@ export default function SimulationMode({
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={resetSimulation}
-            className="px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-lg hover:bg-[var(--primary-hover)] transition-colors flex items-center justify-center gap-2"
+            className="px-6 py-3 bg-(--primary) text-white font-medium rounded-lg hover:bg-(--primary-hover) transition-colors flex items-center justify-center gap-2"
           >
             <RotateCcw className="w-4 h-4" />
             Start New Round
           </button>
           <button
             onClick={onSelectCompetition}
-            className="px-6 py-3 border border-[var(--border)] text-[var(--text-primary)] font-medium rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+            className="px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-lg hover:bg-(--surface-elevated) transition-colors"
           >
             Choose Different Competition
           </button>

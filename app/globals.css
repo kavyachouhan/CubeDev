@@ -547,6 +547,20 @@ textarea::-webkit-scrollbar-thumb:hover {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out forwards;
+}
+
 /* Timer card */
 .timer-card {
   background: var(--surface);

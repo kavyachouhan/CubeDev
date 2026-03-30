@@ -78,21 +78,21 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
       <div className="flex items-center gap-2 sm:gap-3 mb-4">
         <button
           onClick={onBack}
-          className="p-2 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors shrink-0"
+          className="p-2 hover:bg-(--surface-elevated) rounded-lg transition-colors shrink-0"
         >
-          <ChevronLeft className="w-5 h-5 text-[var(--text-muted)]" />
+          <ChevronLeft className="w-5 h-5 text-(--text-muted)" />
         </button>
         <div className="flex-1 min-w-0">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] font-statement truncate">
+          <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement truncate">
             {setName}
           </h2>
-          <p className="text-xs sm:text-sm text-[var(--text-muted)] font-inter">
+          <p className="text-xs sm:text-sm text-(--text-muted) font-inter">
             {cases?.length || 0} cases
           </p>
         </div>
         <button
           onClick={() => setShowNewCaseModal(true)}
-          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-inter text-sm shrink-0"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-inter text-sm shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Add Case</span>
@@ -101,13 +101,13 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
 
       {/* Search */}
       <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
         <input
           type="text"
           placeholder="Search cases..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm"
+          className="w-full pl-10 pr-4 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
         />
       </div>
 
@@ -123,27 +123,27 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
           {filteredCases.map((caseItem) => (
             <div
               key={caseItem._id}
-              className="timer-card hover:border-[var(--border-hover)] transition-colors"
+              className="timer-card hover:border-(--border-hover) transition-colors"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <h4 className="font-semibold text-[var(--text-primary)] font-statement">
+                    <h4 className="font-semibold text-(--text-primary) font-statement">
                       {caseItem.caseName}
                     </h4>
-                    <span className="text-xs px-2 py-0.5 bg-[var(--surface-elevated)] text-[var(--text-muted)] rounded-full font-inter">
+                    <span className="text-xs px-2 py-0.5 bg-(--surface-elevated) text-(--text-muted) rounded-full font-inter">
                       {caseItem.algorithmCount} algs
                     </span>
                     {caseItem.learnerCount > 0 && (
-                      <span className="text-xs px-2 py-0.5 bg-[var(--primary)]/10 text-[var(--primary)] rounded-full font-inter">
+                      <span className="text-xs px-2 py-0.5 bg-(--primary)/10 text-(--primary) rounded-full font-inter">
                         {caseItem.learnerCount} learners
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-[var(--text-muted)] font-inter font-mono truncate">
+                  <p className="text-xs text-(--text-muted) font-inter font-mono truncate">
                     Setup: {caseItem.setupMoves}
                   </p>
-                  <div className="flex items-center gap-4 mt-2 text-xs text-[var(--text-muted)] font-inter">
+                  <div className="flex items-center gap-4 mt-2 text-xs text-(--text-muted) font-inter">
                     <span>Difficulty: {caseItem.difficulty}/10</span>
                     <span>Frequency: {"*".repeat(caseItem.frequency)}</span>
                   </div>
@@ -156,21 +156,21 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
                         caseName: caseItem.caseName,
                       })
                     }
-                    className="p-2 hover:bg-[var(--primary)]/10 text-[var(--text-muted)] hover:text-[var(--primary)] rounded-lg transition-colors"
+                    className="p-2 hover:bg-(--primary)/10 text-(--text-muted) hover:text-(--primary) rounded-lg transition-colors"
                     title="View algorithms"
                   >
                     <Eye className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setEditingCase(caseItem._id)}
-                    className="p-2 hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] hover:text-[var(--primary)] rounded-lg transition-colors"
+                    className="p-2 hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--primary) rounded-lg transition-colors"
                     title="Edit case"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setDeleteCase(caseItem._id)}
-                    className="p-2 hover:bg-red-500/10 text-[var(--text-muted)] hover:text-red-500 rounded-lg transition-colors"
+                    className="p-2 hover:bg-red-500/10 text-(--text-muted) hover:text-red-500 rounded-lg transition-colors"
                     title="Delete case"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -182,8 +182,8 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
         </div>
       ) : (
         <div className="timer-card text-center py-8">
-          <Layers className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-          <p className="text-[var(--text-muted)] font-inter">No cases found</p>
+          <Layers className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
+          <p className="text-(--text-muted) font-inter">No cases found</p>
         </div>
       )}
 

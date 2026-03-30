@@ -78,10 +78,10 @@ export default function CoachSessionSelector({
     <div className="space-y-6">
       {/* Header Card */}
       <div className="timer-card text-center">
-        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+        <h2 className="text-2xl font-bold text-(--text-primary) mb-2">
           What's Your Current Level?
         </h2>
-        <p className="text-[var(--text-secondary)]">
+        <p className="text-(--text-secondary)">
           Select a recent 3x3 session so we can analyze your current skill level.
         </p>
       </div>
@@ -89,27 +89,27 @@ export default function CoachSessionSelector({
       {/* Session Selection Card */}
       <div className="timer-card">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-[var(--text-primary)]">Select a 3x3 Session</h3>
-          <span className="text-xs text-[var(--text-muted)]">Optional</span>
+          <h3 className="font-semibold text-(--text-primary)">Select a 3x3 Session</h3>
+          <span className="text-xs text-(--text-muted)">Optional</span>
         </div>
 
         {/* Info Note */}
-        <div className="flex items-start gap-2 p-3 bg-[var(--info)]/10 border border-[var(--info)]/20 rounded-lg mb-4">
-          <Info className="w-4 h-4 text-[var(--info)] flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-[var(--text-secondary)]">
-            For best accuracy, select a session with at least <span className="font-semibold text-[var(--info)]">100 solves</span>. 
+        <div className="flex items-start gap-2 p-3 bg-(--info)/10 border border-(--info)/20 rounded-lg mb-4">
+          <Info className="w-4 h-4 text-(--info) shrink-0 mt-0.5" />
+          <p className="text-xs text-(--text-secondary)">
+            For best accuracy, select a session with at least <span className="font-semibold text-(--info)">100 solves</span>. 
             This helps us calculate a more accurate average of your current skill level.
           </p>
         </div>
         
         {!sessions ? (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin w-6 h-6 border-2 border-[var(--primary)] border-t-transparent rounded-full" />
+            <div className="animate-spin w-6 h-6 border-2 border-(--primary) border-t-transparent rounded-full" />
           </div>
         ) : filteredSessions.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-            <AlertCircle className="w-8 h-8 text-[var(--text-muted)] mb-2" />
-            <p className="text-[var(--text-muted)] text-sm text-center px-4">
+          <div className="flex flex-col items-center justify-center py-8 bg-(--surface-elevated) rounded-lg border border-(--border)">
+            <AlertCircle className="w-8 h-8 text-(--text-muted) mb-2" />
+            <p className="text-(--text-muted) text-sm text-center px-4">
               No 3x3 sessions found. Create some 3x3 solves in the Timer first, or select your skill level manually below.
             </p>
           </div>
@@ -125,26 +125,26 @@ export default function CoachSessionSelector({
                   onClick={() => handleSessionSelect(session._id)}
                   className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all text-left ${
                     isSelected
-                      ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                      : "bg-[var(--surface-elevated)] border-[var(--border)] hover:border-[var(--border-hover)]"
+                      ? "bg-(--primary)/10 border-(--primary)"
+                      : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <FolderOpen className={`w-5 h-5 ${isSelected ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`} />
-                    <span className={`font-medium ${isSelected ? "text-[var(--primary)]" : "text-[var(--text-primary)]"}`}>
+                    <FolderOpen className={`w-5 h-5 ${isSelected ? "text-(--primary)" : "text-(--text-muted)"}`} />
+                    <span className={`font-medium ${isSelected ? "text-(--primary)" : "text-(--text-primary)"}`}>
                       {session.name}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`text-sm ${
                       hasEnoughSolves 
-                        ? "text-[var(--success)]" 
-                        : "text-[var(--text-muted)]"
+                        ? "text-(--success)" 
+                        : "text-(--text-muted)"
                     }`}>
                       {session.solveCount3x3} solves
                     </span>
                     {hasEnoughSolves && (
-                      <span className="w-2 h-2 rounded-full bg-[var(--success)]" />
+                      <span className="w-2 h-2 rounded-full bg-(--success)" />
                     )}
                   </div>
                 </button>
@@ -158,33 +158,33 @@ export default function CoachSessionSelector({
       {data.selectedSessionId && selectedSessionStats && (
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="w-5 h-5 text-[var(--primary)]" />
-            <h3 className="font-semibold text-[var(--text-primary)]">Session Analysis</h3>
+            <BarChart3 className="w-5 h-5 text-(--primary)" />
+            <h3 className="font-semibold text-(--text-primary)">Session Analysis</h3>
           </div>
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-              <span className="text-xs text-[var(--text-muted)] block mb-1">Solves</span>
-              <span className="text-xl font-bold text-[var(--text-primary)]">
+            <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+              <span className="text-xs text-(--text-muted) block mb-1">Solves</span>
+              <span className="text-xl font-bold text-(--text-primary)">
                 {selectedSessionStats.solveCount}
               </span>
             </div>
-            <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-              <span className="text-xs text-[var(--text-muted)] block mb-1">Average</span>
-              <span className="text-xl font-bold text-[var(--primary)]">
+            <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+              <span className="text-xs text-(--text-muted) block mb-1">Average</span>
+              <span className="text-xl font-bold text-(--primary)">
                 {formatTime(selectedSessionStats.average)}
               </span>
             </div>
-            <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-              <span className="text-xs text-[var(--text-muted)] block mb-1">Best</span>
-              <span className="text-xl font-bold text-[var(--success)]">
+            <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+              <span className="text-xs text-(--text-muted) block mb-1">Best</span>
+              <span className="text-xl font-bold text-(--success)">
                 {formatTime(selectedSessionStats.bestSingle)}
               </span>
             </div>
           </div>
           
           {selectedSessionStats.solveCount < 100 && (
-            <div className="mt-3 p-2 bg-[var(--warning)]/10 border border-[var(--warning)]/20 rounded-lg">
-              <p className="text-xs text-[var(--warning)] text-center">
+            <div className="mt-3 p-2 bg-(--warning)/10 border border-(--warning)/20 rounded-lg">
+              <p className="text-xs text-(--warning) text-center">
                 This session has fewer than 100 solves. The average might not be fully accurate.
               </p>
             </div>
@@ -194,7 +194,7 @@ export default function CoachSessionSelector({
 
       {/* Manual Skill Level Selection Card */}
       <div className="timer-card">
-        <h3 className="font-semibold text-[var(--text-primary)] mb-4">
+        <h3 className="font-semibold text-(--text-primary) mb-4">
           {data.selectedSessionId ? "Detected Skill Level" : "Select Your Skill Level"}
         </h3>
         
@@ -210,16 +210,16 @@ export default function CoachSessionSelector({
               onClick={() => handleSkillLevelManual(level.id as any)}
               className={`p-4 rounded-lg border text-left transition-all ${
                 data.skillLevel === level.id
-                  ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                  : "bg-[var(--surface-elevated)] border-[var(--border)] hover:border-[var(--border-hover)]"
+                  ? "bg-(--primary)/10 border-(--primary)"
+                  : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
               }`}
             >
               <span className={`font-medium block ${
-                data.skillLevel === level.id ? "text-[var(--primary)]" : "text-[var(--text-primary)]"
+                data.skillLevel === level.id ? "text-(--primary)" : "text-(--text-primary)"
               }`}>
                 {level.label}
               </span>
-              <span className="text-xs text-[var(--text-muted)]">{level.description}</span>
+              <span className="text-xs text-(--text-muted)">{level.description}</span>
             </button>
           ))}
         </div>

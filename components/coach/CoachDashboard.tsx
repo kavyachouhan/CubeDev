@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Calendar, BookOpen, TrendingUp, Heart, X } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -84,7 +85,7 @@ interface CoachDashboardProps {
 
 type TabId = "plan" | "journal" | "progress";
 
-const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
+const TABS: { id: TabId; label: string; icon: LucideIcon }[] = [
   { id: "plan", label: "Training Plan", icon: Calendar },
   { id: "journal", label: "Journal", icon: BookOpen },
   { id: "progress", label: "Progress", icon: TrendingUp },
@@ -430,7 +431,7 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
           {showContributeBanner &&
             !contributeBannerDismissed &&
             !hasSubmittedVolunteer && (
-              <div className="timer-card relative border-[var(--primary)]/30">
+              <div className="timer-card relative border-(--primary)/30">
                 <button
                   onClick={() => {
                     localStorage.setItem(
@@ -439,7 +440,7 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                     );
                     setContributeBannerDismissed(true);
                   }}
-                  className="hidden sm:flex absolute top-3 right-3 p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                  className="hidden sm:flex absolute top-3 right-3 p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
                   aria-label="Dismiss banner"
                   title="Dismiss banner"
                 >
@@ -449,10 +450,10 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4 sm:pr-10">
                   <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
                     <div className="flex-1 min-w-0 text-center sm:text-left">
-                      <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-0.5 font-statement">
+                      <h3 className="text-sm font-semibold text-(--text-primary) mb-0.5 font-statement">
                         Want to help improve the Coach?
                       </h3>
-                      <p className="text-xs text-[var(--text-secondary)]">
+                      <p className="text-xs text-(--text-secondary)">
                         Join our contributor program and help make training
                         plans even better for the cubing community!
                       </p>
@@ -461,7 +462,7 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:shrink-0">
                     <Link
                       href="/cube-lab/coach/contribute"
-                      className="block w-full sm:w-auto text-center px-4 py-2 text-sm font-medium bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+                      className="block w-full sm:w-auto text-center px-4 py-2 text-sm font-medium bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
                     >
                       Learn More
                     </Link>
@@ -474,7 +475,7 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                         );
                         setContributeBannerDismissed(true);
                       }}
-                      className="sm:hidden w-full px-4 py-2 text-sm font-medium text-[var(--text-secondary)] bg-[var(--surface)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+                      className="sm:hidden w-full px-4 py-2 text-sm font-medium text-(--text-secondary) bg-(--surface) border border-(--border) rounded-lg hover:bg-(--surface-elevated) transition-colors"
                     >
                       Dismiss
                     </button>
@@ -485,7 +486,7 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
 
           {/* Tabs */}
           <div
-            className="flex gap-1 p-1 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]"
+            className="flex gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border)"
             data-tour="coach-tabs"
           >
             {TABS.map((tab) => {
@@ -505,8 +506,8 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                   data-tour={tourId}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium transition-all ${
                     isActive
-                      ? "bg-[var(--primary)] text-white shadow-sm"
-                      : "text-[var(--text-secondary)] hover:bg-[var(--surface)]"
+                      ? "bg-(--primary) text-white shadow-sm"
+                      : "text-(--text-secondary) hover:bg-(--surface)"
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -535,17 +536,17 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                   /* Only show "Generate Plan" when query has completed AND returned no plan */
                   !isActivePlanLoading && (
                     <div className="timer-card text-center py-12">
-                      <Calendar className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
-                      <h3 className="font-semibold text-[var(--text-primary)] mb-2">
+                      <Calendar className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
+                      <h3 className="font-semibold text-(--text-primary) mb-2">
                         No Active Training Plan
                       </h3>
-                      <p className="text-sm text-[var(--text-muted)] mb-4">
+                      <p className="text-sm text-(--text-muted) mb-4">
                         Generate your first weekly training plan to get started.
                       </p>
                       <button
                         onClick={handleGenerateNewWeek}
                         disabled={isGeneratingPlan}
-                        className="px-6 py-2.5 bg-[var(--primary)] text-white rounded-lg font-medium hover:bg-[var(--primary-hover)] transition-colors disabled:opacity-50"
+                        className="px-6 py-2.5 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors disabled:opacity-50"
                       >
                         {isGeneratingPlan ? "Generating..." : "Generate Plan"}
                       </button>

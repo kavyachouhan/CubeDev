@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ReactNode } from "react";
 import { Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 // Hook to detect current theme
 export function useEffectiveTheme() {
@@ -157,9 +158,9 @@ export function CollapsibleSection({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+          className="flex items-center gap-2 text-(--text-muted) hover:text-(--primary) transition-colors"
         >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             {title}
           </h3>
           {isExpanded ? (
@@ -172,7 +173,7 @@ export function CollapsibleSection({
           {headerAction}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={isExpanded ? `Hide ${title}` : `Show ${title}`}
           >
             {isExpanded ? (
@@ -190,7 +191,7 @@ export function CollapsibleSection({
 
 // Stat Card Component for consistent styling
 interface StatCardProps {
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconColor: string;
   label: string;
   value: string | number;
@@ -203,16 +204,16 @@ export function StatCard({
   iconColor,
   label,
   value,
-  valueColor = "text-[var(--text-primary)]",
+  valueColor = "text-(--text-primary)",
   subtitle,
 }: StatCardProps) {
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+    <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
       <div className="flex items-center gap-2 mb-1">
         <div className={`p-1 ${iconColor} rounded`}>
           <Icon className="w-3 h-3" />
         </div>
-        <span className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+        <span className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
           {label}
         </span>
       </div>
@@ -222,7 +223,7 @@ export function StatCard({
         {value}
       </div>
       {subtitle && (
-        <div className="text-xs text-[var(--text-muted)] mt-1 truncate">
+        <div className="text-xs text-(--text-muted) mt-1 truncate">
           {subtitle}
         </div>
       )}

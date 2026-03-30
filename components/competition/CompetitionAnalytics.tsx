@@ -305,19 +305,19 @@ export default function CompetitionAnalytics({
     diff: number
   ): { text: string; color: string; icon: typeof TrendingUp } => {
     if (diff === 0)
-      return { text: "Same", color: "text-[var(--text-muted)]", icon: Minus };
+      return { text: "Same", color: "text-(--text-muted)", icon: Minus };
     if (diff < 0) {
       // Simulated was faster (better)
       return {
         text: `-${formatTime(Math.abs(diff))}`,
-        color: "text-[var(--success)]",
+        color: "text-(--success)",
         icon: TrendingUp,
       };
     }
     // Simulated was slower
     return {
       text: `+${formatTime(diff)}`,
-      color: "text-[var(--error)]",
+      color: "text-(--error)",
       icon: TrendingDown,
     };
   };
@@ -328,7 +328,7 @@ export default function CompetitionAnalytics({
         {/* Back Button */}
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)]"
+          className="inline-flex items-center gap-2 text-(--text-muted) hover:text-(--primary)"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Competition
@@ -337,12 +337,12 @@ export default function CompetitionAnalytics({
         {/* Header */}
         <div className="timer-card">
           <div className="flex items-center gap-4">
-            <Trophy className="w-10 h-10 text-[var(--warning)]" />
+            <Trophy className="w-10 h-10 text-(--warning)" />
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] font-statement">
+              <h1 className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement">
                 Competition Results
               </h1>
-              <p className="text-[var(--text-muted)]">{competition.name}</p>
+              <p className="text-(--text-muted)">{competition.name}</p>
             </div>
           </div>
         </div>
@@ -350,41 +350,41 @@ export default function CompetitionAnalytics({
         {/* Overall Statistics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="timer-card text-center">
-            <Flame className="w-6 h-6 text-[var(--primary)] mx-auto mb-2" />
-            <div className="text-2xl font-bold font-mono text-[var(--text-primary)]">
+            <Flame className="w-6 h-6 text-(--primary) mx-auto mb-2" />
+            <div className="text-2xl font-bold font-mono text-(--text-primary)">
               {overallBest ? formatTime(overallBest) : "-"}
             </div>
-            <div className="text-xs text-[var(--text-muted)]">
+            <div className="text-xs text-(--text-muted)">
               Best Single{bestSingleEvent ? ` (${bestSingleEvent})` : ""}
             </div>
           </div>
 
           <div className="timer-card text-center">
-            <Target className="w-6 h-6 text-[var(--success)] mx-auto mb-2" />
-            <div className="text-2xl font-bold font-mono text-[var(--text-primary)]">
+            <Target className="w-6 h-6 text-(--success) mx-auto mb-2" />
+            <div className="text-2xl font-bold font-mono text-(--text-primary)">
               {bestAverage ? formatTime(bestAverage) : "-"}
             </div>
-            <div className="text-xs text-[var(--text-muted)]">
+            <div className="text-xs text-(--text-muted)">
               Best Average{bestAverageEvent ? ` (${bestAverageEvent})` : ""}
             </div>
           </div>
 
           <div className="timer-card text-center">
-            <Award className="w-6 h-6 text-[var(--warning)] mx-auto mb-2" />
-            <div className="text-2xl font-bold text-[var(--text-primary)]">
+            <Award className="w-6 h-6 text-(--warning) mx-auto mb-2" />
+            <div className="text-2xl font-bold text-(--text-primary)">
               {Object.keys(resultsByEvent).length}
             </div>
-            <div className="text-xs text-[var(--text-muted)]">
+            <div className="text-xs text-(--text-muted)">
               Events Completed
             </div>
           </div>
 
           <div className="timer-card text-center">
-            <AlertCircle className="w-6 h-6 text-[var(--error)] mx-auto mb-2" />
-            <div className="text-2xl font-bold text-[var(--text-primary)]">
+            <AlertCircle className="w-6 h-6 text-(--error) mx-auto mb-2" />
+            <div className="text-2xl font-bold text-(--text-primary)">
               {dnfRate}%
             </div>
-            <div className="text-xs text-[var(--text-muted)]">DNF Rate</div>
+            <div className="text-xs text-(--text-muted)">DNF Rate</div>
           </div>
         </div>
 
@@ -397,19 +397,19 @@ export default function CompetitionAnalytics({
             >
               <div className="flex items-center gap-3">
                 <div>
-                  <h3 className="font-bold text-[var(--text-primary)] font-statement">
+                  <h3 className="font-bold text-(--text-primary) font-statement">
                     Compare with Actual Results
                   </h3>
-                  <p className="text-xs text-[var(--text-muted)]">
+                  <p className="text-xs text-(--text-muted)">
                     See how your simulation compares to real competition
                     performance
                   </p>
                 </div>
               </div>
               {showCompareSection ? (
-                <ChevronUp className="w-5 h-5 text-[var(--text-muted)]" />
+                <ChevronUp className="w-5 h-5 text-(--text-muted)" />
               ) : (
-                <ChevronDown className="w-5 h-5 text-[var(--text-muted)]" />
+                <ChevronDown className="w-5 h-5 text-(--text-muted)" />
               )}
             </button>
 
@@ -418,13 +418,13 @@ export default function CompetitionAnalytics({
                 {/* Input Section */}
                 {!compareMode && (
                   <>
-                    <p className="text-sm text-[var(--text-primary)]">
+                    <p className="text-sm text-(--text-primary)">
                       Enter a WCA ID to compare your simulation with actual
                       competition results.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
                       <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
                         <input
                           type="text"
                           value={selectedCompetitor}
@@ -437,13 +437,13 @@ export default function CompetitionAnalytics({
                             }
                           }}
                           placeholder="e.g. 2015XXXX01"
-                          className="w-full pl-10 pr-4 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none transition-all"
+                          className="w-full pl-10 pr-4 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:border-(--primary) focus:ring-2 focus:ring-(--primary)/20 outline-none transition-all"
                         />
                       </div>
                       <button
                         onClick={() => fetchActualResults(selectedCompetitor)}
                         disabled={!selectedCompetitor || isLoading}
-                        className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[var(--primary)] text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--primary-hover)] transition-colors"
+                        className="flex items-center justify-center gap-2 px-5 py-2.5 bg-(--primary) text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-(--primary-hover) transition-colors"
                       >
                         {isLoading ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -455,8 +455,8 @@ export default function CompetitionAnalytics({
                     </div>
 
                     {error && (
-                      <div className="flex items-center gap-2 p-3 bg-[var(--error)]/10 border border-[var(--error)]/20 rounded-lg text-[var(--error)] text-sm">
-                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <div className="flex items-center gap-2 p-3 bg-(--error)/10 border border-(--error)/20 rounded-lg text-(--error) text-sm">
+                        <AlertCircle className="w-4 h-4 shrink-0" />
                         <span>{error}</span>
                       </div>
                     )}
@@ -467,19 +467,19 @@ export default function CompetitionAnalytics({
                 {compareMode && actualResults && (
                   <div className="space-y-4">
                     {/* Competitor Info Header */}
-                    <div className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                    <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[var(--success)]/10 rounded-full">
-                          <Check className="w-4 h-4 text-[var(--success)]" />
+                        <div className="p-2 bg-(--success)/10 rounded-full">
+                          <Check className="w-4 h-4 text-(--success)" />
                         </div>
                         <div>
-                          <div className="font-medium text-[var(--text-primary)]">
+                          <div className="font-medium text-(--text-primary)">
                             {actualResults.person.name}
                           </div>
-                          <div className="text-xs text-[var(--text-muted)] flex items-center gap-2">
+                          <div className="text-xs text-(--text-muted) flex items-center gap-2">
                             <span>{actualResults.person.wcaId}</span>
                             {actualResults.person.countryIso2 && (
-                              <span className="px-1.5 py-0.5 bg-[var(--surface)] rounded text-xs">
+                              <span className="px-1.5 py-0.5 bg-(--surface) rounded text-xs">
                                 {actualResults.person.countryIso2}
                               </span>
                             )}
@@ -488,7 +488,7 @@ export default function CompetitionAnalytics({
                       </div>
                       <button
                         onClick={clearComparison}
-                        className="p-2 text-[var(--text-muted)] hover:text-[var(--error)] hover:bg-[var(--error)]/10 rounded-lg transition-colors"
+                        className="p-2 text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 rounded-lg transition-colors"
                         title="Clear comparison"
                       >
                         <X className="w-4 h-4" />
@@ -509,10 +509,10 @@ export default function CompetitionAnalytics({
                             return (
                               <div
                                 key={comp.eventId}
-                                className="p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]"
+                                className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border)"
                               >
                                 {/* Event Header */}
-                                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[var(--border)]/50">
+                                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-(--border)/50">
                                   <Image
                                     src={getEventIcon(comp.eventId)}
                                     alt={getEventName(comp.eventId)}
@@ -520,7 +520,7 @@ export default function CompetitionAnalytics({
                                     height={20}
                                     className="invert opacity-70"
                                   />
-                                  <span className="text-[var(--text-primary)] font-medium">
+                                  <span className="text-(--text-primary) font-medium">
                                     {getEventName(comp.eventId)}
                                   </span>
                                 </div>
@@ -529,14 +529,14 @@ export default function CompetitionAnalytics({
                                 <div className="grid grid-cols-2 gap-3">
                                   {/* Simulated */}
                                   <div>
-                                    <div className="text-xs text-[var(--text-muted)] mb-1">
+                                    <div className="text-xs text-(--text-muted) mb-1">
                                       Simulated
                                     </div>
                                     <div className="font-mono text-sm">
-                                      <div className="text-[var(--success)]">
+                                      <div className="text-(--success)">
                                         {formatTime(comp.simulatedBest)}
                                       </div>
-                                      <div className="text-[var(--text-primary)]">
+                                      <div className="text-(--text-primary)">
                                         {comp.simulatedAvg
                                           ? formatTime(comp.simulatedAvg)
                                           : "-"}
@@ -546,16 +546,16 @@ export default function CompetitionAnalytics({
 
                                   {/* Actual */}
                                   <div>
-                                    <div className="text-xs text-[var(--text-muted)] mb-1">
+                                    <div className="text-xs text-(--text-muted) mb-1">
                                       Actual
                                     </div>
                                     <div className="font-mono text-sm">
-                                      <div className="text-[var(--success)]">
+                                      <div className="text-(--success)">
                                         {comp.actualBest !== Infinity
                                           ? formatTime(comp.actualBest)
                                           : "-"}
                                       </div>
-                                      <div className="text-[var(--text-primary)]">
+                                      <div className="text-(--text-primary)">
                                         {comp.actualAvg !== Infinity
                                           ? formatTime(comp.actualAvg)
                                           : "-"}
@@ -567,8 +567,8 @@ export default function CompetitionAnalytics({
                                 {/* Difference */}
                                 {(comp.bestDiff !== 0 ||
                                   comp.avgDiff !== 0) && (
-                                  <div className="mt-3 pt-2 border-t border-[var(--border)]/50 flex items-center gap-3">
-                                    <span className="text-xs text-[var(--text-muted)]">
+                                  <div className="mt-3 pt-2 border-t border-(--border)/50 flex items-center gap-3">
+                                    <span className="text-xs text-(--text-muted)">
                                       Diff:
                                     </span>
                                     <div className="flex flex-wrap gap-2">
@@ -600,11 +600,11 @@ export default function CompetitionAnalytics({
                         <div className="hidden sm:block overflow-x-auto">
                           <table className="w-full text-sm">
                             <thead>
-                              <tr className="border-b border-[var(--border)]">
-                                <th className="text-left py-3 px-2 text-[var(--text-muted)] font-medium">
+                              <tr className="border-b border-(--border)">
+                                <th className="text-left py-3 px-2 text-(--text-muted) font-medium">
                                   Event
                                 </th>
-                                <th className="text-center py-3 px-2 text-[var(--text-muted)] font-medium">
+                                <th className="text-center py-3 px-2 text-(--text-muted) font-medium">
                                   <div className="flex flex-col items-center gap-0.5">
                                     <span>Simulated</span>
                                     <span className="text-xs opacity-60">
@@ -612,7 +612,7 @@ export default function CompetitionAnalytics({
                                     </span>
                                   </div>
                                 </th>
-                                <th className="text-center py-3 px-2 text-[var(--text-muted)] font-medium">
+                                <th className="text-center py-3 px-2 text-(--text-muted) font-medium">
                                   <div className="flex flex-col items-center gap-0.5">
                                     <span>Actual</span>
                                     <span className="text-xs opacity-60">
@@ -620,7 +620,7 @@ export default function CompetitionAnalytics({
                                     </span>
                                   </div>
                                 </th>
-                                <th className="text-center py-3 px-2 text-[var(--text-muted)] font-medium">
+                                <th className="text-center py-3 px-2 text-(--text-muted) font-medium">
                                   Difference
                                 </th>
                               </tr>
@@ -637,7 +637,7 @@ export default function CompetitionAnalytics({
                                 return (
                                   <tr
                                     key={comp.eventId}
-                                    className="border-b border-[var(--border)]/50 hover:bg-[var(--surface-elevated)]/50 transition-colors"
+                                    className="border-b border-(--border)/50 hover:bg-(--surface-elevated)/50 transition-colors"
                                   >
                                     <td className="py-3 px-2">
                                       <div className="flex items-center gap-2">
@@ -648,20 +648,20 @@ export default function CompetitionAnalytics({
                                           height={20}
                                           className="invert opacity-70"
                                         />
-                                        <span className="text-[var(--text-primary)] font-medium">
+                                        <span className="text-(--text-primary) font-medium">
                                           {getEventName(comp.eventId)}
                                         </span>
                                       </div>
                                     </td>
                                     <td className="py-3 px-2 text-center">
                                       <div className="flex items-center justify-center gap-2 font-mono text-sm">
-                                        <span className="text-[var(--success)]">
+                                        <span className="text-(--success)">
                                           {formatTime(comp.simulatedBest)}
                                         </span>
-                                        <span className="text-[var(--text-muted)]">
+                                        <span className="text-(--text-muted)">
                                           /
                                         </span>
-                                        <span className="text-[var(--text-primary)]">
+                                        <span className="text-(--text-primary)">
                                           {comp.simulatedAvg
                                             ? formatTime(comp.simulatedAvg)
                                             : "-"}
@@ -670,15 +670,15 @@ export default function CompetitionAnalytics({
                                     </td>
                                     <td className="py-3 px-2 text-center">
                                       <div className="flex items-center justify-center gap-2 font-mono text-sm">
-                                        <span className="text-[var(--success)]">
+                                        <span className="text-(--success)">
                                           {comp.actualBest !== Infinity
                                             ? formatTime(comp.actualBest)
                                             : "-"}
                                         </span>
-                                        <span className="text-[var(--text-muted)]">
+                                        <span className="text-(--text-muted)">
                                           /
                                         </span>
-                                        <span className="text-[var(--text-primary)]">
+                                        <span className="text-(--text-primary)">
                                           {comp.actualAvg !== Infinity
                                             ? formatTime(comp.actualAvg)
                                             : "-"}
@@ -705,7 +705,7 @@ export default function CompetitionAnalytics({
                                         )}
                                         {comp.bestDiff === 0 &&
                                           comp.avgDiff === 0 && (
-                                            <span className="text-xs text-[var(--text-muted)]">
+                                            <span className="text-xs text-(--text-muted)">
                                               -
                                             </span>
                                           )}
@@ -719,7 +719,7 @@ export default function CompetitionAnalytics({
                         </div>
                       </>
                     ) : (
-                      <div className="text-center py-6 text-[var(--text-muted)]">
+                      <div className="text-center py-6 text-(--text-muted)">
                         <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
                         <p className="text-sm">
                           No matching events found between your simulation and
@@ -731,33 +731,33 @@ export default function CompetitionAnalytics({
                     {/* Summary Stats */}
                     {comparisonResults.length > 0 && (
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-                        <div className="p-3 bg-[var(--surface-elevated)] rounded-lg text-center">
-                          <div className="text-lg font-bold text-[var(--text-primary)]">
+                        <div className="p-3 bg-(--surface-elevated) rounded-lg text-center">
+                          <div className="text-lg font-bold text-(--text-primary)">
                             {comparisonResults.length}
                           </div>
-                          <div className="text-xs text-[var(--text-muted)]">
+                          <div className="text-xs text-(--text-muted)">
                             Events Compared
                           </div>
                         </div>
-                        <div className="p-3 bg-[var(--surface-elevated)] rounded-lg text-center">
-                          <div className="text-lg font-bold text-[var(--success)]">
+                        <div className="p-3 bg-(--surface-elevated) rounded-lg text-center">
+                          <div className="text-lg font-bold text-(--success)">
                             {
                               comparisonResults.filter((c) => c.bestDiff < 0)
                                 .length
                             }
                           </div>
-                          <div className="text-xs text-[var(--text-muted)]">
+                          <div className="text-xs text-(--text-muted)">
                             Faster Singles
                           </div>
                         </div>
-                        <div className="p-3 bg-[var(--surface-elevated)] rounded-lg text-center col-span-2 sm:col-span-1">
-                          <div className="text-lg font-bold text-[var(--success)]">
+                        <div className="p-3 bg-(--surface-elevated) rounded-lg text-center col-span-2 sm:col-span-1">
+                          <div className="text-lg font-bold text-(--success)">
                             {
                               comparisonResults.filter((c) => c.avgDiff < 0)
                                 .length
                             }
                           </div>
-                          <div className="text-xs text-[var(--text-muted)]">
+                          <div className="text-xs text-(--text-muted)">
                             Faster Averages
                           </div>
                         </div>
@@ -772,7 +772,7 @@ export default function CompetitionAnalytics({
 
         {/* Results by Event */}
         <div className="timer-card">
-          <h3 className="font-bold text-[var(--text-primary)] mb-4 font-statement">
+          <h3 className="font-bold text-(--text-primary) mb-4 font-statement">
             Results by Event
           </h3>
           <div className="space-y-4">
@@ -789,7 +789,7 @@ export default function CompetitionAnalytics({
               return (
                 <div
                   key={eventId}
-                  className="p-4 bg-[var(--surface-elevated)] rounded-lg"
+                  className="p-4 bg-(--surface-elevated) rounded-lg"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -801,20 +801,20 @@ export default function CompetitionAnalytics({
                         className="invert opacity-80"
                       />
                       <div>
-                        <h4 className="font-medium text-[var(--text-primary)]">
+                        <h4 className="font-medium text-(--text-primary)">
                           {getEventName(eventId)}
                         </h4>
-                        <p className="text-xs text-[var(--text-muted)]">
+                        <p className="text-xs text-(--text-muted)">
                           {eventResults.length} round
                           {eventResults.length !== 1 ? "s" : ""} completed
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-mono font-bold text-[var(--primary)]">
+                      <div className="text-lg font-mono font-bold text-(--primary)">
                         {formatTime(bestResult.average)}
                       </div>
-                      <div className="text-xs text-[var(--text-muted)]">
+                      <div className="text-xs text-(--text-muted)">
                         Best Average
                       </div>
                     </div>
@@ -825,20 +825,20 @@ export default function CompetitionAnalytics({
                     {eventResults.map((result) => (
                       <div
                         key={`${eventId}-${result.roundNumber}`}
-                        className="p-3 bg-[var(--surface)] rounded-lg border border-[var(--border)]"
+                        className="p-3 bg-(--surface) rounded-lg border border-(--border)"
                       >
-                        <div className="text-xs text-[var(--text-muted)] mb-1">
+                        <div className="text-xs text-(--text-muted) mb-1">
                           Round {result.roundNumber}
                         </div>
                         <div className="flex justify-between items-baseline">
-                          <div className="font-mono text-sm text-[var(--success)]">
+                          <div className="font-mono text-sm text-(--success)">
                             {formatTime(result.best)}
                           </div>
-                          <div className="font-mono text-sm text-[var(--text-primary)]">
+                          <div className="font-mono text-sm text-(--text-primary)">
                             {formatTime(result.average)}
                           </div>
                         </div>
-                        <div className="flex justify-between text-xs text-[var(--text-muted)]">
+                        <div className="flex justify-between text-xs text-(--text-muted)">
                           <span>Best</span>
                           <span>Avg</span>
                         </div>
@@ -851,7 +851,7 @@ export default function CompetitionAnalytics({
                               result
                             )
                           }
-                          className="mt-2 w-full flex items-center justify-center gap-1 px-2 py-1 text-xs text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--surface-elevated)] rounded transition-colors"
+                          className="mt-2 w-full flex items-center justify-center gap-1 px-2 py-1 text-xs text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded transition-colors"
                         >
                           <Eye className="w-3 h-3" />
                           View Scorecard
@@ -867,30 +867,30 @@ export default function CompetitionAnalytics({
 
         {/* Performance Trends */}
         <div className="timer-card">
-          <h3 className="font-bold text-[var(--text-primary)] mb-4 font-statement">
+          <h3 className="font-bold text-(--text-primary) mb-4 font-statement">
             Performance Analysis
           </h3>
 
           {/* Solve Distribution */}
           <div className="mb-6">
-            <h4 className="text-sm font-medium text-[var(--text-secondary)] mb-3">
+            <h4 className="text-sm font-medium text-(--text-secondary) mb-3">
               Solve Outcomes ({totalSolves} total)
             </h4>
             <div className="flex gap-2">
               <div
-                className="h-4 bg-[var(--success)] rounded-l-full"
+                className="h-4 bg-(--success) rounded-l-full"
                 style={{
                   width: `${((totalSolves - totalDNFs) / totalSolves) * 100}%`,
                 }}
               />
               {totalDNFs > 0 && (
                 <div
-                  className="h-4 bg-[var(--error)] rounded-r-full"
+                  className="h-4 bg-(--error) rounded-r-full"
                   style={{ width: `${(totalDNFs / totalSolves) * 100}%` }}
                 />
               )}
             </div>
-            <div className="flex justify-between mt-2 text-xs text-[var(--text-muted)]">
+            <div className="flex justify-between mt-2 text-xs text-(--text-muted)">
               <span>{totalSolves - totalDNFs} successful</span>
               <span>{totalDNFs} DNF</span>
             </div>
@@ -898,12 +898,12 @@ export default function CompetitionAnalytics({
 
           {/* Penalties Breakdown */}
           <div>
-            <h4 className="text-sm font-medium text-[var(--text-secondary)] mb-3">
+            <h4 className="text-sm font-medium text-(--text-secondary) mb-3">
               Penalty Breakdown
             </h4>
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="p-3 bg-[var(--surface-elevated)] rounded-lg">
-                <div className="text-xl font-bold text-[var(--success)]">
+              <div className="p-3 bg-(--surface-elevated) rounded-lg">
+                <div className="text-xl font-bold text-(--success)">
                   {results.reduce(
                     (acc, r) =>
                       acc +
@@ -913,12 +913,12 @@ export default function CompetitionAnalytics({
                     0
                   )}
                 </div>
-                <div className="text-xs text-[var(--text-muted)]">
+                <div className="text-xs text-(--text-muted)">
                   Clean Solves
                 </div>
               </div>
-              <div className="p-3 bg-[var(--surface-elevated)] rounded-lg">
-                <div className="text-xl font-bold text-[var(--warning)]">
+              <div className="p-3 bg-(--surface-elevated) rounded-lg">
+                <div className="text-xl font-bold text-(--warning)">
                   {results.reduce(
                     (acc, r) =>
                       acc +
@@ -929,15 +929,15 @@ export default function CompetitionAnalytics({
                     0
                   )}
                 </div>
-                <div className="text-xs text-[var(--text-muted)]">
+                <div className="text-xs text-(--text-muted)">
                   +2 Penalties
                 </div>
               </div>
-              <div className="p-3 bg-[var(--surface-elevated)] rounded-lg">
-                <div className="text-xl font-bold text-[var(--error)]">
+              <div className="p-3 bg-(--surface-elevated) rounded-lg">
+                <div className="text-xl font-bold text-(--error)">
                   {totalDNFs}
                 </div>
-                <div className="text-xs text-[var(--text-muted)]">DNFs</div>
+                <div className="text-xs text-(--text-muted)">DNFs</div>
               </div>
             </div>
           </div>
@@ -1053,7 +1053,7 @@ export default function CompetitionAnalytics({
               a.download = `${competition.id}-simulation-results.csv`;
               a.click();
             }}
-            className="flex items-center gap-2 px-4 py-2 border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="flex items-center gap-2 px-4 py-2 border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
           >
             <Download className="w-4 h-4" />
             Export Results
@@ -1064,7 +1064,7 @@ export default function CompetitionAnalytics({
               href={competition.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface-elevated)]"
+              className="flex items-center gap-2 px-4 py-2 border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
             >
               <ExternalLink className="w-4 h-4" />
               View on WCA
@@ -1086,7 +1086,7 @@ export default function CompetitionAnalytics({
             {/* Close Button */}
             <button
               onClick={closeScorecardModal}
-              className="absolute top-2 right-2 z-20 p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--surface)] hover:bg-[var(--surface-elevated)] rounded-full transition-colors shadow-lg"
+              className="absolute top-2 right-2 z-20 p-2 text-(--text-muted) hover:text-(--text-primary) bg-(--surface) hover:bg-(--surface-elevated) rounded-full transition-colors shadow-lg"
             >
               <X className="w-5 h-5" />
             </button>

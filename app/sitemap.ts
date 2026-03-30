@@ -122,6 +122,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
+  // WCA Stats pages
+  const wcaStatsPages = [
+    {
+      url: `${baseUrl}/wca-stats`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    },
+  ];
+
   // Coach pages
   const coachPages = [
     {
@@ -132,11 +142,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
+  // Help Center pages
+  const helpPages = [
+    {
+      url: `${baseUrl}/help`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    },
+  ];
+
   return [
     ...staticPages,
     ...cubeLabPages,
     ...algorithmTrainerPages,
     ...coachPages,
     ...cuberPages,
+    ...wcaStatsPages,
+    ...helpPages,
   ];
 }

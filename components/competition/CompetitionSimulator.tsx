@@ -104,11 +104,11 @@ export default function CompetitionSimulator() {
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] font-statement">
+              <h1 className="text-2xl sm:text-3xl font-bold text-(--text-primary) font-statement">
                 Competition{" "}
-                <span className="text-[var(--primary)]">Simulator</span>
+                <span className="text-(--primary)">Simulator</span>
               </h1>
-              <p className="text-sm text-[var(--text-muted)] mt-1">
+              <p className="text-sm text-(--text-muted) mt-1">
                 Practice like you compete. Build confidence with realistic WCA
                 simulation.
               </p>
@@ -116,7 +116,7 @@ export default function CompetitionSimulator() {
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex flex-wrap gap-2 border-b border-[var(--border)] pb-2">
+          <div className="flex flex-wrap gap-2 border-b border-(--border) pb-2">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -125,8 +125,8 @@ export default function CompetitionSimulator() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                     activeTab === tab.id
-                      ? "bg-[var(--primary)] text-white"
-                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                      ? "bg-(--primary) text-white"
+                      : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
                   }`}
                 >
                   <Icon className="w-4 h-4" />

@@ -259,23 +259,23 @@ export default function SimulationRunner() {
         <div className="max-w-4xl mx-auto space-y-6">
           <Link
             href={`/cube-lab/competitions/${competitionId}`}
-            className="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)]"
+            className="inline-flex items-center gap-2 text-(--text-muted) hover:text-(--primary)"
           >
             <ArrowLeft className="w-4 h-4" />
             Exit Simulation
           </Link>
 
           <div className="timer-card">
-            <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+            <h2 className="text-xl font-bold text-(--text-primary) mb-2">
               {competition.name}
             </h2>
-            <p className="text-[var(--text-muted)]">
+            <p className="text-(--text-muted)">
               Select an event to simulate
             </p>
 
             {/* Progress bar */}
             <div className="mt-4">
-              <div className="flex justify-between text-sm text-[var(--text-muted)] mb-2">
+              <div className="flex justify-between text-sm text-(--text-muted) mb-2">
                 <span>
                   {completedEvents.size} of {simulation.selectedEvents.length}{" "}
                   events completed
@@ -288,9 +288,9 @@ export default function SimulationRunner() {
                   %
                 </span>
               </div>
-              <div className="w-full h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[var(--success)] transition-all"
+                  className="h-full bg-(--success) transition-all"
                   style={{
                     width: `${(completedEvents.size / simulation.selectedEvents.length) * 100}%`,
                   }}
@@ -313,14 +313,14 @@ export default function SimulationRunner() {
                   disabled={isCompleted}
                   className={`relative flex flex-col items-center gap-3 p-6 rounded-xl border transition-all ${
                     isCompleted
-                      ? "border-[var(--success)] bg-[var(--success)]/10 cursor-default"
+                      ? "border-(--success) bg-(--success)/10 cursor-default"
                       : progress > 0
-                        ? "border-[var(--warning)] bg-[var(--warning)]/5 hover:border-[var(--primary)]"
-                        : "border-[var(--border)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/5"
+                        ? "border-(--warning) bg-(--warning)/5 hover:border-(--primary)"
+                        : "border-(--border) hover:border-(--primary) hover:bg-(--primary)/5"
                   }`}
                 >
                   {isCompleted && (
-                    <div className="absolute top-2 right-2 w-6 h-6 bg-[var(--success)] rounded-full flex items-center justify-center">
+                    <div className="absolute top-2 right-2 w-6 h-6 bg-(--success) rounded-full flex items-center justify-center">
                       <Check className="w-4 h-4 text-white" />
                     </div>
                   )}
@@ -331,10 +331,10 @@ export default function SimulationRunner() {
                     height={40}
                     className="invert opacity-80"
                   />
-                  <span className="font-medium text-[var(--text-primary)]">
+                  <span className="font-medium text-(--text-primary)">
                     {event.name}
                   </span>
-                  <span className="text-xs text-[var(--text-muted)]">
+                  <span className="text-xs text-(--text-muted)">
                     {isCompleted
                       ? "Completed"
                       : progress > 0
@@ -348,16 +348,16 @@ export default function SimulationRunner() {
 
           {allEventsCompleted && (
             <div className="timer-card text-center">
-              <Trophy className="w-16 h-16 text-[var(--warning)] mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+              <Trophy className="w-16 h-16 text-(--warning) mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-(--text-primary) mb-2">
                 Competition Complete!
               </h3>
-              <p className="text-[var(--text-muted)] mb-4">
+              <p className="text-(--text-muted) mb-4">
                 You've completed all events in this competition simulation.
               </p>
               <button
                 onClick={handleCompleteSimulation}
-                className="px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-lg"
+                className="px-6 py-3 bg-(--primary) text-white font-medium rounded-lg"
               >
                 View Full Results & Analytics
               </button>
@@ -368,7 +368,7 @@ export default function SimulationRunner() {
             <div className="flex justify-center">
               <button
                 onClick={() => setPhase("competition-complete")}
-                className="flex items-center gap-2 px-6 py-3 border border-[var(--border)] text-[var(--text-primary)] font-medium rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+                className="flex items-center gap-2 px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-lg hover:bg-(--surface-elevated) transition-colors"
               >
                 <BarChart3 className="w-5 h-5" />
                 View Current Results
@@ -406,10 +406,10 @@ export default function SimulationRunner() {
       <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
         <div className="max-w-2xl mx-auto space-y-6">
           <div className="timer-card text-center">
-            <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+            <h2 className="text-2xl font-bold text-(--text-primary) mb-2">
               Round {currentRound} Complete!
             </h2>
-            <p className="text-[var(--text-muted)]">
+            <p className="text-(--text-muted)">
               {event?.name} • {competition.name}
             </p>
           </div>
@@ -425,7 +425,7 @@ export default function SimulationRunner() {
             {currentRound < maxRounds && (
               <button
                 onClick={handleNextRound}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-lg"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-(--primary) text-white font-medium rounded-lg"
               >
                 Continue to Round {currentRound + 1}
                 <ArrowRight className="w-5 h-5" />
@@ -433,7 +433,7 @@ export default function SimulationRunner() {
             )}
             <button
               onClick={handleBackToEvents}
-              className="px-6 py-3 border border-[var(--border)] text-[var(--text-primary)] font-medium rounded-lg"
+              className="px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-lg"
             >
               Back to Events
             </button>
@@ -453,11 +453,11 @@ export default function SimulationRunner() {
       <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
         <div className="max-w-3xl mx-auto space-y-6">
           <div className="timer-card text-center">
-            <Trophy className="w-16 h-16 text-[var(--warning)] mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+            <Trophy className="w-16 h-16 text-(--warning) mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-(--text-primary) mb-2">
               {event?.name} Complete!
             </h2>
-            <p className="text-[var(--text-muted)]">{competition.name}</p>
+            <p className="text-(--text-muted)">{competition.name}</p>
           </div>
 
           <WCAScorecard
@@ -470,7 +470,7 @@ export default function SimulationRunner() {
           <div className="flex justify-center">
             <button
               onClick={handleBackToEvents}
-              className="flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-lg"
+              className="flex items-center gap-2 px-6 py-3 bg-(--primary) text-white font-medium rounded-lg"
             >
               Continue to Next Event
               <ArrowRight className="w-5 h-5" />

@@ -130,7 +130,7 @@ export default function ShareBottomSheet({
   };
 
   const defaultButtonClass =
-    "flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm border border-[var(--border)] bg-[var(--surface-elevated)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface)] transition-colors";
+    "flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm border border-(--border) bg-(--surface-elevated) text-(--text-secondary) rounded-lg hover:bg-(--surface) transition-colors";
 
   return (
     <div className="relative" ref={menuRef}>
@@ -153,15 +153,15 @@ export default function ShareBottomSheet({
               className="absolute inset-0 bg-black/50"
               onClick={() => setIsOpen(false)}
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-[var(--surface)] border-t border-[var(--border)] rounded-t-2xl shadow-lg animate-slide-up">
+            <div className="absolute bottom-0 left-0 right-0 bg-(--surface) border-t border-(--border) rounded-t-2xl shadow-lg animate-slide-up">
               {/* Handle bar */}
               <div className="flex justify-center pt-3 pb-2">
-                <div className="w-10 h-1 bg-[var(--border)] rounded-full" />
+                <div className="w-10 h-1 bg-(--border) rounded-full" />
               </div>
 
               {/* Title */}
-              <div className="px-4 pb-3 border-b border-[var(--border)]">
-                <h3 className="text-base font-semibold text-[var(--text-primary)] text-center">
+              <div className="px-4 pb-3 border-b border-(--border)">
+                <h3 className="text-base font-semibold text-(--text-primary) text-center">
                   {title}
                 </h3>
               </div>
@@ -171,11 +171,11 @@ export default function ShareBottomSheet({
                 {/* Copy Link */}
                 <button
                   onClick={handleCopyLink}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-xl transition-colors mb-2"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-(--text-primary) hover:bg-(--surface-elevated) rounded-xl transition-colors mb-2"
                 >
-                  <div className="w-10 h-10 rounded-full bg-[var(--surface-elevated)] border border-[var(--border)] flex items-center justify-center text-[var(--text-primary)]">
+                  <div className="w-10 h-10 rounded-full bg-(--surface-elevated) border border-(--border) flex items-center justify-center text-(--text-primary)">
                     {copied ? (
-                      <CircleCheck className="w-5 h-5 text-[var(--success)]" />
+                      <CircleCheck className="w-5 h-5 text-(--success)" />
                     ) : (
                       <Link className="w-5 h-5" />
                     )}
@@ -189,9 +189,9 @@ export default function ShareBottomSheet({
                 {typeof navigator !== "undefined" && "share" in navigator && (
                   <button
                     onClick={handleNativeShare}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-xl transition-colors mb-4"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-(--text-primary) hover:bg-(--surface-elevated) rounded-xl transition-colors mb-4"
                   >
-                    <div className="w-10 h-10 rounded-full bg-[var(--primary)] flex items-center justify-center text-white">
+                    <div className="w-10 h-10 rounded-full bg-(--primary) flex items-center justify-center text-white">
                       <Share2 className="w-5 h-5" />
                     </div>
                     <span className="font-medium">Share via...</span>
@@ -211,7 +211,7 @@ export default function ShareBottomSheet({
                       >
                         {option.icon}
                       </div>
-                      <span className="text-[10px] text-[var(--text-muted)]">
+                      <span className="text-[10px] text-(--text-muted)">
                         {option.name}
                       </span>
                     </button>
@@ -222,17 +222,17 @@ export default function ShareBottomSheet({
           </div>
 
           {/* Desktop: Dropdown menu */}
-          <div className="hidden sm:block absolute top-full mt-2 right-0 w-64 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-lg z-[100] overflow-hidden">
-            <div className="p-3 border-b border-[var(--border)]">
+          <div className="hidden sm:block absolute top-full mt-2 right-0 w-64 bg-(--surface) border border-(--border) rounded-xl shadow-lg z-[100] overflow-hidden">
+            <div className="p-3 border-b border-(--border)">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-[var(--text-primary)]">
+                <span className="text-sm font-medium text-(--text-primary)">
                   {title}
                 </span>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                  className="p-1 hover:bg-(--surface-elevated) rounded-lg transition-colors"
                 >
-                  <X className="w-4 h-4 text-[var(--text-muted)]" />
+                  <X className="w-4 h-4 text-(--text-muted)" />
                 </button>
               </div>
             </div>
@@ -241,11 +241,11 @@ export default function ShareBottomSheet({
               {/* Copy Link */}
               <button
                 onClick={handleCopyLink}
-                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
               >
-                <div className="w-8 h-8 rounded-full bg-[var(--surface-elevated)] border border-[var(--border)] flex items-center justify-center text-[var(--text-primary)]">
+                <div className="w-8 h-8 rounded-full bg-(--surface-elevated) border border-(--border) flex items-center justify-center text-(--text-primary)">
                   {copied ? (
-                    <CircleCheck className="w-4 h-4 text-[var(--success)]" />
+                    <CircleCheck className="w-4 h-4 text-(--success)" />
                   ) : (
                     <Link className="w-4 h-4" />
                   )}
@@ -253,7 +253,7 @@ export default function ShareBottomSheet({
                 <span>{copied ? "Copied!" : "Copy to Clipboard"}</span>
               </button>
 
-              <div className="my-2 border-t border-[var(--border)]" />
+              <div className="my-2 border-t border-(--border)" />
 
               {/* Social options */}
               <div className="grid grid-cols-4 gap-2 p-2">

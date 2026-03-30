@@ -40,10 +40,10 @@ export default function ProtectedRoute({
   if (isLoading) {
     return (
       loadingComponent || (
-        <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+        <div className="min-h-screen bg-(--background) flex items-center justify-center">
           <div className="text-center space-y-4">
-            <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin mx-auto" />
-            <p className="text-[var(--text-secondary)] font-inter">
+            <Loader2 className="w-8 h-8 text-(--primary) animate-spin mx-auto" />
+            <p className="text-(--text-secondary) font-inter">
               Verifying authentication...
             </p>
           </div>
@@ -55,13 +55,13 @@ export default function ProtectedRoute({
   // Show authentication required message if user is not authenticated
   if (!user) {
     return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-4">
-        <div className="max-w-md w-full mx-auto text-center space-y-6 bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 shadow-xl">
+      <div className="min-h-screen bg-(--background) flex items-center justify-center p-4">
+        <div className="max-w-md w-full mx-auto text-center space-y-6 bg-(--surface) border border-(--border) rounded-xl p-8 shadow-xl">
           <div className="space-y-3">
-            <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] font-statement">
+            <h1 className="text-2xl md:text-3xl font-bold text-(--text-primary) font-statement">
               Authentication Required
             </h1>
-            <p className="text-[var(--text-secondary)] font-inter">
+            <p className="text-(--text-secondary) font-inter">
               Please sign in with your WCA account to access this page. You'll
               be redirected back here after signing in.
             </p>
@@ -70,14 +70,14 @@ export default function ProtectedRoute({
           <div className="space-y-3">
             <button
               onClick={handleWCASignIn}
-              className="w-full px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg font-button transition-all"
+              className="w-full px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-button transition-all"
             >
               Sign in with WCA
             </button>
 
             <button
               onClick={() => router.push("/")}
-              className="w-full px-6 py-3 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-secondary)] hover:text-[var(--primary)] rounded-lg font-button transition-all"
+              className="w-full px-6 py-3 border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--primary) rounded-lg font-button transition-all"
             >
               Go to Home Page
             </button>

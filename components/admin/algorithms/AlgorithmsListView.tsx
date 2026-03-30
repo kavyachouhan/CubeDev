@@ -51,21 +51,21 @@ export function AlgorithmsListView({
       <div className="flex items-center gap-2 sm:gap-3 mb-4">
         <button
           onClick={onBack}
-          className="p-2 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors shrink-0"
+          className="p-2 hover:bg-(--surface-elevated) rounded-lg transition-colors shrink-0"
         >
-          <ChevronLeft className="w-5 h-5 text-[var(--text-muted)]" />
+          <ChevronLeft className="w-5 h-5 text-(--text-muted)" />
         </button>
         <div className="flex-1 min-w-0">
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] font-statement truncate">
+          <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement truncate">
             {caseName}
           </h2>
-          <p className="text-xs sm:text-sm text-[var(--text-muted)] font-inter">
+          <p className="text-xs sm:text-sm text-(--text-muted) font-inter">
             {algorithms?.length || 0} algorithms
           </p>
         </div>
         <button
           onClick={() => setShowNewAlgModal(true)}
-          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-inter text-sm shrink-0"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-inter text-sm shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Add Algorithm</span>
@@ -84,33 +84,33 @@ export function AlgorithmsListView({
           {algorithms.map((alg) => (
             <div
               key={alg._id}
-              className="timer-card hover:border-[var(--border-hover)] transition-colors"
+              className="timer-card hover:border-(--border-hover) transition-colors"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     {alg.isDefault && (
-                      <span className="px-2 py-0.5 bg-[var(--primary)]/10 text-[var(--primary)] text-xs rounded-full font-inter">
+                      <span className="px-2 py-0.5 bg-(--primary)/10 text-(--primary) text-xs rounded-full font-inter">
                         Default
                       </span>
                     )}
-                    <span className="text-xs text-[var(--text-muted)] font-inter">
+                    <span className="text-xs text-(--text-muted) font-inter">
                       {alg.moveCount} moves
                     </span>
                     {alg.usageCount > 0 && (
-                      <span className="text-xs text-[var(--text-muted)] font-inter">
+                      <span className="text-xs text-(--text-muted) font-inter">
                         {alg.usageCount} users
                       </span>
                     )}
-                    <span className="text-xs text-[var(--text-muted)] font-inter">
+                    <span className="text-xs text-(--text-muted) font-inter">
                       Pop: {alg.popularity}%
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--text-primary)] font-mono break-all">
+                  <p className="text-sm text-(--text-primary) font-mono break-all">
                     {alg.notation}
                   </p>
                   {alg.fingerTricks && (
-                    <p className="text-xs text-[var(--text-muted)] font-inter mt-1 line-clamp-2">
+                    <p className="text-xs text-(--text-muted) font-inter mt-1 line-clamp-2">
                       {alg.fingerTricks}
                     </p>
                   )}
@@ -118,14 +118,14 @@ export function AlgorithmsListView({
                 <div className="flex items-center gap-1 shrink-0 self-end sm:self-start">
                   <button
                     onClick={() => setEditingAlgorithm(alg._id)}
-                    className="p-2 hover:bg-[var(--surface-elevated)] text-[var(--text-muted)] hover:text-[var(--primary)] rounded-lg transition-colors"
+                    className="p-2 hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--primary) rounded-lg transition-colors"
                     title="Edit algorithm"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setDeleteAlg(alg._id)}
-                    className="p-2 hover:bg-red-500/10 text-[var(--text-muted)] hover:text-red-500 rounded-lg transition-colors"
+                    className="p-2 hover:bg-red-500/10 text-(--text-muted) hover:text-red-500 rounded-lg transition-colors"
                     title="Delete algorithm"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -137,8 +137,8 @@ export function AlgorithmsListView({
         </div>
       ) : (
         <div className="timer-card text-center py-8">
-          <FileText className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-          <p className="text-[var(--text-muted)] font-inter">
+          <FileText className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
+          <p className="text-(--text-muted) font-inter">
             No algorithms yet
           </p>
         </div>

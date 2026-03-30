@@ -25,27 +25,27 @@ const variantConfig: Record<
 > = {
   new: {
     label: "New",
-    bgClass: "bg-[var(--primary)]/15",
-    textClass: "text-[var(--primary)]",
-    borderClass: "border-[var(--primary)]/30",
+    bgClass: "bg-(--primary)/15",
+    textClass: "text-(--primary)",
+    borderClass: "border-(--primary)/30",
   },
   beta: {
     label: "Beta",
-    bgClass: "bg-[var(--warning)]/10",
-    textClass: "text-[var(--warning)]",
-    borderClass: "border-[var(--warning)]/20",
+    bgClass: "bg-(--warning)/10",
+    textClass: "text-(--warning)",
+    borderClass: "border-(--warning)/20",
   },
   updated: {
     label: "Updated",
-    bgClass: "bg-[var(--success)]/15",
-    textClass: "text-[var(--success)]",
-    borderClass: "border-[var(--success)]/30",
+    bgClass: "bg-(--success)/15",
+    textClass: "text-(--success)",
+    borderClass: "border-(--success)/30",
   },
   "coming-soon": {
     label: "Soon",
-    bgClass: "bg-[var(--text-muted)]/10",
-    textClass: "text-[var(--text-muted)]",
-    borderClass: "border-[var(--text-muted)]/20",
+    bgClass: "bg-(--text-muted)/10",
+    textClass: "text-(--text-muted)",
+    borderClass: "border-(--text-muted)/20",
   },
 };
 

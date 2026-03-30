@@ -59,10 +59,10 @@ export default function PrivacySection() {
     <div className="timer-card">
       <div className="flex items-center gap-3 mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
             Privacy Settings
           </h3>
-          <p className="text-sm text-[var(--text-muted)]">
+          <p className="text-sm text-(--text-muted)">
             Control your CubeDev profile visibility and data sharing options
           </p>
         </div>
@@ -70,59 +70,59 @@ export default function PrivacySection() {
 
       <div className="space-y-6">
         {/* Profile Visibility */}
-        <div className="bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] p-3 md:p-4">
+        <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-3 md:p-4">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="p-2 bg-[var(--primary)]/10 rounded-lg flex-shrink-0">
-                <UserPen className="w-4 h-4 text-[var(--primary)]" />
+              <div className="p-2 bg-(--primary)/10 rounded-lg shrink-0">
+                <UserPen className="w-4 h-4 text-(--primary)" />
               </div>
               <div className="min-w-0 flex-1">
-                <h4 className="font-semibold text-[var(--text-primary)] text-sm md:text-base">
+                <h4 className="font-semibold text-(--text-primary) text-sm md:text-base">
                   Hide Profile from Public View
                 </h4>
-                <p className="text-xs md:text-sm text-[var(--text-muted)] mt-1">
+                <p className="text-xs md:text-sm text-(--text-muted) mt-1">
                   Hide your CubeDev statistics and activity from public view.
                   Your WCA profile still remains public.
                 </p>
               </div>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
+            <label className="relative inline-flex items-center cursor-pointer shrink-0">
               <input
                 type="checkbox"
                 checked={hideProfile}
                 onChange={(e) => setHideProfile(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-[var(--border)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary)]"></div>
+              <div className="w-11 h-6 bg-(--border) peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-(--primary)"></div>
             </label>
           </div>
         </div>
 
         {/* Challenge Stats Visibility */}
-        <div className="bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)] p-3 md:p-4">
+        <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-3 md:p-4">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="p-2 bg-[var(--secondary)]/10 rounded-lg flex-shrink-0">
-                <Trophy className="w-4 h-4 text-[var(--secondary)]" />
+              <div className="p-2 bg-(--secondary)/10 rounded-lg shrink-0">
+                <Trophy className="w-4 h-4 text-(--secondary)" />
               </div>
               <div className="min-w-0 flex-1">
-                <h4 className="font-semibold text-[var(--text-primary)] text-sm md:text-base">
+                <h4 className="font-semibold text-(--text-primary) text-sm md:text-base">
                   Hide Challenge Room Statistics
                 </h4>
-                <p className="text-xs md:text-sm text-[var(--text-muted)] mt-1">
+                <p className="text-xs md:text-sm text-(--text-muted) mt-1">
                   Hide your challenge room statistics from public view. You'll
                   still appear in leaderboards during active rooms.
                 </p>
               </div>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
+            <label className="relative inline-flex items-center cursor-pointer shrink-0">
               <input
                 type="checkbox"
                 checked={hideChallengeStats}
                 onChange={(e) => setHideChallengeStats(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-[var(--border)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary)]"></div>
+              <div className="w-11 h-6 bg-(--border) peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-(--primary)"></div>
             </label>
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function PrivacySection() {
             <button
               onClick={handleSaveSettings}
               disabled={isSaving}
-              className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-[var(--primary)] text-white rounded-lg font-medium hover:bg-[var(--primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm md:text-base w-full sm:w-auto justify-center"
+              className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm md:text-base w-full sm:w-auto justify-center"
             >
               {isSaving ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

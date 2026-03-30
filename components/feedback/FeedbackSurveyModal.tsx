@@ -234,13 +234,13 @@ export default function FeedbackSurveyModal({
       >
         <div className="timer-card max-w-md w-full">
           <div className="text-center py-6">
-            <div className="w-16 h-16 bg-[var(--success)]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CircleCheck className="w-8 h-8 text-[var(--success)]" />
+            <div className="w-16 h-16 bg-(--success)/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CircleCheck className="w-8 h-8 text-(--success)" />
             </div>
-            <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-3 font-statement">
+            <h2 className="text-2xl font-bold text-(--text-primary) mb-3 font-statement">
               {config.successTitle}
             </h2>
-            <p className="text-[var(--text-secondary)] font-inter mb-6">
+            <p className="text-(--text-secondary) font-inter mb-6">
               {config.successMessage}
             </p>
             <button onClick={handleClose} className="btn-primary px-6 py-2">
@@ -267,25 +267,25 @@ export default function FeedbackSurveyModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+            <h2 className="text-xl font-bold text-(--text-primary) font-statement">
               {config.title}
             </h2>
-            <p className="text-sm text-[var(--text-muted)] font-inter mt-1">
+            <p className="text-sm text-(--text-muted) font-inter mt-1">
               Step {currentStep} of {totalSteps}
             </p>
           </div>
           <button
             onClick={handleClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-[var(--surface-elevated)] rounded-full h-2 mb-6">
+        <div className="w-full bg-(--surface-elevated) rounded-full h-2 mb-6">
           <div
-            className="bg-[var(--primary)] h-2 rounded-full transition-all duration-300"
+            className="bg-(--primary) h-2 rounded-full transition-all duration-300"
             style={{ width: `${(currentStep / totalSteps) * 100}%` }}
           />
         </div>
@@ -294,10 +294,10 @@ export default function FeedbackSurveyModal({
         {currentStepType === "uiux" && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2 font-inter">
+              <h3 className="text-lg font-semibold text-(--text-primary) mb-2 font-inter">
                 How would you rate the overall design and experience?
               </h3>
-              <p className="text-sm text-[var(--text-muted)] font-inter">
+              <p className="text-sm text-(--text-muted) font-inter">
                 Consider the visual design, ease of use, and overall feel of
                 CubeDev.
               </p>
@@ -310,8 +310,8 @@ export default function FeedbackSurveyModal({
                   onClick={() => setUiuxRating(rating)}
                   className={`p-3 rounded-lg transition-all duration-200 ${
                     uiuxRating >= rating
-                      ? "text-[var(--warning)]"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                      ? "text-(--warning)"
+                      : "text-(--text-muted) hover:text-(--text-secondary)"
                   }`}
                 >
                   <Star
@@ -322,7 +322,7 @@ export default function FeedbackSurveyModal({
               ))}
             </div>
 
-            <div className="flex justify-between text-xs text-[var(--text-muted)] font-inter px-2">
+            <div className="flex justify-between text-xs text-(--text-muted) font-inter px-2">
               <span>Poor</span>
               <span>Excellent</span>
             </div>
@@ -333,10 +333,10 @@ export default function FeedbackSurveyModal({
         {currentStepType === "features" && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2 font-inter">
+              <h3 className="text-lg font-semibold text-(--text-primary) mb-2 font-inter">
                 Rate how useful each feature is to you
               </h3>
-              <p className="text-sm text-[var(--text-muted)] font-inter">
+              <p className="text-sm text-(--text-muted) font-inter">
                 Even if you haven't used a feature, rate how valuable you think
                 it would be.
               </p>
@@ -346,9 +346,9 @@ export default function FeedbackSurveyModal({
               {config.features.map(({ key, label }) => (
                 <div
                   key={key}
-                  className="flex items-center justify-between gap-4 p-3 bg-[var(--surface-elevated)] rounded-lg"
+                  className="flex items-center justify-between gap-4 p-3 bg-(--surface-elevated) rounded-lg"
                 >
-                  <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                  <span className="text-sm font-medium text-(--text-primary) font-inter">
                     {label}
                   </span>
                   <div className="flex gap-1">
@@ -358,8 +358,8 @@ export default function FeedbackSurveyModal({
                         onClick={() => handleFeatureRating(key, rating)}
                         className={`p-1.5 rounded transition-all duration-200 ${
                           (featureRatings[key] || 0) >= rating
-                            ? "text-[var(--warning)]"
-                            : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                            ? "text-(--warning)"
+                            : "text-(--text-muted) hover:text-(--text-secondary)"
                         }`}
                       >
                         <Star
@@ -394,10 +394,10 @@ export default function FeedbackSurveyModal({
         {currentStepType === "nps" && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2 font-inter">
+              <h3 className="text-lg font-semibold text-(--text-primary) mb-2 font-inter">
                 How likely are you to recommend CubeDev to a friend?
               </h3>
-              <p className="text-sm text-[var(--text-muted)] font-inter">
+              <p className="text-sm text-(--text-muted) font-inter">
                 On a scale from 1 to 10, how likely would you recommend us?
               </p>
             </div>
@@ -409,8 +409,8 @@ export default function FeedbackSurveyModal({
                   onClick={() => setRecommendScore(score)}
                   className={`py-2.5 sm:py-3 rounded-lg text-sm font-medium transition-all duration-200 font-inter ${
                     recommendScore === score
-                      ? "bg-[var(--primary)] text-white"
-                      : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)] hover:text-[var(--text-primary)]"
+                      ? "bg-(--primary) text-white"
+                      : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) hover:text-(--text-primary)"
                   }`}
                 >
                   {score}
@@ -418,21 +418,21 @@ export default function FeedbackSurveyModal({
               ))}
             </div>
 
-            <div className="flex justify-between text-xs text-[var(--text-muted)] font-inter px-1">
+            <div className="flex justify-between text-xs text-(--text-muted) font-inter px-1">
               <span>Not likely</span>
               <span>Very likely</span>
             </div>
 
             {config.showFeatureRequests && (
               <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+                <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                   What features would you like to see? (Optional)
                 </label>
                 <textarea
                   value={featureRequests}
                   onChange={(e) => setFeatureRequests(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none transition-all font-inter"
+                  className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
                   placeholder="Tell us about features you'd love to have..."
                   maxLength={500}
                 />
@@ -446,10 +446,10 @@ export default function FeedbackSurveyModal({
           <div className="space-y-6">
             {config.customQuestions.map((question) => (
               <div key={question.id}>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+                <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
                   {question.question}
                   {question.required && (
-                    <span className="text-[var(--error)] ml-1">*</span>
+                    <span className="text-(--error) ml-1">*</span>
                   )}
                 </label>
 
@@ -460,7 +460,7 @@ export default function FeedbackSurveyModal({
                     onChange={(e) =>
                       handleCustomResponse(question.id, e.target.value)
                     }
-                    className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter"
+                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
                   />
                 )}
 
@@ -471,7 +471,7 @@ export default function FeedbackSurveyModal({
                       handleCustomResponse(question.id, e.target.value)
                     }
                     rows={3}
-                    className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none transition-all font-inter"
+                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
                   />
                 )}
 
@@ -485,8 +485,8 @@ export default function FeedbackSurveyModal({
                         }
                         className={`p-2 rounded-lg transition-all duration-200 ${
                           (customResponses[question.id] as number) >= rating
-                            ? "text-[var(--warning)]"
-                            : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                            ? "text-(--warning)"
+                            : "text-(--text-muted) hover:text-(--text-secondary)"
                         }`}
                       >
                         <Star
@@ -524,10 +524,10 @@ export default function FeedbackSurveyModal({
         {currentStepType === "comments" && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2 font-inter">
+              <h3 className="text-lg font-semibold text-(--text-primary) mb-2 font-inter">
                 Anything else you'd like to share?
               </h3>
-              <p className="text-sm text-[var(--text-muted)] font-inter">
+              <p className="text-sm text-(--text-muted) font-inter">
                 Any additional feedback, suggestions, or comments are welcome.
               </p>
             </div>
@@ -537,24 +537,24 @@ export default function FeedbackSurveyModal({
                 value={additionalComments}
                 onChange={(e) => setAdditionalComments(e.target.value)}
                 rows={4}
-                className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none transition-all font-inter"
+                className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
                 placeholder="Share your thoughts..."
                 maxLength={1000}
               />
             </div>
 
-            <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+            <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
               <div className="flex items-start gap-3">
-                <MessageSquare className="w-5 h-5 text-[var(--primary)] mt-0.5 flex-shrink-0" />
+                <MessageSquare className="w-5 h-5 text-(--primary) mt-0.5 shrink-0" />
                 <div>
-                  <h4 className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                  <h4 className="text-sm font-medium text-(--text-primary) font-inter">
                     Have a question or issue?
                   </h4>
-                  <p className="text-sm text-[var(--text-muted)] font-inter mt-1">
+                  <p className="text-sm text-(--text-muted) font-inter mt-1">
                     For specific questions or issues, please use our{" "}
                     <Link
                       href="/contact"
-                      className="text-[var(--primary)] hover:underline"
+                      className="text-(--primary) hover:underline"
                       onClick={handleClose}
                       target="_blank"
                     >

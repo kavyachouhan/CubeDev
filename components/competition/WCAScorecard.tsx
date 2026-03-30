@@ -157,39 +157,39 @@ export default function WCAScorecard({
       {/* WCA Scorecard */}
       <div ref={cardRef} className="timer-card p-4 sm:p-6">
         {/* Header - Competition Name */}
-        <div className="text-center border-b border-[var(--border)] pb-3 mb-4">
-          <h1 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] tracking-wide">
+        <div className="text-center border-b border-(--border) pb-3 mb-4">
+          <h1 className="text-lg sm:text-xl font-bold text-(--text-primary) tracking-wide">
             {competition.name}
           </h1>
         </div>
 
         {/* Event and Round Info */}
         <div className="flex flex-wrap justify-between items-start gap-3 mb-4">
-          <div className="flex-shrink-0">
-            <div className="text-xs text-[var(--text-muted)] mb-1">Event</div>
-            <div className="border border-[var(--border)] px-3 py-1.5 bg-[var(--surface-elevated)] rounded-lg inline-block">
-              <span className="font-medium text-[var(--text-primary)]">
+          <div className="shrink-0">
+            <div className="text-xs text-(--text-muted) mb-1">Event</div>
+            <div className="border border-(--border) px-3 py-1.5 bg-(--surface-elevated) rounded-lg inline-block">
+              <span className="font-medium text-(--text-primary)">
                 {event.name}
               </span>
             </div>
           </div>
           <div className="flex gap-2 sm:gap-3">
             <div>
-              <div className="text-xs text-[var(--text-muted)] mb-1 text-center">
+              <div className="text-xs text-(--text-muted) mb-1 text-center">
                 Round
               </div>
-              <div className="border border-[var(--border)] w-9 sm:w-10 h-8 flex items-center justify-center bg-[var(--surface-elevated)] rounded-lg">
-                <span className="font-bold text-[var(--text-primary)]">
+              <div className="border border-(--border) w-9 sm:w-10 h-8 flex items-center justify-center bg-(--surface-elevated) rounded-lg">
+                <span className="font-bold text-(--text-primary)">
                   {roundNumber}
                 </span>
               </div>
             </div>
             <div>
-              <div className="text-xs text-[var(--text-muted)] mb-1 text-center">
+              <div className="text-xs text-(--text-muted) mb-1 text-center">
                 Group
               </div>
-              <div className="border border-[var(--border)] w-9 sm:w-10 h-8 flex items-center justify-center bg-[var(--surface-elevated)] rounded-lg">
-                <span className="font-bold text-[var(--text-primary)]">
+              <div className="border border-(--border) w-9 sm:w-10 h-8 flex items-center justify-center bg-(--surface-elevated) rounded-lg">
+                <span className="font-bold text-(--text-primary)">
                   {groupNumber}
                 </span>
               </div>
@@ -200,26 +200,26 @@ export default function WCAScorecard({
         {/* Competitor Info */}
         <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0 flex-1">
-            <div className="flex-shrink-0">
-              <div className="text-xs text-[var(--text-muted)] mb-1">ID</div>
-              <div className="border border-[var(--border)] px-2 py-1 bg-[var(--surface-elevated)] rounded-lg">
-                <span className="font-mono text-sm text-[var(--text-primary)]">
+            <div className="shrink-0">
+              <div className="text-xs text-(--text-muted) mb-1">ID</div>
+              <div className="border border-(--border) px-2 py-1 bg-(--surface-elevated) rounded-lg">
+                <span className="font-mono text-sm text-(--text-primary)">
                   {displayId}
                 </span>
               </div>
             </div>
             <div className="min-w-0 flex-1 max-w-[180px] sm:max-w-[200px]">
-              <div className="text-xs text-[var(--text-muted)] mb-1">Name</div>
-              <div className="border border-[var(--border)] px-3 py-1 bg-[var(--surface-elevated)] rounded-lg overflow-hidden">
-                <span className="text-sm font-medium text-[var(--text-primary)] block truncate">
+              <div className="text-xs text-(--text-muted) mb-1">Name</div>
+              <div className="border border-(--border) px-3 py-1 bg-(--surface-elevated) rounded-lg overflow-hidden">
+                <span className="text-sm font-medium text-(--text-primary) block truncate">
                   {displayName}
                 </span>
               </div>
             </div>
           </div>
           {displayWcaId && (
-            <div className="text-right flex-shrink-0">
-              <div className="text-xs text-[var(--text-muted)]">
+            <div className="text-right shrink-0">
+              <div className="text-xs text-(--text-muted)">
                 {displayWcaId}
               </div>
             </div>
@@ -227,26 +227,26 @@ export default function WCAScorecard({
         </div>
 
         {/* Results Table */}
-        <div className="border border-[var(--border)] rounded-lg overflow-hidden mb-4">
+        <div className="border border-(--border) rounded-lg overflow-hidden mb-4">
           {/* Table Header */}
-          <div className="grid grid-cols-[40px_1fr_50px_50px] sm:grid-cols-[50px_1fr_60px_60px] bg-[var(--surface-elevated)]">
-            <div className="p-2 text-center border-r border-[var(--border)]">
-              <span className="text-xs font-medium text-[var(--text-muted)]">
+          <div className="grid grid-cols-[40px_1fr_50px_50px] sm:grid-cols-[50px_1fr_60px_60px] bg-(--surface-elevated)">
+            <div className="p-2 text-center border-r border-(--border)">
+              <span className="text-xs font-medium text-(--text-muted)">
                 No.
               </span>
             </div>
-            <div className="p-2 text-center border-r border-[var(--border)]">
-              <span className="text-xs font-medium text-[var(--text-muted)]">
+            <div className="p-2 text-center border-r border-(--border)">
+              <span className="text-xs font-medium text-(--text-muted)">
                 Result
               </span>
             </div>
-            <div className="p-2 text-center border-r border-[var(--border)]">
-              <span className="text-xs font-medium text-[var(--text-muted)]">
+            <div className="p-2 text-center border-r border-(--border)">
+              <span className="text-xs font-medium text-(--text-muted)">
                 Judge
               </span>
             </div>
             <div className="p-2 text-center">
-              <span className="text-xs font-medium text-[var(--text-muted)]">
+              <span className="text-xs font-medium text-(--text-muted)">
                 Comp
               </span>
             </div>
@@ -256,27 +256,27 @@ export default function WCAScorecard({
           {result.solves.map((solve, idx) => (
             <div
               key={idx}
-              className={`grid grid-cols-[40px_1fr_50px_50px] sm:grid-cols-[50px_1fr_60px_60px] ${idx < result.solves.length - 1 ? "border-b border-[var(--border)]" : ""}`}
+              className={`grid grid-cols-[40px_1fr_50px_50px] sm:grid-cols-[50px_1fr_60px_60px] ${idx < result.solves.length - 1 ? "border-b border-(--border)" : ""}`}
             >
               {/* Solve Number */}
-              <div className="p-2 border-r border-[var(--border)] bg-[var(--surface-elevated)]">
+              <div className="p-2 border-r border-(--border) bg-(--surface-elevated)">
                 <div className="flex flex-col items-center">
-                  <span className="font-bold text-base sm:text-lg text-[var(--text-primary)]">
+                  <span className="font-bold text-base sm:text-lg text-(--text-primary)">
                     {idx + 1}
                   </span>
                 </div>
               </div>
 
               {/* Result */}
-              <div className="p-2 sm:p-3 border-r border-[var(--border)] bg-[var(--surface)] flex items-center justify-center">
+              <div className="p-2 sm:p-3 border-r border-(--border) bg-(--surface) flex items-center justify-center">
                 <span
                   className={`font-mono text-lg sm:text-xl font-semibold ${
                     solve.penalty === "DNF"
-                      ? "text-[var(--error)]"
+                      ? "text-(--error)"
                       : solve.penalty === "+2" ||
                           solve.inspectionViolation === "+2"
-                        ? "text-[var(--warning)]"
-                        : "text-[var(--primary)]"
+                        ? "text-(--warning)"
+                        : "text-(--primary)"
                   }`}
                 >
                   {getDisplayTime(solve)}
@@ -284,9 +284,9 @@ export default function WCAScorecard({
               </div>
 
               {/* Judge Signature - CD for CubeDev */}
-              <div className="p-2 border-r border-[var(--border)] bg-[var(--surface)] flex items-center justify-center">
+              <div className="p-2 border-r border-(--border) bg-(--surface) flex items-center justify-center">
                 <span
-                  className="text-sm text-[var(--text-secondary)]"
+                  className="text-sm text-(--text-secondary)"
                   style={{ fontFamily: "cursive, serif" }}
                 >
                   CD
@@ -294,9 +294,9 @@ export default function WCAScorecard({
               </div>
 
               {/* Competitor Signature - User Initials */}
-              <div className="p-2 bg-[var(--surface)] flex items-center justify-center">
+              <div className="p-2 bg-(--surface) flex items-center justify-center">
                 <span
-                  className="text-sm text-[var(--text-secondary)]"
+                  className="text-sm text-(--text-secondary)"
                   style={{ fontFamily: "cursive, serif" }}
                 >
                   {competitorInitials}
@@ -306,47 +306,47 @@ export default function WCAScorecard({
           ))}
 
           {/* Extra Attempt Row */}
-          <div className="border-t border-[var(--border)]">
-            <div className="text-xs text-[var(--text-muted)] p-2 bg-[var(--surface-elevated)]">
+          <div className="border-t border-(--border)">
+            <div className="text-xs text-(--text-muted) p-2 bg-(--surface-elevated)">
               Extra attempt
             </div>
-            <div className="grid grid-cols-[40px_1fr_50px_50px] sm:grid-cols-[50px_1fr_60px_60px] border-t border-[var(--border)]">
-              <div className="p-2 border-r border-[var(--border)] bg-[var(--surface-elevated)] text-center">
-                <span className="text-[var(--text-muted)]">-</span>
+            <div className="grid grid-cols-[40px_1fr_50px_50px] sm:grid-cols-[50px_1fr_60px_60px] border-t border-(--border)">
+              <div className="p-2 border-r border-(--border) bg-(--surface-elevated) text-center">
+                <span className="text-(--text-muted)">-</span>
               </div>
-              <div className="p-2 sm:p-3 border-r border-[var(--border)] bg-[var(--surface)]"></div>
-              <div className="p-2 border-r border-[var(--border)] bg-[var(--surface)]"></div>
-              <div className="p-2 bg-[var(--surface)]"></div>
+              <div className="p-2 sm:p-3 border-r border-(--border) bg-(--surface)"></div>
+              <div className="p-2 border-r border-(--border) bg-(--surface)"></div>
+              <div className="p-2 bg-(--surface)"></div>
             </div>
           </div>
         </div>
 
         {/* Time Limit */}
         <div className="text-right mb-4">
-          <span className="text-sm text-[var(--text-secondary)]">
+          <span className="text-sm text-(--text-secondary)">
             Time limit:{" "}
-            <strong className="text-[var(--text-primary)]">
+            <strong className="text-(--text-primary)">
               {getTimeLimit(event.id)}
             </strong>
           </span>
         </div>
 
         {/* Results Summary */}
-        <div className="border-t border-[var(--border)] pt-4">
+        <div className="border-t border-(--border) pt-4">
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            <div className="text-center p-3 sm:p-4 bg-[var(--success)]/10 border border-[var(--success)]/30 rounded-lg">
-              <div className="text-xs text-[var(--text-muted)] mb-1">
+            <div className="text-center p-3 sm:p-4 bg-(--success)/10 border border-(--success)/30 rounded-lg">
+              <div className="text-xs text-(--text-muted) mb-1">
                 Best Single
               </div>
-              <div className="font-mono text-lg sm:text-xl font-bold text-[var(--success)]">
+              <div className="font-mono text-lg sm:text-xl font-bold text-(--success)">
                 {formatTime(result.best)}
               </div>
             </div>
-            <div className="text-center p-3 sm:p-4 bg-[var(--primary)]/10 border border-[var(--primary)]/30 rounded-lg">
-              <div className="text-xs text-[var(--text-muted)] mb-1">
+            <div className="text-center p-3 sm:p-4 bg-(--primary)/10 border border-(--primary)/30 rounded-lg">
+              <div className="text-xs text-(--text-muted) mb-1">
                 Average
               </div>
-              <div className="font-mono text-lg sm:text-xl font-bold text-[var(--primary)]">
+              <div className="font-mono text-lg sm:text-xl font-bold text-(--primary)">
                 {result.average === Infinity
                   ? "DNF"
                   : formatTime(result.average)}
@@ -357,11 +357,11 @@ export default function WCAScorecard({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-wrap items-center justify-center gap-3 mt-4 p-3 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
+      <div className="flex flex-wrap items-center justify-center gap-3 mt-4 p-3 bg-(--surface) rounded-lg border border-(--border)">
         <button
           onClick={handleDownload}
           disabled={isDownloading}
-          className="flex items-center gap-2 px-4 py-2 text-sm border border-[var(--border)] bg-[var(--surface-elevated)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface)] transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 text-sm border border-(--border) bg-(--surface-elevated) text-(--text-secondary) rounded-lg hover:bg-(--surface) transition-colors disabled:opacity-50"
         >
           {isDownloading ? (
             <Loader2 className="w-4 h-4 animate-spin" />

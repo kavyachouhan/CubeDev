@@ -98,23 +98,23 @@ export default function ContactPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+      <div className="min-h-screen bg-(--background) flex items-center justify-center">
         <div className="container-responsive py-8 max-w-2xl">
           <div className="timer-card text-center">
-            <div className="w-16 h-16 bg-[var(--success)]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CircleCheck className="w-8 h-8 text-[var(--success)]" />
+            <div className="w-16 h-16 bg-(--success)/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CircleCheck className="w-8 h-8 text-(--success)" />
             </div>
-            <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-4 font-statement">
+            <h1 className="text-3xl font-bold text-(--text-primary) mb-4 font-statement">
               Message Sent Successfully!
             </h1>
-            <p className="text-[var(--text-secondary)] font-inter mb-6 leading-relaxed">
+            <p className="text-(--text-secondary) font-inter mb-6 leading-relaxed">
               Thank you for reaching out! We&apos;ve received your message and will
               get back to you as soon as possible. You should also receive a
               confirmation email shortly.
             </p>
             <button
               onClick={() => setSubmitted(false)}
-              className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-all duration-200 font-button"
+              className="px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-all duration-200 font-button"
             >
               Send Another Message
             </button>
@@ -125,15 +125,15 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="min-h-screen bg-(--background)">
         <Header />
       <div className="container-responsive py-8 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-4 font-statement">
-            Contact <span className="text-[var(--primary)]">CubeDev</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-(--text-primary) mb-4 font-statement">
+            Contact <span className="text-(--primary)">CubeDev</span>
           </h1>
-          <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto font-inter">
+          <p className="text-xl text-(--text-secondary) max-w-2xl mx-auto font-inter">
             Have a question, suggestion, or feedback? I'd love to hear from you!
             Your input helps make CubeDev better.
           </p>
@@ -144,14 +144,14 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div className="lg:col-span-2">
             <div className="timer-card">
-              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6 font-statement">
+              <h2 className="text-2xl font-bold text-(--text-primary) mb-6 font-statement">
                 Send a Message
               </h2>
 
               {error && (
-                <div className="mb-6 p-4 bg-[var(--error)]/10 border border-[var(--error)]/20 rounded-lg flex items-center gap-3">
-                  <AlertCircle className="w-5 h-5 text-[var(--error)] flex-shrink-0" />
-                  <p className="text-[var(--error)] font-inter">{error}</p>
+                <div className="mb-6 p-4 bg-(--error)/10 border border-(--error)/20 rounded-lg flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-(--error) shrink-0" />
+                  <p className="text-(--error) font-inter">{error}</p>
                 </div>
               )}
 
@@ -160,9 +160,9 @@ export default function ContactPage() {
                   <div>
                     <label
                       htmlFor="name"
-                      className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter"
+                      className="block text-sm font-medium text-(--text-primary) mb-2 font-inter"
                     >
-                      Name <span className="text-[var(--error)]">*</span>
+                      Name <span className="text-(--error)">*</span>
                     </label>
                     <input
                       type="text"
@@ -171,7 +171,7 @@ export default function ContactPage() {
                       value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent text-[var(--text-primary)] font-inter"
+                      className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-(--text-primary) font-inter"
                       placeholder="Your full name"
                     />
                   </div>
@@ -179,9 +179,9 @@ export default function ContactPage() {
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter"
+                      className="block text-sm font-medium text-(--text-primary) mb-2 font-inter"
                     >
-                      Email <span className="text-[var(--error)]">*</span>
+                      Email <span className="text-(--error)">*</span>
                     </label>
                     <input
                       type="email"
@@ -190,7 +190,7 @@ export default function ContactPage() {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent text-[var(--text-primary)] font-inter"
+                      className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-(--text-primary) font-inter"
                       placeholder="your.email@example.com"
                     />
                   </div>
@@ -199,10 +199,10 @@ export default function ContactPage() {
                 <div>
                   <label
                     htmlFor="wcaId"
-                    className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter"
+                    className="block text-sm font-medium text-(--text-primary) mb-2 font-inter"
                   >
                     WCA ID{" "}
-                    <span className="text-[var(--text-muted)]">(Optional)</span>
+                    <span className="text-(--text-muted)">(Optional)</span>
                   </label>
                   <input
                     type="text"
@@ -210,7 +210,7 @@ export default function ContactPage() {
                     name="wcaId"
                     value={formData.wcaId}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent text-[var(--text-primary)] font-inter"
+                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-(--text-primary) font-inter"
                     placeholder="WCA ID"
                   />
                 </div>
@@ -218,9 +218,9 @@ export default function ContactPage() {
                 <div>
                   <label
                     htmlFor="subject"
-                    className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter"
+                    className="block text-sm font-medium text-(--text-primary) mb-2 font-inter"
                   >
-                    Subject <span className="text-[var(--error)]">*</span>
+                    Subject <span className="text-(--error)">*</span>
                   </label>
                   <select
                     id="subject"
@@ -228,7 +228,7 @@ export default function ContactPage() {
                     value={formData.subject}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent text-[var(--text-primary)] font-inter"
+                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-(--text-primary) font-inter"
                   >
                     <option value="">Select a subject</option>
                     <option value="Bug Report">Bug Report</option>
@@ -245,9 +245,9 @@ export default function ContactPage() {
                 <div>
                   <label
                     htmlFor="message"
-                    className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter"
+                    className="block text-sm font-medium text-(--text-primary) mb-2 font-inter"
                   >
-                    Message <span className="text-[var(--error)]">*</span>
+                    Message <span className="text-(--error)">*</span>
                   </label>
                   <textarea
                     id="message"
@@ -257,10 +257,10 @@ export default function ContactPage() {
                     required
                     rows={6}
                     maxLength={2000}
-                    className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent text-[var(--text-primary)] font-inter resize-vertical"
+                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-(--text-primary) font-inter resize-vertical"
                     placeholder="Tell me about your question, feedback, or suggestion..."
                   />
-                  <div className="mt-2 text-right text-sm text-[var(--text-muted)] font-inter">
+                  <div className="mt-2 text-right text-sm text-(--text-muted) font-inter">
                     {formData.message.length}/2000 characters
                   </div>
                 </div>
@@ -270,13 +270,13 @@ export default function ContactPage() {
                   disabled={isSubmitting}
                   className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-lg font-button text-lg transition-all duration-200 ${
                     isSubmitting
-                      ? "bg-[var(--surface-elevated)] text-[var(--text-muted)] cursor-not-allowed"
-                      : "bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white hover:scale-105"
+                      ? "bg-(--surface-elevated) text-(--text-muted) cursor-not-allowed"
+                      : "bg-(--primary) hover:bg-(--primary-hover) text-white hover:scale-105"
                   }`}
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-[var(--text-muted)] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-(--text-muted) border-t-transparent rounded-full animate-spin" />
                       Sending Message...
                     </>
                   ) : (

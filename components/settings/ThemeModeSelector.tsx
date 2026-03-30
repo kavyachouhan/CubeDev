@@ -14,7 +14,7 @@ export default function ThemeModeSelector() {
 
   return (
     <div>
-      <label className="text-sm font-medium text-[var(--text-secondary)] mb-3 block">
+      <label className="text-sm font-medium text-(--text-secondary) mb-3 block">
         Theme Mode
       </label>
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -26,8 +26,8 @@ export default function ThemeModeSelector() {
               flex flex-col items-center gap-2 p-3 sm:p-4 rounded-lg border-2 transition-all
               ${
                 themeMode === mode.value
-                  ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
-                  : "border-[var(--border)] hover:border-[var(--border-hover)] text-[var(--text-secondary)]"
+                  ? "border-(--primary) bg-(--primary)/10 text-(--primary)"
+                  : "border-(--border) hover:border-(--border-hover) text-(--text-secondary)"
               }
             `}
           >

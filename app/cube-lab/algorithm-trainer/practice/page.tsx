@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useUser } from "@/components/UserProvider";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -16,12 +16,12 @@ import { AlgorithmPracticeSkeleton } from "@/components/SkeletonLoaders";
 import { ArrowLeft, Check, CheckCircle2, X, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
+import { isNotationCompatibleWithPlayer } from "@/lib/notation-utils";
 
 type PracticeMode = "srs" | "drill" | "all" | "infinite" | "custom";
 type DrillType = "rec" | "exec" | "pattern" | "blind";
 
 function PracticePageContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useUser();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -36,6 +36,7 @@ function PracticePageContent() {
   const [sessionStartTime] = useState(Date.now());
   const [randomizedCases, setRandomizedCases] = useState<any[] | null>(null);
   const [infiniteRepeatCount, setInfiniteRepeatCount] = useState(0);
+  const isFinishingRef = React.useRef(false);
 
   const mode = (searchParams.get("mode") || "srs") as PracticeMode;
   const drillType = (searchParams.get("type") || "rec") as DrillType;
@@ -51,14 +52,14 @@ function PracticePageContent() {
   // Queries based on mode
   const dueReviews = useQuery(
     api.algorithms.getDueReviews,
-    user?.convexId && mode === "srs" ? { userId: user.convexId } : "skip"
+    user?.convexId && mode === "srs" ? { userId: user.convexId } : "skip",
   );
 
   const drillCases = useQuery(
     api.algorithms.getRandomPracticeCases,
     user?.convexId && mode === "drill"
       ? { userId: user.convexId, count: 15 }
-      : "skip"
+      : "skip",
   );
 
   // Queries based on mode
@@ -66,7 +67,7 @@ function PracticePageContent() {
     api.algorithms.getCaseForPractice,
     user?.convexId && caseSlug && (mode === "all" || mode === "infinite")
       ? { userId: user.convexId, caseSlug }
-      : "skip"
+      : "skip",
   );
 
   // Queries based on mode
@@ -77,14 +78,20 @@ function PracticePageContent() {
           userId: user.convexId,
           setId: customSetId as Id<"customAlgorithmSets">,
         }
-      : "skip"
+      : "skip",
   );
 
   // Queries based on mode
   const allCaseNames = useQuery(
     api.algorithms.getAllCaseNames,
-    useBlindRecognition ? {} : "skip"
+    useBlindRecognition ? {} : "skip",
   );
+
+  // Extract custom algorithm names from the custom set cases to use in blind recognition mode (these won't have standard case records, but we can still show the names if available)
+  const customSetAlgNames =
+    mode === "custom" && useBlindRecognition && customSetCases
+      ? customSetCases.map((c: any) => c.case?.caseName).filter(Boolean)
+      : [];
 
   // Determine raw cases based on mode
   const rawCases =
@@ -107,14 +114,16 @@ function PracticePageContent() {
 
   const recordReview = useMutation(api.algorithms.recordReview);
   const recordPracticeSession = useMutation(
-    api.algorithms.recordPracticeSession
+    api.algorithms.recordPracticeSession,
   );
 
   const handleAnswer = async (
     timeMs: number,
     correct: boolean,
-    rating?: "again" | "hard" | "good" | "easy"
+    rating?: "again" | "hard" | "good" | "easy",
   ) => {
+    // Prevent any state updates or session finishing logic if we've already dispatched a finishSession call to avoid double-counting answers when users click rapidly at the end of a session
+    if (isFinishingRef.current) return;
     if (!casesToReview || casesToReview.length === 0 || !user) return;
 
     const currentReview = casesToReview[currentIndex];
@@ -134,23 +143,29 @@ function PracticePageContent() {
       return;
     }
 
-    try {
-      await recordReview({
-        userId: user.convexId as Id<"users">,
-        caseId: currentReview.case!._id,
-        rating: rating || (correct ? "good" : "again"),
-        recognitionTime: drillFocus === "recognition" ? timeMs : undefined,
-        executionTime: drillFocus === "execution" ? timeMs : undefined,
-        wasCorrect: correct,
-      });
-    } catch (error) {
-      console.error("Failed to record review:", error);
+    // Only record reviews for non-custom algorithms, since custom algs may have non-standard notation that isn't compatible with the player and we don't want to penalize users for that.  This also simplifies the logic since custom algs can be used in both drill and SRS modes without needing separate handling.
+    const isCustomAlg = currentReview.isCustomAlgorithm;
+    if (!isCustomAlg) {
+      try {
+        await recordReview({
+          userId: user.convexId as Id<"users">,
+          caseId: currentReview.case!._id,
+          rating: rating || (correct ? "good" : "again"),
+          recognitionTime: drillFocus === "recognition" ? timeMs : undefined,
+          executionTime: drillFocus === "execution" ? timeMs : undefined,
+          wasCorrect: correct,
+        });
+      } catch (error) {
+        console.error("Failed to record review:", error);
+      }
     }
 
     if (currentIndex < casesToReview.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      await finishSession();
+      isFinishingRef.current = true;
+      // Wait a tick to allow the last answer's state updates to propagate before finishing the session and potentially unmounting the component
+      await finishSession(correct, timeMs);
     }
   };
 
@@ -158,18 +173,25 @@ function PracticePageContent() {
     await handleAnswer(timeMs, true);
   };
 
-  const finishSession = async () => {
+  const finishSession = async (lastCorrect?: boolean, lastTimeMs?: number) => {
     if (!user) return;
 
-    const totalCases = sessionStats.correct + sessionStats.incorrect;
+    // Calculate final session stats including the last answered case
+    const finalCorrect = sessionStats.correct + (lastCorrect === true ? 1 : 0);
+    const finalIncorrect =
+      sessionStats.incorrect + (lastCorrect === false ? 1 : 0);
+    const finalTimes =
+      lastTimeMs !== undefined
+        ? [...sessionStats.times, lastTimeMs]
+        : sessionStats.times;
+    const totalCases = finalCorrect + finalIncorrect;
     const sessionDuration = Date.now() - sessionStartTime;
     const avgTime =
-      sessionStats.times.length > 0
-        ? sessionStats.times.reduce((a, b) => a + b, 0) /
-          sessionStats.times.length
+      finalTimes.length > 0
+        ? finalTimes.reduce((a, b) => a + b, 0) / finalTimes.length
         : undefined;
     const accuracyRate =
-      totalCases > 0 ? (sessionStats.correct / totalCases) * 100 : 100;
+      totalCases > 0 ? (finalCorrect / totalCases) * 100 : 100;
 
     // Determine session type
     let sessionType: "recognition" | "execution" | "drill" | "mixed";
@@ -228,10 +250,10 @@ function PracticePageContent() {
                   <X className="w-16 h-16 text-red-500 mx-auto" />
                 )}
               </div>
-              <h2 className="text-2xl font-bold text-[var(--text-primary)] font-statement mb-4">
+              <h2 className="text-2xl font-bold text-(--text-primary) font-statement mb-4">
                 {mode === "srs" ? "All Caught Up" : "No Cases to Practice"}
               </h2>
-              <p className="text-[var(--text-muted)] mb-6">
+              <p className="text-(--text-muted) mb-6">
                 {mode === "srs"
                   ? "You don't have any reviews due right now. Great job!"
                   : "You haven't started learning any cases yet."}
@@ -240,14 +262,14 @@ function PracticePageContent() {
                 {mode === "srs" && (
                   <Link
                     href="/cube-lab/algorithm-trainer/practice?mode=drill&type=rec"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors"
                   >
                     Start Drill Practice
                   </Link>
                 )}
                 <Link
                   href="/cube-lab/algorithm-trainer"
-                  className="inline-flex items-center gap-2 justify-center px-6 py-3 border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors"
+                  className="inline-flex items-center gap-2 justify-center px-6 py-3 border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors"
                 >
                   <ArrowLeft className="w-5 h-5" />
                   Back to Algorithm Trainer
@@ -261,6 +283,13 @@ function PracticePageContent() {
   }
 
   const currentReview = casesToReview[currentIndex];
+  const isCurrentCustomAlg = currentReview?.isCustomAlgorithm;
+  // For blind recognition mode, we won't have standard case records for custom algorithms, but we can still show the algorithm names if available from the custom set query
+  const notationToValidate =
+    currentReview?.case?.setupMoves || currentReview?.algorithm?.notation || "";
+  const currentNotationValid = notationToValidate
+    ? isNotationCompatibleWithPlayer(notationToValidate)
+    : false;
   const progressPercentage = ((currentIndex + 1) / casesToReview.length) * 100;
 
   if (sessionCompleted) {
@@ -283,10 +312,10 @@ function PracticePageContent() {
           <div className="h-full flex items-center justify-center p-4">
             <div className="timer-card max-w-2xl w-full text-center">
               <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-6" />
-              <h2 className="text-2xl font-bold text-[var(--text-primary)] font-statement mb-2">
+              <h2 className="text-2xl font-bold text-(--text-primary) font-statement mb-2">
                 {mode === "srs" ? "Review Complete" : "Session Complete"}
               </h2>
-              <p className="text-[var(--text-muted)] mb-8">
+              <p className="text-(--text-muted) mb-8">
                 {mode === "srs"
                   ? "All due reviews completed! Come back later for more."
                   : "Great work! You've completed your practice session."}
@@ -295,11 +324,11 @@ function PracticePageContent() {
               {/* Stats Grid - Different for each mode */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
                 {/* Cases Reviewed - Always show */}
-                <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
-                  <div className="text-2xl font-bold text-[var(--primary)] font-statement">
+                <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="text-2xl font-bold text-(--primary) font-statement">
                     {totalCases}
                   </div>
-                  <div className="text-sm text-[var(--text-muted)] mt-1">
+                  <div className="text-sm text-(--text-muted) mt-1">
                     Cases
                   </div>
                 </div>
@@ -308,11 +337,11 @@ function PracticePageContent() {
                 {(drillType === "pattern" ||
                   drillType === "blind" ||
                   mode === "srs") && (
-                  <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
                     <div className="text-2xl font-bold text-green-500 font-statement">
                       {accuracyRate.toFixed(0)}%
                     </div>
-                    <div className="text-sm text-[var(--text-muted)] mt-1">
+                    <div className="text-sm text-(--text-muted) mt-1">
                       Accuracy
                     </div>
                   </div>
@@ -321,33 +350,33 @@ function PracticePageContent() {
                 {/* Avg Time - Show for execution and recognition */}
                 {(drillType === "exec" || drillType === "rec") &&
                   sessionStats.times.length > 0 && (
-                    <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+                    <div className="p-4 bg-(--surface-elevated) rounded-lg">
                       <div className="text-2xl font-bold text-blue-500 font-statement">
                         {avgTime}s
                       </div>
-                      <div className="text-sm text-[var(--text-muted)] mt-1">
+                      <div className="text-sm text-(--text-muted) mt-1">
                         Avg Time
                       </div>
                     </div>
                   )}
 
                 {/* Session Duration - Always show */}
-                <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+                <div className="p-4 bg-(--surface-elevated) rounded-lg">
                   <div className="text-2xl font-bold text-orange-500 font-statement">
                     {totalTimeStr}
                   </div>
-                  <div className="text-sm text-[var(--text-muted)] mt-1">
+                  <div className="text-sm text-(--text-muted) mt-1">
                     Duration
                   </div>
                 </div>
 
                 {/* Correct Count - Show for SRS */}
                 {mode === "srs" && (
-                  <div className="p-4 bg-[var(--surface-elevated)] rounded-lg">
+                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
                     <div className="text-2xl font-bold text-green-500 font-statement">
                       {sessionStats.correct}
                     </div>
-                    <div className="text-sm text-[var(--text-muted)] mt-1">
+                    <div className="text-sm text-(--text-muted) mt-1">
                       Remembered
                     </div>
                   </div>
@@ -356,13 +385,18 @@ function PracticePageContent() {
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
-                  href="/cube-lab/algorithm-trainer"
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors font-medium"
+                  href={
+                    mode === "custom" && customSetId
+                      ? `/cube-lab/algorithm-trainer/custom/${customSetId}`
+                      : "/cube-lab/algorithm-trainer"
+                  }
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium"
                 >
-                  Back to Trainer
+                  {mode === "custom" ? "Back to Custom Set" : "Back to Trainer"}
                 </Link>
                 <button
                   onClick={() => {
+                    isFinishingRef.current = false;
                     setSessionCompleted(false);
                     setCurrentIndex(0);
                     setHasStarted(false);
@@ -374,7 +408,7 @@ function PracticePageContent() {
                       times: [],
                     });
                   }}
-                  className="flex-1 px-6 py-3 border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors font-medium"
+                  className="flex-1 px-6 py-3 border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors font-medium"
                 >
                   Practice Again
                 </button>
@@ -394,16 +428,22 @@ function PracticePageContent() {
             {/* Header */}
             <div>
               <Link
-                href="/cube-lab/algorithm-trainer"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[var(--border)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-lg transition-colors w-fit mb-4"
+                href={
+                  mode === "custom" && customSetId
+                    ? `/cube-lab/algorithm-trainer/custom/${customSetId}`
+                    : "/cube-lab/algorithm-trainer"
+                }
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors w-fit mb-4"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Back to Algorithm Trainer
+                {mode === "custom"
+                  ? "Back to Custom Set"
+                  : "Back to Algorithm Trainer"}
               </Link>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] font-statement mb-2">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-(--text-primary) font-statement mb-2">
                     {mode === "srs"
                       ? "SRS Review"
                       : mode === "infinite"
@@ -412,7 +452,7 @@ function PracticePageContent() {
                           ? "Custom Set Practice"
                           : "Drill Practice"}
                   </h1>
-                  <p className="text-[var(--text-muted)]">
+                  <p className="text-(--text-muted)">
                     {mode === "infinite"
                       ? `Drilling: ${casesToReview[0]?.case?.caseName || "Loading..."}`
                       : mode === "srs"
@@ -427,37 +467,49 @@ function PracticePageContent() {
                   </p>
                 </div>
 
-                {/* Toggle Controls */}
-                {mode === "drill" && !hasStarted && (
+                {/* Toggle Controls - shown for drill and custom modes */}
+                {(mode === "drill" || mode === "custom") && !hasStarted && (
                   <div className="flex flex-col gap-3 w-full sm:w-auto">
                     {/* Recognition/Execution/Blind Toggle */}
-                    <div className="inline-flex rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1 w-full sm:w-auto flex-wrap">
+                    <div className="inline-flex rounded-lg border border-(--border) bg-(--surface) p-1 w-full sm:w-auto flex-wrap">
                       <Link
-                        href="/cube-lab/algorithm-trainer/practice?mode=drill&type=rec"
+                        href={
+                          mode === "custom"
+                            ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=rec`
+                            : "/cube-lab/algorithm-trainer/practice?mode=drill&type=rec"
+                        }
                         className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "rec"
-                            ? "bg-[var(--primary)] text-white"
-                            : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                            ? "bg-(--primary) text-white"
+                            : "text-(--text-muted) hover:text-(--text-primary)"
                         }`}
                       >
                         Recognition
                       </Link>
                       <Link
-                        href="/cube-lab/algorithm-trainer/practice?mode=drill&type=exec"
+                        href={
+                          mode === "custom"
+                            ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=exec`
+                            : "/cube-lab/algorithm-trainer/practice?mode=drill&type=exec"
+                        }
                         className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "exec"
-                            ? "bg-[var(--primary)] text-white"
-                            : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                            ? "bg-(--primary) text-white"
+                            : "text-(--text-muted) hover:text-(--text-primary)"
                         }`}
                       >
                         Execution
                       </Link>
                       <Link
-                        href="/cube-lab/algorithm-trainer/practice?mode=drill&type=blind"
+                        href={
+                          mode === "custom"
+                            ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=blind`
+                            : "/cube-lab/algorithm-trainer/practice?mode=drill&type=blind"
+                        }
                         className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "blind"
-                            ? "bg-[var(--primary)] text-white"
-                            : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                            ? "bg-(--primary) text-white"
+                            : "text-(--text-muted) hover:text-(--text-primary)"
                         }`}
                       >
                         Blind
@@ -467,11 +519,15 @@ function PracticePageContent() {
                     {/* Pattern Memory Toggle - Only for Recognition */}
                     {(drillType === "rec" || drillType === "pattern") && (
                       <Link
-                        href={`/cube-lab/algorithm-trainer/practice?mode=drill&type=${drillType === "pattern" ? "rec" : "pattern"}`}
+                        href={
+                          mode === "custom"
+                            ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=${drillType === "pattern" ? "rec" : "pattern"}`
+                            : `/cube-lab/algorithm-trainer/practice?mode=drill&type=${drillType === "pattern" ? "rec" : "pattern"}`
+                        }
                         className={`inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors border w-full sm:w-auto ${
                           drillType === "pattern"
-                            ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-                            : "border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                            ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
+                            : "border-(--border) text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
                         }`}
                       >
                         {drillType === "pattern" && (
@@ -490,17 +546,17 @@ function PracticePageContent() {
               {isInfiniteMode ? (
                 <>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-[var(--text-primary)]">
+                    <span className="text-sm font-medium text-(--text-primary)">
                       Infinite Drill
                     </span>
                     <div className="flex items-center gap-2">
-                      <RotateCcw className="w-4 h-4 text-[var(--primary)]" />
-                      <span className="text-sm text-[var(--text-muted)]">
+                      <RotateCcw className="w-4 h-4 text-(--primary)" />
+                      <span className="text-sm text-(--text-muted)">
                         {infiniteRepeatCount} repetitions
                       </span>
                     </div>
                   </div>
-                  <p className="text-xs text-[var(--text-muted)]">
+                  <p className="text-xs text-(--text-muted)">
                     Keep practicing until you feel confident. Use the back
                     button to exit.
                   </p>
@@ -508,16 +564,16 @@ function PracticePageContent() {
               ) : (
                 <>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-[var(--text-primary)]">
+                    <span className="text-sm font-medium text-(--text-primary)">
                       Progress
                     </span>
-                    <span className="text-sm text-[var(--text-muted)]">
+                    <span className="text-sm text-(--text-muted)">
                       {currentIndex + 1} / {casesToReview.length}
                     </span>
                   </div>
-                  <div className="h-3 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                  <div className="h-3 bg-(--surface-elevated) rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[var(--primary)] transition-all duration-300"
+                      className="h-full bg-(--primary) transition-all duration-300"
                       style={{ width: `${progressPercentage}%` }}
                     />
                   </div>
@@ -528,14 +584,14 @@ function PracticePageContent() {
                 <div
                   className={`grid gap-4 mt-4 ${drillType === "rec" && !isInfiniteMode ? "grid-cols-1" : "grid-cols-2"}`}
                 >
-                  <div className="text-center p-3 rounded-lg bg-[var(--surface-elevated)]">
+                  <div className="text-center p-3 rounded-lg bg-(--surface-elevated)">
                     <div className="flex items-center justify-center gap-1 mb-1">
                       <CheckCircle2 className="w-4 h-4 text-green-500" />
                       <span className="text-xl font-bold text-green-500 font-statement">
                         {sessionStats.correct}
                       </span>
                     </div>
-                    <div className="text-xs text-[var(--text-muted)]">
+                    <div className="text-xs text-(--text-muted)">
                       {drillType === "rec" && !isInfiniteMode
                         ? "Completed"
                         : "Correct"}
@@ -545,22 +601,22 @@ function PracticePageContent() {
                   {(drillType === "pattern" ||
                     drillType === "blind" ||
                     isInfiniteMode) && (
-                    <div className="text-center p-3 rounded-lg bg-[var(--surface-elevated)]">
+                    <div className="text-center p-3 rounded-lg bg-(--surface-elevated)">
                       <div className="flex items-center justify-center gap-1 mb-1">
                         <X className="w-4 h-4 text-red-500" />
                         <span className="text-xl font-bold text-red-500 font-statement">
                           {sessionStats.incorrect}
                         </span>
                       </div>
-                      <div className="text-xs text-[var(--text-muted)]">
+                      <div className="text-xs text-(--text-muted)">
                         Incorrect
                       </div>
                     </div>
                   )}
 
                   {drillType === "exec" && sessionStats.times.length > 0 && (
-                    <div className="text-center p-3 rounded-lg bg-[var(--surface-elevated)]">
-                      <div className="text-xl font-bold text-[var(--primary)] font-statement mb-1">
+                    <div className="text-center p-3 rounded-lg bg-(--surface-elevated)">
+                      <div className="text-xl font-bold text-(--primary) font-statement mb-1">
                         {(
                           sessionStats.times.reduce((a, b) => a + b, 0) /
                           sessionStats.times.length /
@@ -568,7 +624,7 @@ function PracticePageContent() {
                         ).toFixed(1)}
                         s
                       </div>
-                      <div className="text-xs text-[var(--text-muted)]">
+                      <div className="text-xs text-(--text-muted)">
                         Avg Time
                       </div>
                     </div>
@@ -592,18 +648,28 @@ function PracticePageContent() {
                     onComplete={handleExecutionComplete}
                     hasStarted={hasStarted}
                     onStart={() => setHasStarted(true)}
+                    isCustomAlgorithm={isCurrentCustomAlg}
+                    hasValidNotation={currentNotationValid}
                   />
                 ) : useBlindRecognition ? (
                   <BlindRecognitionCard
                     caseName={currentReview.case.caseName}
                     setupMoves={currentReview.case.setupMoves}
-                    recognition={currentReview.case.recognition}
+                    recognition={currentReview.case.recognition || []}
                     algorithm={currentReview.algorithm?.notation}
                     puzzleType={currentReview.set?.puzzleType || "3x3x3"}
-                    allCaseNames={allCaseNames || []}
+                    allCaseNames={
+                      mode === "custom"
+                        ? customSetAlgNames.length > 0
+                          ? customSetAlgNames
+                          : allCaseNames || []
+                        : allCaseNames || []
+                    }
                     onAnswer={handleAnswer}
                     hasStarted={hasStarted}
                     onStart={() => setHasStarted(true)}
+                    isCustomAlgorithm={isCurrentCustomAlg}
+                    hasValidNotation={currentNotationValid}
                   />
                 ) : (
                   <RecognitionFlashCard
@@ -614,7 +680,7 @@ function PracticePageContent() {
                     }
                     caseName={currentReview.case.caseName}
                     setupMoves={currentReview.case.setupMoves}
-                    recognition={currentReview.case.recognition}
+                    recognition={currentReview.case.recognition || []}
                     algorithm={currentReview.algorithm?.notation}
                     puzzleType={currentReview.set?.puzzleType || "3x3x3"}
                     onAnswer={handleAnswer}
@@ -624,6 +690,8 @@ function PracticePageContent() {
                     onStart={() => setHasStarted(true)}
                     showSrsRatings={mode === "srs"}
                     isInfiniteMode={isInfiniteMode}
+                    isCustomAlgorithm={isCurrentCustomAlg}
+                    hasValidNotation={currentNotationValid}
                   />
                 )}
               </>

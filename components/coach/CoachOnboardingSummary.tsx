@@ -75,10 +75,10 @@ export default function CoachOnboardingSummary({
     <div className="space-y-6">
       {/* Header Card */}
       <div className="timer-card text-center">
-        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+        <h2 className="text-2xl font-bold text-(--text-primary) mb-2">
           Ready to Start Your Training!
         </h2>
-        <p className="text-[var(--text-secondary)]">
+        <p className="text-(--text-secondary)">
           Review your training plan before we generate your personalized weekly
           schedule.
         </p>
@@ -89,29 +89,29 @@ export default function CoachOnboardingSummary({
         {/* Current Level */}
         <div className="timer-card">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-[var(--primary)]/10 flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-[var(--primary)]" />
+            <div className="w-10 h-10 rounded-full bg-(--primary)/10 flex items-center justify-center">
+              <BarChart3 className="w-5 h-5 text-(--primary)" />
             </div>
             <div>
-              <span className="text-xs text-[var(--text-muted)]">
+              <span className="text-xs text-(--text-muted)">
                 Current Level
               </span>
-              <span className="font-bold text-[var(--text-primary)] block">
+              <span className="font-bold text-(--text-primary) block">
                 {skillLabels[data.skillLevel]}
               </span>
             </div>
           </div>
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm p-2 bg-[var(--surface-elevated)] rounded">
-              <span className="text-[var(--text-muted)]">Event</span>
-              <span className="font-medium text-[var(--text-primary)]">
+            <div className="flex items-center justify-between text-sm p-2 bg-(--surface-elevated) rounded">
+              <span className="text-(--text-muted)">Event</span>
+              <span className="font-medium text-(--text-primary)">
                 3x3 Cube
               </span>
             </div>
             {data.currentAverage && (
-              <div className="flex items-center justify-between text-sm p-2 bg-[var(--surface-elevated)] rounded">
-                <span className="text-[var(--text-muted)]">Average</span>
-                <span className="font-medium text-[var(--primary)]">
+              <div className="flex items-center justify-between text-sm p-2 bg-(--surface-elevated) rounded">
+                <span className="text-(--text-muted)">Average</span>
+                <span className="font-medium text-(--primary)">
                   {formatTime(data.currentAverage)}
                 </span>
               </div>
@@ -122,22 +122,22 @@ export default function CoachOnboardingSummary({
         {/* Goal */}
         <div className="timer-card">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-[var(--success)]/10 flex items-center justify-center">
-              <Target className="w-5 h-5 text-[var(--success)]" />
+            <div className="w-10 h-10 rounded-full bg-(--success)/10 flex items-center justify-center">
+              <Target className="w-5 h-5 text-(--success)" />
             </div>
             <div>
-              <span className="text-xs text-[var(--text-muted)]">
+              <span className="text-xs text-(--text-muted)">
                 Your Goal
               </span>
-              <span className="font-bold text-[var(--text-primary)] block">
+              <span className="font-bold text-(--text-primary) block">
                 {goalLabels[data.goalType]}
               </span>
             </div>
           </div>
           {data.customGoalTime && data.goalType === "custom" && (
-            <div className="flex items-center justify-between text-sm p-2 bg-[var(--surface-elevated)] rounded">
-              <span className="text-[var(--text-muted)]">Target Time</span>
-              <span className="font-medium text-[var(--success)]">
+            <div className="flex items-center justify-between text-sm p-2 bg-(--surface-elevated) rounded">
+              <span className="text-(--text-muted)">Target Time</span>
+              <span className="font-medium text-(--success)">
                 {formatTime(data.customGoalTime)}
               </span>
             </div>
@@ -147,21 +147,21 @@ export default function CoachOnboardingSummary({
         {/* Timeline */}
         <div className="timer-card">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-[var(--warning)]/10 flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-[var(--warning)]" />
+            <div className="w-10 h-10 rounded-full bg-(--warning)/10 flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-(--warning)" />
             </div>
             <div>
-              <span className="text-xs text-[var(--text-muted)]">
+              <span className="text-xs text-(--text-muted)">
                 Target Date
               </span>
-              <span className="font-bold text-[var(--text-primary)] block">
+              <span className="font-bold text-(--text-primary) block">
                 {formatDate(data.targetDate)}
               </span>
             </div>
           </div>
-          <div className="flex items-center justify-between text-sm p-2 bg-[var(--surface-elevated)] rounded">
-            <span className="text-[var(--text-muted)]">Time Remaining</span>
-            <span className="font-medium text-[var(--primary)]">
+          <div className="flex items-center justify-between text-sm p-2 bg-(--surface-elevated) rounded">
+            <span className="text-(--text-muted)">Time Remaining</span>
+            <span className="font-medium text-(--primary)">
               {daysUntilTarget} days
             </span>
           </div>
@@ -170,28 +170,28 @@ export default function CoachOnboardingSummary({
         {/* Schedule */}
         <div className="timer-card">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-[var(--info)]/10 flex items-center justify-center">
-              <Clock className="w-5 h-5 text-[var(--info)]" />
+            <div className="w-10 h-10 rounded-full bg-(--info)/10 flex items-center justify-center">
+              <Clock className="w-5 h-5 text-(--info)" />
             </div>
             <div>
-              <span className="text-xs text-[var(--text-muted)]">
+              <span className="text-xs text-(--text-muted)">
                 Weekly Commitment
               </span>
-              <span className="font-bold text-[var(--text-primary)] block">
+              <span className="font-bold text-(--text-primary) block">
                 {totalWeeklyHours.toFixed(1)} hours/week
               </span>
             </div>
           </div>
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm p-2 bg-[var(--surface-elevated)] rounded">
-              <span className="text-[var(--text-muted)]">Daily</span>
-              <span className="font-medium text-[var(--text-primary)]">
+            <div className="flex items-center justify-between text-sm p-2 bg-(--surface-elevated) rounded">
+              <span className="text-(--text-muted)">Daily</span>
+              <span className="font-medium text-(--text-primary)">
                 {data.dailyPracticeMinutes} min
               </span>
             </div>
-            <div className="flex items-center justify-between text-sm p-2 bg-[var(--surface-elevated)] rounded">
-              <span className="text-[var(--text-muted)]">Days</span>
-              <span className="font-medium text-[var(--text-primary)]">
+            <div className="flex items-center justify-between text-sm p-2 bg-(--surface-elevated) rounded">
+              <span className="text-(--text-muted)">Days</span>
+              <span className="font-medium text-(--text-primary)">
                 {data.practiceSchedule.length} days/week
               </span>
             </div>
@@ -200,33 +200,33 @@ export default function CoachOnboardingSummary({
       </div>
 
       {/* What to Expect Card */}
-      <div className="timer-card !bg-[var(--primary)]/5 !border-[var(--primary)]/20">
+      <div className="timer-card !bg-(--primary)/5 !border-(--primary)/20">
         <div className="flex items-center gap-2 mb-4">
-          <CheckCircle2 className="w-5 h-5 text-[var(--primary)]" />
-          <h3 className="font-semibold text-[var(--text-primary)]">
+          <CheckCircle2 className="w-5 h-5 text-(--primary)" />
+          <h3 className="font-semibold text-(--text-primary)">
             What to Expect
           </h3>
         </div>
-        <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
+        <ul className="space-y-2 text-sm text-(--text-secondary)">
           <li className="flex items-start gap-2">
-            <span className="text-[var(--primary)] font-bold">1.</span>
+            <span className="text-(--primary) font-bold">1.</span>
             <span>
               Personalized weekly training plans based on your schedule and
               goals
             </span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-[var(--primary)] font-bold">2.</span>
+            <span className="text-(--primary) font-bold">2.</span>
             <span>
               Daily activities focused on different aspects of solving
             </span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-[var(--primary)] font-bold">3.</span>
+            <span className="text-(--primary) font-bold">3.</span>
             <span>Journal entries to track your progress and reflections</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-[var(--primary)] font-bold">4.</span>
+            <span className="text-(--primary) font-bold">4.</span>
             <span>
               Adaptive plans that adjust based on your actual progress
             </span>

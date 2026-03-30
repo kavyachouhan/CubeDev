@@ -332,7 +332,7 @@ export default function RoomTimer({
   return (
     <div className="timer-card">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
           Solve {solveNumber} of {totalSolves}
         </h3>
       </div>
@@ -372,7 +372,7 @@ export default function RoomTimer({
           </div>
         )}
 
-        <div className="text-sm text-[var(--text-secondary)] font-inter select-none">
+        <div className="text-sm text-(--text-secondary) font-inter select-none">
           {getStatusText()}
         </div>
       </div>
@@ -381,7 +381,7 @@ export default function RoomTimer({
       {state === "stopped" && showPenaltySelection && (
         <div className="space-y-4 mt-6">
           <div className="text-center">
-            <p className="text-sm text-[var(--text-secondary)] font-inter mb-3">
+            <p className="text-sm text-(--text-secondary) font-inter mb-3">
               Select penalty for this solve:
             </p>
           </div>
@@ -394,8 +394,8 @@ export default function RoomTimer({
               }}
               className={`px-6 py-2 text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105 ${
                 currentPenalty === "+2"
-                  ? "bg-[var(--warning)] text-white ring-2 ring-yellow-300"
-                  : "bg-[var(--surface-elevated)] text-[var(--text-primary)] hover:bg-[var(--border)]"
+                  ? "bg-(--warning) text-white ring-2 ring-yellow-300"
+                  : "bg-(--surface-elevated) text-(--text-primary) hover:bg-(--border)"
               }`}
             >
               +2 {currentPenalty === "+2" ? "✓" : ""}
@@ -408,8 +408,8 @@ export default function RoomTimer({
               }}
               className={`px-6 py-2 text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105 ${
                 currentPenalty === "DNF"
-                  ? "bg-[var(--error)] text-white ring-2 ring-red-300"
-                  : "bg-[var(--surface-elevated)] text-[var(--text-primary)] hover:bg-[var(--border)]"
+                  ? "bg-(--error) text-white ring-2 ring-red-300"
+                  : "bg-(--surface-elevated) text-(--text-primary) hover:bg-(--border)"
               }`}
             >
               DNF {currentPenalty === "DNF" ? "✓" : ""}
@@ -424,7 +424,7 @@ export default function RoomTimer({
                 e.preventDefault();
                 handleConfirmSolve();
               }}
-              className="px-8 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-lg rounded-lg font-bold font-statement transition-all hover:scale-105 shadow-lg"
+              className="px-8 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white text-lg rounded-lg font-bold font-statement transition-all hover:scale-105 shadow-lg"
             >
               OK - Save Solve
             </button>

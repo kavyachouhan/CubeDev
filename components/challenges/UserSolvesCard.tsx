@@ -51,11 +51,11 @@ export default function UserSolvesCard({
     <div className="timer-card">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
           Your Solves
         </h3>
         <div className="flex items-center gap-2">
-          <div className="text-sm text-[var(--text-muted)] font-inter">
+          <div className="text-sm text-(--text-muted) font-inter">
             {solves.length} / {totalSolves}
           </div>
           {isCompleted && (
@@ -68,7 +68,7 @@ export default function UserSolvesCard({
           )}
           <button
             onClick={() => setShowSolves(!showSolves)}
-            className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+            className="p-2 text-(--text-muted) hover:text-(--primary) transition-colors"
             title={showSolves ? "Hide solves" : "Show solves"}
           >
             {showSolves ? (
@@ -83,8 +83,8 @@ export default function UserSolvesCard({
       {/* Summary Stats */}
       {(isCompleted || solves.length >= 3) && (
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg p-3">
-            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-1">
+          <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-3">
+            <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-1">
               Best Single
             </div>
             <div className="text-lg font-mono font-bold text-green-500">
@@ -93,11 +93,11 @@ export default function UserSolvesCard({
                 : "--:--"}
             </div>
           </div>
-          <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg p-3">
-            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-1">
+          <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-3">
+            <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-1">
               {format.toUpperCase()} Average
             </div>
-            <div className="text-lg font-mono font-bold text-[var(--text-primary)]">
+            <div className="text-lg font-mono font-bold text-(--text-primary)">
               {average && average !== Infinity ? formatTime(average) : "--:--"}
             </div>
           </div>
@@ -110,7 +110,7 @@ export default function UserSolvesCard({
           {solves.map((solve, index) => (
             <div
               key={solve._id}
-              className="bg-[var(--surface-elevated)] rounded border border-[var(--border)] p-3 hover:bg-[var(--surface-elevated)]/80 transition-colors"
+              className="bg-(--surface-elevated) rounded border border-(--border) p-3 hover:bg-(--surface-elevated)/80 transition-colors"
             >
               <div className="flex justify-between items-center">
                 {/* Solve number and time */}
@@ -120,7 +120,7 @@ export default function UserSolvesCard({
                     setSelectedSolve(selectedSolve === index ? null : index)
                   }
                 >
-                  <span className="text-sm text-[var(--text-muted)] font-inter">
+                  <span className="text-sm text-(--text-muted) font-inter">
                     #{solve.solveNumber}
                   </span>
                   <span
@@ -129,13 +129,13 @@ export default function UserSolvesCard({
                         ? "text-yellow-400"
                         : solve.penalty === "DNF"
                           ? "text-red-400"
-                          : "text-[var(--text-primary)]"
+                          : "text-(--text-primary)"
                     }`}
                   >
                     {formatTime(solve.finalTime, solve.penalty)}
                     {solve.penalty === "+2" && "+"}
                   </span>
-                  <span className="text-xs text-[var(--text-muted)] font-inter">
+                  <span className="text-xs text-(--text-muted) font-inter">
                     {new Date(solve.solveDate).toLocaleTimeString()}
                   </span>
                 </div>
@@ -157,22 +157,22 @@ export default function UserSolvesCard({
 
               {/* Expanded Details */}
               {selectedSolve === index && (
-                <div className="mt-3 pt-3 border-t border-[var(--border)]">
-                  <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-3">
-                    <h5 className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-3">
+                <div className="mt-3 pt-3 border-t border-(--border)">
+                  <div className="bg-(--surface) border border-(--border) rounded-lg p-3">
+                    <h5 className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-3">
                       Time Breakdown
                     </h5>
                     <div className="space-y-2 text-sm font-mono">
                       <div className="flex justify-between">
-                        <span className="text-[var(--text-secondary)]">
+                        <span className="text-(--text-secondary)">
                           Raw Time:
                         </span>
-                        <span className="text-[var(--text-primary)]">
+                        <span className="text-(--text-primary)">
                           {formatTime(solve.time)}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[var(--text-secondary)]">
+                        <span className="text-(--text-secondary)">
                           Penalty:
                         </span>
                         <span
@@ -181,17 +181,17 @@ export default function UserSolvesCard({
                               ? "text-yellow-400"
                               : solve.penalty === "DNF"
                                 ? "text-red-400"
-                                : "text-[var(--text-primary)]"
+                                : "text-(--text-primary)"
                           }
                         >
                           {solve.penalty === "none" ? "None" : solve.penalty}
                         </span>
                       </div>
-                      <div className="flex justify-between pt-2 border-t border-[var(--border)]">
-                        <span className="text-[var(--text-secondary)] font-semibold">
+                      <div className="flex justify-between pt-2 border-t border-(--border)">
+                        <span className="text-(--text-secondary) font-semibold">
                           Final Time:
                         </span>
-                        <span className="text-[var(--text-primary)] font-semibold">
+                        <span className="text-(--text-primary) font-semibold">
                           {formatTime(solve.finalTime, solve.penalty)}
                         </span>
                       </div>
@@ -200,11 +200,11 @@ export default function UserSolvesCard({
 
                   {/* Comment */}
                   {solve.comment && (
-                    <div className="mt-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg p-3">
-                      <h5 className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-2">
+                    <div className="mt-3 bg-(--surface) border border-(--border) rounded-lg p-3">
+                      <h5 className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-2">
                         Comment
                       </h5>
-                      <p className="text-sm text-[var(--text-secondary)]">
+                      <p className="text-sm text-(--text-secondary)">
                         {solve.comment}
                       </p>
                     </div>
@@ -224,21 +224,21 @@ export default function UserSolvesCard({
                     key={`placeholder-${i}`}
                     className={`rounded border p-3 transition-colors ${
                       solves.length + i === currentSolveIndex
-                        ? "border-[var(--primary)] bg-[var(--primary)]/5"
-                        : "border-dashed border-[var(--border)] bg-[var(--surface-elevated)]/30"
+                        ? "border-(--primary) bg-(--primary)/5"
+                        : "border-dashed border-(--border) bg-(--surface-elevated)/30"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-sm text-[var(--text-muted)] font-inter">
+                      <span className="text-sm text-(--text-muted) font-inter">
                         #{solves.length + i + 1}
                       </span>
-                      <span className="font-mono text-lg text-[var(--text-muted)]">
+                      <span className="font-mono text-lg text-(--text-muted)">
                         {solves.length + i === currentSolveIndex
                           ? "---"
                           : "--:--"}
                       </span>
                       {solves.length + i === currentSolveIndex && (
-                        <span className="text-xs text-[var(--primary)] font-medium">
+                        <span className="text-xs text-(--primary) font-medium">
                           Current
                         </span>
                       )}
@@ -248,7 +248,7 @@ export default function UserSolvesCard({
               )}
               {totalSolves - solves.length > 3 && (
                 <div className="text-center py-2">
-                  <span className="text-xs text-[var(--text-muted)] font-inter">
+                  <span className="text-xs text-(--text-muted) font-inter">
                     ...and {totalSolves - solves.length - 3} more solve
                     {totalSolves - solves.length - 3 !== 1 ? "s" : ""}
                   </span>
@@ -258,8 +258,8 @@ export default function UserSolvesCard({
           )}
 
           {solves.length === 0 && (
-            <div className="text-center py-8 text-[var(--text-muted)]">
-              <Clock className="w-8 h-8 mx-auto mb-2 text-[var(--text-muted)] opacity-50" />
+            <div className="text-center py-8 text-(--text-muted)">
+              <Clock className="w-8 h-8 mx-auto mb-2 text-(--text-muted) opacity-50" />
               <p className="text-sm">No solves recorded yet</p>
               <p className="text-xs mt-1">Complete solves to see them here</p>
             </div>

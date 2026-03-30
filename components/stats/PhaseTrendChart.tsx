@@ -82,13 +82,13 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
   if (trendData.length === 0) {
     return (
       <div className="text-center py-8">
-        <div className="w-16 h-16 bg-[var(--surface-elevated)] rounded-full flex items-center justify-center mx-auto mb-4">
-          <TrendingUp className="w-8 h-8 text-[var(--text-muted)]" />
+        <div className="w-16 h-16 bg-(--surface-elevated) rounded-full flex items-center justify-center mx-auto mb-4">
+          <TrendingUp className="w-8 h-8 text-(--text-muted)" />
         </div>
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+        <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
           No Phase Trends Yet
         </h3>
-        <p className="text-[var(--text-secondary)] text-sm">
+        <p className="text-(--text-secondary) text-sm">
           Complete more solves with Phase Split Timer to see trends!
         </p>
       </div>
@@ -108,13 +108,13 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-6 h-6 bg-[var(--primary)]/20 text-[var(--primary)] rounded flex items-center justify-center">
+        <div className="w-6 h-6 bg-(--primary)/20 text-(--primary) rounded flex items-center justify-center">
           <TrendingUp className="w-3 h-3" />
         </div>
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
           Phase Trend
         </h3>
-        <span className="text-xs text-[var(--text-muted)] bg-[var(--surface-elevated)] px-2 py-1 rounded">
+        <span className="text-xs text-(--text-muted) bg-(--surface-elevated) px-2 py-1 rounded">
           Last {trendData.length} solves
         </span>
       </div>
@@ -122,10 +122,10 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
       {/* Mini chart area */}
       <div className="relative">
         {/* Chart container */}
-        <div className="h-48 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg p-4">
+        <div className="h-48 bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
           <div className="relative h-full">
             {/* Y-axis labels */}
-            <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-[var(--text-muted)] pr-2">
+            <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-(--text-muted) pr-2">
               <span>{formatPhaseTime(maxTime)}s</span>
               <span>{formatPhaseTime(maxTime * 0.75)}s</span>
               <span>{formatPhaseTime(maxTime * 0.5)}s</span>
@@ -140,7 +140,7 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
                 {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
                   <div
                     key={ratio}
-                    className="absolute w-full border-t border-[var(--border)]/30"
+                    className="absolute w-full border-t border-(--border)/30"
                     style={{ bottom: `${ratio * 100}%` }}
                   />
                 ))}
@@ -206,7 +206,7 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
               </svg>
 
               {/* X-axis labels */}
-              <div className="absolute -bottom-6 left-0 right-0 flex justify-between text-xs text-[var(--text-muted)]">
+              <div className="absolute -bottom-6 left-0 right-0 flex justify-between text-xs text-(--text-muted)">
                 <span>1</span>
                 <span>{Math.ceil(trendData.length / 2)}</span>
                 <span>{trendData.length}</span>
@@ -232,7 +232,7 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
                     "bg-"
                   )}`}
                 />
-                <span className="text-xs text-[var(--text-secondary)]">
+                <span className="text-xs text-(--text-secondary)">
                   {samplePhase.name}
                 </span>
               </div>
@@ -242,10 +242,10 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
 
         {/* Recent improvement indicator */}
         {trendData.length >= 5 && (
-          <div className="mt-3 p-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg">
+          <div className="mt-3 p-3 bg-(--surface-elevated) border border-(--border) rounded-lg">
             <div className="flex items-center gap-2 text-sm">
-              <BarChart3 className="w-4 h-4 text-[var(--text-muted)]" />
-              <span className="text-[var(--text-secondary)]">
+              <BarChart3 className="w-4 h-4 text-(--text-muted)" />
+              <span className="text-(--text-secondary)">
                 Phase consistency improving over last 5 solves
               </span>
             </div>

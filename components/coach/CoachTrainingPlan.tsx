@@ -17,6 +17,7 @@ import {
   SkipForward,
   Plus,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -72,7 +73,7 @@ const DAYS_OF_WEEK = [
 ];
 const SHORT_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const activityIcons: Record<string, React.ElementType> = {
+const activityIcons: Record<string, LucideIcon> = {
   "timed-solves": Clock,
   "untimed-practice": Pause,
   "algorithm-drill": Brain,
@@ -178,35 +179,35 @@ export default function CoachTrainingPlan({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-full bg-[var(--primary)]/10 flex items-center justify-center"
+              className="w-10 h-10 rounded-full bg-(--primary)/10 flex items-center justify-center"
               data-tour="recommendation-engine"
             >
-              <Calendar className="w-5 h-5 text-[var(--primary)]" />
+              <Calendar className="w-5 h-5 text-(--primary)" />
             </div>
             <div>
-              <span className="font-bold text-[var(--text-primary)] block font-statement">
+              <span className="font-bold text-(--text-primary) block font-statement">
                 Week {plan.weekNumber}
               </span>
-              <span className="text-sm text-[var(--text-muted)]">
+              <span className="text-sm text-(--text-muted)">
                 {formatDate(plan.weekStartDate)} -{" "}
                 {formatDate(plan.weekEndDate)}
               </span>
             </div>
           </div>
           <div className="text-right">
-            <span className="text-2xl font-bold text-[var(--primary)]">
+            <span className="text-2xl font-bold text-(--primary)">
               {progressPercentage}%
             </span>
-            <span className="text-xs text-[var(--text-muted)] block">
+            <span className="text-xs text-(--text-muted) block">
               {plan.completedDays}/{plan.totalDays} days
             </span>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="mt-4 h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+        <div className="mt-4 h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
           <div
-            className="h-full bg-[var(--primary)] transition-all duration-500"
+            className="h-full bg-(--primary) transition-all duration-500"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
@@ -228,9 +229,7 @@ export default function CoachTrainingPlan({
               key={dayIndex}
               data-tour={dayIndex === 0 ? "daily-plan" : undefined}
               className={`timer-card !p-0 overflow-hidden ${
-                isTodayPlan
-                  ? "!border-[var(--primary)] !bg-[var(--primary)]/5"
-                  : ""
+                isTodayPlan ? "!border-(--primary) !bg-(--primary)/5" : ""
               }`}
             >
               {/* Day Header */}
@@ -242,14 +241,14 @@ export default function CoachTrainingPlan({
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center ${
                       day.isCompleted
-                        ? "bg-[var(--success)] text-white"
+                        ? "bg-(--success) text-white"
                         : day.isRestDay
-                          ? "bg-[var(--surface)] text-[var(--text-muted)]"
+                          ? "bg-(--surface) text-(--text-muted)"
                           : isTodayPlan
-                            ? "bg-[var(--primary)] text-white"
+                            ? "bg-(--primary) text-white"
                             : isPastDay
-                              ? "bg-[var(--warning)]/20 text-[var(--warning)]"
-                              : "bg-[var(--surface)] text-[var(--text-muted)]"
+                              ? "bg-(--warning)/20 text-(--warning)"
+                              : "bg-(--surface) text-(--text-muted)"
                     }`}
                   >
                     {day.isCompleted ? (
@@ -262,16 +261,16 @@ export default function CoachTrainingPlan({
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-[var(--text-primary)] font-statement">
+                      <span className="font-medium text-(--text-primary) font-statement">
                         {DAYS_OF_WEEK[day.dayOfWeek]}
                       </span>
                       {isTodayPlan && (
-                        <span className="px-2 py-0.5 text-xs font-medium bg-[var(--primary)] text-white rounded-full">
+                        <span className="px-2 py-0.5 text-xs font-medium bg-(--primary) text-white rounded-full">
                           Today
                         </span>
                       )}
                     </div>
-                    <span className="text-sm text-[var(--text-muted)]">
+                    <span className="text-sm text-(--text-muted)">
                       {day.isRestDay ? "Rest Day" : day.focus}
                     </span>
                   </div>
@@ -281,7 +280,7 @@ export default function CoachTrainingPlan({
                   {!day.isRestDay && onOpenJournal && (
                     <button
                       onClick={() => onOpenJournal(day.date)}
-                      className="p-1.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-medium transition-colors bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--primary)]/10 hover:text-[var(--primary)] border border-[var(--border)] flex items-center gap-1"
+                      className="p-1.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-medium transition-colors bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--primary)/10 hover:text-(--primary) border border-(--border) flex items-center gap-1"
                       title="Add journal entry"
                     >
                       <Plus className="w-3.5 h-3.5" />
@@ -289,18 +288,15 @@ export default function CoachTrainingPlan({
                     </button>
                   )}
                   {!day.isRestDay && (
-                    <span className="text-sm text-[var(--text-muted)]">
+                    <span className="text-sm text-(--text-muted)">
                       {completedActivities}/{totalActivities}
                     </span>
                   )}
-                  <button
-                    onClick={() => toggleDay(dayIndex)}
-                    className="p-1"
-                  >
+                  <button onClick={() => toggleDay(dayIndex)} className="p-1">
                     {isExpanded ? (
-                      <ChevronDown className="w-5 h-5 text-[var(--text-muted)]" />
+                      <ChevronDown className="w-5 h-5 text-(--text-muted)" />
                     ) : (
-                      <ChevronRight className="w-5 h-5 text-[var(--text-muted)]" />
+                      <ChevronRight className="w-5 h-5 text-(--text-muted)" />
                     )}
                   </button>
                 </div>
@@ -322,8 +318,8 @@ export default function CoachTrainingPlan({
                         }
                         className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
                           activity.completed
-                            ? "bg-[var(--success)]/10"
-                            : "bg-[var(--surface)]"
+                            ? "bg-(--success)/10"
+                            : "bg-(--surface)"
                         }`}
                       >
                         <button
@@ -334,10 +330,10 @@ export default function CoachTrainingPlan({
                               !activity.completed,
                             )
                           }
-                          className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                          className={`mt-0.5 shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                             activity.completed
-                              ? "bg-[var(--success)] border-[var(--success)] text-white"
-                              : "border-[var(--border)] hover:border-[var(--primary)]"
+                              ? "bg-(--success) border-(--success) text-white"
+                              : "border-(--border) hover:border-(--primary)"
                           }`}
                         >
                           {activity.completed && (
@@ -350,24 +346,24 @@ export default function CoachTrainingPlan({
                             <Icon
                               className={`w-4 h-4 ${
                                 activity.completed
-                                  ? "text-[var(--success)]"
-                                  : "text-[var(--primary)]"
+                                  ? "text-(--success)"
+                                  : "text-(--primary)"
                               }`}
                             />
                             <span
                               className={`font-medium ${
                                 activity.completed
-                                  ? "text-[var(--text-muted)] line-through"
-                                  : "text-[var(--text-primary)]"
+                                  ? "text-(--text-muted) line-through"
+                                  : "text-(--text-primary)"
                               }`}
                             >
                               {activity.title}
                             </span>
                           </div>
-                          <p className="text-sm text-[var(--text-muted)] mt-1">
+                          <p className="text-sm text-(--text-muted) mt-1">
                             {activity.description}
                           </p>
-                          <div className="flex items-center gap-4 mt-2 text-xs text-[var(--text-muted)]">
+                          <div className="flex items-center gap-4 mt-2 text-xs text-(--text-muted)">
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />
                               {activity.durationMinutes} min
@@ -386,10 +382,10 @@ export default function CoachTrainingPlan({
 
                   {/* Skip Day Button - show for non-rest, non-completed days */}
                   {!day.isRestDay && !day.isCompleted && (
-                    <div className="mt-3 pt-3 border-t border-[var(--border)]">
+                    <div className="mt-3 pt-3 border-t border-(--border)">
                       <button
                         onClick={() => handleSkipDay(dayIndex, "Skipped")}
-                        className="w-full sm:w-auto flex items-center justify-center sm:justify-start gap-2 px-3 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--warning)] hover:bg-[var(--surface)] rounded-lg transition-colors"
+                        className="w-full sm:w-auto flex items-center justify-center sm:justify-start gap-2 px-3 py-2 text-sm text-(--text-muted) hover:text-(--warning) hover:bg-(--surface) rounded-lg transition-colors"
                       >
                         <SkipForward className="w-4 h-4" />
                         Skip this day

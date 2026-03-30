@@ -339,16 +339,16 @@ export default function CompetitionDetail() {
     return (
       <div className="h-full flex items-center justify-center p-6">
         <div className="timer-card text-center max-w-md">
-          <AlertTriangle className="w-12 h-12 text-[var(--error)] mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+          <AlertTriangle className="w-12 h-12 text-(--error) mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-(--text-primary) mb-2">
             Competition Not Found
           </h2>
-          <p className="text-[var(--text-muted)] mb-4">
+          <p className="text-(--text-muted) mb-4">
             {error || "The competition could not be loaded."}
           </p>
           <Link
             href="/cube-lab/competitions"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Competitions
@@ -366,7 +366,7 @@ export default function CompetitionDetail() {
           {/* Back Link */}
           <Link
             href="/cube-lab/competitions"
-            className="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+            className="inline-flex items-center gap-2 text-(--text-muted) hover:text-(--primary) transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Competitions
@@ -376,10 +376,10 @@ export default function CompetitionDetail() {
           <div className="timer-card">
             <div className="flex flex-col lg:flex-row lg:items-start gap-6">
               <div className="flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] font-statement">
+                <h1 className="text-2xl sm:text-3xl font-bold text-(--text-primary) font-statement">
                   {competition.name}
                 </h1>
-                <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-[var(--text-muted)]">
+                <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-(--text-muted)">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4" />
                     {formatDate(competition.start_date)}
@@ -398,7 +398,7 @@ export default function CompetitionDetail() {
                   )}
                 </div>
                 {competition.venue && (
-                  <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                  <p className="mt-2 text-sm text-(--text-secondary)">
                     {competition.venue}
                   </p>
                 )}
@@ -409,7 +409,7 @@ export default function CompetitionDetail() {
                   href={competition.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-[var(--primary)] border border-[var(--primary)] rounded-lg hover:bg-[var(--primary)]/10 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-(--primary) border border-(--primary) rounded-lg hover:bg-(--primary)/10 transition-colors"
                 >
                   <ExternalLink className="w-4 h-4" />
                   View on WCA
@@ -420,7 +420,7 @@ export default function CompetitionDetail() {
 
           {/* Events */}
           <div className="timer-card">
-            <h2 className="text-lg font-bold text-[var(--text-primary)] mb-4">
+            <h2 className="text-lg font-bold text-(--text-primary) mb-4">
               Events
             </h2>
             <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3">
@@ -434,14 +434,14 @@ export default function CompetitionDetail() {
                     key={eventId}
                     className={`relative flex flex-col items-center gap-2 p-3 rounded-lg border ${
                       isCompleted
-                        ? "border-[var(--success)] bg-[var(--success)]/10"
+                        ? "border-(--success) bg-(--success)/10"
                         : progress > 0
-                          ? "border-[var(--warning)] bg-[var(--warning)]/10"
-                          : "border-[var(--border)] bg-[var(--surface)]"
+                          ? "border-(--warning) bg-(--warning)/10"
+                          : "border-(--border) bg-(--surface)"
                     }`}
                   >
                     {isCompleted && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--success)] rounded-full flex items-center justify-center">
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-(--success) rounded-full flex items-center justify-center">
                         <Check className="w-3 h-3 text-white" />
                       </div>
                     )}
@@ -452,11 +452,11 @@ export default function CompetitionDetail() {
                       height={24}
                       className="invert opacity-80"
                     />
-                    <span className="text-xs text-[var(--text-secondary)] text-center">
+                    <span className="text-xs text-(--text-secondary) text-center">
                       {event.name}
                     </span>
                     {progress > 0 && !isCompleted && (
-                      <span className="text-xs text-[var(--warning)]">
+                      <span className="text-xs text-(--warning)">
                         R{progress}
                       </span>
                     )}
@@ -469,12 +469,12 @@ export default function CompetitionDetail() {
           {/* Atmosphere Settings Preview */}
           <div className="timer-card">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-[var(--text-primary)]">
+              <h2 className="text-lg font-bold text-(--text-primary)">
                 Simulation Atmosphere
               </h2>
               <button
                 onClick={() => setShowSettings(!showSettings)}
-                className="flex items-center gap-2 text-sm text-[var(--primary)]"
+                className="flex items-center gap-2 text-sm text-(--primary)"
               >
                 <Settings className="w-4 h-4" />
                 {showSettings ? "Hide" : "Configure"}
@@ -488,35 +488,35 @@ export default function CompetitionDetail() {
               />
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-                  <div className="text-2xl font-bold text-[var(--primary)]">
+                <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+                  <div className="text-2xl font-bold text-(--primary)">
                     {atmosphere.crowdNoise}%
                   </div>
-                  <div className="text-xs text-[var(--text-muted)]">
+                  <div className="text-xs text-(--text-muted)">
                     Crowd Noise
                   </div>
                 </div>
-                <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-                  <div className="text-2xl font-bold text-[var(--warning)]">
+                <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+                  <div className="text-2xl font-bold text-(--warning)">
                     {atmosphere.pressure}%
                   </div>
-                  <div className="text-xs text-[var(--text-muted)]">
+                  <div className="text-xs text-(--text-muted)">
                     Pressure
                   </div>
                 </div>
-                <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-                  <div className="text-2xl font-bold text-[var(--text-primary)]">
+                <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+                  <div className="text-2xl font-bold text-(--text-primary)">
                     {atmosphere.distractions ? "On" : "Off"}
                   </div>
-                  <div className="text-xs text-[var(--text-muted)]">
+                  <div className="text-xs text-(--text-muted)">
                     Distractions
                   </div>
                 </div>
-                <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-                  <div className="text-2xl font-bold text-[var(--text-primary)]">
+                <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+                  <div className="text-2xl font-bold text-(--text-primary)">
                     {atmosphere.judgeInteractions ? "On" : "Off"}
                   </div>
-                  <div className="text-xs text-[var(--text-muted)]">
+                  <div className="text-xs text-(--text-muted)">
                     Judge Sim
                   </div>
                 </div>
@@ -528,7 +528,7 @@ export default function CompetitionDetail() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => setPhase("event-select")}
-              className="flex items-center justify-center gap-2 px-8 py-4 bg-[var(--primary)] text-white text-lg font-bold rounded-xl hover:bg-[var(--primary-hover)] transition-colors"
+              className="flex items-center justify-center gap-2 px-8 py-4 bg-(--primary) text-white text-lg font-bold rounded-xl hover:bg-(--primary-hover) transition-colors"
             >
               <Play className="w-6 h-6" />
               Start Competition Simulation
@@ -537,7 +537,7 @@ export default function CompetitionDetail() {
             {roundResults.length > 0 && (
               <button
                 onClick={() => setPhase("competition-complete")}
-                className="flex items-center justify-center gap-2 px-6 py-4 border border-[var(--border)] text-[var(--text-primary)] font-medium rounded-xl hover:bg-[var(--surface-elevated)] transition-colors"
+                className="flex items-center justify-center gap-2 px-6 py-4 border border-(--border) text-(--text-primary) font-medium rounded-xl hover:bg-(--surface-elevated) transition-colors"
               >
                 <BarChart3 className="w-5 h-5" />
                 View Results & Analytics
@@ -548,16 +548,16 @@ export default function CompetitionDetail() {
           {/* Progress Summary */}
           {completedEvents.size > 0 && (
             <div className="timer-card">
-              <h3 className="font-bold text-[var(--text-primary)] mb-3">
+              <h3 className="font-bold text-(--text-primary) mb-3">
                 Your Progress
               </h3>
-              <div className="text-sm text-[var(--text-muted)]">
+              <div className="text-sm text-(--text-muted)">
                 {completedEvents.size} of {competition.event_ids.length} events
                 completed
               </div>
-              <div className="w-full h-2 bg-[var(--surface-elevated)] rounded-full mt-2 overflow-hidden">
+              <div className="w-full h-2 bg-(--surface-elevated) rounded-full mt-2 overflow-hidden">
                 <div
-                  className="h-full bg-[var(--success)] transition-all"
+                  className="h-full bg-(--success) transition-all"
                   style={{
                     width: `${(completedEvents.size / competition.event_ids.length) * 100}%`,
                   }}
@@ -577,17 +577,17 @@ export default function CompetitionDetail() {
         <div className="max-w-4xl mx-auto space-y-6">
           <button
             onClick={() => setPhase("overview")}
-            className="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)]"
+            className="inline-flex items-center gap-2 text-(--text-muted) hover:text-(--primary)"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Overview
           </button>
 
           <div className="timer-card">
-            <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+            <h2 className="text-xl font-bold text-(--text-primary) mb-2">
               {competition.name}
             </h2>
-            <p className="text-[var(--text-muted)]">
+            <p className="text-(--text-muted)">
               Select an event to simulate
             </p>
           </div>
@@ -606,14 +606,14 @@ export default function CompetitionDetail() {
                   disabled={isCompleted}
                   className={`relative flex flex-col items-center gap-3 p-6 rounded-xl border transition-all ${
                     isCompleted
-                      ? "border-[var(--success)] bg-[var(--success)]/10 cursor-default"
+                      ? "border-(--success) bg-(--success)/10 cursor-default"
                       : progress > 0
-                        ? "border-[var(--warning)] bg-[var(--warning)]/5 hover:border-[var(--primary)]"
-                        : "border-[var(--border)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/5"
+                        ? "border-(--warning) bg-(--warning)/5 hover:border-(--primary)"
+                        : "border-(--border) hover:border-(--primary) hover:bg-(--primary)/5"
                   }`}
                 >
                   {isCompleted && (
-                    <div className="absolute top-2 right-2 w-6 h-6 bg-[var(--success)] rounded-full flex items-center justify-center">
+                    <div className="absolute top-2 right-2 w-6 h-6 bg-(--success) rounded-full flex items-center justify-center">
                       <Check className="w-4 h-4 text-white" />
                     </div>
                   )}
@@ -624,10 +624,10 @@ export default function CompetitionDetail() {
                     height={40}
                     className="invert opacity-80"
                   />
-                  <span className="font-medium text-[var(--text-primary)]">
+                  <span className="font-medium text-(--text-primary)">
                     {event.name}
                   </span>
-                  <span className="text-xs text-[var(--text-muted)]">
+                  <span className="text-xs text-(--text-muted)">
                     {isCompleted
                       ? "Completed"
                       : progress > 0
@@ -641,16 +641,16 @@ export default function CompetitionDetail() {
 
           {completedEvents.size === competition.event_ids.length && (
             <div className="timer-card text-center">
-              <Trophy className="w-16 h-16 text-[var(--warning)] mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+              <Trophy className="w-16 h-16 text-(--warning) mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-(--text-primary) mb-2">
                 Competition Complete!
               </h3>
-              <p className="text-[var(--text-muted)] mb-4">
+              <p className="text-(--text-muted) mb-4">
                 You've completed all events in this competition simulation.
               </p>
               <button
                 onClick={() => setPhase("competition-complete")}
-                className="px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-lg"
+                className="px-6 py-3 bg-(--primary) text-white font-medium rounded-lg"
               >
                 View Full Results & Analytics
               </button>
@@ -687,10 +687,10 @@ export default function CompetitionDetail() {
       <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
         <div className="max-w-2xl mx-auto space-y-6">
           <div className="timer-card text-center">
-            <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+            <h2 className="text-2xl font-bold text-(--text-primary) mb-2">
               Round {currentRound} Complete!
             </h2>
-            <p className="text-[var(--text-muted)]">
+            <p className="text-(--text-muted)">
               {event?.name} • {competition.name}
             </p>
           </div>
@@ -708,7 +708,7 @@ export default function CompetitionDetail() {
             {currentRound < maxRounds && (
               <button
                 onClick={handleNextRound}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-lg"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-(--primary) text-white font-medium rounded-lg"
               >
                 Continue to Round {currentRound + 1}
                 <ArrowRight className="w-5 h-5" />
@@ -716,7 +716,7 @@ export default function CompetitionDetail() {
             )}
             <button
               onClick={handleBackToEvents}
-              className="px-6 py-3 border border-[var(--border)] text-[var(--text-primary)] font-medium rounded-lg"
+              className="px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-lg"
             >
               Back to Events
             </button>
@@ -736,11 +736,11 @@ export default function CompetitionDetail() {
       <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
         <div className="max-w-3xl mx-auto space-y-6">
           <div className="timer-card text-center">
-            <Trophy className="w-16 h-16 text-[var(--warning)] mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+            <Trophy className="w-16 h-16 text-(--warning) mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-(--text-primary) mb-2">
               {event?.name} Complete!
             </h2>
-            <p className="text-[var(--text-muted)]">{competition.name}</p>
+            <p className="text-(--text-muted)">{competition.name}</p>
           </div>
 
           <WCAScorecard
@@ -754,7 +754,7 @@ export default function CompetitionDetail() {
           <div className="flex justify-center">
             <button
               onClick={handleBackToEvents}
-              className="flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-lg"
+              className="flex items-center gap-2 px-6 py-3 bg-(--primary) text-white font-medium rounded-lg"
             >
               Continue to Next Event
               <ArrowRight className="w-5 h-5" />

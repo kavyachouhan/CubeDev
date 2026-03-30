@@ -168,14 +168,14 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-      <div className="w-12 h-12 rounded-full bg-[var(--surface-elevated)] flex items-center justify-center mb-3">
-        <Icon className="w-6 h-6 text-[var(--text-muted)]" />
+      <div className="w-12 h-12 rounded-full bg-(--surface-elevated) flex items-center justify-center mb-3">
+        <Icon className="w-6 h-6 text-(--text-muted)" />
       </div>
-      <p className="text-sm font-medium text-[var(--text-secondary)] font-inter">
+      <p className="text-sm font-medium text-(--text-secondary) font-inter">
         {title}
       </p>
       {description && (
-        <p className="text-xs text-[var(--text-muted)] font-inter mt-1">
+        <p className="text-xs text-(--text-muted) font-inter mt-1">
           {description}
         </p>
       )}
@@ -220,9 +220,9 @@ function CollapsibleCard({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={toggleOpen}
-          className="flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
         >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             {title}
           </h3>
           {isOpen ? (
@@ -235,7 +235,7 @@ function CollapsibleCard({
           {headerExtra}
           <button
             onClick={toggleOpen}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={isOpen ? "Hide" : "Show"}
           >
             {isOpen ? (
@@ -256,8 +256,8 @@ function StatCard({
   title,
   value,
   icon: Icon,
-  iconColor = "text-[var(--primary)]",
-  iconBgColor = "bg-[var(--primary)]/10",
+  iconColor = "text-(--primary)",
+  iconBgColor = "bg-(--primary)/10",
   subValue,
   trend,
 }: {
@@ -270,17 +270,17 @@ function StatCard({
   trend?: { value: number; label: string };
 }) {
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
       <div className="flex items-center gap-2 sm:gap-3">
         <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
           <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate font-inter">
+          <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate font-inter">
             {title}
           </div>
           <div className="flex items-center gap-2">
-            <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-statement">
+            <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
               {typeof value === "number" ? value.toLocaleString() : value}
             </div>
             {trend && (
@@ -299,7 +299,7 @@ function StatCard({
             )}
           </div>
           {subValue && (
-            <div className="text-xs text-[var(--text-muted)] font-inter">
+            <div className="text-xs text-(--text-muted) font-inter">
               {subValue}
             </div>
           )}
@@ -323,7 +323,7 @@ function DistributionBar({
 
   return (
     <div className="space-y-4">
-      <div className="h-3 bg-[var(--surface-elevated)] rounded-full overflow-hidden flex">
+      <div className="h-3 bg-(--surface-elevated) rounded-full overflow-hidden flex">
         {items.map((item, idx) => (
           <div
             key={idx}
@@ -342,7 +342,7 @@ function DistributionBar({
               className="w-2.5 h-2.5 rounded-full shrink-0"
               style={{ backgroundColor: item.color }}
             />
-            <span className="text-xs text-[var(--text-muted)] font-inter truncate">
+            <span className="text-xs text-(--text-muted) font-inter truncate">
               {item.label}: {item.value.toLocaleString()}
             </span>
           </div>
@@ -373,7 +373,7 @@ function UserCard({
         ? "bg-gray-400/10 text-gray-400 border-gray-400/30"
         : rank === 3
           ? "bg-orange-600/10 text-orange-600 border-orange-600/30"
-          : "bg-[var(--surface-elevated)] text-[var(--text-muted)] border-[var(--border)]";
+          : "bg-(--surface-elevated) text-(--text-muted) border-(--border)";
 
   return (
     <div
@@ -381,14 +381,14 @@ function UserCard({
     >
       <div
         className={`w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold ${
-          rank <= 3 ? "" : "bg-[var(--surface)] border border-[var(--border)]"
+          rank <= 3 ? "" : "bg-(--surface) border border-(--border)"
         }`}
       >
         {rank}
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
-          <span className="text-sm font-medium text-[var(--text-primary)] font-inter truncate">
+          <span className="text-sm font-medium text-(--text-primary) font-inter truncate">
             {name}
           </span>
           {wcaId && (
@@ -396,17 +396,17 @@ function UserCard({
               href={`https://www.worldcubeassociation.org/persons/${wcaId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[var(--primary)] hover:text-[var(--primary-hover)] shrink-0"
+              className="text-(--primary) hover:text-(--primary-hover) shrink-0"
             >
               <ExternalLink className="w-3 h-3" />
             </a>
           )}
         </div>
-        <span className="text-xs text-[var(--text-muted)] font-inter">
+        <span className="text-xs text-(--text-muted) font-inter">
           {valueLabel}
         </span>
       </div>
-      <div className="text-sm font-bold text-[var(--text-primary)] font-statement shrink-0">
+      <div className="text-sm font-bold text-(--text-primary) font-statement shrink-0">
         {value}
       </div>
     </div>
@@ -429,7 +429,7 @@ function EventFilterSelector({
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg hover:border-[var(--primary)] transition-colors"
+        className="flex items-center gap-2 px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg hover:border-(--primary) transition-colors"
       >
         <Image
           src={`/cube-icons/${selectedEvent}.svg`}
@@ -441,11 +441,11 @@ function EventFilterSelector({
             e.currentTarget.style.display = "none";
           }}
         />
-        <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+        <span className="text-sm font-medium text-(--text-primary) font-inter">
           {WCA_EVENTS[selectedEvent] || selectedEvent}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-[var(--text-muted)] transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`w-4 h-4 text-(--text-muted) transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -455,7 +455,7 @@ function EventFilterSelector({
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full left-0 mt-1 w-56 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg z-50 max-h-72 overflow-y-auto">
+          <div className="absolute top-full left-0 mt-1 w-56 bg-(--surface) border border-(--border) rounded-lg shadow-lg z-50 max-h-72 overflow-y-auto">
             {events.map((event) => (
               <button
                 key={event.event}
@@ -463,10 +463,10 @@ function EventFilterSelector({
                   onEventChange(event.event);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-[var(--surface-elevated)] transition-colors ${
+                className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-(--surface-elevated) transition-colors ${
                   event.event === selectedEvent
-                    ? "bg-[var(--primary)]/10 text-[var(--primary)]"
-                    : "text-[var(--text-primary)]"
+                    ? "bg-(--primary)/10 text-(--primary)"
+                    : "text-(--text-primary)"
                 }`}
               >
                 <Image
@@ -482,7 +482,7 @@ function EventFilterSelector({
                 <span className="text-sm font-inter flex-1">
                   {event.eventName}
                 </span>
-                <span className="text-xs text-[var(--text-muted)] font-inter">
+                <span className="text-xs text-(--text-muted) font-inter">
                   {event.count.toLocaleString()}
                 </span>
               </button>
@@ -514,12 +514,12 @@ function EventCategoryModal({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+          <h2 className="text-xl font-bold text-(--text-primary) font-statement">
             {eventName} Categories
           </h2>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -536,13 +536,13 @@ function EventCategoryModal({
             {categories.map((cat) => (
               <div
                 key={cat.category}
-                className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]"
+                className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-[var(--text-primary)] font-statement">
+                  <span className="text-sm font-semibold text-(--text-primary) font-statement">
                     {cat.category}
                   </span>
-                  <span className="text-sm font-bold text-[var(--primary)] font-statement">
+                  <span className="text-sm font-bold text-(--primary) font-statement">
                     {cat.count} {cat.count === 1 ? "user" : "users"}
                   </span>
                 </div>
@@ -551,7 +551,7 @@ function EventCategoryModal({
                     {cat.users.map((user, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-0.5 text-xs bg-[var(--surface)] text-[var(--text-secondary)] rounded font-inter"
+                        className="px-2 py-0.5 text-xs bg-(--surface) text-(--text-secondary) rounded font-inter"
                       >
                         {user}
                       </span>
@@ -824,14 +824,14 @@ export default function AdminTimerStats() {
           <div className="timer-card">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center justify-center sm:justify-start gap-3 w-full sm:w-auto">
-                <div className="h-4 w-12 bg-[var(--surface-elevated)] rounded animate-pulse" />
-                <div className="h-10 w-28 bg-[var(--surface-elevated)] rounded-lg animate-pulse" />
+                <div className="h-4 w-12 bg-(--surface-elevated) rounded animate-pulse" />
+                <div className="h-10 w-28 bg-(--surface-elevated) rounded-lg animate-pulse" />
               </div>
               <div className="grid grid-cols-4 sm:flex gap-2 w-full sm:w-auto">
                 {[...Array(4)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-10 w-full sm:w-20 bg-[var(--surface-elevated)] rounded-lg animate-pulse"
+                    className="h-10 w-full sm:w-20 bg-(--surface-elevated) rounded-lg animate-pulse"
                   />
                 ))}
               </div>
@@ -873,7 +873,7 @@ export default function AdminTimerStats() {
         <div className="timer-card">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center justify-center sm:justify-start gap-3 w-full sm:w-auto">
-              <span className="text-sm text-[var(--text-secondary)] font-inter">
+              <span className="text-sm text-(--text-secondary) font-inter">
                 Event:
               </span>
               <EventFilterSelector
@@ -887,7 +887,7 @@ export default function AdminTimerStats() {
               <button
                 onClick={handleExportJSON}
                 disabled={!exportData}
-                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Export JSON"
               >
                 <FileJson className="w-4 h-4" />
@@ -896,7 +896,7 @@ export default function AdminTimerStats() {
               <button
                 onClick={handleExportSolvesCSV}
                 disabled={!exportData}
-                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Export Solves"
               >
                 <Clock className="w-4 h-4" />
@@ -905,7 +905,7 @@ export default function AdminTimerStats() {
               <button
                 onClick={handleExportSessionsCSV}
                 disabled={!exportData}
-                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Export Sessions"
               >
                 <Layers className="w-4 h-4" />
@@ -914,7 +914,7 @@ export default function AdminTimerStats() {
               <button
                 onClick={handleExportStatsCSV}
                 disabled={!exportData}
-                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Export Stats"
               >
                 <BarChart3 className="w-4 h-4" />
@@ -1060,7 +1060,7 @@ export default function AdminTimerStats() {
             headerExtra={
               <button
                 onClick={() => setShowCategoryModal(true)}
-                className="text-xs text-[var(--primary)] hover:underline font-inter"
+                className="text-xs text-(--primary) hover:underline font-inter"
               >
                 View Details
               </button>
@@ -1113,27 +1113,27 @@ export default function AdminTimerStats() {
               />
               {analytics.totalSolves > 0 && (
                 <div className="grid grid-cols-3 gap-2 mt-4">
-                  <div className="text-center bg-[var(--surface-elevated)] rounded-lg py-2 px-1 border border-[var(--border)]">
+                  <div className="text-center bg-(--surface-elevated) rounded-lg py-2 px-1 border border-(--border)">
                     <div className="text-sm sm:text-lg font-bold text-green-500 font-statement">
                       {100 - analytics.dnfRate - analytics.plusTwoRate}%
                     </div>
-                    <div className="text-[10px] text-[var(--text-muted)] font-inter">
+                    <div className="text-[10px] text-(--text-muted) font-inter">
                       Clean Rate
                     </div>
                   </div>
-                  <div className="text-center bg-[var(--surface-elevated)] rounded-lg py-2 px-1 border border-[var(--border)]">
+                  <div className="text-center bg-(--surface-elevated) rounded-lg py-2 px-1 border border-(--border)">
                     <div className="text-sm sm:text-lg font-bold text-amber-500 font-statement">
                       {analytics.plusTwoRate}%
                     </div>
-                    <div className="text-[10px] text-[var(--text-muted)] font-inter">
+                    <div className="text-[10px] text-(--text-muted) font-inter">
                       +2 Rate
                     </div>
                   </div>
-                  <div className="text-center bg-[var(--surface-elevated)] rounded-lg py-2 px-1 border border-[var(--border)]">
+                  <div className="text-center bg-(--surface-elevated) rounded-lg py-2 px-1 border border-(--border)">
                     <div className="text-sm sm:text-lg font-bold text-red-500 font-statement">
                       {analytics.dnfRate}%
                     </div>
-                    <div className="text-[10px] text-[var(--text-muted)] font-inter">
+                    <div className="text-[10px] text-(--text-muted) font-inter">
                       DNF Rate
                     </div>
                   </div>
@@ -1170,27 +1170,27 @@ export default function AdminTimerStats() {
               />
               {analytics.totalSolves > 0 && (
                 <div className="grid grid-cols-3 gap-2 mt-4">
-                  <div className="text-center bg-[var(--surface-elevated)] rounded-lg py-2 px-1 border border-[var(--border)]">
+                  <div className="text-center bg-(--surface-elevated) rounded-lg py-2 px-1 border border-(--border)">
                     <div className="text-sm sm:text-lg font-bold text-blue-500 font-statement">
                       {analytics.timerModeDistribution.normal.toLocaleString()}
                     </div>
-                    <div className="text-[10px] text-[var(--text-muted)] font-inter">
+                    <div className="text-[10px] text-(--text-muted) font-inter">
                       Normal
                     </div>
                   </div>
-                  <div className="text-center bg-[var(--surface-elevated)] rounded-lg py-2 px-1 border border-[var(--border)]">
+                  <div className="text-center bg-(--surface-elevated) rounded-lg py-2 px-1 border border-(--border)">
                     <div className="text-sm sm:text-lg font-bold text-purple-500 font-statement">
                       {analytics.timerModeDistribution.manual.toLocaleString()}
                     </div>
-                    <div className="text-[10px] text-[var(--text-muted)] font-inter">
+                    <div className="text-[10px] text-(--text-muted) font-inter">
                       Manual
                     </div>
                   </div>
-                  <div className="text-center bg-[var(--surface-elevated)] rounded-lg py-2 px-1 border border-[var(--border)]">
+                  <div className="text-center bg-(--surface-elevated) rounded-lg py-2 px-1 border border-(--border)">
                     <div className="text-sm sm:text-lg font-bold text-green-500 font-statement">
                       {analytics.timerModeDistribution.stackmat.toLocaleString()}
                     </div>
-                    <div className="text-[10px] text-[var(--text-muted)] font-inter">
+                    <div className="text-[10px] text-(--text-muted) font-inter">
                       Stackmat
                     </div>
                   </div>
@@ -1211,12 +1211,12 @@ export default function AdminTimerStats() {
               {Object.entries(analytics.sessionSizes).map(([range, count]) => (
                 <div
                   key={range}
-                  className="text-center bg-[var(--surface-elevated)] rounded-lg py-3 px-2 border border-[var(--border)]"
+                  className="text-center bg-(--surface-elevated) rounded-lg py-3 px-2 border border-(--border)"
                 >
-                  <div className="text-lg sm:text-xl font-bold text-[var(--text-primary)] font-statement">
+                  <div className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
                     {count}
                   </div>
-                  <div className="text-xs text-[var(--text-muted)] font-inter">
+                  <div className="text-xs text-(--text-muted) font-inter">
                     {range} solves
                   </div>
                 </div>
@@ -1303,32 +1303,32 @@ export default function AdminTimerStats() {
                     setSelectedFilterEvent(event.event);
                     setShowCategoryModal(true);
                   }}
-                  className="text-left bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)] hover:border-[var(--primary)] transition-colors"
+                  className="text-left bg-(--surface-elevated) rounded-lg p-3 border border-(--border) hover:border-(--primary) transition-colors"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-semibold text-[var(--text-primary)] font-statement">
+                    <span className="text-sm font-semibold text-(--text-primary) font-statement">
                       {event.eventName}
                     </span>
-                    <span className="text-xs text-[var(--text-muted)] font-inter">
+                    <span className="text-xs text-(--text-muted) font-inter">
                       {event.userCount} users
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <div className="text-xs text-[var(--text-muted)] font-inter">
+                      <div className="text-xs text-(--text-muted) font-inter">
                         Best Single
                       </div>
-                      <div className="text-sm font-bold text-[var(--primary)] font-statement">
+                      <div className="text-sm font-bold text-(--primary) font-statement">
                         {event.bestSingle
                           ? formatTimeDisplay(event.bestSingle)
                           : "N/A"}
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-[var(--text-muted)] font-inter">
+                      <div className="text-xs text-(--text-muted) font-inter">
                         Best Ao5
                       </div>
-                      <div className="text-sm font-bold text-[var(--text-secondary)] font-statement">
+                      <div className="text-sm font-bold text-(--text-secondary) font-statement">
                         {event.bestAo5
                           ? formatTimeDisplay(event.bestAo5)
                           : "N/A"}
@@ -1354,27 +1354,27 @@ export default function AdminTimerStats() {
           defaultOpen={false}
         >
           <div className="grid grid-cols-3 gap-3 mt-4">
-            <div className="text-center bg-[var(--surface-elevated)] rounded-lg py-4 px-2 border border-[var(--border)]">
-              <div className="text-xl sm:text-2xl font-bold text-[var(--primary)] font-statement">
+            <div className="text-center bg-(--surface-elevated) rounded-lg py-4 px-2 border border-(--border)">
+              <div className="text-xl sm:text-2xl font-bold text-(--primary) font-statement">
                 {analytics.todaySolves.toLocaleString()}
               </div>
-              <div className="text-xs text-[var(--text-muted)] font-inter mt-1">
+              <div className="text-xs text-(--text-muted) font-inter mt-1">
                 Today
               </div>
             </div>
-            <div className="text-center bg-[var(--surface-elevated)] rounded-lg py-4 px-2 border border-[var(--border)]">
-              <div className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] font-statement">
+            <div className="text-center bg-(--surface-elevated) rounded-lg py-4 px-2 border border-(--border)">
+              <div className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement">
                 {analytics.thisWeekSolves.toLocaleString()}
               </div>
-              <div className="text-xs text-[var(--text-muted)] font-inter mt-1">
+              <div className="text-xs text-(--text-muted) font-inter mt-1">
                 This Week
               </div>
             </div>
-            <div className="text-center bg-[var(--surface-elevated)] rounded-lg py-4 px-2 border border-[var(--border)]">
-              <div className="text-xl sm:text-2xl font-bold text-[var(--text-secondary)] font-statement">
+            <div className="text-center bg-(--surface-elevated) rounded-lg py-4 px-2 border border-(--border)">
+              <div className="text-xl sm:text-2xl font-bold text-(--text-secondary) font-statement">
                 {analytics.thisMonthSolves.toLocaleString()}
               </div>
-              <div className="text-xs text-[var(--text-muted)] font-inter mt-1">
+              <div className="text-xs text-(--text-muted) font-inter mt-1">
                 This Month
               </div>
             </div>

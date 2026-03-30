@@ -197,7 +197,7 @@ export default function CoachTour({
       {showFloatingButton && hasCompletedTour && !isOpen && (
         <button
           onClick={startTour}
-          className="fixed bottom-4 right-4 z-50 flex items-center gap-2 px-3 py-2 text-sm font-medium bg-[var(--surface)] hover:bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-lg transition-all shadow-lg"
+          className="fixed bottom-4 right-4 z-50 flex items-center gap-2 px-3 py-2 text-sm font-medium bg-(--surface) hover:bg-(--surface-elevated) border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--text-primary) rounded-lg transition-all shadow-lg"
           title="How to use"
           aria-label="How to use"
         >

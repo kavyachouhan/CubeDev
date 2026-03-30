@@ -377,12 +377,12 @@ export default function RoundSimulator({
 
   const getTimeColor = () => {
     if (timerState === "inspection") {
-      if (inspectionTime <= 3) return "text-[var(--error)]";
-      if (inspectionTime <= 8) return "text-[var(--warning)]";
-      return "text-[var(--success)]";
+      if (inspectionTime <= 3) return "text-(--error)";
+      if (inspectionTime <= 8) return "text-(--warning)";
+      return "text-(--success)";
     }
-    if (timerState === "ready") return "text-[var(--success)]";
-    return "text-[var(--text-primary)]";
+    if (timerState === "ready") return "text-(--success)";
+    return "text-(--text-primary)";
   };
 
   return (
@@ -392,7 +392,7 @@ export default function RoundSimulator({
         <div className="flex items-center justify-between">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)]"
+            className="flex items-center gap-2 text-(--text-muted) hover:text-(--primary)"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -400,7 +400,7 @@ export default function RoundSimulator({
 
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)]"
+            className="p-2 text-(--text-muted) hover:text-(--primary)"
           >
             {soundEnabled ? (
               <Volume2 className="w-5 h-5" />
@@ -421,10 +421,10 @@ export default function RoundSimulator({
               className="invert opacity-80"
             />
             <div>
-              <h2 className="font-bold text-[var(--text-primary)]">
+              <h2 className="font-bold text-(--text-primary)">
                 {event.name}
               </h2>
-              <p className="text-sm text-[var(--text-muted)]">
+              <p className="text-sm text-(--text-muted)">
                 Round {roundNumber} of {maxRounds} • {competition.name}
               </p>
             </div>
@@ -439,11 +439,11 @@ export default function RoundSimulator({
               className={`w-3 h-3 rounded-full ${
                 idx < solves.length
                   ? solves[idx].penalty === "DNF"
-                    ? "bg-[var(--error)]"
-                    : "bg-[var(--success)]"
+                    ? "bg-(--error)"
+                    : "bg-(--success)"
                   : idx === currentSolve
-                    ? "bg-[var(--primary)]"
-                    : "bg-[var(--surface-elevated)]"
+                    ? "bg-(--primary)"
+                    : "bg-(--surface-elevated)"
               }`}
             />
           ))}
@@ -452,15 +452,15 @@ export default function RoundSimulator({
         {/* Scramble */}
         <div className="timer-card">
           <div className="text-center">
-            <div className="text-xs text-[var(--text-muted)] mb-2">
+            <div className="text-xs text-(--text-muted) mb-2">
               Scramble {currentSolve + 1}/5
             </div>
             {isLoadingScramble ? (
-              <div className="py-4 text-[var(--text-muted)]">
+              <div className="py-4 text-(--text-muted)">
                 Generating scramble...
               </div>
             ) : (
-              <div className="font-mono text-lg sm:text-xl text-[var(--text-primary)] break-words">
+              <div className="font-mono text-lg sm:text-xl text-(--text-primary) wrap-break-word">
                 {scramble}
               </div>
             )}
@@ -497,7 +497,7 @@ export default function RoundSimulator({
           {/* Hold Progress Indicator */}
           {isHolding && (
             <div
-              className="absolute top-0 left-0 h-1 bg-[var(--success)] transition-all"
+              className="absolute top-0 left-0 h-1 bg-(--success) transition-all"
               style={{ width: `${holdProgress * 100}%` }}
             />
           )}
@@ -509,7 +509,7 @@ export default function RoundSimulator({
               {getDisplayTime()}
             </div>
 
-            <div className="mt-4 text-sm text-[var(--text-muted)]">
+            <div className="mt-4 text-sm text-(--text-muted)">
               {timerState === "idle" &&
                 "Press SPACE or tap to start inspection"}
               {timerState === "inspection" &&
@@ -521,7 +521,7 @@ export default function RoundSimulator({
 
             {/* Inspection Penalty Warning */}
             {inspectionPenalty && timerState === "inspection" && (
-              <div className="mt-2 flex items-center justify-center gap-2 text-[var(--error)]">
+              <div className="mt-2 flex items-center justify-center gap-2 text-(--error)">
                 <AlertTriangle className="w-4 h-4" />
                 <span className="text-sm font-medium">
                   {inspectionPenalty} Penalty
@@ -534,15 +534,15 @@ export default function RoundSimulator({
         {/* Judge Prompt */}
         {showJudgePrompt && (
           <div className="timer-card">
-            <h3 className="font-bold text-[var(--text-primary)] mb-4 text-center">
+            <h3 className="font-bold text-(--text-primary) mb-4 text-center">
               Judge Check - Confirm Result
             </h3>
             <div className="text-center mb-4">
-              <span className="text-3xl font-mono font-bold text-[var(--text-primary)]">
+              <span className="text-3xl font-mono font-bold text-(--text-primary)">
                 {formatTime(time)}
               </span>
               {inspectionPenalty && (
-                <span className="ml-2 text-[var(--warning)]">
+                <span className="ml-2 text-(--warning)">
                   + {inspectionPenalty} inspection
                 </span>
               )}
@@ -550,20 +550,20 @@ export default function RoundSimulator({
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={() => confirmSolve("none")}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-[var(--success)] text-white font-medium rounded-lg"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-(--success) text-white font-medium rounded-lg"
               >
                 <CircleCheck className="w-5 h-5" />
                 OK
               </button>
               <button
                 onClick={() => confirmSolve("+2")}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-[var(--warning)] text-white font-medium rounded-lg"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-(--warning) text-white font-medium rounded-lg"
               >
                 +2 Penalty
               </button>
               <button
                 onClick={() => confirmSolve("DNF")}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-[var(--error)] text-white font-medium rounded-lg"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-(--error) text-white font-medium rounded-lg"
               >
                 DNF
               </button>
@@ -574,7 +574,7 @@ export default function RoundSimulator({
         {/* Completed Solves */}
         {solves.length > 0 && (
           <div className="timer-card">
-            <h3 className="font-bold text-[var(--text-primary)] mb-3">
+            <h3 className="font-bold text-(--text-primary) mb-3">
               Completed Solves
             </h3>
             <div className="grid grid-cols-5 gap-2">
@@ -599,14 +599,14 @@ export default function RoundSimulator({
                     key={idx}
                     className={`text-center p-2 rounded-lg ${
                       solve.penalty === "DNF"
-                        ? "bg-[var(--error)]/20 text-[var(--error)]"
+                        ? "bg-(--error)/20 text-(--error)"
                         : solve.penalty === "+2" ||
                             solve.inspectionViolation === "+2"
-                          ? "bg-[var(--warning)]/20 text-[var(--warning)]"
-                          : "bg-[var(--surface-elevated)] text-[var(--text-primary)]"
+                          ? "bg-(--warning)/20 text-(--warning)"
+                          : "bg-(--surface-elevated) text-(--text-primary)"
                     }`}
                   >
-                    <div className="text-xs text-[var(--text-muted)]">
+                    <div className="text-xs text-(--text-muted)">
                       #{idx + 1}
                     </div>
                     <div className="font-mono font-medium text-sm">
@@ -621,14 +621,14 @@ export default function RoundSimulator({
 
         {/* Pressure Indicator */}
         {atmosphere.pressure > 50 && (
-          <div className="timer-card border-[var(--warning)] bg-[var(--warning)]/5">
+          <div className="timer-card border-(--warning) bg-(--warning)/5">
             <div className="flex items-center gap-3">
-              <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />
+              <AlertTriangle className="w-5 h-5 text-(--warning)" />
               <div>
-                <div className="font-medium text-[var(--text-primary)]">
+                <div className="font-medium text-(--text-primary)">
                   High Pressure Mode
                 </div>
-                <div className="text-sm text-[var(--text-muted)]">
+                <div className="text-sm text-(--text-muted)">
                   Simulating competition stress at {atmosphere.pressure}%
                 </div>
               </div>

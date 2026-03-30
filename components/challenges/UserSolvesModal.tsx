@@ -112,7 +112,7 @@ export default function UserSolvesModal({
       return { text: "3rd", color: "text-orange-500", icon: Award };
     return {
       text: `${rank}th`,
-      color: "text-[var(--text-secondary)]",
+      color: "text-(--text-secondary)",
       icon: Award,
     };
   };
@@ -140,20 +140,20 @@ export default function UserSolvesModal({
     >
       {/* Modal Background */}
       <div
-        className="bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+        className="bg-(--surface) border border-(--border) rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
+        <div className="flex items-center justify-between p-6 border-b border-(--border)">
           <div className="flex items-center gap-4">
-            <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+            <h2 className="text-xl font-bold text-(--text-primary) font-statement">
               Performance Details
             </h2>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+            className="p-2 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -162,11 +162,11 @@ export default function UserSolvesModal({
         {/* Scrollable Content */}
         <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
           {/* User Profile Section */}
-          <div className="p-6 border-b border-[var(--border)]">
+          <div className="p-6 border-b border-(--border)">
             <div className="flex flex-col sm:flex-row sm:items-center gap-6">
               {/* User Info */}
               <div className="flex items-center gap-4 flex-1">
-                <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center bg-[var(--primary)] text-white font-bold text-lg">
+                <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-white font-bold text-lg">
                   {participant.user?.avatar &&
                   !(
                     participant.user?.isDeleted ||
@@ -189,7 +189,7 @@ export default function UserSolvesModal({
 
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-1">
-                    <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+                    <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
                       {participant.user?.isDeleted ||
                       participant.wasDeletedWhenJoined
                         ? "Deleted User"
@@ -202,7 +202,7 @@ export default function UserSolvesModal({
                       ) && (
                         <Link
                           href={`/cuber/${participant.user.wcaId}`}
-                          className="inline-flex items-center gap-1 text-sm text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors"
+                          className="inline-flex items-center gap-1 text-sm text-(--primary) hover:text-(--primary-hover) transition-colors"
                           title="View cuber's profile"
                         >
                           <ExternalLink className="w-4 h-4" />
@@ -212,12 +212,12 @@ export default function UserSolvesModal({
 
                   <div className="flex flex-wrap items-center gap-2">
                     {participant.user?.wcaId && (
-                      <span className="px-2 py-1 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-full font-mono text-xs text-[var(--text-secondary)]">
+                      <span className="px-2 py-1 bg-(--surface-elevated) border border-(--border) rounded-full font-mono text-xs text-(--text-secondary)">
                         {participant.user.wcaId}
                       </span>
                     )}
                     {participant.finalRank && (
-                      <div className="flex items-center gap-1 px-2 py-1 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-full">
+                      <div className="flex items-center gap-1 px-2 py-1 bg-(--surface-elevated) border border-(--border) rounded-full">
                         <rankDisplay.icon
                           className={`w-3 h-3 ${rankDisplay.color}`}
                         />
@@ -236,26 +236,26 @@ export default function UserSolvesModal({
 
           {/* Statistics Cards */}
           {participant.isCompleted && (
-            <div className="p-6 border-b border-[var(--border)]">
+            <div className="p-6 border-b border-(--border)">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg p-4">
+                <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <Target className="w-4 h-4 text-[var(--primary)]" />
-                    <span className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                    <Target className="w-4 h-4 text-(--primary)" />
+                    <span className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
                       Final Average
                     </span>
                   </div>
-                  <div className="text-xl font-mono font-bold text-[var(--text-primary)]">
+                  <div className="text-xl font-mono font-bold text-(--text-primary)">
                     {participant.average && participant.average !== Infinity
                       ? formatTime(participant.average)
                       : "DNF"}
                   </div>
                 </div>
 
-                <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg p-4">
+                <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Activity className="w-4 h-4 text-green-500" />
-                    <span className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                    <span className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
                       Best Single
                     </span>
                   </div>
@@ -267,10 +267,10 @@ export default function UserSolvesModal({
                   </div>
                 </div>
 
-                <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg p-4">
+                <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Timer className="w-4 h-4 text-blue-500" />
-                    <span className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                    <span className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
                       Completed
                     </span>
                   </div>
@@ -279,10 +279,10 @@ export default function UserSolvesModal({
                   </div>
                 </div>
 
-                <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg p-4">
+                <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Calendar className="w-4 h-4 text-purple-500" />
-                    <span className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter">
+                    <span className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
                       Session Avg
                     </span>
                   </div>
@@ -296,12 +296,12 @@ export default function UserSolvesModal({
 
           {/* Individual Solves */}
           <div className="p-6">
-            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg">
-              <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
-                <h4 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+            <div className="bg-(--surface) border border-(--border) rounded-lg">
+              <div className="flex items-center justify-between p-4 border-b border-(--border)">
+                <h4 className="text-lg font-semibold text-(--text-primary) font-statement">
                   Individual Solves
                 </h4>
-                <div className="text-sm text-[var(--text-muted)] font-inter">
+                <div className="text-sm text-(--text-muted) font-inter">
                   {individualSolves.length} of {participant.totalSolves} solves
                 </div>
               </div>
@@ -312,7 +312,7 @@ export default function UserSolvesModal({
                     {individualSolves.map((solve) => (
                       <div
                         key={solve._id}
-                        className="bg-[var(--surface-elevated)] rounded border border-[var(--border)] p-3 hover:bg-[var(--surface-elevated)]/80 transition-colors"
+                        className="bg-(--surface-elevated) rounded border border-(--border) p-3 hover:bg-(--surface-elevated)/80 transition-colors"
                       >
                         <div className="flex justify-between items-center">
                           {/* Solve number and time */}
@@ -324,7 +324,7 @@ export default function UserSolvesModal({
                               )
                             }
                           >
-                            <span className="text-sm text-[var(--text-muted)] font-inter">
+                            <span className="text-sm text-(--text-muted) font-inter">
                               #{solve.solveNumber}
                             </span>
                             <span
@@ -333,13 +333,13 @@ export default function UserSolvesModal({
                                   ? "text-yellow-400"
                                   : solve.penalty === "DNF"
                                     ? "text-red-400"
-                                    : "text-[var(--text-primary)]"
+                                    : "text-(--text-primary)"
                               }`}
                             >
                               {formatTime(solve.finalTime)}
                               {solve.penalty === "+2" && "+"}
                             </span>
-                            <span className="text-xs text-[var(--text-muted)] font-inter">
+                            <span className="text-xs text-(--text-muted) font-inter">
                               {new Date(solve.solveDate).toLocaleTimeString()}
                             </span>
                           </div>
@@ -361,22 +361,22 @@ export default function UserSolvesModal({
 
                         {/* Expanded Details */}
                         {selectedSolve?._id === solve._id && (
-                          <div className="mt-3 pt-3 border-t border-[var(--border)]">
-                            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-3">
-                              <h5 className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-3">
+                          <div className="mt-3 pt-3 border-t border-(--border)">
+                            <div className="bg-(--surface) border border-(--border) rounded-lg p-3">
+                              <h5 className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-3">
                                 Time Breakdown
                               </h5>
                               <div className="space-y-2 text-sm font-mono">
                                 <div className="flex justify-between">
-                                  <span className="text-[var(--text-secondary)]">
+                                  <span className="text-(--text-secondary)">
                                     Raw Time:
                                   </span>
-                                  <span className="text-[var(--text-primary)]">
+                                  <span className="text-(--text-primary)">
                                     {formatTime(solve.time)}
                                   </span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="text-[var(--text-secondary)]">
+                                  <span className="text-(--text-secondary)">
                                     Penalty:
                                   </span>
                                   <span
@@ -385,7 +385,7 @@ export default function UserSolvesModal({
                                         ? "text-yellow-400"
                                         : solve.penalty === "DNF"
                                           ? "text-red-400"
-                                          : "text-[var(--text-primary)]"
+                                          : "text-(--text-primary)"
                                     }
                                   >
                                     {solve.penalty === "none"
@@ -393,11 +393,11 @@ export default function UserSolvesModal({
                                       : solve.penalty}
                                   </span>
                                 </div>
-                                <div className="flex justify-between pt-2 border-t border-[var(--border)]">
-                                  <span className="text-[var(--text-secondary)] font-semibold">
+                                <div className="flex justify-between pt-2 border-t border-(--border)">
+                                  <span className="text-(--text-secondary) font-semibold">
                                     Final Time:
                                   </span>
-                                  <span className="text-[var(--text-primary)] font-semibold">
+                                  <span className="text-(--text-primary) font-semibold">
                                     {formatTime(solve.finalTime)}
                                   </span>
                                 </div>
@@ -406,11 +406,11 @@ export default function UserSolvesModal({
 
                             {/* Comment */}
                             {solve.comment && (
-                              <div className="mt-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg p-3">
-                                <h5 className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-2">
+                              <div className="mt-3 bg-(--surface) border border-(--border) rounded-lg p-3">
+                                <h5 className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-2">
                                   Comment
                                 </h5>
-                                <p className="text-sm text-[var(--text-secondary)]">
+                                <p className="text-sm text-(--text-secondary)">
                                   {solve.comment}
                                 </p>
                               </div>
@@ -421,8 +421,8 @@ export default function UserSolvesModal({
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 text-[var(--text-muted)]">
-                    <Clock className="w-12 h-12 mx-auto mb-4 text-[var(--text-muted)] opacity-50" />
+                  <div className="text-center py-12 text-(--text-muted)">
+                    <Clock className="w-12 h-12 mx-auto mb-4 text-(--text-muted) opacity-50" />
                     <p className="text-lg font-medium mb-2">
                       No solves recorded yet
                     </p>

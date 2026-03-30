@@ -33,10 +33,10 @@ export default function RoomPage({ params }: RoomPageProps) {
   // Show loading state while checking authentication or fetching room details
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+      <div className="min-h-screen bg-(--background) flex items-center justify-center">
         <div className="text-center space-y-4">
-          <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin mx-auto" />
-          <p className="text-[var(--text-secondary)] font-inter">
+          <Loader2 className="w-8 h-8 text-(--primary) animate-spin mx-auto" />
+          <p className="text-(--text-secondary) font-inter">
             Loading challenge room...
           </p>
         </div>
@@ -47,13 +47,13 @@ export default function RoomPage({ params }: RoomPageProps) {
   // If user is not authenticated, show sign-in prompt
   if (!user) {
     return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+      <div className="min-h-screen bg-(--background) flex items-center justify-center">
         <div className="max-w-md mx-auto text-center space-y-6 p-8">
           <div className="space-y-3">
-            <h1 className="text-3xl font-bold text-[var(--text-primary)] font-statement">
-              Join <span className="text-[var(--primary)]">Challenge</span> Room
+            <h1 className="text-3xl font-bold text-(--text-primary) font-statement">
+              Join <span className="text-(--primary)">Challenge</span> Room
             </h1>
-            <p className="text-[var(--text-secondary)] font-inter text-lg leading-relaxed">
+            <p className="text-(--text-secondary) font-inter text-lg leading-relaxed">
               Sign in with your WCA account to participate in this challenge
               room and compete with other cubers.
             </p>
@@ -73,7 +73,7 @@ export default function RoomPage({ params }: RoomPageProps) {
             Sign in with WCA
           </button>
 
-          <p className="text-xs text-[var(--text-muted)] font-inter">
+          <p className="text-xs text-(--text-muted) font-inter">
             You'll be redirected back to this room after signing in
           </p>
         </div>
@@ -83,7 +83,7 @@ export default function RoomPage({ params }: RoomPageProps) {
 
   // Main room view
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="min-h-screen bg-(--background)">
       {/* Dynamic metadata */}
       {roomDetails?.room && (
         <Head>

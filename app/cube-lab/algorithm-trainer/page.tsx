@@ -108,14 +108,14 @@ export default function AlgorithmTrainerPage() {
             {/* User Stats Dashboard */}
             <div data-tour="progress-section">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                <h2 className="text-2xl font-bold text-[var(--text-primary)] font-statement">
+                <h2 className="text-2xl font-bold text-(--text-primary) font-statement">
                   Your Progress
                 </h2>
                 {(userStats?.totalLearned || 0) > 0 && (
                   <Link
                     href="/cube-lab/algorithm-trainer/stats"
                     data-tour="analytics-button"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--primary)] hover:bg-[var(--primary-hover)] rounded-lg transition-colors w-full sm:w-auto"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-(--primary) hover:bg-(--primary-hover) rounded-lg transition-colors w-full sm:w-auto"
                   >
                     <TrendingUp className="w-4 h-4" />
                     <span className="hidden sm:inline">
@@ -130,14 +130,14 @@ export default function AlgorithmTrainerPage() {
                 {/* Total Learned */}
                 <div className="timer-card" data-tour="total-learned">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-[var(--primary)]/10 rounded-lg">
-                      <Brain className="w-5 h-5 text-[var(--primary)]" />
+                    <div className="p-2 bg-(--primary)/10 rounded-lg">
+                      <Brain className="w-5 h-5 text-(--primary)" />
                     </div>
                   </div>
-                  <div className="text-2xl font-bold text-[var(--text-primary)] font-statement">
+                  <div className="text-2xl font-bold text-(--text-primary) font-statement">
                     {userStats?.totalLearned || 0}
                   </div>
-                  <div className="text-sm text-[var(--text-muted)]">
+                  <div className="text-sm text-(--text-muted)">
                     Total Learning
                   </div>
                 </div>
@@ -152,7 +152,7 @@ export default function AlgorithmTrainerPage() {
                   <div className="text-2xl font-bold text-green-500 font-statement">
                     {userStats?.mastered || 0}
                   </div>
-                  <div className="text-sm text-[var(--text-muted)]">
+                  <div className="text-sm text-(--text-muted)">
                     Mastered
                   </div>
                 </div>
@@ -167,7 +167,7 @@ export default function AlgorithmTrainerPage() {
                   <div className="text-2xl font-bold text-red-500 font-statement">
                     {userStats?.dueToday || 0}
                   </div>
-                  <div className="text-sm text-[var(--text-muted)]">
+                  <div className="text-sm text-(--text-muted)">
                     Due Today
                   </div>
                 </div>
@@ -182,7 +182,7 @@ export default function AlgorithmTrainerPage() {
                   <div className="text-2xl font-bold text-blue-500 font-statement">
                     {userStats?.reviewedToday || 0}
                   </div>
-                  <div className="text-sm text-[var(--text-muted)]">
+                  <div className="text-sm text-(--text-muted)">
                     Reviewed Today
                   </div>
                 </div>
@@ -192,22 +192,22 @@ export default function AlgorithmTrainerPage() {
             {/* Quick Actions */}
             {(userStats?.dueToday || 0) > 0 && (
               <div
-                className="timer-card border-l-4 border-[var(--primary)]"
+                className="timer-card border-l-4 border-(--primary)"
                 data-tour="srs-review-prompt"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
-                    <h3 className="text-lg font-bold text-[var(--text-primary)] font-statement mb-1">
+                    <h3 className="text-lg font-bold text-(--text-primary) font-statement mb-1">
                       You have {userStats?.dueToday} review
                       {userStats?.dueToday !== 1 ? "s" : ""} due
                     </h3>
-                    <p className="text-sm text-[var(--text-muted)]">
+                    <p className="text-sm text-(--text-muted)">
                       Keep your learning momentum going with spaced repetition
                     </p>
                   </div>
                   <Link
                     href="/cube-lab/algorithm-trainer/practice?mode=srs"
-                    className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors flex items-center justify-center gap-2 font-medium whitespace-nowrap"
+                    className="px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors flex items-center justify-center gap-2 font-medium whitespace-nowrap"
                   >
                     <Play className="w-5 h-5" />
                     Start SRS Review
@@ -219,24 +219,24 @@ export default function AlgorithmTrainerPage() {
             {/* Practice Options */}
             {(userStats?.totalLearned || 0) > 0 && (
               <div data-tour="practice-modes">
-                <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement mb-4">
+                <h2 className="text-xl font-bold text-(--text-primary) font-statement mb-4">
                   Practice Modes
                 </h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <Link
                     href="/cube-lab/algorithm-trainer/practice?mode=drill&type=rec"
                     data-tour="recognition-drill"
-                    className="timer-card hover:scale-[1.02] transition-all cursor-pointer border-2 border-transparent hover:border-[var(--primary)]"
+                    className="timer-card hover:scale-[1.02] transition-all cursor-pointer border-2 border-transparent hover:border-(--primary)"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-[var(--primary)]/10 rounded-lg">
-                        <Brain className="w-8 h-8 text-[var(--primary)]" />
+                      <div className="p-3 bg-(--primary)/10 rounded-lg">
+                        <Brain className="w-8 h-8 text-(--primary)" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                        <h3 className="text-lg font-bold text-(--text-primary) font-statement">
                           Recognition Drill
                         </h3>
-                        <p className="text-sm text-[var(--text-muted)]">
+                        <p className="text-sm text-(--text-muted)">
                           Practice identifying cases quickly
                         </p>
                       </div>
@@ -246,17 +246,17 @@ export default function AlgorithmTrainerPage() {
                   <Link
                     href="/cube-lab/algorithm-trainer/practice?mode=drill&type=exec"
                     data-tour="execution-drill"
-                    className="timer-card hover:scale-[1.02] transition-all cursor-pointer border-2 border-transparent hover:border-[var(--primary)]"
+                    className="timer-card hover:scale-[1.02] transition-all cursor-pointer border-2 border-transparent hover:border-(--primary)"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-[var(--primary)]/10 rounded-lg">
-                        <Flame className="w-8 h-8 text-[var(--primary)]" />
+                      <div className="p-3 bg-(--primary)/10 rounded-lg">
+                        <Flame className="w-8 h-8 text-(--primary)" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                        <h3 className="text-lg font-bold text-(--text-primary) font-statement">
                           Execution Drill
                         </h3>
-                        <p className="text-sm text-[var(--text-muted)]">
+                        <p className="text-sm text-(--text-muted)">
                           Improve algorithm execution speed
                         </p>
                       </div>
@@ -266,17 +266,17 @@ export default function AlgorithmTrainerPage() {
                   <Link
                     href="/cube-lab/algorithm-trainer/practice?mode=drill&type=blind"
                     data-tour="blind-recognition"
-                    className="timer-card hover:scale-[1.02] transition-all cursor-pointer border-2 border-transparent hover:border-[var(--primary)]"
+                    className="timer-card hover:scale-[1.02] transition-all cursor-pointer border-2 border-transparent hover:border-(--primary)"
                   >
                     <div className="flex items-center gap-4">
                       <div className="p-3 bg-purple-500/10 rounded-lg">
                         <EyeOff className="w-8 h-8 text-purple-500" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                        <h3 className="text-lg font-bold text-(--text-primary) font-statement">
                           Blind Recognition
                         </h3>
-                        <p className="text-sm text-[var(--text-muted)]">
+                        <p className="text-sm text-(--text-muted)">
                           Recall case names from memory
                         </p>
                       </div>
@@ -293,13 +293,13 @@ export default function AlgorithmTrainerPage() {
                 className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
                 data-tour="algorithm-sets-header"
               >
-                <h2 className="text-2xl font-bold text-[var(--text-primary)] font-statement">
+                <h2 className="text-2xl font-bold text-(--text-primary) font-statement">
                   Algorithm Sets
                 </h2>
                 <Link
                   href="/cube-lab/algorithm-trainer/custom"
                   data-tour="custom-sets-button"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-[var(--text-primary)] bg-[var(--surface-elevated)] hover:bg-[var(--surface)] border border-[var(--border)] rounded-lg transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-lg transition-colors"
                 >
                   <FolderPlus className="w-4 h-4" />
                   Custom Sets
@@ -309,8 +309,8 @@ export default function AlgorithmTrainerPage() {
               {sets.length === 0 ? (
                 /* Empty State */
                 <div className="timer-card text-center py-12">
-                  <Brain className="w-16 h-16 text-[var(--text-muted)] mx-auto mb-4" />
-                  <p className="text-[var(--text-muted)]">
+                  <Brain className="w-16 h-16 text-(--text-muted) mx-auto mb-4" />
+                  <p className="text-(--text-muted)">
                     No algorithm sets available yet
                   </p>
                 </div>

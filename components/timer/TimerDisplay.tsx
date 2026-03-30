@@ -1018,10 +1018,10 @@ export default function TimerDisplay({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => setShowTimer(!showTimer)}
-          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
           title={showTimer ? "Hide timer" : "Show timer"}
         >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             Timer
           </h3>
           {showTimer ? (
@@ -1033,14 +1033,14 @@ export default function TimerDisplay({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+            className="p-1.5 text-(--text-secondary) hover:text-(--primary) transition-colors"
             title="Timer Settings"
           >
             <Settings className="w-4 h-4" />
           </button>
           <button
             onClick={() => setShowTimer(!showTimer)}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={showTimer ? "Hide timer" : "Show timer"}
           >
             {showTimer ? (
@@ -1110,8 +1110,8 @@ export default function TimerDisplay({
                 {/* Saving Indicator */}
                 {state === "stopped" && isSavingSolve && (
                   <div className="flex items-center justify-center gap-2 py-2">
-                    <div className="w-4 h-4 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-sm text-[var(--text-secondary)] font-inter">
+                    <div className="w-4 h-4 border-2 border-(--primary) border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-sm text-(--text-secondary) font-inter">
                       Saving time...
                     </span>
                   </div>

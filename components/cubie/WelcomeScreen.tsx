@@ -133,13 +133,13 @@ export default function WelcomeScreen({
       <div className="max-w-3xl w-full text-center space-y-8">
         {/* Welcome Header */}
         <div className="space-y-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] font-statement flex items-center justify-center gap-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-(--text-primary) font-statement flex items-center justify-center gap-3">
             Hey! I'm Cubie
             <span className="inline-block animate-wave origin-[70%_70%]">
               👋
             </span>
           </h1>
-          <p className="text-lg text-[var(--text-secondary)] font-inter max-w-2xl mx-auto">
+          <p className="text-lg text-(--text-secondary) font-inter max-w-2xl mx-auto">
             Your speedcubing assistant. Ask me anything about cubing, training,
             competitions, or get personalized advice!
           </p>
@@ -154,17 +154,17 @@ export default function WelcomeScreen({
                 onSendMessage(suggestion.message);
                 onFocusInput?.();
               }}
-              className="p-4 bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--primary)] rounded-xl text-left transition-all group"
+              className="p-4 bg-(--surface-elevated) border border-(--border) hover:border-(--primary) rounded-xl text-left transition-all group"
             >
               <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-10 h-10 bg-[var(--primary)]/10 border border-[var(--primary)]/20 rounded-lg flex items-center justify-center text-[var(--primary)] group-hover:bg-[var(--primary)] group-hover:text-white transition-colors">
+                <div className="shrink-0 w-10 h-10 bg-(--primary)/10 border border-(--primary)/20 rounded-lg flex items-center justify-center text-(--primary) group-hover:bg-(--primary) group-hover:text-white transition-colors">
                   {suggestion.icon}
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-button">
+                  <h3 className="text-sm font-semibold text-(--text-primary) mb-1 font-button">
                     {suggestion.title}
                   </h3>
-                  <p className="text-xs text-[var(--text-secondary)] font-inter">
+                  <p className="text-xs text-(--text-secondary) font-inter">
                     {suggestion.description}
                   </p>
                 </div>

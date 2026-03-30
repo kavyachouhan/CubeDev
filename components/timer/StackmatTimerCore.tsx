@@ -325,14 +325,14 @@ export default function StackmatTimerCore({
   // Get timer color based on state
   const getTimerColor = () => {
     if (isInspecting) {
-      if (inspectionTime <= 3) return "text-[var(--timer-running)]";
-      if (inspectionTime <= 8) return "text-[var(--warning)]";
-      return "text-[var(--timer-ready)]";
+      if (inspectionTime <= 3) return "text-(--timer-running)";
+      if (inspectionTime <= 8) return "text-(--warning)";
+      return "text-(--timer-ready)";
     }
-    if (stackmatData.state === "ready") return "text-[var(--timer-ready)]";
-    if (stackmatData.state === "running") return "text-[var(--timer-running)]";
-    if (stackmatData.state === "stopped") return "text-[var(--primary)]";
-    return "text-[var(--text-muted)]";
+    if (stackmatData.state === "ready") return "text-(--timer-ready)";
+    if (stackmatData.state === "running") return "text-(--timer-running)";
+    if (stackmatData.state === "stopped") return "text-(--primary)";
+    return "text-(--text-muted)";
   };
 
   return (
@@ -346,13 +346,13 @@ export default function StackmatTimerCore({
       />
 
       {/* Connection Status */}
-      <div className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+      <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
         <div className="flex items-center gap-3">
           <div
             className={`w-10 h-10 rounded-lg flex items-center justify-center ${
               isConnected
-                ? "bg-[var(--success)]/20 text-[var(--success)]"
-                : "bg-[var(--text-muted)]/20 text-[var(--text-muted)]"
+                ? "bg-(--success)/20 text-(--success)"
+                : "bg-(--text-muted)/20 text-(--text-muted)"
             }`}
           >
             {isConnected ? (
@@ -362,10 +362,10 @@ export default function StackmatTimerCore({
             )}
           </div>
           <div>
-            <div className="text-sm font-medium text-[var(--text-primary)]">
+            <div className="text-sm font-medium text-(--text-primary)">
               {isConnected ? "Stackmat Connected" : "Stackmat Disconnected"}
             </div>
-            <div className="text-xs text-[var(--text-muted)]">
+            <div className="text-xs text-(--text-muted)">
               {hasPermission
                 ? isConnected
                   ? "Receiving timer signals"
@@ -378,8 +378,8 @@ export default function StackmatTimerCore({
           onClick={toggleMicrophone}
           className={`p-2 rounded-lg font-medium transition-colors ${
             isActive
-              ? "bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]"
-              : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)] border border-[var(--border)]"
+              ? "bg-(--primary) text-white hover:bg-(--primary-hover)"
+              : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
           }`}
         >
           {isActive ? (
@@ -392,9 +392,9 @@ export default function StackmatTimerCore({
 
       {/* Error Display */}
       {error && (
-        <div className="p-3 bg-[var(--error)]/10 border border-[var(--error)]/30 rounded-lg flex items-start gap-2">
-          <AlertCircle className="w-5 h-5 text-[var(--error)] flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-[var(--error)]">{error}</div>
+        <div className="p-3 bg-(--error)/10 border border-(--error)/30 rounded-lg flex items-start gap-2">
+          <AlertCircle className="w-5 h-5 text-(--error) shrink-0 mt-0.5" />
+          <div className="text-sm text-(--error)">{error}</div>
         </div>
       )}
 
@@ -406,7 +406,7 @@ export default function StackmatTimerCore({
           <div className="flex justify-center">
             <button
               onClick={handleStartInspection}
-              className="flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-[var(--surface-elevated)] hover:bg-[var(--border)] text-[var(--text-primary)] rounded-lg font-medium transition-colors border border-[var(--border)]"
+              className="flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) rounded-lg font-medium transition-colors border border-(--border)"
             >
               <span className="text-sm sm:text-base">
                 Start Inspection (Space)
@@ -417,7 +417,7 @@ export default function StackmatTimerCore({
 
       {/* Inspection Display */}
       {isInspecting && (
-        <div className="text-center p-4 sm:p-6 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+        <div className="text-center p-4 sm:p-6 bg-(--surface-elevated) rounded-lg border border-(--border)">
           <div
             className={`text-5xl sm:text-6xl font-bold font-mono mb-2 transition-colors ${
               inspectionTime <= 3
@@ -429,12 +429,12 @@ export default function StackmatTimerCore({
           >
             {inspectionTime.toFixed(2)}
           </div>
-          <div className="text-sm text-[var(--text-muted)] mb-4">
+          <div className="text-sm text-(--text-muted) mb-4">
             Place hands on timer when ready
           </div>
           <button
             onClick={handleStopInspection}
-            className="px-4 py-2 bg-[var(--error)] hover:bg-[var(--error)]/80 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
+            className="px-4 py-2 bg-(--error) hover:bg-(--error)/80 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
           >
             Stop Inspection
           </button>
@@ -456,25 +456,25 @@ export default function StackmatTimerCore({
           {/* Penalty Buttons */}
           {showPenaltyButtons && (
             <div className="space-y-2">
-              <div className="text-sm text-[var(--text-muted)] mb-2">
+              <div className="text-sm text-(--text-muted) mb-2">
                 Apply penalty if needed
               </div>
               <div className="grid grid-cols-3 gap-2 max-w-md mx-auto">
                 <button
                   onClick={() => handlePenalty("none")}
-                  className="px-4 sm:px-6 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
+                  className="px-4 sm:px-6 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
                 >
                   OK
                 </button>
                 <button
                   onClick={() => handlePenalty("+2")}
-                  className="px-4 sm:px-6 py-2 bg-[var(--warning)] hover:bg-[var(--warning)]/80 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
+                  className="px-4 sm:px-6 py-2 bg-(--warning) hover:bg-(--warning)/80 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
                 >
                   +2
                 </button>
                 <button
                   onClick={() => handlePenalty("DNF")}
-                  className="px-4 sm:px-6 py-2 bg-[var(--error)] hover:bg-[var(--error)]/80 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
+                  className="px-4 sm:px-6 py-2 bg-(--error) hover:bg-(--error)/80 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
                 >
                   DNF
                 </button>
@@ -487,8 +487,8 @@ export default function StackmatTimerCore({
             <div
               className={`text-xs font-semibold px-2 py-1 rounded-full transition-all duration-300 ${
                 currentPenalty === "+2"
-                  ? "bg-[var(--warning)]/10 text-[var(--warning)] border border-[var(--warning)]/30"
-                  : "bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30"
+                  ? "bg-(--warning)/10 text-(--warning) border border-(--warning)/30"
+                  : "bg-(--error)/10 text-(--error) border border-(--error)/30"
               }`}
             >
               {currentPenalty === "+2" ? "+2 Penalty Applied" : "DNF Applied"}
@@ -496,7 +496,7 @@ export default function StackmatTimerCore({
           )}
 
           {/* Status Text */}
-          <div className="text-sm text-[var(--text-secondary)] font-inter select-none">
+          <div className="text-sm text-(--text-secondary) font-inter select-none">
             {getStatusText()}
           </div>
         </div>
@@ -504,11 +504,11 @@ export default function StackmatTimerCore({
 
       {/* Instructions */}
       {isActive && !error && !isInspecting && (
-        <div className="p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+        <div className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
           <div className="flex items-start gap-2">
-            <Info className="w-5 h-5 text-[var(--primary)] flex-shrink-0 mt-0.5" />
-            <div className="text-xs sm:text-sm text-[var(--text-muted)] space-y-1">
-              <div className="font-medium text-[var(--text-primary)]">
+            <Info className="w-5 h-5 text-(--primary) shrink-0 mt-0.5" />
+            <div className="text-xs sm:text-sm text-(--text-muted) space-y-1">
+              <div className="font-medium text-(--text-primary)">
                 Stackmat Timer Instructions:
               </div>
               <div>

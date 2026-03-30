@@ -111,10 +111,10 @@ export default function ScramblePreview({
       // Show error message
       if (containerRef.current) {
         containerRef.current.innerHTML = `
-          <div class="w-full h-[180px] sm:h-48 bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
+          <div class="w-full h-[180px] sm:h-48 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
             <div class="text-center">
               <div class="text-4xl mb-2">🧩</div>
-              <div class="text-sm text-[var(--text-muted)]">Preview not available</div>
+              <div class="text-sm text-(--text-muted)">Preview not available</div>
             </div>
           </div>
         `;
@@ -176,7 +176,7 @@ export default function ScramblePreview({
   return (
     <div className="timer-card">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
           Scramble Preview
         </h3>
         {showPreview && (
@@ -185,7 +185,7 @@ export default function ScramblePreview({
               setShowPreview(false);
               setIsLoaded(false);
             }}
-            className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+            className="text-sm text-(--text-muted) hover:text-(--text-primary) transition-colors"
           >
             Hide
           </button>
@@ -193,10 +193,10 @@ export default function ScramblePreview({
       </div>
 
       {!showPreview ? (
-        <div className="w-full min-h-[180px] sm:min-h-[200px] bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center border border-[var(--border)]">
+        <div className="w-full min-h-[180px] sm:min-h-[200px] bg-(--surface-elevated) rounded-lg flex items-center justify-center border border-(--border)">
           <button
             onClick={() => setShowPreview(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-md hover:bg-[var(--primary-hover)] transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-md hover:bg-(--primary-hover) transition-colors"
           >
             <Play size={16} />
             Load 3D Preview
@@ -205,10 +205,10 @@ export default function ScramblePreview({
       ) : (
         <div className="relative">
           {isLoading && (
-            <div className="absolute inset-0 bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center z-10">
+            <div className="absolute inset-0 bg-(--surface-elevated) rounded-lg flex items-center justify-center z-10">
               <div className="text-center">
-                <div className="animate-spin w-6 h-6 border-2 border-[var(--primary)] border-t-transparent rounded-full mx-auto mb-2"></div>
-                <div className="text-sm text-[var(--text-muted)]">
+                <div className="animate-spin w-6 h-6 border-2 border-(--primary) border-t-transparent rounded-full mx-auto mb-2"></div>
+                <div className="text-sm text-(--text-muted)">
                   Loading preview...
                 </div>
               </div>
@@ -216,7 +216,7 @@ export default function ScramblePreview({
           )}
           <div
             ref={containerRef}
-            className="w-full min-h-[180px] sm:min-h-[200px] bg-[var(--surface-elevated)] rounded-lg overflow-hidden"
+            className="w-full min-h-[180px] sm:min-h-[200px] bg-(--surface-elevated) rounded-lg overflow-hidden"
             style={{
               touchAction: "none",
               WebkitTouchCallout: "none",
