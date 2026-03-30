@@ -37,7 +37,7 @@ import {
   Monitor,
   Globe,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { AdminSelect } from "./AdminDropdown";
 
 // Register ChartJS components
 ChartJS.register(
@@ -1039,31 +1039,34 @@ export default function AdminNotifications() {
           {/* Filter Row on Mobile */}
           <div className="flex gap-2 flex-wrap">
             {/* Status Filter */}
-            <select
+            <AdminSelect
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="flex-1 sm:flex-none px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter text-sm min-w-25"
-            >
-              <option value="all">All Status</option>
-              <option value="sent">Sent</option>
-              <option value="failed">Failed</option>
-              <option value="clicked">Clicked</option>
-              <option value="pending">Pending</option>
-            </select>
+              onChange={(val) => setStatusFilter(val)}
+              options={[
+                { value: "all", label: "All Status" },
+                { value: "sent", label: "Sent" },
+                { value: "failed", label: "Failed" },
+                { value: "clicked", label: "Clicked" },
+                { value: "pending", label: "Pending" },
+              ]}
+              compact
+              className="flex-1 sm:flex-none min-w-[6.25rem]"
+            />
 
             {/* Type Filter */}
-            <select
+            <AdminSelect
               value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="flex-1 sm:flex-none px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter text-sm min-w-25"
-            >
-              <option value="all">All Types</option>
-              {notificationTypes?.map((type) => (
-                <option key={type} value={type}>
-                  {type.replace(/_/g, " ")}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setTypeFilter(val)}
+              options={[
+                { value: "all", label: "All Types" },
+                ...(notificationTypes?.map((type) => ({
+                  value: type,
+                  label: type.replace(/_/g, " "),
+                })) || []),
+              ]}
+              compact
+              className="flex-1 sm:flex-none min-w-[6.25rem]"
+            />
 
             {/* Export Button */}
             <button
