@@ -73,15 +73,15 @@ export default function ChatHeader({
   };
 
   return (
-    <div className="border-b border-[var(--border)] bg-[var(--surface)] px-3 md:px-4 lg:px-6 py-3 md:py-4 shrink-0">
+    <div className="border-b border-(--border) bg-(--surface) px-3 md:px-4 lg:px-6 py-3 md:py-4 shrink-0">
       <div className="max-w-4xl mx-auto flex items-center gap-2 md:gap-3">
         {/* Session Management Button */}
         <button
           onClick={onOpenSessionModal}
-          className="p-2 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors flex-shrink-0"
+          className="p-2 hover:bg-(--surface-elevated) rounded-lg transition-colors shrink-0"
           title="View all sessions"
         >
-          <MessageSquarePlus className="w-5 h-5 text-[var(--primary)]" />
+          <MessageSquarePlus className="w-5 h-5 text-(--primary)" />
         </button>
 
         {/* Session Title / Edit Mode */}
@@ -95,52 +95,52 @@ export default function ChatHeader({
                   value={editingTitle}
                   onChange={(e) => setEditingTitle(e.target.value)}
                   onKeyDown={handleEditKeyDown}
-                  className="flex-1 px-3 py-1.5 text-sm md:text-base bg-[var(--surface-elevated)] border border-[var(--primary)] rounded-lg outline-none font-inter text-[var(--text-primary)] min-w-0"
+                  className="flex-1 px-3 py-1.5 text-sm md:text-base bg-(--surface-elevated) border border-(--primary) rounded-lg outline-none font-inter text-(--text-primary) min-w-0"
                   disabled={isUpdating}
                   placeholder="Chat title..."
                 />
                 <button
                   onClick={handleSaveEdit}
                   disabled={isUpdating || !editingTitle.trim()}
-                  className="p-2 hover:bg-[var(--success)]/20 rounded-lg transition-colors disabled:opacity-50 flex-shrink-0"
+                  className="p-2 hover:bg-(--success)/20 rounded-lg transition-colors disabled:opacity-50 shrink-0"
                   title="Save"
                 >
-                  <Check className="w-4 h-4 md:w-5 md:h-5 text-[var(--success)]" />
+                  <Check className="w-4 h-4 md:w-5 md:h-5 text-(--success)" />
                 </button>
                 <button
                   onClick={handleCancelEdit}
                   disabled={isUpdating}
-                  className="p-2 hover:bg-[var(--error)]/20 rounded-lg transition-colors flex-shrink-0"
+                  className="p-2 hover:bg-(--error)/20 rounded-lg transition-colors shrink-0"
                   title="Cancel"
                 >
-                  <X className="w-4 h-4 md:w-5 md:h-5 text-[var(--error)]" />
+                  <X className="w-4 h-4 md:w-5 md:h-5 text-(--error)" />
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-2 group">
-                <h1 className="text-base md:text-lg font-semibold text-[var(--text-primary)] truncate font-statement flex-1">
+                <h1 className="text-base md:text-lg font-semibold text-(--text-primary) truncate font-statement flex-1">
                   {currentSession.title}
                 </h1>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                   <button
                     onClick={handleStartEdit}
-                    className="p-1.5 hover:bg-[var(--primary)]/20 rounded-lg transition-colors"
+                    className="p-1.5 hover:bg-(--primary)/20 rounded-lg transition-colors"
                     title="Edit title"
                   >
-                    <Pencil className="w-4 h-4 text-[var(--primary)]" />
+                    <Pencil className="w-4 h-4 text-(--primary)" />
                   </button>
                   <button
                     onClick={handleDelete}
-                    className="p-1.5 hover:bg-[var(--error)]/20 rounded-lg transition-colors"
+                    className="p-1.5 hover:bg-(--error)/20 rounded-lg transition-colors"
                     title="Delete session"
                   >
-                    <Trash2 className="w-4 h-4 text-[var(--error)]" />
+                    <Trash2 className="w-4 h-4 text-(--error)" />
                   </button>
                 </div>
               </div>
             )
           ) : (
-            <h1 className="text-base md:text-lg font-semibold text-[var(--text-primary)] font-statement">
+            <h1 className="text-base md:text-lg font-semibold text-(--text-primary) font-statement">
               New Chat
             </h1>
           )}
@@ -148,7 +148,7 @@ export default function ChatHeader({
 
         {/* Session Info */}
         {currentSession && !isEditing && (
-          <div className="hidden md:flex items-center gap-2 text-xs text-[var(--text-muted)] font-inter flex-shrink-0">
+          <div className="hidden md:flex items-center gap-2 text-xs text-(--text-muted) font-inter shrink-0">
             <span>{currentSession.message_count || 0} messages</span>
           </div>
         )}

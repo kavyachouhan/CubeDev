@@ -176,7 +176,7 @@ export default function CoachOnboarding({
   return (
     <div className="min-h-full flex flex-col">
       {/* Progress Steps */}
-      <div className="flex-shrink-0 px-4 py-6 border-b border-[var(--border)]">
+      <div className="shrink-0 px-4 py-6 border-b border-(--border)">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center justify-between">
             {STEPS.map((step, index) => {
@@ -190,10 +190,10 @@ export default function CoachOnboarding({
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
                         isActive
-                          ? "bg-[var(--primary)] text-white"
+                          ? "bg-(--primary) text-white"
                           : isCompleted
-                            ? "bg-[var(--success)] text-white"
-                            : "bg-[var(--surface-elevated)] text-[var(--text-muted)]"
+                            ? "bg-(--success) text-white"
+                            : "bg-(--surface-elevated) text-(--text-muted)"
                       }`}
                     >
                       {isCompleted ? (
@@ -205,8 +205,8 @@ export default function CoachOnboarding({
                     <span
                       className={`mt-2 text-xs font-medium hidden sm:block ${
                         isActive
-                          ? "text-[var(--primary)]"
-                          : "text-[var(--text-muted)]"
+                          ? "text-(--primary)"
+                          : "text-(--text-muted)"
                       }`}
                     >
                       {step.title}
@@ -216,8 +216,8 @@ export default function CoachOnboarding({
                     <div
                       className={`w-8 sm:w-16 lg:w-24 h-1 mx-2 rounded ${
                         isCompleted
-                          ? "bg-[var(--success)]"
-                          : "bg-[var(--border)]"
+                          ? "bg-(--success)"
+                          : "bg-(--border)"
                       }`}
                     />
                   )}
@@ -254,15 +254,15 @@ export default function CoachOnboarding({
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex-shrink-0 px-4 py-4 border-t border-[var(--border)] bg-[var(--surface)]">
+      <div className="shrink-0 px-4 py-4 border-t border-(--border) bg-(--surface)">
         <div className="max-w-2xl mx-auto flex justify-between">
           <button
             onClick={handleBack}
             disabled={currentStep === 1}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
               currentStep === 1
-                ? "text-[var(--text-muted)] cursor-not-allowed"
-                : "text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)]"
+                ? "text-(--text-muted) cursor-not-allowed"
+                : "text-(--text-secondary) hover:bg-(--surface-elevated)"
             }`}
           >
             <ChevronLeft className="w-5 h-5" />
@@ -275,8 +275,8 @@ export default function CoachOnboarding({
               disabled={!canProceed()}
               className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-colors ${
                 canProceed()
-                  ? "bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]"
-                  : "bg-[var(--surface-elevated)] text-[var(--text-muted)] cursor-not-allowed"
+                  ? "bg-(--primary) text-white hover:bg-(--primary-hover)"
+                  : "bg-(--surface-elevated) text-(--text-muted) cursor-not-allowed"
               }`}
             >
               <span>Continue</span>
@@ -286,7 +286,7 @@ export default function CoachOnboarding({
             <button
               onClick={handleComplete}
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-2 rounded-lg font-medium bg-[var(--success)] text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2 rounded-lg font-medium bg-(--success) text-white hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>

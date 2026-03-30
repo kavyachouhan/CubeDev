@@ -22,13 +22,13 @@ export default function ProgressBar({
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
-        <span className="text-sm text-[var(--text-secondary)]">{label}</span>
-        <span className="text-sm font-semibold text-[var(--text-primary)] font-statement">
+        <span className="text-sm text-(--text-secondary)">{label}</span>
+        <span className="text-sm font-semibold text-(--text-primary) font-statement">
           {formatValue(value)}
           {showPercentage && ` (${percentage.toFixed(0)}%)`}
         </span>
       </div>
-      <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+      <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
         <div
           className={`h-full ${color} transition-all duration-300`}
           style={{ width: `${Math.min(percentage, 100)}%` }}

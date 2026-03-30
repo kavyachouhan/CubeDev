@@ -165,7 +165,7 @@ export default function RoundSimulatorRedesigned({
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+            className="flex items-center gap-2 text-(--text-muted) hover:text-(--primary) transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Back</span>
@@ -197,10 +197,10 @@ export default function RoundSimulatorRedesigned({
               className="invert opacity-80"
             />
             <div className="flex-1 min-w-0">
-              <h2 className="font-bold text-[var(--text-primary)] truncate">
+              <h2 className="font-bold text-(--text-primary) truncate">
                 {event.name}
               </h2>
-              <p className="text-sm text-[var(--text-muted)] truncate">
+              <p className="text-sm text-(--text-muted) truncate">
                 Round {roundNumber} of {maxRounds} • {competition.name}
               </p>
             </div>
@@ -223,7 +223,7 @@ export default function RoundSimulatorRedesigned({
             {/* Solve Progress - Hidden on mobile, shown on desktop */}
             <div className="hidden lg:block">
               <div className="timer-card">
-                <h3 className="text-sm font-medium text-[var(--text-primary)] mb-4">
+                <h3 className="text-sm font-medium text-(--text-primary) mb-4">
                   Round Progress
                 </h3>
                 <SolveProgressIndicator
@@ -314,25 +314,25 @@ export default function RoundSimulatorRedesigned({
             {/* Completed Solves Summary */}
             {solves.length > 0 && (
               <div className="timer-card">
-                <h3 className="text-sm font-medium text-[var(--text-primary)] mb-4">
+                <h3 className="text-sm font-medium text-(--text-primary) mb-4">
                   Completed Solves
                 </h3>
                 <div className="grid grid-cols-5 gap-2">
                   {solves.map((solve, idx) => {
                     let displayTime = formatTime(solve.time);
                     let cardStyle =
-                      "bg-[var(--surface-elevated)] text-[var(--text-primary)]";
+                      "bg-(--surface-elevated) text-(--text-primary)";
 
                     if (solve.penalty === "DNF") {
                       displayTime = "DNF";
-                      cardStyle = "bg-[var(--error)]/10 text-[var(--error)]";
+                      cardStyle = "bg-(--error)/10 text-(--error)";
                     } else if (
                       solve.penalty === "+2" ||
                       solve.inspectionViolation === "+2"
                     ) {
                       displayTime = formatTime(solve.time + 2000) + "+";
                       cardStyle =
-                        "bg-[var(--warning)]/10 text-[var(--warning)]";
+                        "bg-(--warning)/10 text-(--warning)";
                     }
 
                     return (
@@ -340,7 +340,7 @@ export default function RoundSimulatorRedesigned({
                         key={idx}
                         className={`text-center p-2 sm:p-3 rounded-lg ${cardStyle}`}
                       >
-                        <div className="text-xs text-[var(--text-muted)] mb-0.5">
+                        <div className="text-xs text-(--text-muted) mb-0.5">
                           #{idx + 1}
                         </div>
                         <div className="font-mono font-medium text-sm">
@@ -353,12 +353,12 @@ export default function RoundSimulatorRedesigned({
 
                 {/* Current Average */}
                 {solves.length >= 3 && (
-                  <div className="mt-4 pt-4 border-t border-[var(--border)]">
+                  <div className="mt-4 pt-4 border-t border-(--border)">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-[var(--text-muted)]">
+                      <span className="text-sm text-(--text-muted)">
                         Current Avg ({solves.length}/5)
                       </span>
-                      <span className="font-mono font-medium text-[var(--text-primary)]">
+                      <span className="font-mono font-medium text-(--text-primary)">
                         {calculateCurrentAverage(solves)}
                       </span>
                     </div>

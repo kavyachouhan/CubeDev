@@ -33,6 +33,7 @@ import {
   X,
   ExternalLink,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import {
   Chart as ChartJS,
@@ -149,9 +150,9 @@ function CollapsibleCard({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={toggleOpen}
-          className="flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
         >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             {title}
           </h3>
           {isOpen ? (
@@ -164,7 +165,7 @@ function CollapsibleCard({
           {headerExtra}
           <button
             onClick={toggleOpen}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={isOpen ? "Hide" : "Show"}
           >
             {isOpen ? (
@@ -185,31 +186,31 @@ function StatCard({
   title,
   value,
   icon: Icon,
-  iconColor = "text-[var(--primary)]",
-  iconBgColor = "bg-[var(--primary)]/10",
+  iconColor = "text-(--primary)",
+  iconBgColor = "bg-(--primary)/10",
   subValue,
   trend,
 }: {
   title: string;
   value: string | number;
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconColor?: string;
   iconBgColor?: string;
   subValue?: string;
   trend?: { value: number; label: string };
 }) {
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
       <div className="flex items-center gap-2 sm:gap-3">
         <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
           <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate font-inter">
+          <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate font-inter">
             {title}
           </div>
           <div className="flex items-center gap-2">
-            <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-statement">
+            <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
               {typeof value === "number" ? value.toLocaleString() : value}
             </div>
             {trend && (
@@ -228,7 +229,7 @@ function StatCard({
             )}
           </div>
           {subValue && (
-            <div className="text-xs text-[var(--text-muted)] font-inter">
+            <div className="text-xs text-(--text-muted) font-inter">
               {subValue}
             </div>
           )}
@@ -363,26 +364,24 @@ function EventBar({
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-sm">
-        <span className="text-[var(--text-secondary)] font-inter">
-          {eventName}
-        </span>
+        <span className="text-(--text-secondary) font-inter">{eventName}</span>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-[var(--text-muted)] font-inter">
+          <span className="text-xs text-(--text-muted) font-inter">
             {results} results
           </span>
-          <span className="text-[var(--text-primary)] font-medium font-inter">
+          <span className="text-(--text-primary) font-medium font-inter">
             {count}
           </span>
         </div>
       </div>
-      <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden flex">
+      <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden flex">
         <div
-          className="h-full bg-[var(--primary)] rounded-full transition-all duration-500"
+          className="h-full bg-(--primary) rounded-full transition-all duration-500"
           style={{ width: `${(count / maxCount) * 100}%` }}
         />
       </div>
       <div className="flex items-center justify-between text-xs">
-        <span className="text-[var(--text-muted)] font-inter">
+        <span className="text-(--text-muted) font-inter">
           {completionRate}% completion
         </span>
       </div>
@@ -429,7 +428,7 @@ function StatusDistribution({
   return (
     <div className="space-y-4">
       {/* Horizontal stacked bar */}
-      <div className="h-3 bg-[var(--surface-elevated)] rounded-full overflow-hidden flex">
+      <div className="h-3 bg-(--surface-elevated) rounded-full overflow-hidden flex">
         {segments.map((segment) => (
           <div
             key={segment.key}
@@ -448,11 +447,11 @@ function StatusDistribution({
           <div key={segment.key} className="text-center">
             <div className="flex items-center justify-center gap-1.5 mb-1">
               <div className={`w-2.5 h-2.5 rounded-full ${segment.bgClass}`} />
-              <span className="text-lg font-bold text-[var(--text-primary)] font-statement">
+              <span className="text-lg font-bold text-(--text-primary) font-statement">
                 {segment.value}
               </span>
             </div>
-            <span className="text-xs text-[var(--text-muted)] font-inter">
+            <span className="text-xs text-(--text-muted) font-inter">
               {segment.label}
             </span>
           </div>
@@ -460,12 +459,12 @@ function StatusDistribution({
       </div>
 
       {/* Rates */}
-      <div className="flex items-center justify-center gap-6 pt-2 border-t border-[var(--border)]">
+      <div className="flex items-center justify-center gap-6 pt-2 border-t border-(--border)">
         <div className="text-center">
           <span className="text-lg font-bold text-green-500 font-statement">
             {completionRate}%
           </span>
-          <p className="text-xs text-[var(--text-muted)] font-inter">
+          <p className="text-xs text-(--text-muted) font-inter">
             Completion Rate
           </p>
         </div>
@@ -473,7 +472,7 @@ function StatusDistribution({
           <span className="text-lg font-bold text-red-500 font-statement">
             {abandonmentRate}%
           </span>
-          <p className="text-xs text-[var(--text-muted)] font-inter">
+          <p className="text-xs text-(--text-muted) font-inter">
             Abandonment Rate
           </p>
         </div>
@@ -524,14 +523,14 @@ function AtmosphereStats({
       {items.map((item, idx) => (
         <div
           key={idx}
-          className="flex items-center gap-2 bg-[var(--surface-elevated)] rounded-lg p-2.5 border border-[var(--border)]"
+          className="flex items-center gap-2 bg-(--surface-elevated) rounded-lg p-2.5 border border-(--border)"
         >
-          <item.icon className="w-4 h-4 text-[var(--text-muted)]" />
+          <item.icon className="w-4 h-4 text-(--text-muted)" />
           <div className="min-w-0 flex-1">
-            <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide truncate font-inter">
+            <div className="text-[10px] text-(--text-muted) uppercase tracking-wide truncate font-inter">
               {item.label}
             </div>
-            <div className="text-sm font-semibold text-[var(--text-primary)] font-statement">
+            <div className="text-sm font-semibold text-(--text-primary) font-statement">
               {item.value}
             </div>
           </div>
@@ -563,25 +562,25 @@ function CompetitionItem({
   onViewDetails: () => void;
 }) {
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-lg p-3 sm:p-4 border border-[var(--border)] hover:border-[var(--primary)]/30 transition-colors">
+    <div className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border) hover:border-(--primary)/30 transition-colors">
       {/* Header with name and view button */}
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h4 className="text-sm font-semibold text-[var(--text-primary)] font-statement truncate">
+            <h4 className="text-sm font-semibold text-(--text-primary) font-statement truncate">
               {competition.name}
             </h4>
             <a
               href={`https://www.worldcubeassociation.org/competitions/${competition.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors shrink-0"
+              className="text-(--primary) hover:text-(--primary-hover) transition-colors shrink-0"
               onClick={(e) => e.stopPropagation()}
             >
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--text-muted)] font-inter">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-(--text-muted) font-inter">
             {competition.country && (
               <span className="flex items-center gap-1">
                 <Globe className="w-3 h-3" />
@@ -597,7 +596,7 @@ function CompetitionItem({
         </div>
         <button
           onClick={onViewDetails}
-          className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--surface)] rounded-lg transition-colors shrink-0"
+          className="p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--surface) rounded-lg transition-colors shrink-0"
         >
           <Eye className="w-4 h-4" />
         </button>
@@ -605,23 +604,23 @@ function CompetitionItem({
 
       {/* Stats row - responsive grid */}
       <div className="grid grid-cols-3 gap-2 mt-3">
-        <div className="text-center bg-[var(--surface)] rounded-lg py-2 px-1">
-          <div className="text-base sm:text-lg font-bold text-[var(--text-primary)] font-statement">
+        <div className="text-center bg-(--surface) rounded-lg py-2 px-1">
+          <div className="text-base sm:text-lg font-bold text-(--text-primary) font-statement">
             {competition.totalSimulations}
           </div>
-          <div className="text-[10px] text-[var(--text-muted)] font-inter">
+          <div className="text-[10px] text-(--text-muted) font-inter">
             Simulations
           </div>
         </div>
-        <div className="text-center bg-[var(--surface)] rounded-lg py-2 px-1">
-          <div className="text-base sm:text-lg font-bold text-[var(--primary)] font-statement">
+        <div className="text-center bg-(--surface) rounded-lg py-2 px-1">
+          <div className="text-base sm:text-lg font-bold text-(--primary) font-statement">
             {competition.uniqueUsers}
           </div>
-          <div className="text-[10px] text-[var(--text-muted)] font-inter">
+          <div className="text-[10px] text-(--text-muted) font-inter">
             Users
           </div>
         </div>
-        <div className="text-center bg-[var(--surface)] rounded-lg py-2 px-1">
+        <div className="text-center bg-(--surface) rounded-lg py-2 px-1">
           <div
             className={`text-base sm:text-lg font-bold font-statement ${
               competition.completionRate >= 70
@@ -633,7 +632,7 @@ function CompetitionItem({
           >
             {competition.completionRate}%
           </div>
-          <div className="text-[10px] text-[var(--text-muted)] font-inter">
+          <div className="text-[10px] text-(--text-muted) font-inter">
             Complete
           </div>
         </div>
@@ -644,13 +643,13 @@ function CompetitionItem({
         {competition.events.slice(0, 6).map((event) => (
           <span
             key={event.id}
-            className="px-2 py-0.5 text-[10px] bg-[var(--surface)] text-[var(--text-secondary)] rounded font-inter"
+            className="px-2 py-0.5 text-[10px] bg-(--surface) text-(--text-secondary) rounded font-inter"
           >
             {event.name}
           </span>
         ))}
         {competition.events.length > 6 && (
-          <span className="px-2 py-0.5 text-[10px] bg-[var(--surface)] text-[var(--text-muted)] rounded font-inter">
+          <span className="px-2 py-0.5 text-[10px] bg-(--surface) text-(--text-muted) rounded font-inter">
             +{competition.events.length - 6} more
           </span>
         )}
@@ -688,14 +687,14 @@ function CompetitionDetailsModal({
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex-1 min-w-0 pr-4">
-            <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+            <h2 className="text-xl font-bold text-(--text-primary) font-statement">
               {competition.name}
             </h2>
             <a
               href={`https://www.worldcubeassociation.org/competitions/${competition.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-[var(--primary)] hover:underline font-inter inline-flex items-center gap-1 mt-1"
+              className="text-sm text-(--primary) hover:underline font-inter inline-flex items-center gap-1 mt-1"
             >
               {competition.id}
               <ExternalLink className="w-3 h-3" />
@@ -703,7 +702,7 @@ function CompetitionDetailsModal({
           </div>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)] shrink-0"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated) shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -712,36 +711,36 @@ function CompetitionDetailsModal({
         {/* Competition Info */}
         <div className="space-y-4">
           <div>
-            <h4 className="text-sm font-medium text-[var(--text-muted)] mb-2 font-inter uppercase tracking-wide">
+            <h4 className="text-sm font-medium text-(--text-muted) mb-2 font-inter uppercase tracking-wide">
               Competition Details
             </h4>
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
-                <div className="flex items-center gap-2 text-[var(--text-muted)] mb-1">
+              <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+                <div className="flex items-center gap-2 text-(--text-muted) mb-1">
                   <MapPin className="w-3.5 h-3.5" />
                   <span className="text-xs font-inter uppercase">Location</span>
                 </div>
-                <p className="text-sm font-semibold text-[var(--text-primary)] font-statement">
+                <p className="text-sm font-semibold text-(--text-primary) font-statement">
                   {competition.city || competition.country || "Unknown"}
                 </p>
               </div>
-              <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
-                <div className="flex items-center gap-2 text-[var(--text-muted)] mb-1">
+              <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+                <div className="flex items-center gap-2 text-(--text-muted) mb-1">
                   <Calendar className="w-3.5 h-3.5" />
                   <span className="text-xs font-inter uppercase">Date</span>
                 </div>
-                <p className="text-sm font-semibold text-[var(--text-primary)] font-statement">
+                <p className="text-sm font-semibold text-(--text-primary) font-statement">
                   {competition.date}
                 </p>
               </div>
             </div>
             {competition.venue && (
-              <div className="mt-2 bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
-                <div className="flex items-center gap-2 text-[var(--text-muted)] mb-1">
+              <div className="mt-2 bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+                <div className="flex items-center gap-2 text-(--text-muted) mb-1">
                   <MapPin className="w-3.5 h-3.5" />
                   <span className="text-xs font-inter uppercase">Venue</span>
                 </div>
-                <p className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                <p className="text-sm font-medium text-(--text-primary) font-inter">
                   {competition.venue}
                 </p>
               </div>
@@ -750,59 +749,59 @@ function CompetitionDetailsModal({
 
           {/* Simulation Stats */}
           <div>
-            <h4 className="text-sm font-medium text-[var(--text-muted)] mb-2 font-inter uppercase tracking-wide">
+            <h4 className="text-sm font-medium text-(--text-muted) mb-2 font-inter uppercase tracking-wide">
               Simulation Statistics
             </h4>
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+              <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="p-1 bg-blue-500/10 rounded">
                     <Medal className="w-3 h-3 text-blue-500" />
                   </div>
-                  <span className="text-xs text-[var(--text-muted)] font-inter uppercase">
+                  <span className="text-xs text-(--text-muted) font-inter uppercase">
                     Total
                   </span>
                 </div>
-                <p className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                <p className="text-lg font-bold text-(--text-primary) font-statement">
                   {competition.totalSimulations}
                 </p>
               </div>
-              <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+              <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="p-1 bg-green-500/10 rounded">
                     <CheckCircle2 className="w-3 h-3 text-green-500" />
                   </div>
-                  <span className="text-xs text-[var(--text-muted)] font-inter uppercase">
+                  <span className="text-xs text-(--text-muted) font-inter uppercase">
                     Completed
                   </span>
                 </div>
-                <p className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                <p className="text-lg font-bold text-(--text-primary) font-statement">
                   {competition.completedCount}
                 </p>
               </div>
-              <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+              <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="p-1 bg-amber-500/10 rounded">
                     <Clock className="w-3 h-3 text-amber-500" />
                   </div>
-                  <span className="text-xs text-[var(--text-muted)] font-inter uppercase">
+                  <span className="text-xs text-(--text-muted) font-inter uppercase">
                     In Progress
                   </span>
                 </div>
-                <p className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                <p className="text-lg font-bold text-(--text-primary) font-statement">
                   {competition.inProgressCount}
                 </p>
               </div>
-              <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+              <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="p-1 bg-red-500/10 rounded">
                     <XCircle className="w-3 h-3 text-red-500" />
                   </div>
-                  <span className="text-xs text-[var(--text-muted)] font-inter uppercase">
+                  <span className="text-xs text-(--text-muted) font-inter uppercase">
                     Abandoned
                   </span>
                 </div>
-                <p className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                <p className="text-lg font-bold text-(--text-primary) font-statement">
                   {competition.abandonedCount}
                 </p>
               </div>
@@ -811,20 +810,20 @@ function CompetitionDetailsModal({
 
           {/* User Engagement */}
           <div className="grid grid-cols-2 gap-2">
-            <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
               <div className="flex items-center gap-2 mb-1">
                 <div className="p-1 bg-purple-500/10 rounded">
                   <Users className="w-3 h-3 text-purple-500" />
                 </div>
-                <span className="text-xs text-[var(--text-muted)] font-inter uppercase">
+                <span className="text-xs text-(--text-muted) font-inter uppercase">
                   Unique Users
                 </span>
               </div>
-              <p className="text-lg font-bold text-[var(--text-primary)] font-statement">
+              <p className="text-lg font-bold text-(--text-primary) font-statement">
                 {competition.uniqueUsers}
               </p>
             </div>
-            <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
               <div className="flex items-center gap-2 mb-1">
                 <div
                   className={`p-1 rounded ${competition.completionRate >= 70 ? "bg-green-500/10" : competition.completionRate >= 40 ? "bg-amber-500/10" : "bg-red-500/10"}`}
@@ -833,7 +832,7 @@ function CompetitionDetailsModal({
                     className={`w-3 h-3 ${competition.completionRate >= 70 ? "text-green-500" : competition.completionRate >= 40 ? "text-amber-500" : "text-red-500"}`}
                   />
                 </div>
-                <span className="text-xs text-[var(--text-muted)] font-inter uppercase">
+                <span className="text-xs text-(--text-muted) font-inter uppercase">
                   Completion
                 </span>
               </div>
@@ -847,14 +846,14 @@ function CompetitionDetailsModal({
 
           {/* Events */}
           <div>
-            <h4 className="text-sm font-medium text-[var(--text-muted)] mb-2 font-inter uppercase tracking-wide">
+            <h4 className="text-sm font-medium text-(--text-muted) mb-2 font-inter uppercase tracking-wide">
               Events Practiced ({competition.events.length})
             </h4>
             <div className="flex flex-wrap gap-1.5">
               {competition.events.map((event) => (
                 <span
                   key={event.id}
-                  className="px-2.5 py-1 text-xs bg-[var(--surface-elevated)] text-[var(--text-secondary)] rounded-lg border border-[var(--border)] font-inter"
+                  className="px-2.5 py-1 text-xs bg-(--surface-elevated) text-(--text-secondary) rounded-lg border border-(--border) font-inter"
                 >
                   {event.name}
                 </span>
@@ -863,21 +862,21 @@ function CompetitionDetailsModal({
           </div>
 
           {/* Last Activity */}
-          <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
-            <div className="flex items-center gap-2 text-[var(--text-muted)] mb-1">
+          <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+            <div className="flex items-center gap-2 text-(--text-muted) mb-1">
               <Activity className="w-3.5 h-3.5" />
               <span className="text-xs font-inter uppercase">
                 Latest Activity
               </span>
             </div>
-            <p className="text-sm font-medium text-[var(--text-primary)] font-inter">
+            <p className="text-sm font-medium text-(--text-primary) font-inter">
               {new Date(competition.latestActivity).toLocaleString()}
             </p>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col-reverse sm:flex-row gap-3 mt-6 pt-4 border-t border-[var(--border)]">
+        <div className="flex flex-col-reverse sm:flex-row gap-3 mt-6 pt-4 border-t border-(--border)">
           <button onClick={onClose} className="flex-1 btn-secondary py-3">
             Close
           </button>
@@ -931,7 +930,7 @@ function RecentSimulationItem({
   };
 
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+    <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
       <div className="flex items-start gap-3">
         {simulation.userAvatar ? (
           <Image
@@ -942,13 +941,13 @@ function RecentSimulationItem({
             className="w-8 h-8 rounded-full object-cover shrink-0"
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-[var(--primary)]/10 flex items-center justify-center shrink-0">
-            <Users className="w-4 h-4 text-[var(--primary)]" />
+          <div className="w-8 h-8 rounded-full bg-(--primary)/10 flex items-center justify-center shrink-0">
+            <Users className="w-4 h-4 text-(--primary)" />
           </div>
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-sm font-medium text-[var(--text-primary)] font-inter truncate">
+            <span className="text-sm font-medium text-(--text-primary) font-inter truncate">
               {simulation.userName}
             </span>
             <span
@@ -957,10 +956,10 @@ function RecentSimulationItem({
               {simulation.status.replace("-", " ")}
             </span>
           </div>
-          <p className="text-xs text-[var(--text-muted)] font-inter truncate mt-0.5">
+          <p className="text-xs text-(--text-muted) font-inter truncate mt-0.5">
             {simulation.competitionName}
           </p>
-          <div className="flex items-center gap-3 mt-2 text-[10px] text-[var(--text-muted)] font-inter">
+          <div className="flex items-center gap-3 mt-2 text-[10px] text-(--text-muted) font-inter">
             <span>
               {simulation.completedEvents}/{simulation.totalEvents} events
             </span>
@@ -998,7 +997,7 @@ function UserActivityItem({
       : 0;
 
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+    <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
       <div className="flex items-start gap-3">
         {user.userAvatar ? (
           <Image
@@ -1009,13 +1008,13 @@ function UserActivityItem({
             className="w-10 h-10 rounded-full object-cover shrink-0"
           />
         ) : (
-          <div className="w-10 h-10 rounded-full bg-[var(--primary)]/10 flex items-center justify-center shrink-0">
-            <Users className="w-5 h-5 text-[var(--primary)]" />
+          <div className="w-10 h-10 rounded-full bg-(--primary)/10 flex items-center justify-center shrink-0">
+            <Users className="w-5 h-5 text-(--primary)" />
           </div>
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-[var(--text-primary)] font-inter truncate">
+            <span className="text-sm font-medium text-(--text-primary) font-inter truncate">
               {user.userName}
             </span>
             {user.userWcaId && (
@@ -1023,7 +1022,7 @@ function UserActivityItem({
                 href={`https://www.worldcubeassociation.org/persons/${user.userWcaId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-[var(--primary)] hover:underline font-inter"
+                className="text-xs text-(--primary) hover:underline font-inter"
               >
                 {user.userWcaId}
               </a>
@@ -1031,10 +1030,10 @@ function UserActivityItem({
           </div>
           <div className="grid grid-cols-4 gap-2 mt-2">
             <div className="text-center">
-              <div className="text-sm font-bold text-[var(--text-primary)] font-statement">
+              <div className="text-sm font-bold text-(--text-primary) font-statement">
                 {user.totalSimulations}
               </div>
-              <div className="text-[10px] text-[var(--text-muted)] font-inter">
+              <div className="text-[10px] text-(--text-muted) font-inter">
                 Sims
               </div>
             </div>
@@ -1050,23 +1049,23 @@ function UserActivityItem({
               >
                 {completionRate}%
               </div>
-              <div className="text-[10px] text-[var(--text-muted)] font-inter">
+              <div className="text-[10px] text-(--text-muted) font-inter">
                 Rate
               </div>
             </div>
             <div className="text-center">
-              <div className="text-sm font-bold text-[var(--text-primary)] font-statement">
+              <div className="text-sm font-bold text-(--text-primary) font-statement">
                 {user.totalSolves}
               </div>
-              <div className="text-[10px] text-[var(--text-muted)] font-inter">
+              <div className="text-[10px] text-(--text-muted) font-inter">
                 Solves
               </div>
             </div>
             <div className="text-center">
-              <div className="text-sm font-bold text-[var(--text-primary)] font-statement">
+              <div className="text-sm font-bold text-(--text-primary) font-statement">
                 {user.eventsCount}
               </div>
-              <div className="text-[10px] text-[var(--text-muted)] font-inter">
+              <div className="text-[10px] text-(--text-muted) font-inter">
                 Events
               </div>
             </div>
@@ -1090,19 +1089,19 @@ function CountryDistribution({
     <div className="space-y-2">
       {countries.map((item) => (
         <div key={item.country} className="flex items-center gap-3">
-          <span className="w-24 text-sm text-[var(--text-secondary)] font-inter truncate">
+          <span className="w-24 text-sm text-(--text-secondary) font-inter truncate">
             {item.country}
           </span>
-          <div className="flex-1 h-2 bg-[var(--surface)] rounded-full overflow-hidden">
+          <div className="flex-1 h-2 bg-(--surface) rounded-full overflow-hidden">
             <div
-              className="h-full bg-[var(--primary)] rounded-full transition-all duration-500"
+              className="h-full bg-(--primary) rounded-full transition-all duration-500"
               style={{ width: `${(item.count / maxCount) * 100}%` }}
             />
           </div>
-          <span className="w-10 text-sm text-[var(--text-primary)] font-inter text-right">
+          <span className="w-10 text-sm text-(--text-primary) font-inter text-right">
             {item.count}
           </span>
-          <span className="w-12 text-xs text-[var(--text-muted)] font-inter text-right">
+          <span className="w-12 text-xs text-(--text-muted) font-inter text-right">
             {total > 0 ? ((item.count / total) * 100).toFixed(0) : 0}%
           </span>
         </div>
@@ -1118,7 +1117,7 @@ function StatsSkeleton() {
       {[...Array(8)].map((_, i) => (
         <div
           key={i}
-          className="h-20 bg-[var(--surface-elevated)] rounded-xl animate-pulse border border-[var(--border)]"
+          className="h-20 bg-(--surface-elevated) rounded-xl animate-pulse border border-(--border)"
         />
       ))}
     </div>
@@ -1185,7 +1184,7 @@ export default function AdminCompetitions() {
           <button
             onClick={handleExportAnalytics}
             disabled={!analytics}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] transition-colors font-inter disabled:opacity-50"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             <span className="hidden sm:inline">Export</span>
@@ -1315,12 +1314,12 @@ export default function AdminCompetitions() {
         >
           {isLoading ? (
             <div className="animate-pulse space-y-4">
-              <div className="h-3 bg-[var(--surface-elevated)] rounded-full" />
+              <div className="h-3 bg-(--surface-elevated) rounded-full" />
               <div className="grid grid-cols-3 gap-3">
                 {[...Array(3)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-16 bg-[var(--surface-elevated)] rounded-lg"
+                    className="h-16 bg-(--surface-elevated) rounded-lg"
                   />
                 ))}
               </div>
@@ -1341,7 +1340,7 @@ export default function AdminCompetitions() {
           defaultOpen={true}
         >
           {isLoading ? (
-            <div className="h-32 bg-[var(--surface-elevated)] rounded-lg animate-pulse" />
+            <div className="h-32 bg-(--surface-elevated) rounded-lg animate-pulse" />
           ) : (
             <>
               <BarChart
@@ -1352,13 +1351,13 @@ export default function AdminCompetitions() {
                 }))}
                 showCompletedOverlay={true}
               />
-              <div className="flex items-center justify-center gap-4 mt-3 text-xs text-[var(--text-muted)]">
+              <div className="flex items-center justify-center gap-4 mt-3 text-xs text-(--text-muted)">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-2 bg-[var(--primary)]/30 rounded" />
+                  <div className="w-3 h-2 bg-(--primary)/30 rounded" />
                   <span>Incomplete</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-2 bg-[var(--primary)] rounded" />
+                  <div className="w-3 h-2 bg-(--primary) rounded" />
                   <span>Completed</span>
                 </div>
               </div>
@@ -1378,14 +1377,14 @@ export default function AdminCompetitions() {
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="h-12 bg-[var(--surface-elevated)] rounded-lg"
+                className="h-12 bg-(--surface-elevated) rounded-lg"
               />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h4 className="text-sm font-medium text-[var(--text-muted)] font-inter uppercase tracking-wide">
+              <h4 className="text-sm font-medium text-(--text-muted) font-inter uppercase tracking-wide">
                 Event Popularity
               </h4>
               <div className="space-y-4">
@@ -1405,7 +1404,7 @@ export default function AdminCompetitions() {
             <div className="space-y-4">
               {analytics.popularEvents.length > 5 && (
                 <>
-                  <h4 className="text-sm font-medium text-[var(--text-muted)] font-inter uppercase tracking-wide">
+                  <h4 className="text-sm font-medium text-(--text-muted) font-inter uppercase tracking-wide">
                     More Events
                   </h4>
                   <div className="space-y-4">
@@ -1441,7 +1440,7 @@ export default function AdminCompetitions() {
               {[...Array(4)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-16 bg-[var(--surface-elevated)] rounded-lg animate-pulse"
+                  className="h-16 bg-(--surface-elevated) rounded-lg animate-pulse"
                 />
               ))}
             </div>
@@ -1462,16 +1461,13 @@ export default function AdminCompetitions() {
           {isLoading ? (
             <div className="animate-pulse space-y-2">
               {[...Array(5)].map((_, i) => (
-                <div
-                  key={i}
-                  className="h-6 bg-[var(--surface-elevated)] rounded"
-                />
+                <div key={i} className="h-6 bg-(--surface-elevated) rounded" />
               ))}
             </div>
           ) : analytics.topCountries.length > 0 ? (
             <CountryDistribution countries={analytics.topCountries} />
           ) : (
-            <p className="text-sm text-[var(--text-muted)] font-inter">
+            <p className="text-sm text-(--text-muted) font-inter">
               No location data available
             </p>
           )}
@@ -1485,13 +1481,13 @@ export default function AdminCompetitions() {
         defaultOpen={true}
         headerExtra={
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
             <input
               type="text"
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-1.5 text-sm bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-inter w-32 sm:w-48"
+              className="pl-9 pr-4 py-1.5 text-sm bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter w-32 sm:w-48"
             />
           </div>
         }
@@ -1501,7 +1497,7 @@ export default function AdminCompetitions() {
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="h-24 bg-[var(--surface-elevated)] rounded-lg"
+                className="h-24 bg-(--surface-elevated) rounded-lg"
               />
             ))}
           </div>
@@ -1515,13 +1511,13 @@ export default function AdminCompetitions() {
               />
             ))}
             {filteredCompetitions.length > 15 && (
-              <p className="text-center text-sm text-[var(--text-muted)] font-inter pt-2">
+              <p className="text-center text-sm text-(--text-muted) font-inter pt-2">
                 Showing 15 of {filteredCompetitions.length} competitions
               </p>
             )}
           </div>
         ) : (
-          <p className="text-center text-sm text-[var(--text-muted)] font-inter py-8">
+          <p className="text-center text-sm text-(--text-muted) font-inter py-8">
             {searchQuery
               ? "No competitions match your search"
               : "No competitions found"}
@@ -1542,7 +1538,7 @@ export default function AdminCompetitions() {
               {[...Array(5)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-20 bg-[var(--surface-elevated)] rounded-lg"
+                  className="h-20 bg-(--surface-elevated) rounded-lg"
                 />
               ))}
             </div>
@@ -1553,7 +1549,7 @@ export default function AdminCompetitions() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-[var(--text-muted)] font-inter">
+            <p className="text-sm text-(--text-muted) font-inter">
               No user activity data
             </p>
           )}
@@ -1570,7 +1566,7 @@ export default function AdminCompetitions() {
               {[...Array(5)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-20 bg-[var(--surface-elevated)] rounded-lg"
+                  className="h-20 bg-(--surface-elevated) rounded-lg"
                 />
               ))}
             </div>
@@ -1581,7 +1577,7 @@ export default function AdminCompetitions() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-[var(--text-muted)] font-inter">
+            <p className="text-sm text-(--text-muted) font-inter">
               No recent simulations
             </p>
           )}

@@ -8,3 +8,4 @@ export { default as ThemeModeSelector } from "./ThemeModeSelector";
 export { default as ColorSchemeSelector } from "./ColorSchemeSelector";
 export { default as TimerCustomization } from "./TimerCustomization";
 export { default as AccessibilitySettings } from "./AccessibilitySettings";
+export { default as KeyboardShortcutsSettings } from "./KeyboardShortcutsSettings";

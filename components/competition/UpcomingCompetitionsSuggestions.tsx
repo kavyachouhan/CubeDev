@@ -147,11 +147,11 @@ export default function UpcomingCompetitionsSuggestions() {
     return (
       <div className="timer-card">
         <div className="text-center py-12">
-          <AlertCircle className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+          <AlertCircle className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
             Sign in Required
           </h3>
-          <p className="text-sm text-[var(--text-secondary)] mb-4">
+          <p className="text-sm text-(--text-secondary) mb-4">
             Sign in with your WCA account to see your registered competitions.
           </p>
         </div>
@@ -164,14 +164,14 @@ export default function UpcomingCompetitionsSuggestions() {
     return (
       <div className="timer-card">
         <div className="text-center py-12">
-          <AlertCircle className="w-12 h-12 text-[var(--error)] mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+          <AlertCircle className="w-12 h-12 text-(--error) mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
             Unable to Load
           </h3>
-          <p className="text-sm text-[var(--text-secondary)] mb-4">{error}</p>
+          <p className="text-sm text-(--text-secondary) mb-4">{error}</p>
           <button
             onClick={handleRefresh}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
           >
             <RefreshCw className="w-4 h-4" />
             Try Again
@@ -186,16 +186,16 @@ export default function UpcomingCompetitionsSuggestions() {
     return (
       <div className="timer-card">
         <div className="text-center py-12">
-          <Trophy className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+          <Trophy className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
             No Upcoming Competitions
           </h3>
-          <p className="text-sm text-[var(--text-secondary)] mb-4">
+          <p className="text-sm text-(--text-secondary) mb-4">
             You&apos;re not registered for any upcoming wca competitions yet.
           </p>
           <Link
             href="/cube-lab/competitions?tab=browse"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
           >
             Browse Competitions
             <ChevronRight className="w-4 h-4" />
@@ -210,33 +210,33 @@ export default function UpcomingCompetitionsSuggestions() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <CircleCheck className="w-5 h-5 text-[var(--primary)]" />
-          <h2 className="text-lg font-bold text-[var(--text-primary)]">
+          <CircleCheck className="w-5 h-5 text-(--primary)" />
+          <h2 className="text-lg font-bold text-(--text-primary)">
             Your Registered Competitions
           </h2>
           {isRefreshing && (
-            <RefreshCw className="w-4 h-4 text-[var(--text-muted)] animate-spin" />
+            <RefreshCw className="w-4 h-4 text-(--text-muted) animate-spin" />
           )}
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors disabled:opacity-50"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-secondary) transition-colors disabled:opacity-50"
             title="Refresh"
           >
             <RefreshCw
               className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
             />
           </button>
-          <span className="text-sm text-[var(--text-muted)]">
+          <span className="text-sm text-(--text-muted)">
             {competitions.length} competition
             {competitions.length !== 1 ? "s" : ""}
           </span>
         </div>
       </div>
 
-      <p className="text-sm text-[var(--text-secondary)]">
+      <p className="text-sm text-(--text-secondary)">
         Practice for your upcoming competitions by running simulations
       </p>
 
@@ -251,30 +251,30 @@ export default function UpcomingCompetitionsSuggestions() {
             <Link
               key={comp.id}
               href={`/cube-lab/competitions/${comp.id}/setup`}
-              className="group timer-card hover:border-[var(--primary)]/50 transition-all"
+              className="group timer-card hover:border-(--primary)/50 transition-all"
             >
               <div className="flex items-start justify-between gap-3 sm:gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start sm:items-center gap-2 flex-wrap">
-                    <h3 className="font-semibold text-[var(--text-primary)] group-hover:text-[var(--primary)] transition-colors text-sm sm:text-base">
+                    <h3 className="font-semibold text-(--text-primary) group-hover:text-(--primary) transition-colors text-sm sm:text-base">
                       {comp.name}
                     </h3>
                     <span
-                      className={`flex-shrink-0 px-2 py-0.5 text-xs font-medium rounded-full border ${
+                      className={`shrink-0 px-2 py-0.5 text-xs font-medium rounded-full border ${
                         isOngoing
-                          ? "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/30"
+                          ? "bg-(--success)/10 text-(--success) border-(--success)/30"
                           : isUrgent
-                            ? "bg-[var(--warning)]/10 text-[var(--warning)] border-[var(--warning)]/30"
-                            : "bg-[var(--surface-elevated)] text-[var(--text-muted)] border-[var(--border)]"
+                            ? "bg-(--warning)/10 text-(--warning) border-(--warning)/30"
+                            : "bg-(--surface-elevated) text-(--text-muted) border-(--border)"
                       }`}
                     >
                       {getCountdownText(comp.start_date)}
                     </span>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-2 text-xs sm:text-sm text-[var(--text-muted)]">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-2 text-xs sm:text-sm text-(--text-muted)">
                     <span className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
+                      <Calendar className="w-3.5 h-3.5 shrink-0" />
                       <span>
                         {formatCompetitionDateRange(
                           comp.start_date,
@@ -283,7 +283,7 @@ export default function UpcomingCompetitionsSuggestions() {
                       </span>
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                      <MapPin className="w-3.5 h-3.5 shrink-0" />
                       <span className="truncate">
                         {comp.city}, {comp.country_iso2}
                       </span>
@@ -299,7 +299,7 @@ export default function UpcomingCompetitionsSuggestions() {
                           <div
                             key={eventId}
                             title={event.name}
-                            className="p-1.5 rounded bg-[var(--surface-elevated)] border border-[var(--border)]"
+                            className="p-1.5 rounded bg-(--surface-elevated) border border-(--border)"
                           >
                             <Image
                               src={event.icon}
@@ -312,7 +312,7 @@ export default function UpcomingCompetitionsSuggestions() {
                         ) : null;
                       })}
                       {comp.event_ids.length > 10 && (
-                        <span className="px-2 py-1 text-xs text-[var(--text-muted)] bg-[var(--surface-elevated)] rounded border border-[var(--border)]">
+                        <span className="px-2 py-1 text-xs text-(--text-muted) bg-(--surface-elevated) rounded border border-(--border)">
                           +{comp.event_ids.length - 10}
                         </span>
                       )}
@@ -320,8 +320,8 @@ export default function UpcomingCompetitionsSuggestions() {
                   )}
                 </div>
 
-                <div className="flex-shrink-0">
-                  <span className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-[var(--primary)] text-white text-xs sm:text-sm font-medium rounded-lg group-hover:opacity-90 transition-opacity">
+                <div className="shrink-0">
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-(--primary) text-white text-xs sm:text-sm font-medium rounded-lg group-hover:opacity-90 transition-opacity">
                     <Play className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Simulate</span>
                   </span>

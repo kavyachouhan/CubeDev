@@ -58,10 +58,10 @@ export default function CoachScheduleSelector({
     <div className="space-y-6">
       {/* Header Card */}
       <div className="timer-card text-center">
-        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+        <h2 className="text-2xl font-bold text-(--text-primary) mb-2">
           How Much Time Can You Commit?
         </h2>
-        <p className="text-[var(--text-secondary)]">
+        <p className="text-(--text-secondary)">
           Tell us your availability so we can create a personalized training schedule.
         </p>
       </div>
@@ -69,8 +69,8 @@ export default function CoachScheduleSelector({
       {/* Daily Practice Time Card */}
       <div className="timer-card">
         <div className="flex items-center gap-2 mb-4">
-          <Clock className="w-5 h-5 text-[var(--primary)]" />
-          <h3 className="font-semibold text-[var(--text-primary)]">Daily Practice Time</h3>
+          <Clock className="w-5 h-5 text-(--primary)" />
+          <h3 className="font-semibold text-(--text-primary)">Daily Practice Time</h3>
         </div>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -80,16 +80,16 @@ export default function CoachScheduleSelector({
               onClick={() => onUpdate({ dailyPracticeMinutes: option.id })}
               className={`p-3 rounded-lg border text-center transition-all ${
                 data.dailyPracticeMinutes === option.id
-                  ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                  : "bg-[var(--surface-elevated)] border-[var(--border)] hover:border-[var(--border-hover)]"
+                  ? "bg-(--primary)/10 border-(--primary)"
+                  : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
               }`}
             >
               <span className={`font-semibold block ${
-                data.dailyPracticeMinutes === option.id ? "text-[var(--primary)]" : "text-[var(--text-primary)]"
+                data.dailyPracticeMinutes === option.id ? "text-(--primary)" : "text-(--text-primary)"
               }`}>
                 {option.label}
               </span>
-              <span className="text-xs text-[var(--text-muted)]">{option.description}</span>
+              <span className="text-xs text-(--text-muted)">{option.description}</span>
             </button>
           ))}
         </div>
@@ -98,8 +98,8 @@ export default function CoachScheduleSelector({
       {/* Practice Days Card */}
       <div className="timer-card">
         <div className="flex items-center gap-2 mb-4">
-          <Calendar className="w-5 h-5 text-[var(--primary)]" />
-          <h3 className="font-semibold text-[var(--text-primary)]">Practice Days</h3>
+          <Calendar className="w-5 h-5 text-(--primary)" />
+          <h3 className="font-semibold text-(--text-primary)">Practice Days</h3>
         </div>
 
         {/* Preset Schedules */}
@@ -112,8 +112,8 @@ export default function CoachScheduleSelector({
                 onClick={() => applyPreset(preset.days)}
                 className={`px-3 py-1.5 rounded-full text-sm transition-all ${
                   isActive
-                    ? "bg-[var(--primary)] text-white"
-                    : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--surface)]"
+                    ? "bg-(--primary) text-white"
+                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--surface)"
                 }`}
               >
                 {preset.label}
@@ -132,12 +132,12 @@ export default function CoachScheduleSelector({
                 onClick={() => toggleDay(day.id)}
                 className={`p-3 rounded-lg border text-center transition-all ${
                   isSelected
-                    ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                    : "bg-[var(--surface-elevated)] border-[var(--border)] hover:border-[var(--border-hover)]"
+                    ? "bg-(--primary)/10 border-(--primary)"
+                    : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
                 }`}
               >
                 <span className={`font-medium block text-sm ${
-                  isSelected ? "text-[var(--primary)]" : "text-[var(--text-primary)]"
+                  isSelected ? "text-(--primary)" : "text-(--text-primary)"
                 }`}>
                   {day.label}
                 </span>
@@ -150,34 +150,34 @@ export default function CoachScheduleSelector({
       {/* Weekly Summary Card */}
       <div className="timer-card">
         <div className="flex items-center gap-2 mb-4">
-          <CheckSquare className="w-5 h-5 text-[var(--primary)]" />
-          <h3 className="font-semibold text-[var(--text-primary)]">Weekly Summary</h3>
+          <CheckSquare className="w-5 h-5 text-(--primary)" />
+          <h3 className="font-semibold text-(--text-primary)">Weekly Summary</h3>
         </div>
         
         <div className="grid grid-cols-3 gap-4 mb-4">
-          <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-            <span className="text-xs text-[var(--text-muted)] block mb-1">Practice Days</span>
-            <span className="text-xl font-bold text-[var(--text-primary)]">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+            <span className="text-xs text-(--text-muted) block mb-1">Practice Days</span>
+            <span className="text-xl font-bold text-(--text-primary)">
               {schedule.length}
             </span>
           </div>
-          <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-            <span className="text-xs text-[var(--text-muted)] block mb-1">Daily Time</span>
-            <span className="text-xl font-bold text-[var(--text-primary)]">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+            <span className="text-xs text-(--text-muted) block mb-1">Daily Time</span>
+            <span className="text-xl font-bold text-(--text-primary)">
               {data.dailyPracticeMinutes}m
             </span>
           </div>
-          <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-            <span className="text-xs text-[var(--text-muted)] block mb-1">Weekly Total</span>
-            <span className="text-xl font-bold text-[var(--primary)]">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+            <span className="text-xs text-(--text-muted) block mb-1">Weekly Total</span>
+            <span className="text-xl font-bold text-(--primary)">
               {totalWeeklyHours.toFixed(1)}h
             </span>
           </div>
         </div>
 
         {/* Practice Calendar Preview */}
-        <div className="pt-4 border-t border-[var(--border)]">
-          <span className="text-xs text-[var(--text-muted)] block mb-2">Your practice week:</span>
+        <div className="pt-4 border-t border-(--border)">
+          <span className="text-xs text-(--text-muted) block mb-2">Your practice week:</span>
           <div className="flex gap-1">
             {DAYS_OF_WEEK.map((day) => {
               const isSelected = schedule.includes(day.id);
@@ -186,8 +186,8 @@ export default function CoachScheduleSelector({
                   key={day.id}
                   className={`flex-1 h-8 rounded flex items-center justify-center text-xs font-medium ${
                     isSelected
-                      ? "bg-[var(--primary)] text-white"
-                      : "bg-[var(--surface)] text-[var(--text-muted)]"
+                      ? "bg-(--primary) text-white"
+                      : "bg-(--surface) text-(--text-muted)"
                   }`}
                 >
                   {day.label[0]}
@@ -200,13 +200,13 @@ export default function CoachScheduleSelector({
 
       {/* Validation Message */}
       {schedule.length === 0 && (
-        <div className="p-3 bg-[var(--warning)]/10 border border-[var(--warning)]/30 rounded-lg text-sm text-[var(--warning)]">
+        <div className="p-3 bg-(--warning)/10 border border-(--warning)/30 rounded-lg text-sm text-(--warning)">
           Please select at least one practice day to continue.
         </div>
       )}
 
       {schedule.length > 0 && schedule.length < 3 && (
-        <div className="p-3 bg-[var(--info)]/10 border border-[var(--info)]/30 rounded-lg text-sm text-[var(--info)]">
+        <div className="p-3 bg-(--info)/10 border border-(--info)/30 rounded-lg text-sm text-(--info)">
           Practicing more days per week will help you reach your goal faster. Consider adding more practice days if possible.
         </div>
       )}

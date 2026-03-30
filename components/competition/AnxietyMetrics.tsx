@@ -237,22 +237,22 @@ export default function AnxietyMetrics() {
   const getStatusColor = (status: AnxietyMetric["status"]) => {
     switch (status) {
       case "good":
-        return "text-[var(--success)]";
+        return "text-(--success)";
       case "warning":
-        return "text-[var(--warning)]";
+        return "text-(--warning)";
       case "alert":
-        return "text-[var(--error)]";
+        return "text-(--error)";
     }
   };
 
   const getStatusBg = (status: AnxietyMetric["status"]) => {
     switch (status) {
       case "good":
-        return "bg-[var(--success)]/10";
+        return "bg-(--success)/10";
       case "warning":
-        return "bg-[var(--warning)]/10";
+        return "bg-(--warning)/10";
       case "alert":
-        return "bg-[var(--error)]/10";
+        return "bg-(--error)/10";
     }
   };
 
@@ -313,10 +313,10 @@ export default function AnxietyMetrics() {
       <div className="timer-card">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-[var(--text-primary)]">
+            <h2 className="text-xl font-bold text-(--text-primary)">
               Performance Analysis
             </h2>
-            <p className="text-sm text-[var(--text-muted)] mt-1">
+            <p className="text-sm text-(--text-muted) mt-1">
               Analyze your competition anxiety patterns and improve under
               pressure.
             </p>
@@ -328,13 +328,13 @@ export default function AnxietyMetrics() {
       <div className="timer-card">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-sm text-[var(--text-secondary)] block mb-2">
+            <label className="text-sm text-(--text-secondary) block mb-2">
               Event
             </label>
             <select
               value={selectedEvent}
               onChange={(e) => setSelectedEvent(e.target.value)}
-              className="w-full px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
             >
               {WCA_EVENTS.map((event) => (
                 <option key={event.id} value={event.id}>
@@ -344,7 +344,7 @@ export default function AnxietyMetrics() {
             </select>
           </div>
           <div>
-            <label className="text-sm text-[var(--text-secondary)] block mb-2">
+            <label className="text-sm text-(--text-secondary) block mb-2">
               Time Range
             </label>
             <div className="flex gap-2">
@@ -354,8 +354,8 @@ export default function AnxietyMetrics() {
                   onClick={() => setTimeRange(range)}
                   className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                     timeRange === range
-                      ? "bg-[var(--primary)] text-white"
-                      : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                      ? "bg-(--primary) text-white"
+                      : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary)"
                   }`}
                 >
                   {range === "week"
@@ -394,15 +394,15 @@ export default function AnxietyMetrics() {
                       />
                     )}
                   </div>
-                  <span className="font-medium text-[var(--text-primary)]">
+                  <span className="font-medium text-(--text-primary)">
                     {metric.name}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
                   {metric.trend === "up" ? (
-                    <TrendingUp className="w-4 h-4 text-[var(--success)]" />
+                    <TrendingUp className="w-4 h-4 text-(--success)" />
                   ) : metric.trend === "down" ? (
-                    <TrendingDown className="w-4 h-4 text-[var(--error)]" />
+                    <TrendingDown className="w-4 h-4 text-(--error)" />
                   ) : null}
                 </div>
               </div>
@@ -410,26 +410,26 @@ export default function AnxietyMetrics() {
               {/* Progress Bar */}
               <div className="mb-3">
                 <div className="flex items-center justify-between text-sm mb-1">
-                  <span className="text-[var(--text-muted)]">Score</span>
+                  <span className="text-(--text-muted)">Score</span>
                   <span className={getStatusColor(metric.status)}>
                     {Math.round(metric.value)}%
                   </span>
                 </div>
-                <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                   <div
                     className={`h-full transition-all ${
                       metric.status === "good"
-                        ? "bg-[var(--success)]"
+                        ? "bg-(--success)"
                         : metric.status === "warning"
-                          ? "bg-[var(--warning)]"
-                          : "bg-[var(--error)]"
+                          ? "bg-(--warning)"
+                          : "bg-(--error)"
                     }`}
                     style={{ width: `${metric.value}%` }}
                   />
                 </div>
               </div>
 
-              <p className="text-sm text-[var(--text-muted)]">
+              <p className="text-sm text-(--text-muted)">
                 {metric.description}
               </p>
             </div>
@@ -437,11 +437,11 @@ export default function AnxietyMetrics() {
         </div>
       ) : (
         <div className="timer-card text-center py-12">
-          <BarChart3 className="w-16 h-16 text-[var(--text-muted)] mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+          <BarChart3 className="w-16 h-16 text-(--text-muted) mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-(--text-primary) mb-2">
             Not Enough Data Yet
           </h3>
-          <p className="text-[var(--text-muted)] max-w-md mx-auto">
+          <p className="text-(--text-muted) max-w-md mx-auto">
             Complete at least 5 practice sessions and 5 competition simulations
             to see your anxiety metrics and performance analysis.
           </p>
@@ -451,19 +451,19 @@ export default function AnxietyMetrics() {
       {/* Comparison Stats */}
       {practiceSolves.length > 0 || competitionSolves.length > 0 ? (
         <div className="timer-card">
-          <h3 className="font-bold text-[var(--text-primary)] mb-4">
+          <h3 className="font-bold text-(--text-primary) mb-4">
             Session Comparison
           </h3>
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-[var(--surface-elevated)] rounded-lg text-center">
-              <div className="text-xs text-[var(--text-muted)] mb-1">
+            <div className="p-4 bg-(--surface-elevated) rounded-lg text-center">
+              <div className="text-xs text-(--text-muted) mb-1">
                 Practice Sessions
               </div>
-              <div className="text-2xl font-bold text-[var(--text-primary)]">
+              <div className="text-2xl font-bold text-(--text-primary)">
                 {practiceSolves.length}
               </div>
               {practiceSolves.length > 0 && (
-                <div className="text-sm text-[var(--text-muted)] mt-1">
+                <div className="text-sm text-(--text-muted) mt-1">
                   Avg:{" "}
                   {formatTime(
                     practiceSolves.reduce((a, b) => a + b.time, 0) /
@@ -472,15 +472,15 @@ export default function AnxietyMetrics() {
                 </div>
               )}
             </div>
-            <div className="p-4 bg-[var(--surface-elevated)] rounded-lg text-center">
-              <div className="text-xs text-[var(--text-muted)] mb-1">
+            <div className="p-4 bg-(--surface-elevated) rounded-lg text-center">
+              <div className="text-xs text-(--text-muted) mb-1">
                 Competition Simulations
               </div>
-              <div className="text-2xl font-bold text-[var(--primary)]">
+              <div className="text-2xl font-bold text-(--primary)">
                 {competitionSolves.length}
               </div>
               {competitionSolves.length > 0 && (
-                <div className="text-sm text-[var(--text-muted)] mt-1">
+                <div className="text-sm text-(--text-muted) mt-1">
                   Avg:{" "}
                   {formatTime(
                     competitionSolves.reduce((a, b) => a + b.time, 0) /
@@ -496,18 +496,18 @@ export default function AnxietyMetrics() {
       {/* Tips */}
       <div className="timer-card">
         <div className="flex items-center gap-2 mb-4">
-          <Brain className="w-5 h-5 text-[var(--primary)]" />
-          <h3 className="font-bold text-[var(--text-primary)]">
+          <Brain className="w-5 h-5 text-(--primary)" />
+          <h3 className="font-bold text-(--text-primary)">
             Improvement Tips
           </h3>
         </div>
         <ul className="space-y-3">
           {tips.map((tip, idx) => (
             <li key={idx} className="flex items-start gap-3">
-              <div className="p-1 mt-0.5 bg-[var(--primary)]/10 rounded">
-                <Zap className="w-3 h-3 text-[var(--primary)]" />
+              <div className="p-1 mt-0.5 bg-(--primary)/10 rounded">
+                <Zap className="w-3 h-3 text-(--primary)" />
               </div>
-              <span className="text-sm text-[var(--text-secondary)]">
+              <span className="text-sm text-(--text-secondary)">
                 {tip}
               </span>
             </li>
@@ -516,14 +516,14 @@ export default function AnxietyMetrics() {
       </div>
 
       {/* Info Card */}
-      <div className="timer-card bg-[var(--surface-elevated)]">
+      <div className="timer-card bg-(--surface-elevated)">
         <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-[var(--info)] flex-shrink-0 mt-0.5" />
+          <Info className="w-5 h-5 text-(--info) shrink-0 mt-0.5" />
           <div>
-            <h4 className="font-medium text-[var(--text-primary)] mb-1">
+            <h4 className="font-medium text-(--text-primary) mb-1">
               About Competition Anxiety Metrics
             </h4>
-            <p className="text-sm text-[var(--text-muted)]">
+            <p className="text-sm text-(--text-muted)">
               These metrics compare your performance in practice mode vs
               competition simulation mode. A lower anxiety index means you
               perform consistently regardless of pressure. Track these over time

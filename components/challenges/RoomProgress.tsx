@@ -22,18 +22,18 @@ export default function RoomProgress({
   return (
     <div className="timer-card">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
           Your Progress
         </h3>
-        <span className="text-sm text-[var(--text-muted)] font-inter">
+        <span className="text-sm text-(--text-muted) font-inter">
           {currentSolveIndex} / {totalSolves}
         </span>
       </div>
 
       <div className="space-y-4">
-        <div className="w-full bg-[var(--surface-elevated)] rounded-full h-3">
+        <div className="w-full bg-(--surface-elevated) rounded-full h-3">
           <div
-            className="bg-[var(--primary)] h-3 rounded-full transition-all duration-300"
+            className="bg-(--primary) h-3 rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>

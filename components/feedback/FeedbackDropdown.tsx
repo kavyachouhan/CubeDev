@@ -61,7 +61,7 @@ export default function FeedbackDropdown({
   return (
     <div className="relative" ref={dropdownRef}>
       {label && (
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+        <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
           {label}
         </label>
       )}
@@ -70,17 +70,17 @@ export default function FeedbackDropdown({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg hover:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
+        className="w-full flex items-center justify-between px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg hover:border-(--primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all"
       >
         <span
           className={`text-sm font-medium truncate font-inter ${
-            value ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"
+            value ? "text-(--text-primary)" : "text-(--text-muted)"
           }`}
         >
           {displayText}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-[var(--text-muted)] flex-shrink-0 transition-transform duration-200 ${
+          className={`w-4 h-4 text-(--text-muted) shrink-0 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -88,7 +88,7 @@ export default function FeedbackDropdown({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto">
           {/* Empty option */}
           <button
             type="button"
@@ -98,13 +98,13 @@ export default function FeedbackDropdown({
             }}
             className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors font-inter ${
               !value
-                ? "text-[var(--primary)] bg-[var(--primary)]/10"
-                : "text-[var(--text-muted)] hover:bg-[var(--surface-elevated)]"
+                ? "text-(--primary) bg-(--primary)/10"
+                : "text-(--text-muted) hover:bg-(--surface-elevated)"
             }`}
           >
             <span className="truncate">{placeholder}</span>
             {!value && (
-              <Check className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+              <Check className="w-4 h-4 text-(--primary) shrink-0" />
             )}
           </button>
 
@@ -116,15 +116,15 @@ export default function FeedbackDropdown({
                 onChange(option.value);
                 setIsOpen(false);
               }}
-              className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors font-inter border-t border-[var(--border)]/50 ${
+              className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors font-inter border-t border-(--border)/50 ${
                 value === option.value
-                  ? "text-[var(--primary)] bg-[var(--primary)]/10"
-                  : "text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                  ? "text-(--primary) bg-(--primary)/10"
+                  : "text-(--text-primary) hover:bg-(--surface-elevated)"
               }`}
             >
               <span className="truncate">{option.label}</span>
               {value === option.value && (
-                <Check className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+                <Check className="w-4 h-4 text-(--primary) shrink-0" />
               )}
             </button>
           ))}

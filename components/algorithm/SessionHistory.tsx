@@ -98,8 +98,8 @@ export default function SessionHistory({
   if (sessions.length === 0) {
     return (
       <div className="timer-card text-center py-8">
-        <History className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-        <p className="text-[var(--text-muted)]">
+        <History className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
+        <p className="text-(--text-muted)">
           No practice sessions yet. Start practicing to see your history here.
         </p>
       </div>
@@ -110,7 +110,7 @@ export default function SessionHistory({
     <div className="timer-card">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-bold text-[var(--text-primary)] font-statement">
+          <h3 className="text-lg font-bold text-(--text-primary) font-statement">
             Practice History
           </h3>
         </div>
@@ -122,7 +122,7 @@ export default function SessionHistory({
 
       {displaySessions.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-[var(--text-muted)]">
+          <p className="text-(--text-muted)">
             No {selectedType} sessions found.
           </p>
         </div>
@@ -135,7 +135,7 @@ export default function SessionHistory({
             return (
               <div
                 key={session._id}
-                className="p-4 rounded-lg bg-[var(--surface-elevated)] hover:border-[var(--border-hover)] border border-transparent transition-colors"
+                className="p-4 rounded-lg bg-(--surface-elevated) hover:border-(--border-hover) border border-transparent transition-colors"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   {/* Session Info */}
@@ -144,10 +144,10 @@ export default function SessionHistory({
                       <IconComponent className={`w-5 h-5 ${config.text}`} />
                     </div>
                     <div>
-                      <div className="font-semibold text-[var(--text-primary)] capitalize">
+                      <div className="font-semibold text-(--text-primary) capitalize">
                         {session.sessionType} Practice
                       </div>
-                      <div className="text-sm text-[var(--text-muted)] flex items-center gap-2">
+                      <div className="text-sm text-(--text-muted) flex items-center gap-2">
                         <span>
                           {new Date(session.createdAt).toLocaleDateString(
                             "en-US",
@@ -158,7 +158,7 @@ export default function SessionHistory({
                             }
                           )}
                         </span>
-                        <span className="w-1 h-1 rounded-full bg-[var(--text-muted)]" />
+                        <span className="w-1 h-1 rounded-full bg-(--text-muted)" />
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {formatDuration(session.duration)}
@@ -170,27 +170,27 @@ export default function SessionHistory({
                   {/* Session Stats */}
                   <div className="flex gap-6 sm:gap-8">
                     <div className="text-center">
-                      <div className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                      <div className="text-lg font-bold text-(--text-primary) font-statement">
                         {session.casesReviewed}
                       </div>
-                      <div className="text-xs text-[var(--text-muted)]">
+                      <div className="text-xs text-(--text-muted)">
                         Cases
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                      <div className="text-lg font-bold text-(--text-primary) font-statement">
                         {session.accuracyRate.toFixed(0)}%
                       </div>
-                      <div className="text-xs text-[var(--text-muted)]">
+                      <div className="text-xs text-(--text-muted)">
                         Accuracy
                       </div>
                     </div>
                     {session.averageRecognitionTime && (
                       <div className="text-center">
-                        <div className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                        <div className="text-lg font-bold text-(--text-primary) font-statement">
                           {formatTime(session.averageRecognitionTime)}
                         </div>
-                        <div className="text-xs text-[var(--text-muted)]">
+                        <div className="text-xs text-(--text-muted)">
                           Avg Time
                         </div>
                       </div>
@@ -205,8 +205,8 @@ export default function SessionHistory({
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t border-[var(--border)]">
-          <p className="text-sm text-[var(--text-muted)]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t border-(--border)">
+          <p className="text-sm text-(--text-muted)">
             Showing {startIndex + 1}-
             {Math.min(endIndex, filteredSessions.length)} of{" "}
             {filteredSessions.length} sessions
@@ -215,12 +215,12 @@ export default function SessionHistory({
             <button
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="p-2 rounded-lg border border-[var(--border)] hover:bg-[var(--surface-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-2 rounded-lg border border-(--border) hover:bg-(--surface-elevated) disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               aria-label="Previous page"
             >
-              <ChevronLeft className="w-4 h-4 text-[var(--text-primary)]" />
+              <ChevronLeft className="w-4 h-4 text-(--text-primary)" />
             </button>
-            <span className="text-sm text-[var(--text-primary)] min-w-[80px] text-center font-medium">
+            <span className="text-sm text-(--text-primary) min-w-[80px] text-center font-medium">
               Page {currentPage} of {totalPages}
             </span>
             <button
@@ -228,10 +228,10 @@ export default function SessionHistory({
                 setCurrentPage((prev) => Math.min(totalPages, prev + 1))
               }
               disabled={currentPage === totalPages}
-              className="p-2 rounded-lg border border-[var(--border)] hover:bg-[var(--surface-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-2 rounded-lg border border-(--border) hover:bg-(--surface-elevated) disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               aria-label="Next page"
             >
-              <ChevronRight className="w-4 h-4 text-[var(--text-primary)]" />
+              <ChevronRight className="w-4 h-4 text-(--text-primary)" />
             </button>
           </div>
         </div>

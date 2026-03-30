@@ -106,22 +106,22 @@ export default function AccountDeletionSection() {
       <div className="timer-card">
         <div className="flex items-center gap-3 mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+            <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
               Delete Account
             </h3>
-            <p className="text-sm text-[var(--text-muted)]">
+            <p className="text-sm text-(--text-muted)">
               Permanently remove your CubeDev account and all associated data
             </p>
           </div>
         </div>
 
-        <div className="bg-[var(--error)]/10 border border-[var(--error)]/30 rounded-lg p-4 mb-6">
+        <div className="bg-(--error)/10 border border-(--error)/30 rounded-lg p-4 mb-6">
           <div className="flex items-start gap-3">
             <div>
-              <h4 className="font-semibold text-[var(--error)] mb-2">
+              <h4 className="font-semibold text-(--error) mb-2">
                 What happens when you delete your account:
               </h4>
-              <ul className="text-sm text-[var(--error)]/80 space-y-1">
+              <ul className="text-sm text-(--error)/80 space-y-1">
                 <li>• All your timer data and solve history will be removed</li>
                 <li>• Your challenge room participation will be anonymized</li>
                 <li>• Your profile will be hidden from public view</li>
@@ -134,7 +134,7 @@ export default function AccountDeletionSection() {
 
         <button
           onClick={() => setIsDeleteModalOpen(true)}
-          className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-[var(--error)] hover:opacity-90 text-white rounded-lg font-medium transition-all text-sm md:text-base w-full sm:w-auto"
+          className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-(--error) hover:opacity-90 text-white rounded-lg font-medium transition-all text-sm md:text-base w-full sm:w-auto"
         >
           <Trash2 className="w-4 h-4" />
           Delete My Account
@@ -144,10 +144,10 @@ export default function AccountDeletionSection() {
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-[var(--surface)] rounded-lg shadow-xl max-w-md w-full border border-[var(--border)]">
+          <div className="bg-(--surface) rounded-lg shadow-xl max-w-md w-full border border-(--border)">
             <div className="p-4 md:p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base md:text-lg font-semibold text-[var(--text-primary)] flex items-center gap-2">
+                <h3 className="text-base md:text-lg font-semibold text-(--text-primary) flex items-center gap-2">
                   Confirm Account Deletion
                 </h3>
                 <button
@@ -155,21 +155,21 @@ export default function AccountDeletionSection() {
                     setIsDeleteModalOpen(false);
                     setDeleteConfirmation("");
                   }}
-                  className="p-1 hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+                  className="p-1 hover:bg-(--surface-elevated) rounded-md transition-colors"
                 >
-                  <X className="w-4 h-4 text-[var(--text-muted)]" />
+                  <X className="w-4 h-4 text-(--text-muted)" />
                 </button>
               </div>
 
               <div className="mb-6">
-                <p className="text-[var(--text-secondary)] mb-4 text-sm md:text-base">
+                <p className="text-(--text-secondary) mb-4 text-sm md:text-base">
                   This action cannot be undone. This will permanently delete
                   your account and remove all your data from CubeDev.
                 </p>
 
-                <label className="block text-xs md:text-sm font-medium text-[var(--text-secondary)] mb-2">
+                <label className="block text-xs md:text-sm font-medium text-(--text-secondary) mb-2">
                   Type{" "}
-                  <span className="font-bold text-[var(--error)]">DELETE</span>{" "}
+                  <span className="font-bold text-(--error)">DELETE</span>{" "}
                   to confirm:
                 </label>
                 <input
@@ -177,7 +177,7 @@ export default function AccountDeletionSection() {
                   value={deleteConfirmation}
                   onChange={(e) => setDeleteConfirmation(e.target.value)}
                   placeholder="DELETE"
-                  className="w-full px-3 py-2 border border-[var(--border)] rounded-md bg-[var(--surface-elevated)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--error)] text-sm md:text-base"
+                  className="w-full px-3 py-2 border border-(--border) rounded-md bg-(--surface-elevated) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--error) text-sm md:text-base"
                 />
               </div>
 
@@ -187,14 +187,14 @@ export default function AccountDeletionSection() {
                     setIsDeleteModalOpen(false);
                     setDeleteConfirmation("");
                   }}
-                  className="flex-1 px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-md text-[var(--text-primary)] font-medium transition-colors text-sm md:text-base"
+                  className="flex-1 px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-primary) font-medium transition-colors text-sm md:text-base"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteAccount}
                   disabled={deleteConfirmation !== "DELETE" || isDeleting}
-                  className="flex-1 px-4 py-2 bg-[var(--error)] hover:opacity-90 text-white rounded-md font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm md:text-base"
+                  className="flex-1 px-4 py-2 bg-(--error) hover:opacity-90 text-white rounded-md font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm md:text-base"
                 >
                   {isDeleting ? (
                     <>

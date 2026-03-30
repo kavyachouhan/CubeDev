@@ -97,11 +97,11 @@ export default function AppWalkthrough({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-lg timer-card border-[var(--border)] animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-lg timer-card border-(--border) animate-in fade-in zoom-in-95 duration-200">
         {/* Close Button */}
         <button
           onClick={handleSkip}
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors z-10"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors z-10"
           aria-label="Close walkthrough"
         >
           <X className="w-5 h-5" />
@@ -109,11 +109,11 @@ export default function AppWalkthrough({
 
         {/* Header */}
         <div className="mb-6 pr-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] font-statement">
+          <h2 className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement">
             {title}
           </h2>
           {subtitle && (
-            <p className="text-sm text-[var(--text-muted)] mt-1">{subtitle}</p>
+            <p className="text-sm text-(--text-muted) mt-1">{subtitle}</p>
           )}
         </div>
 
@@ -131,14 +131,14 @@ export default function AppWalkthrough({
               <div
                 className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
                   index === currentStep
-                    ? "bg-[var(--primary)]"
+                    ? "bg-(--primary)"
                     : index < currentStep
-                      ? "bg-[var(--primary)]/50"
-                      : "bg-[var(--border)] hover:bg-[var(--border-hover)]"
+                      ? "bg-(--primary)/50"
+                      : "bg-(--border) hover:bg-(--border-hover)"
                 }`}
               />
               {/* Tooltip */}
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-[var(--text-primary)] bg-[var(--surface-elevated)] border border-[var(--border)] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-(--text-primary) bg-(--surface-elevated) border border-(--border) rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                 {s.title}
               </div>
             </button>
@@ -149,15 +149,15 @@ export default function AppWalkthrough({
         <div className="min-h-[140px] sm:min-h-[160px]">
           <div className="flex items-start gap-4">
             {step.icon && (
-              <div className="shrink-0 p-3 bg-[var(--primary)]/10 rounded-xl">
-                <span className="text-[var(--primary)]">{step.icon}</span>
+              <div className="shrink-0 p-3 bg-(--primary)/10 rounded-xl">
+                <span className="text-(--primary)">{step.icon}</span>
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+              <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
                 {step.title}
               </h3>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+              <p className="text-sm text-(--text-secondary) leading-relaxed">
                 {step.description}
               </p>
             </div>
@@ -165,14 +165,14 @@ export default function AppWalkthrough({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-[var(--border)]">
+        <div className="flex items-center justify-between mt-6 pt-4 border-t border-(--border)">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[var(--text-muted)]">
+            <span className="text-xs text-(--text-muted)">
               {currentStep + 1} of {steps.length}
             </span>
             <button
               onClick={handleSkip}
-              className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors ml-2"
+              className="text-xs text-(--text-muted) hover:text-(--text-primary) transition-colors ml-2"
             >
               Skip
             </button>
@@ -181,7 +181,7 @@ export default function AppWalkthrough({
             {!isFirstStep && (
               <button
                 onClick={handlePrev}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-[var(--border)] rounded-lg hover:bg-[var(--surface-elevated)] hover:border-[var(--border-hover)] text-[var(--text-primary)] transition-colors"
+                className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-(--border) rounded-lg hover:bg-(--surface-elevated) hover:border-(--border-hover) text-(--text-primary) transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span className="hidden sm:inline">Back</span>
@@ -189,7 +189,7 @@ export default function AppWalkthrough({
             )}
             <button
               onClick={handleNext}
-              className="flex items-center gap-1 px-4 py-1.5 text-sm font-medium bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors"
+              className="flex items-center gap-1 px-4 py-1.5 text-sm font-medium bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors"
             >
               {isLastStep ? (
                 <>

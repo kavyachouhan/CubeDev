@@ -59,7 +59,7 @@ export default function RegionDropdown({
   return (
     <div className="relative" ref={dropdownRef}>
       {label && (
-        <label className="text-sm text-[var(--text-secondary)] mb-1.5 block">
+        <label className="text-sm text-(--text-secondary) mb-1.5 block">
           {label}
         </label>
       )}
@@ -68,16 +68,16 @@ export default function RegionDropdown({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg hover:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
+        className="w-full flex items-center justify-between px-3 py-2 bg-(--surface) border border-(--border) rounded-lg hover:border-(--primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all"
       >
         <div className="flex items-center gap-2 min-w-0">
-          <MapPin className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
-          <span className="text-sm font-medium text-[var(--text-primary)] truncate">
+          <MapPin className="w-4 h-4 text-(--primary) shrink-0" />
+          <span className="text-sm font-medium text-(--text-primary) truncate">
             {selectedRegionName}
           </span>
         </div>
         <ChevronDown
-          className={`w-4 h-4 text-[var(--text-muted)] flex-shrink-0 transition-transform duration-200 ${
+          className={`w-4 h-4 text-(--text-muted) shrink-0 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -85,7 +85,7 @@ export default function RegionDropdown({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-200 max-h-64 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-200 max-h-64 overflow-y-auto">
           {regions.map((region, index) => (
             <button
               key={region.code}
@@ -95,18 +95,18 @@ export default function RegionDropdown({
                 setIsOpen(false);
               }}
               className={`w-full flex items-center justify-between px-3 py-2.5 text-sm transition-colors ${
-                index !== 0 ? "border-t border-[var(--border)]/50" : ""
+                index !== 0 ? "border-t border-(--border)/50" : ""
               } ${
                 selectedRegion === region.code
-                  ? "text-[var(--primary)] bg-[var(--primary)]/10"
-                  : "text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]"
+                  ? "text-(--primary) bg-(--primary)/10"
+                  : "text-(--text-primary) hover:bg-(--surface-elevated)"
               }`}
             >
               <div className="flex items-center gap-2 min-w-0">
                 <span className="truncate">{region.name}</span>
               </div>
               {selectedRegion === region.code && (
-                <Check className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+                <Check className="w-4 h-4 text-(--primary) shrink-0" />
               )}
             </button>
           ))}

@@ -32,14 +32,6 @@ const testimonials: Testimonial[] = [
   },
   {
     id: "2",
-    name: "Rohan Verma",
-    wcaId: "2022VERM15",
-    feedback:
-      "CubeDev has transformed how I track my progress. The analytics are detailed yet easy to understand, and the challenge rooms keep practice sessions exciting. Being able to compete with friends on the same scrambles is a game-changer.",
-    highlight: "Analytics & Challenge Rooms",
-  },
-  {
-    id: "3",
     name: "Junaid Ekhlaque",
     wcaId: "2024EKHL01",
     feedback:
@@ -49,7 +41,7 @@ const testimonials: Testimonial[] = [
       "https://avatars.worldcubeassociation.org/lk708827qkx43z5zl409ajj5oc26",
   },
   {
-    id: "4",
+    id: "3",
     name: "Ritesh Yeragi",
     wcaId: "2019YERA01",
     feedback:
@@ -75,7 +67,7 @@ function TestimonialAvatar({
   if (avatar && !imageError) {
     return (
       <div
-        className="relative rounded-full overflow-hidden border-2 border-[var(--border)] shrink-0"
+        className="relative rounded-full overflow-hidden border-2 border-(--border) shrink-0"
         style={{ width: size, height: size }}
       >
         <Image
@@ -91,14 +83,14 @@ function TestimonialAvatar({
 
   return (
     <div
-      className="rounded-full flex items-center justify-center bg-[var(--primary)]/10 border-2 border-[var(--border)] shrink-0"
+      className="rounded-full flex items-center justify-center bg-(--primary)/10 border-2 border-(--border) shrink-0"
       style={{ width: size, height: size }}
     >
       {avatar && imageError ? (
-        <User className="w-1/2 h-1/2 text-[var(--primary)]" />
+        <User className="w-1/2 h-1/2 text-(--primary)" />
       ) : (
         <span
-          className="font-bold text-[var(--primary)]"
+          className="font-bold text-(--primary)"
           style={{ fontSize: size * 0.4 }}
         >
           {name.charAt(0)}
@@ -111,42 +103,42 @@ function TestimonialAvatar({
 // Card component for individual testimonials
 function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
   return (
-    <div className="group bg-[var(--background)] border border-[var(--border)] rounded-xl p-4 sm:p-6 hover:border-[var(--primary)] transition-all duration-300 h-full flex flex-col min-h-[280px] sm:min-h-[320px]">
+    <div className="group bg-(--background) border border-(--border) rounded-xl p-4 sm:p-6 hover:border-(--primary) transition-all duration-300 h-full flex flex-col min-h-[280px] sm:min-h-[320px]">
       {/* Quote Icon */}
       <div className="mb-3 sm:mb-4">
-        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[var(--primary)]/10 rounded-lg flex items-center justify-center group-hover:bg-[var(--primary)]/20 transition-colors duration-300">
-          <Quote className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--primary)]" />
+        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-(--primary)/10 rounded-lg flex items-center justify-center group-hover:bg-(--primary)/20 transition-colors duration-300">
+          <Quote className="w-4 h-4 sm:w-5 sm:h-5 text-(--primary)" />
         </div>
       </div>
 
       {/* Highlight Badge */}
       {testimonial.highlight && (
         <div className="inline-block mb-3 sm:mb-4">
-          <span className="text-[10px] sm:text-xs font-semibold text-[var(--primary)] bg-[var(--primary)]/10 px-2 sm:px-3 py-1 rounded-full font-button">
+          <span className="text-[10px] sm:text-xs font-semibold text-(--primary) bg-(--primary)/10 px-2 sm:px-3 py-1 rounded-full font-button">
             {testimonial.highlight}
           </span>
         </div>
       )}
 
       {/* Feedback */}
-      <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed mb-4 sm:mb-6 font-inter flex-grow line-clamp-6 sm:line-clamp-none">
+      <p className="text-sm sm:text-base text-(--text-secondary) leading-relaxed mb-4 sm:mb-6 font-inter flex-grow line-clamp-6 sm:line-clamp-none">
         &ldquo;{testimonial.feedback}&rdquo;
       </p>
 
       {/* Cuber Info */}
-      <div className="flex items-center gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-[var(--border)]">
+      <div className="flex items-center gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-(--border)">
         <TestimonialAvatar
           name={testimonial.name}
           avatar={testimonial.avatar}
           size={36}
         />
         <div className="min-w-0">
-          <div className="font-semibold text-sm sm:text-base text-[var(--text-primary)] font-button truncate">
+          <div className="font-semibold text-sm sm:text-base text-(--text-primary) font-button truncate">
             {testimonial.name}
           </div>
           <Link
             href={`/cuber/${testimonial.wcaId}`}
-            className="text-xs sm:text-sm text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors font-inter"
+            className="text-xs sm:text-sm text-(--text-muted) hover:text-(--primary) transition-colors font-inter"
           >
             {testimonial.wcaId}
           </Link>
@@ -243,16 +235,16 @@ export default function Testimonials() {
   return (
     <section
       ref={sectionRef}
-      className="py-12 sm:py-16 lg:py-24 bg-[var(--surface)]"
+      className="py-12 sm:py-16 lg:py-24 bg-(--surface)"
     >
       <div className="container-responsive">
         {/* Section Header */}
         <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-[var(--text-primary)] mb-3 sm:mb-4 font-statement">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-(--text-primary) mb-3 sm:mb-4 font-statement">
             Trusted by{" "}
-            <span className="text-[var(--primary)]">Speedcubers</span>
+            <span className="text-(--primary)">Speedcubers</span>
           </h2>
-          <p className="text-base sm:text-lg md:text-2xl text-[var(--text-secondary)] max-w-3xl mx-auto font-inter px-4">
+          <p className="text-base sm:text-lg md:text-2xl text-(--text-secondary) max-w-3xl mx-auto font-inter px-4">
             See what the cubing community has to say about CubeDev
           </p>
         </div>
@@ -262,7 +254,7 @@ export default function Testimonials() {
           {/* Navigation Buttons */}
           <button
             onClick={goToPrevious}
-            className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 md:-translate-x-4 z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-[var(--background)] border border-[var(--border)] rounded-full items-center justify-center text-[var(--text-secondary)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-all duration-200"
+            className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 md:-translate-x-4 z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-(--background) border border-(--border) rounded-full items-center justify-center text-(--text-secondary) hover:text-(--primary) hover:border-(--primary) transition-all duration-200"
             aria-label="Previous testimonial"
           >
             <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
@@ -270,7 +262,7 @@ export default function Testimonials() {
 
           <button
             onClick={goToNext}
-            className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 md:translate-x-4 z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-[var(--background)] border border-[var(--border)] rounded-full items-center justify-center text-[var(--text-secondary)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-all duration-200"
+            className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 md:translate-x-4 z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-(--background) border border-(--border) rounded-full items-center justify-center text-(--text-secondary) hover:text-(--primary) hover:border-(--primary) transition-all duration-200"
             aria-label="Next testimonial"
           >
             <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
@@ -287,7 +279,7 @@ export default function Testimonials() {
               {extendedTestimonials.map((testimonial, index) => (
                 <div
                   key={`${testimonial.id}-${index}`}
-                  className="flex-shrink-0 px-1.5 sm:px-2 md:px-3"
+                  className="shrink-0 px-1.5 sm:px-2 md:px-3"
                   style={{ width: `${100 / visibleCount}%` }}
                 >
                   <TestimonialCard testimonial={testimonial} />
@@ -302,7 +294,7 @@ export default function Testimonials() {
           {/* Mobile Navigation Arrows */}
           <button
             onClick={goToPrevious}
-            className="sm:hidden w-8 h-8 bg-[var(--background)] border border-[var(--border)] rounded-full flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-all duration-200"
+            className="sm:hidden w-8 h-8 bg-(--background) border border-(--border) rounded-full flex items-center justify-center text-(--text-secondary) hover:text-(--primary) hover:border-(--primary) transition-all duration-200"
             aria-label="Previous testimonial"
             title="Previous testimonial"
           >
@@ -317,8 +309,8 @@ export default function Testimonials() {
                 onClick={() => goToSlide(index)}
                 className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-300 ${
                   index === currentIndex
-                    ? "bg-[var(--primary)] w-4 sm:w-6"
-                    : "bg-[var(--border)] hover:bg-[var(--text-muted)]"
+                    ? "bg-(--primary) w-4 sm:w-6"
+                    : "bg-(--border) hover:bg-(--text-muted)"
                 }`}
                 aria-label={`Go to testimonial ${index + 1}`}
                 title={`Go to testimonial ${index + 1}`}
@@ -329,7 +321,7 @@ export default function Testimonials() {
           {/* Mobile Next Arrow */}
           <button
             onClick={goToNext}
-            className="sm:hidden w-8 h-8 bg-[var(--background)] border border-[var(--border)] rounded-full flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-all duration-200"
+            className="sm:hidden w-8 h-8 bg-(--background) border border-(--border) rounded-full flex items-center justify-center text-(--text-secondary) hover:text-(--primary) hover:border-(--primary) transition-all duration-200"
             aria-label="Next testimonial"
             title="Next testimonial"
           >

@@ -74,14 +74,14 @@ export default function WhyCubeDev() {
   return (
     <section
       ref={sectionRef}
-      className="py-24 bg-[var(--surface)] overflow-hidden"
+      className="py-24 bg-(--surface) overflow-hidden"
     >
       <div className="container-responsive">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-primary)] mb-6 font-statement">
-            Why <span className="text-[var(--primary)]">CubeDev</span>?
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-(--text-primary) mb-6 font-statement">
+            Why <span className="text-(--primary)">CubeDev</span>?
           </h2>
-          <p className="text-xl md:text-2xl text-[var(--text-secondary)] max-w-3xl mx-auto font-inter">
+          <p className="text-xl md:text-2xl text-(--text-secondary) max-w-3xl mx-auto font-inter">
             A cutting-edge platform designed by cubers, for cubers. Whether
             you're a beginner or a seasoned pro, CubeDev has everything you need
             to take your speedcubing to the next level.
@@ -96,7 +96,7 @@ export default function WhyCubeDev() {
             return (
               <div
                 key={index}
-                className={`group p-8 bg-[var(--background)] border border-[var(--border)] rounded-xl hover:border-[var(--primary)] transition-all duration-500 hover:shadow-lg hover:shadow-[var(--primary)]/10 transform ${
+                className={`group p-8 bg-(--background) border border-(--border) rounded-xl hover:border-(--primary) transition-all duration-500 hover:shadow-lg hover:shadow-(--primary)/10 transform ${
                   isVisible
                     ? "translate-y-0 opacity-100"
                     : "translate-y-8 opacity-0"
@@ -106,16 +106,16 @@ export default function WhyCubeDev() {
                 }}
               >
                 <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-[var(--primary)]/10 rounded-lg flex items-center justify-center group-hover:bg-[var(--primary)]/20 transition-colors duration-300">
-                      <Icon className="w-6 h-6 text-[var(--primary)]" />
+                  <div className="shrink-0">
+                    <div className="w-12 h-12 bg-(--primary)/10 rounded-lg flex items-center justify-center group-hover:bg-(--primary)/20 transition-colors duration-300">
+                      <Icon className="w-6 h-6 text-(--primary)" />
                     </div>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-[var(--text-primary)] mb-3 font-statement">
+                    <h3 className="text-xl font-bold text-(--text-primary) mb-3 font-statement">
                       {feature.title}
                     </h3>
-                    <p className="text-[var(--text-secondary)] leading-relaxed font-inter">
+                    <p className="text-(--text-secondary) leading-relaxed font-inter">
                       {feature.description}
                     </p>
                   </div>

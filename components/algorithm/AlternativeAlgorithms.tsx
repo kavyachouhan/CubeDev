@@ -50,7 +50,7 @@ export default function AlternativeAlgorithms({
 
   return (
     <div className="space-y-3">
-      <h4 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+      <h4 className="text-lg font-semibold text-(--text-primary) font-statement">
         Alternative Algorithms ({algorithms.length - 1})
       </h4>
 
@@ -63,41 +63,41 @@ export default function AlternativeAlgorithms({
             return (
               <div
                 key={alg._id}
-                className="p-4 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg"
+                className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg"
               >
                 {/* Algorithm Header */}
                 <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
                   <div className="flex-1 min-w-0 w-full">
                     {/* Algorithm Notation */}
                     <div className="overflow-x-auto mb-2">
-                      <p className="font-mono text-sm text-[var(--text-primary)] whitespace-nowrap">
+                      <p className="font-mono text-sm text-(--text-primary) whitespace-nowrap">
                         {alg.notation}
                       </p>
                     </div>
 
                     {/* Algorithm Stats */}
-                    <div className="flex flex-wrap gap-3 text-xs text-[var(--text-muted)]">
+                    <div className="flex flex-wrap gap-3 text-xs text-(--text-muted)">
                       <div className="flex items-center gap-1">
-                        <Zap className="w-3 h-3 flex-shrink-0" />
+                        <Zap className="w-3 h-3 shrink-0" />
                         <span>{alg.moveCount} moves</span>
                       </div>
 
                       {alg.popularity && (
                         <div className="flex items-center gap-1">
-                          <Users className="w-3 h-3 flex-shrink-0" />
+                          <Users className="w-3 h-3 shrink-0" />
                           <span>{alg.popularity}% use this</span>
                         </div>
                       )}
 
                       {alg.averageSpeed && (
                         <div className="flex items-center gap-1">
-                          <TrendingUp className="w-3 h-3 flex-shrink-0" />
+                          <TrendingUp className="w-3 h-3 shrink-0" />
                           <span>{alg.averageSpeed.toFixed(2)}s avg</span>
                         </div>
                       )}
 
                       {alg.isDefault && (
-                        <span className="px-2 py-0.5 bg-[var(--primary)]/10 text-[var(--primary)] rounded">
+                        <span className="px-2 py-0.5 bg-(--primary)/10 text-(--primary) rounded">
                           Recommended
                         </span>
                       )}
@@ -105,7 +105,7 @@ export default function AlternativeAlgorithms({
 
                     {/* Fingertricks */}
                     {alg.fingerTricks && (
-                      <div className="mt-2 text-xs text-[var(--text-muted)] break-words">
+                      <div className="mt-2 text-xs text-(--text-muted) wrap-break-word">
                         <span className="font-medium">Fingertricks:</span>{" "}
                         {alg.fingerTricks}
                       </div>
@@ -113,7 +113,7 @@ export default function AlternativeAlgorithms({
 
                     {/* Notes */}
                     {alg.notes && (
-                      <div className="mt-2 text-xs text-[var(--text-muted)] break-words">
+                      <div className="mt-2 text-xs text-(--text-muted) wrap-break-word">
                         <span className="font-medium">Notes:</span> {alg.notes}
                       </div>
                     )}
@@ -121,7 +121,7 @@ export default function AlternativeAlgorithms({
 
                   {/* Current Selection Indicator */}
                   {currentAlgId === alg._id && (
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                       <div className="p-1 bg-green-500/10 border border-green-500/20 rounded">
                         <CheckCircle2 className="w-4 h-4 text-green-500" />
                       </div>
@@ -133,7 +133,7 @@ export default function AlternativeAlgorithms({
                 <div className="flex flex-wrap gap-2 mt-3">
                   <button
                     onClick={() => setExpandedAlg(isExpanded ? null : alg._id)}
-                    className="px-3 py-1.5 bg-[var(--surface)] hover:bg-[var(--background)] border border-[var(--border)] text-sm text-[var(--text-secondary)] rounded transition-colors"
+                    className="px-3 py-1.5 bg-(--surface) hover:bg-(--background) border border-(--border) text-sm text-(--text-secondary) rounded transition-colors"
                   >
                     {isExpanded ? "Hide Preview" : "Preview"}
                   </button>
@@ -141,7 +141,7 @@ export default function AlternativeAlgorithms({
                   {currentAlgId !== alg._id && (
                     <button
                       onClick={() => onSelectAlgorithm(alg._id)}
-                      className="px-3 py-1.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-sm rounded transition-colors whitespace-nowrap"
+                      className="px-3 py-1.5 bg-(--primary) hover:bg-(--primary-hover) text-white text-sm rounded transition-colors whitespace-nowrap"
                     >
                       Use This Algorithm
                     </button>
@@ -152,7 +152,7 @@ export default function AlternativeAlgorithms({
                       href={alg.videoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1.5 bg-[var(--surface)] hover:bg-[var(--background)] border border-[var(--border)] text-sm text-[var(--text-secondary)] rounded transition-colors whitespace-nowrap"
+                      className="px-3 py-1.5 bg-(--surface) hover:bg-(--background) border border-(--border) text-sm text-(--text-secondary) rounded transition-colors whitespace-nowrap"
                     >
                       Video Tutorial
                     </a>
@@ -161,7 +161,7 @@ export default function AlternativeAlgorithms({
 
                 {/* 3D Preview (Expandable) */}
                 {isExpanded && (
-                  <div className="mt-4 pt-4 border-t border-[var(--border)]">
+                  <div className="mt-4 pt-4 border-t border-(--border)">
                     <CubeVisualizer3D
                       algorithm={alg.notation}
                       puzzle={puzzleType}

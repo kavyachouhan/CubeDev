@@ -14,6 +14,7 @@ import {
   Timer,
   Flag,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 const EVENT_NAMES: Record<string, string> = {
   "222": "2x2",
@@ -99,26 +100,26 @@ function formatDuration(days: number): string {
 const STATUS_CONFIG = {
   achieved: {
     Icon: CheckCircle2,
-    color: "text-[var(--success)]",
-    bg: "bg-[var(--success)]",
+    color: "text-(--success)",
+    bg: "bg-(--success)",
     label: "Goal Achieved",
   },
   expired: {
     Icon: XCircle,
-    color: "text-[var(--warning)]",
-    bg: "bg-[var(--warning)]",
+    color: "text-(--warning)",
+    bg: "bg-(--warning)",
     label: "Deadline Passed",
   },
   replaced: {
     Icon: ArrowRightLeft,
-    color: "text-[var(--text-muted)]",
-    bg: "bg-[var(--text-muted)]",
+    color: "text-(--text-muted)",
+    bg: "bg-(--text-muted)",
     label: "Goal Replaced",
   },
   active: {
     Icon: Target,
-    color: "text-[var(--primary)]",
-    bg: "bg-[var(--primary)]",
+    color: "text-(--primary)",
+    bg: "bg-(--primary)",
     label: "In Progress",
   },
 };
@@ -147,8 +148,7 @@ export default function GoalDetailModal({
 
   if (!mounted || !isOpen) return null;
 
-  const targetTime =
-    goal.customGoalTime || GOAL_TIMES[goal.goalType] || 20000;
+  const targetTime = goal.customGoalTime || GOAL_TIMES[goal.goalType] || 20000;
   const endPoint = goal.endDate || Date.now();
   const durationDays = getDurationDays(goal.startDate, endPoint);
   const totalPlannedDays = getDurationDays(goal.startDate, goal.targetDate);
@@ -171,16 +171,16 @@ export default function GoalDetailModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="min-w-0">
-            <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement truncate">
+            <h2 className="text-xl font-bold text-(--text-primary) font-statement truncate">
               {getGoalDisplay(goal.goalType, goal.customGoalTime)}
             </h2>
-            <p className="text-sm text-[var(--text-muted)] mt-0.5 font-inter">
+            <p className="text-sm text-(--text-muted) mt-0.5 font-inter">
               {eventName}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -189,16 +189,18 @@ export default function GoalDetailModal({
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto space-y-6 min-h-0">
           {/* Status */}
-          <div className="timer-card bg-[var(--surface-elevated)] p-4 border border-[var(--border)]">
+          <div className="timer-card bg-(--surface-elevated) p-4 border border-(--border)">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 min-w-0">
                 <StatusIcon className={`w-5 h-5 ${config.color} shrink-0`} />
-                <span className={`text-sm font-semibold ${config.color} font-statement`}>
+                <span
+                  className={`text-sm font-semibold ${config.color} font-statement`}
+                >
                   {config.label}
                 </span>
               </div>
               {goal.isCurrent && (
-                <span className="text-xs text-[var(--primary)] bg-[var(--primary)]/10 px-2 py-0.5 rounded-full border border-[var(--primary)]/20 shrink-0 font-inter">
+                <span className="text-xs text-(--primary) bg-(--primary)/10 px-2 py-0.5 rounded-full border border-(--primary)/20 shrink-0 font-inter">
                   Current
                 </span>
               )}
@@ -206,24 +208,28 @@ export default function GoalDetailModal({
           </div>
 
           {/* Progress */}
-          <div className="timer-card bg-[var(--surface-elevated)] p-4 border border-[var(--border)]">
-            <h3 className="text-sm font-medium text-[var(--text-primary)] mb-3 font-statement">
+          <div className="timer-card bg-(--surface-elevated) p-4 border border-(--border)">
+            <h3 className="text-sm font-medium text-(--text-primary) mb-3 font-statement">
               Progress
             </h3>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-[var(--text-muted)] font-inter">
+              <span className="text-xs text-(--text-muted) font-inter">
                 {goal.progressPercentage.toFixed(0)}% complete
               </span>
-              <span className={`text-xs font-medium font-inter ${
-                goal.progressPercentage >= 100 ? "text-[var(--success)]" : config.color
-              }`}>
+              <span
+                className={`text-xs font-medium font-inter ${
+                  goal.progressPercentage >= 100
+                    ? "text-(--success)"
+                    : config.color
+                }`}
+              >
                 {goal.progressPercentage >= 100 ? "Complete" : "In progress"}
               </span>
             </div>
-            <div className="relative h-2 bg-[var(--surface)] rounded-full overflow-hidden">
+            <div className="relative h-2 bg-(--surface) rounded-full overflow-hidden">
               <div
                 className={`absolute h-full transition-all duration-500 rounded-full ${
-                  goal.progressPercentage >= 100 ? "bg-[var(--success)]" : config.bg
+                  goal.progressPercentage >= 100 ? "bg-(--success)" : config.bg
                 }`}
                 style={{ width: `${Math.min(100, goal.progressPercentage)}%` }}
               />
@@ -232,8 +238,8 @@ export default function GoalDetailModal({
 
           {/* Performance */}
           {(startAvg || endAvg) && (
-            <div className="timer-card bg-[var(--surface-elevated)] p-4 border border-[var(--border)]">
-              <h3 className="text-sm font-medium text-[var(--text-primary)] mb-3 font-statement">
+            <div className="timer-card bg-(--surface-elevated) p-4 border border-(--border)">
+              <h3 className="text-sm font-medium text-(--text-primary) mb-3 font-statement">
                 Performance
               </h3>
               <div className="space-y-2">
@@ -248,7 +254,7 @@ export default function GoalDetailModal({
                   label="Target Time"
                   value={formatTime(targetTime)}
                   icon={Target}
-                  valueColor="text-[var(--success)]"
+                  valueColor="text-(--success)"
                 />
                 {endAvg && (
                   <InfoRow
@@ -257,22 +263,20 @@ export default function GoalDetailModal({
                     icon={Flag}
                     valueColor={
                       goal.status === "achieved"
-                        ? "text-[var(--success)]"
+                        ? "text-(--success)"
                         : undefined
                     }
                   />
                 )}
                 {improvement !== undefined && (
                   <>
-                    <div className="h-px bg-[var(--border)] my-1" />
+                    <div className="h-px bg-(--border) my-1" />
                     <InfoRow
                       label="Improvement"
                       value={`${improvement > 0 ? "-" : "+"}${formatTime(Math.abs(improvement))}`}
                       icon={improvement > 0 ? TrendingDown : TrendingUp}
                       valueColor={
-                        improvement > 0
-                          ? "text-[var(--success)]"
-                          : "text-[var(--error)]"
+                        improvement > 0 ? "text-(--success)" : "text-(--error)"
                       }
                     />
                   </>
@@ -282,7 +286,7 @@ export default function GoalDetailModal({
                     label="Avg per Day"
                     value={`${(improvementPerDay / 1000).toFixed(3)}s`}
                     icon={TrendingDown}
-                    valueColor="text-[var(--primary)]"
+                    valueColor="text-(--primary)"
                   />
                 )}
                 {goal.status !== "achieved" && endAvg && (
@@ -296,8 +300,8 @@ export default function GoalDetailModal({
                     icon={Target}
                     valueColor={
                       endAvg <= targetTime
-                        ? "text-[var(--success)]"
-                        : "text-[var(--warning)]"
+                        ? "text-(--success)"
+                        : "text-(--warning)"
                     }
                   />
                 )}
@@ -306,8 +310,8 @@ export default function GoalDetailModal({
           )}
 
           {/* Timeline */}
-          <div className="timer-card bg-[var(--surface-elevated)] p-4 border border-[var(--border)]">
-            <h3 className="text-sm font-medium text-[var(--text-primary)] mb-3 font-statement">
+          <div className="timer-card bg-(--surface-elevated) p-4 border border-(--border)">
+            <h3 className="text-sm font-medium text-(--text-primary) mb-3 font-statement">
               Timeline
             </h3>
             <div className="space-y-2">
@@ -347,15 +351,15 @@ export default function GoalDetailModal({
                   }
                   sublabelColor={
                     goal.status === "achieved"
-                      ? "text-[var(--success)]"
+                      ? "text-(--success)"
                       : goal.status === "expired"
-                        ? "text-[var(--warning)]"
+                        ? "text-(--warning)"
                         : undefined
                   }
                 />
               )}
             </div>
-            <p className="text-xs text-[var(--text-muted)] mt-3 font-inter">
+            <p className="text-xs text-(--text-muted) mt-3 font-inter">
               {goal.isCurrent
                 ? "This is your active goal."
                 : `Archived ${goal.endDate ? formatDate(goal.endDate) : ""}`}
@@ -364,11 +368,8 @@ export default function GoalDetailModal({
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 pt-6 mt-6 border-t border-[var(--border)]">
-          <button
-            onClick={onClose}
-            className="flex-1 btn-secondary"
-          >
+        <div className="flex gap-3 pt-6 mt-6 border-t border-(--border)">
+          <button onClick={onClose} className="flex-1 btn-secondary">
             Close
           </button>
         </div>
@@ -387,7 +388,7 @@ function InfoRow({
 }: {
   label: string;
   value: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   valueColor?: string;
   sublabel?: string;
   sublabelColor?: string;
@@ -395,14 +396,14 @@ function InfoRow({
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="flex items-center gap-2 min-w-0">
-        <Icon className="w-3.5 h-3.5 text-[var(--text-muted)] shrink-0" />
+        <Icon className="w-3.5 h-3.5 text-(--text-muted) shrink-0" />
         <div className="min-w-0">
-          <span className="text-sm text-[var(--text-muted)] font-inter block truncate">
+          <span className="text-sm text-(--text-muted) font-inter block truncate">
             {label}
           </span>
           {sublabel && (
             <span
-              className={`text-xs block ${sublabelColor || "text-[var(--text-muted)]"} font-inter`}
+              className={`text-xs block ${sublabelColor || "text-(--text-muted)"} font-inter`}
             >
               {sublabel}
             </span>
@@ -411,7 +412,7 @@ function InfoRow({
       </div>
       <span
         className={`text-sm font-medium font-mono shrink-0 ${
-          valueColor || "text-[var(--text-primary)]"
+          valueColor || "text-(--text-primary)"
         }`}
       >
         {value}

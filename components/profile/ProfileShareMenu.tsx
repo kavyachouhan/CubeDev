@@ -140,7 +140,7 @@ export default function ProfileShareMenu({
     <div className="relative" ref={menuRef}>
       <button
         onClick={handleButtonClick}
-        className="inline-flex items-center gap-2 px-4 py-2 border border-[var(--border)] bg-[var(--surface-elevated)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface)] transition-colors font-inter font-medium text-sm"
+        className="inline-flex items-center gap-2 px-4 py-2 border border-(--border) bg-(--surface-elevated) text-(--text-secondary) rounded-lg hover:bg-(--surface) transition-colors font-inter font-medium text-sm"
         title="Share Profile"
       >
         <Share2 className="w-4 h-4" />
@@ -150,17 +150,17 @@ export default function ProfileShareMenu({
 
       {/* Desktop dropdown - on mobile native share is triggered directly */}
       {isOpen && (
-        <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-64 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-lg z-[100] overflow-hidden">
-          <div className="p-3 border-b border-[var(--border)]">
+        <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-64 bg-(--surface) border border-(--border) rounded-xl shadow-lg z-[100] overflow-hidden">
+          <div className="p-3 border-b border-(--border)">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-[var(--text-primary)]">
+              <span className="text-sm font-medium text-(--text-primary)">
                 Share Profile
               </span>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1 hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                className="p-1 hover:bg-(--surface-elevated) rounded-lg transition-colors"
               >
-                <X className="w-4 h-4 text-[var(--text-muted)]" />
+                <X className="w-4 h-4 text-(--text-muted)" />
               </button>
             </div>
           </div>
@@ -170,9 +170,9 @@ export default function ProfileShareMenu({
             {typeof navigator !== "undefined" && "share" in navigator && (
               <button
                 onClick={handleNativeShare}
-                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
               >
-                <div className="w-8 h-8 rounded-full bg-[var(--primary)] flex items-center justify-center text-white">
+                <div className="w-8 h-8 rounded-full bg-(--primary) flex items-center justify-center text-white">
                   <Share2 className="w-4 h-4" />
                 </div>
                 <span>Share via...</span>
@@ -182,11 +182,11 @@ export default function ProfileShareMenu({
             {/* Copy Link */}
             <button
               onClick={handleCopyLink}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
             >
-              <div className="w-8 h-8 rounded-full bg-[var(--surface-elevated)] border border-[var(--border)] flex items-center justify-center text-[var(--text-primary)]">
+              <div className="w-8 h-8 rounded-full bg-(--surface-elevated) border border-(--border) flex items-center justify-center text-(--text-primary)">
                 {copied ? (
-                  <CircleCheck className="w-4 h-4 text-[var(--success)]" />
+                  <CircleCheck className="w-4 h-4 text-(--success)" />
                 ) : (
                   <Link className="w-4 h-4" />
                 )}
@@ -194,7 +194,7 @@ export default function ProfileShareMenu({
               <span>{copied ? "Copied!" : "Copy to Clipboard"}</span>
             </button>
 
-            <div className="my-2 border-t border-[var(--border)]" />
+            <div className="my-2 border-t border-(--border)" />
 
             {/* Social options */}
             <div className="grid grid-cols-4 gap-2 p-2">

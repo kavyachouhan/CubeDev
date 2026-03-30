@@ -9,6 +9,7 @@ import {
   ThemeSection,
   NotificationSettings,
   AccountDeletionSection,
+  KeyboardShortcutsSettings,
 } from "@/components/settings";
 
 export default function SettingsPage() {
@@ -23,6 +24,7 @@ export default function SettingsPage() {
               <ProfileSection />
               <PrivacySection />
               <NotificationSettings />
+              <KeyboardShortcutsSettings />
             </div>
 
             {/* Right Column */}

@@ -59,12 +59,12 @@ export default function EditRoomModal({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+          <h2 className="text-xl font-bold text-(--text-primary) font-statement">
             Edit Challenge Room
           </h2>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -72,7 +72,7 @@ export default function EditRoomModal({
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Room Title
             </label>
             <input
@@ -81,7 +81,7 @@ export default function EditRoomModal({
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all font-inter"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
               placeholder="Enter room title..."
               required
               maxLength={100}
@@ -89,7 +89,7 @@ export default function EditRoomModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 font-inter">
+            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
               Description
             </label>
             <textarea
@@ -98,35 +98,35 @@ export default function EditRoomModal({
                 setFormData({ ...formData, description: e.target.value })
               }
               rows={3}
-              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none transition-all font-inter"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
               placeholder="Enter room description..."
               maxLength={500}
             />
           </div>
 
-          <div className="timer-card bg-[var(--surface-elevated)] p-4 border border-[var(--border)]">
-            <h3 className="text-sm font-medium text-[var(--text-primary)] mb-3 font-statement">
+          <div className="timer-card bg-(--surface-elevated) p-4 border border-(--border)">
+            <h3 className="text-sm font-medium text-(--text-primary) mb-3 font-statement">
               Room Settings
             </h3>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-[var(--text-muted)] font-inter">
+                <span className="text-sm text-(--text-muted) font-inter">
                   Solves:
                 </span>
-                <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                <span className="text-sm font-medium text-(--text-primary) font-inter">
                   {room.format === "ao5" ? "5" : "12"}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-[var(--text-muted)] font-inter">
+                <span className="text-sm text-(--text-muted) font-inter">
                   Expires:
                 </span>
-                <span className="text-sm font-medium text-[var(--text-primary)] font-inter">
+                <span className="text-sm font-medium text-(--text-primary) font-inter">
                   {new Date(room.expiresAt).toLocaleString()}
                 </span>
               </div>
             </div>
-            <p className="text-xs text-[var(--text-muted)] mt-3 font-inter">
+            <p className="text-xs text-(--text-muted) mt-3 font-inter">
               Note: Solve count and expiration cannot be changed after room
               creation.
             </p>

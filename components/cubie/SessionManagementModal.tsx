@@ -133,17 +133,17 @@ export default function SessionManagementModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col shadow-lg">
+      <div className="bg-(--surface) border border-(--border) rounded-xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col shadow-lg">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
-          <h2 className="text-lg md:text-xl font-bold text-[var(--text-primary)] font-statement">
+        <div className="flex items-center justify-between p-4 border-b border-(--border)">
+          <h2 className="text-lg md:text-xl font-bold text-(--text-primary) font-statement">
             Chat Sessions
           </h2>
           <div className="flex items-center gap-2">
             {/* New Chat Icon Button */}
             <button
               onClick={handleNewChat}
-              className="p-2 hover:bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg transition-colors"
+              className="p-2 hover:bg-(--primary)/20 text-(--primary) rounded-lg transition-colors"
               title="New chat"
             >
               <Plus className="w-5 h-5" />
@@ -151,7 +151,7 @@ export default function SessionManagementModal({
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+              className="p-2 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
               title="Close"
             >
               <X className="w-5 h-5" />
@@ -163,11 +163,11 @@ export default function SessionManagementModal({
         <div className="flex-1 overflow-y-auto p-2">
           {sessions.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 px-4">
-              <MessageSquare className="w-12 h-12 text-[var(--text-muted)] mb-3" />
-              <p className="text-sm text-[var(--text-muted)] font-inter text-center">
+              <MessageSquare className="w-12 h-12 text-(--text-muted) mb-3" />
+              <p className="text-sm text-(--text-muted) font-inter text-center">
                 No conversations yet
               </p>
-              <p className="text-xs text-[var(--text-muted)] font-inter text-center mt-1">
+              <p className="text-xs text-(--text-muted) font-inter text-center mt-1">
                 Start a new chat to begin
               </p>
             </div>
@@ -183,8 +183,8 @@ export default function SessionManagementModal({
                     key={session.session_id}
                     className={`p-3 rounded-lg border transition-all duration-300 ease-in-out ${
                       isActive
-                        ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                        : "bg-[var(--surface-elevated)] border-[var(--border)] hover:border-[var(--primary)]/50"
+                        ? "bg-(--primary)/10 border-(--primary)"
+                        : "bg-(--surface-elevated) border-(--border) hover:border-(--primary)/50"
                     }`}
                   >
                     {isEditing ? (
@@ -194,10 +194,10 @@ export default function SessionManagementModal({
                       >
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                           <MessageSquare
-                            className={`w-4 h-4 flex-shrink-0 ${
+                            className={`w-4 h-4 shrink-0 ${
                               isActive
-                                ? "text-[var(--primary)]"
-                                : "text-[var(--text-muted)]"
+                                ? "text-(--primary)"
+                                : "text-(--text-muted)"
                             }`}
                           />
                           <input
@@ -208,27 +208,27 @@ export default function SessionManagementModal({
                             onKeyDown={(e) =>
                               handleEditKeyDown(e, session.session_id)
                             }
-                            className="flex-1 px-2 py-1 text-sm bg-[var(--surface)] border border-[var(--primary)] rounded outline-none font-inter text-[var(--text-primary)] min-w-0"
+                            className="flex-1 px-2 py-1 text-sm bg-(--surface) border border-(--primary) rounded outline-none font-inter text-(--text-primary) min-w-0"
                             disabled={isUpdating}
                             placeholder="Session title..."
                           />
                         </div>
-                        <div className="flex items-center gap-2 justify-end sm:justify-start flex-shrink-0">
+                        <div className="flex items-center gap-2 justify-end sm:justify-start shrink-0">
                           <button
                             onClick={() => handleSaveEdit(session.session_id)}
                             disabled={isUpdating || !editingTitle.trim()}
-                            className="p-1.5 hover:bg-[var(--success)]/20 rounded transition-colors disabled:opacity-50"
+                            className="p-1.5 hover:bg-(--success)/20 rounded transition-colors disabled:opacity-50"
                             title="Save"
                           >
-                            <Check className="w-4 h-4 text-[var(--success)]" />
+                            <Check className="w-4 h-4 text-(--success)" />
                           </button>
                           <button
                             onClick={handleCancelEdit}
                             disabled={isUpdating}
-                            className="p-1.5 hover:bg-[var(--error)]/20 rounded transition-colors"
+                            className="p-1.5 hover:bg-(--error)/20 rounded transition-colors"
                             title="Cancel"
                           >
-                            <X className="w-4 h-4 text-[var(--error)]" />
+                            <X className="w-4 h-4 text-(--error)" />
                           </button>
                         </div>
                       </div>
@@ -239,42 +239,42 @@ export default function SessionManagementModal({
                           className="flex-1 text-left min-w-0 flex items-start gap-2"
                         >
                           <MessageSquare
-                            className={`w-4 h-4 flex-shrink-0 mt-0.5 ${
+                            className={`w-4 h-4 shrink-0 mt-0.5 ${
                               isActive
-                                ? "text-[var(--primary)]"
-                                : "text-[var(--text-muted)]"
+                                ? "text-(--primary)"
+                                : "text-(--text-muted)"
                             }`}
                           />
                           <div className="flex-1 min-w-0">
                             <p
                               className={`text-sm font-medium truncate font-inter ${
                                 isActive
-                                  ? "text-[var(--primary)]"
-                                  : "text-[var(--text-primary)]"
+                                  ? "text-(--primary)"
+                                  : "text-(--text-primary)"
                               }`}
                               title={session.title}
                             >
                               {session.title}
                             </p>
-                            <p className="text-xs text-[var(--text-muted)] mt-0.5 font-inter">
+                            <p className="text-xs text-(--text-muted) mt-0.5 font-inter">
                               {session.message_count || 0} messages
                             </p>
                           </div>
                         </button>
-                        <div className="flex items-center gap-1 flex-shrink-0">
+                        <div className="flex items-center gap-1 shrink-0">
                           <button
                             onClick={(e) => handleStartEdit(e, session)}
-                            className="p-1.5 hover:bg-[var(--primary)]/20 rounded transition-colors"
+                            className="p-1.5 hover:bg-(--primary)/20 rounded transition-colors"
                             title="Edit title"
                           >
-                            <Pencil className="w-4 h-4 text-[var(--primary)]" />
+                            <Pencil className="w-4 h-4 text-(--primary)" />
                           </button>
                           <button
                             onClick={(e) => handleDeleteClick(e, session)}
-                            className="p-1.5 hover:bg-[var(--error)]/20 rounded transition-colors"
+                            className="p-1.5 hover:bg-(--error)/20 rounded transition-colors"
                             title="Delete session"
                           >
-                            <Trash2 className="w-4 h-4 text-[var(--error)]" />
+                            <Trash2 className="w-4 h-4 text-(--error)" />
                           </button>
                         </div>
                       </div>
@@ -287,8 +287,8 @@ export default function SessionManagementModal({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-[var(--border)] bg-[var(--surface-elevated)]">
-          <p className="text-xs text-[var(--text-muted)] text-center font-inter">
+        <div className="p-4 border-t border-(--border) bg-(--surface-elevated)">
+          <p className="text-xs text-(--text-muted) text-center font-inter">
             {sessions.length} {sessions.length === 1 ? "chat" : "chats"} total
           </p>
         </div>

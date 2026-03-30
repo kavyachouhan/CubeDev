@@ -25,9 +25,9 @@ export default function StatCard({
   // Derive background color from iconColor
   const colorParts = iconColor.split(" ");
   const bgColor =
-    colorParts.find((c) => c.startsWith("bg-")) || "bg-[var(--primary)]/10";
+    colorParts.find((c) => c.startsWith("bg-")) || "bg-(--primary)/10";
   const textColor =
-    colorParts.find((c) => c.startsWith("text-")) || "text-[var(--primary)]";
+    colorParts.find((c) => c.startsWith("text-")) || "text-(--primary)";
 
   return (
     <div className="timer-card">
@@ -47,12 +47,12 @@ export default function StatCard({
           </div>
         )}
       </div>
-      <div className="text-2xl font-bold text-[var(--text-primary)] font-statement mb-1">
+      <div className="text-2xl font-bold text-(--text-primary) font-statement mb-1">
         {value}
       </div>
-      <div className="text-sm text-[var(--text-muted)]">{label}</div>
+      <div className="text-sm text-(--text-muted)">{label}</div>
       {subValue && (
-        <div className="text-xs text-[var(--text-muted)] mt-1">{subValue}</div>
+        <div className="text-xs text-(--text-muted) mt-1">{subValue}</div>
       )}
     </div>
   );

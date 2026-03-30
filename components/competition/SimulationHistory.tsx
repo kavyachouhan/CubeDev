@@ -109,21 +109,21 @@ export default function SimulationHistory({
     switch (status) {
       case "in-progress":
         return (
-          <span className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-[var(--warning)]/10 text-[var(--warning)] border border-[var(--warning)]/30">
+          <span className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-(--warning)/10 text-(--warning) border border-(--warning)/30">
             <Pause className="w-3 h-3" />
             In Progress
           </span>
         );
       case "completed":
         return (
-          <span className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/30">
+          <span className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-(--success)/10 text-(--success) border border-(--success)/30">
             <Check className="w-3 h-3" />
             Completed
           </span>
         );
       case "abandoned":
         return (
-          <span className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-[var(--text-muted)]/10 text-[var(--text-muted)] border border-[var(--text-muted)]/30">
+          <span className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-(--text-muted)/10 text-(--text-muted) border border-(--text-muted)/30">
             <AlertTriangle className="w-3 h-3" />
             Abandoned
           </span>
@@ -142,22 +142,22 @@ export default function SimulationHistory({
     return (
       <div className={`timer-card ${compact ? "p-3" : ""}`}>
         {showTitle && (
-          <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2 mb-4">
-            <History className="w-4 h-4 text-[var(--primary)]" />
+          <h3 className="font-bold text-(--text-primary) flex items-center gap-2 mb-4">
+            <History className="w-4 h-4 text-(--primary)" />
             Recent Simulations
           </h3>
         )}
         <div className="text-center py-8">
-          <History className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" />
-          <h4 className="text-sm font-medium text-[var(--text-primary)] mb-1">
+          <History className="w-10 h-10 text-(--text-muted) mx-auto mb-3" />
+          <h4 className="text-sm font-medium text-(--text-primary) mb-1">
             No Simulations Yet
           </h4>
-          <p className="text-xs text-[var(--text-muted)] mb-4">
+          <p className="text-xs text-(--text-muted) mb-4">
             Start practicing for an upcoming competition
           </p>
           <Link
             href="/cube-lab/competitions"
-            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
           >
             <Play className="w-3 h-3" />
             Browse Competitions
@@ -171,14 +171,14 @@ export default function SimulationHistory({
     <div className={`timer-card ${compact ? "p-3" : ""}`}>
       {showTitle && (
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
-            <Clock className="w-4 h-4 text-[var(--primary)]" />
+          <h3 className="font-bold text-(--text-primary) flex items-center gap-2">
+            <Clock className="w-4 h-4 text-(--primary)" />
             Recent Simulations
           </h3>
           {recentSimulations.length > 3 && (
             <Link
               href="/cube-lab/competitions?tab=history"
-              className="text-xs text-[var(--primary)] hover:underline"
+              className="text-xs text-(--primary) hover:underline"
             >
               View All
             </Link>
@@ -203,17 +203,17 @@ export default function SimulationHistory({
             <Link
               key={sim._id}
               href={`/cube-lab/competitions/${sim.competitionId}/simulate/${sim._id}`}
-              className="block p-3 rounded-lg border border-[var(--border)] hover:border-[var(--primary)]/50 bg-[var(--surface)] hover:bg-[var(--surface-elevated)] transition-all group"
+              className="block p-3 rounded-lg border border-(--border) hover:border-(--primary)/50 bg-(--surface) hover:bg-(--surface-elevated) transition-all group"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium text-[var(--text-primary)] text-sm truncate">
+                    <span className="font-medium text-(--text-primary) text-sm truncate">
                       {sim.competitionName}
                     </span>
                     {getStatusBadge(sim.status)}
                   </div>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-[var(--text-muted)]">
+                  <div className="flex items-center gap-3 mt-1 text-xs text-(--text-muted)">
                     <span>{formatDate(sim.startedAt)}</span>
                     <span>
                       {completedRounds}/{totalRounds} rounds
@@ -233,8 +233,8 @@ export default function SimulationHistory({
                             key={eventId}
                             className={`p-1 rounded ${
                               isCompleted
-                                ? "bg-[var(--success)]/20"
-                                : "bg-[var(--surface-elevated)]"
+                                ? "bg-(--success)/20"
+                                : "bg-(--surface-elevated)"
                             }`}
                             title={`${event.name}${isCompleted ? " (completed)" : ""}`}
                           >
@@ -249,7 +249,7 @@ export default function SimulationHistory({
                         ) : null;
                       })}
                     {sim.selectedEvents.length > 6 && (
-                      <span className="px-1.5 text-[10px] text-[var(--text-muted)] bg-[var(--surface-elevated)] rounded flex items-center">
+                      <span className="px-1.5 text-[10px] text-(--text-muted) bg-(--surface-elevated) rounded flex items-center">
                         +{sim.selectedEvents.length - 6}
                       </span>
                     )}
@@ -259,23 +259,23 @@ export default function SimulationHistory({
                 <div className="flex items-center gap-2">
                   {isInProgress && (
                     <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+                      <div className="w-16 h-1.5 bg-(--surface-elevated) rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-[var(--primary)] transition-all"
+                          className="h-full bg-(--primary) transition-all"
                           style={{ width: `${progress}%` }}
                         />
                       </div>
-                      <span className="text-xs text-[var(--text-muted)]">
+                      <span className="text-xs text-(--text-muted)">
                         {progress}%
                       </span>
                     </div>
                   )}
                   {sim.status === "completed" && (
-                    <span className="text-xs text-[var(--success)]">
+                    <span className="text-xs text-(--success)">
                       View Results
                     </span>
                   )}
-                  <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-(--text-muted) group-hover:text-(--primary) transition-colors" />
                 </div>
               </div>
             </Link>
@@ -285,14 +285,14 @@ export default function SimulationHistory({
 
       {/* Continue in-progress simulations */}
       {inProgressSimulations && inProgressSimulations.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-[var(--border)]">
-          <p className="text-xs text-[var(--text-muted)] mb-2">
+        <div className="mt-4 pt-4 border-t border-(--border)">
+          <p className="text-xs text-(--text-muted) mb-2">
             You have {inProgressSimulations.length} simulation
             {inProgressSimulations.length > 1 ? "s" : ""} in progress
           </p>
           <Link
             href={`/cube-lab/competitions/${inProgressSimulations[0].competitionId}/simulate/${inProgressSimulations[0]._id}`}
-            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[var(--primary)] border border-[var(--primary)] rounded-lg hover:bg-[var(--primary)]/10 transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-(--primary) border border-(--primary) rounded-lg hover:bg-(--primary)/10 transition-colors"
           >
             <Play className="w-3 h-3" />
             Continue

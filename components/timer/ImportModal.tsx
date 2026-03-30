@@ -330,15 +330,15 @@ export default function ImportModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-(--surface) border border-(--border) rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+        <div className="flex items-center justify-between p-4 border-b border-(--border)">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
             Import Timer Data
           </h3>
           <button
             onClick={onClose}
-            className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+            className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -347,13 +347,13 @@ export default function ImportModal({
         {/* Content */}
         <div className="p-4 space-y-4">
           {/* Tab Navigation */}
-          <div className="flex border-b border-[var(--border)]">
+          <div className="flex border-b border-(--border)">
             <button
               onClick={() => setActiveTab("paste")}
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === "paste"
-                  ? "border-[var(--primary)] text-[var(--primary)]"
-                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary)"
               }`}
             >
               Paste Data
@@ -362,8 +362,8 @@ export default function ImportModal({
               onClick={() => setActiveTab("file")}
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === "file"
-                  ? "border-[var(--primary)] text-[var(--primary)]"
-                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary)"
               }`}
             >
               Upload File
@@ -372,7 +372,7 @@ export default function ImportModal({
 
           {activeTab === "paste" ? (
             <>
-              <div className="text-sm text-[var(--text-secondary)]">
+              <div className="text-sm text-(--text-secondary)">
                 Paste your timer data below. Supported formats: csTimer,
                 CubeDesk, and CubeDev.
               </div>
@@ -383,7 +383,7 @@ export default function ImportModal({
                   value={importData}
                   onChange={(e) => handleDataChange(e.target.value)}
                   placeholder="Paste your timer data here..."
-                  className="w-full h-48 p-3 text-sm bg-[var(--background)] border border-[var(--border)] rounded resize-none focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-mono"
+                  className="w-full h-48 p-3 text-sm bg-(--background) border border-(--border) rounded resize-none focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-mono"
                   onKeyDown={(e) => {
                     // Prevent spacebar from triggering timer events
                     if (e.key === " ") {
@@ -395,7 +395,7 @@ export default function ImportModal({
             </>
           ) : (
             <>
-              <div className="text-sm text-[var(--text-secondary)]">
+              <div className="text-sm text-(--text-secondary)">
                 Upload a TXT or JSON file containing your timer data.
               </div>
 
@@ -403,8 +403,8 @@ export default function ImportModal({
               <div
                 className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                   isDragOver
-                    ? "border-[var(--primary)] bg-[var(--primary)]/5"
-                    : "border-[var(--border)] hover:border-[var(--primary)]/50"
+                    ? "border-(--primary) bg-(--primary)/5"
+                    : "border-(--border) hover:border-(--primary)/50"
                 }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -419,17 +419,17 @@ export default function ImportModal({
                 />
 
                 <div className="space-y-4">
-                  <div className="mx-auto w-12 h-12 bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
-                    <File className="w-6 h-6 text-[var(--primary)]" />
+                  <div className="mx-auto w-12 h-12 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
+                    <File className="w-6 h-6 text-(--primary)" />
                   </div>
 
                   <div>
-                    <div className="text-[var(--text-primary)] font-medium mb-2">
+                    <div className="text-(--text-primary) font-medium mb-2">
                       {isDragOver
                         ? "Drop your file here"
                         : "Choose a file or drag it here"}
                     </div>
-                    <div className="text-sm text-[var(--text-secondary)]">
+                    <div className="text-sm text-(--text-secondary)">
                       Supports .txt and .json files
                     </div>
                   </div>
@@ -437,7 +437,7 @@ export default function ImportModal({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-medium transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-primary) font-medium transition-colors"
                   >
                     <FolderOpen className="w-4 h-4" />
                     Browse Files
@@ -448,10 +448,10 @@ export default function ImportModal({
               {/* File content preview */}
               {importData && (
                 <div className="space-y-2">
-                  <div className="text-sm font-medium text-[var(--text-primary)]">
+                  <div className="text-sm font-medium text-(--text-primary)">
                     File Content Preview:
                   </div>
-                  <div className="max-h-32 overflow-y-auto p-3 bg-[var(--background)] border border-[var(--border)] rounded text-xs font-mono text-[var(--text-secondary)]">
+                  <div className="max-h-32 overflow-y-auto p-3 bg-(--background) border border-(--border) rounded text-xs font-mono text-(--text-secondary)">
                     {importData.slice(0, 500)}
                     {importData.length > 500 && "..."}
                   </div>
@@ -464,16 +464,16 @@ export default function ImportModal({
           {importProgress && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--text-secondary)]">
+                <span className="text-(--text-secondary)">
                   Importing solves...
                 </span>
-                <span className="text-[var(--text-primary)]">
+                <span className="text-(--text-primary)">
                   {importProgress.current} / {importProgress.total}
                 </span>
               </div>
-              <div className="w-full bg-[var(--surface-elevated)] rounded-full h-2">
+              <div className="w-full bg-(--surface-elevated) rounded-full h-2">
                 <div
-                  className="bg-[var(--primary)] h-2 rounded-full transition-all duration-300"
+                  className="bg-(--primary) h-2 rounded-full transition-all duration-300"
                   style={{
                     width: `${(importProgress.current / importProgress.total) * 100}%`,
                   }}
@@ -487,20 +487,20 @@ export default function ImportModal({
             <div
               className={`flex items-center gap-2 p-3 rounded-lg ${
                 importResult.success
-                  ? "bg-[var(--success)]/20 border border-[var(--success)]/30"
-                  : "bg-[var(--error)]/20 border border-[var(--error)]/30"
+                  ? "bg-(--success)/20 border border-(--success)/30"
+                  : "bg-(--error)/20 border border-(--error)/30"
               }`}
             >
               {importResult.success ? (
-                <CircleCheck className="w-4 h-4 text-[var(--success)] flex-shrink-0" />
+                <CircleCheck className="w-4 h-4 text-(--success) shrink-0" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-[var(--error)] flex-shrink-0" />
+                <AlertCircle className="w-4 h-4 text-(--error) shrink-0" />
               )}
               <span
                 className={`text-sm ${
                   importResult.success
-                    ? "text-[var(--success)]"
-                    : "text-[var(--error)]"
+                    ? "text-(--success)"
+                    : "text-(--error)"
                 }`}
               >
                 {importResult.message}
@@ -513,20 +513,20 @@ export default function ImportModal({
             <div
               className={`flex items-center gap-2 p-3 rounded-lg ${
                 validationStatus.isValid
-                  ? "bg-[var(--success)]/20 border border-[var(--success)]/30"
-                  : "bg-[var(--error)]/20 border border-[var(--error)]/30"
+                  ? "bg-(--success)/20 border border-(--success)/30"
+                  : "bg-(--error)/20 border border-(--error)/30"
               }`}
             >
               {validationStatus.isValid ? (
-                <CircleCheck className="w-4 h-4 text-[var(--success)] flex-shrink-0" />
+                <CircleCheck className="w-4 h-4 text-(--success) shrink-0" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-[var(--error)] flex-shrink-0" />
+                <AlertCircle className="w-4 h-4 text-(--error) shrink-0" />
               )}
               <span
                 className={`text-sm ${
                   validationStatus.isValid
-                    ? "text-[var(--success)]"
-                    : "text-[var(--error)]"
+                    ? "text-(--success)"
+                    : "text-(--error)"
                 }`}
               >
                 {validationStatus.message}
@@ -535,11 +535,11 @@ export default function ImportModal({
           )}
 
           {/* Format help */}
-          <div className="bg-[var(--surface-elevated)] rounded-lg p-3">
-            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-inter mb-2">
+          <div className="bg-(--surface-elevated) rounded-lg p-3">
+            <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-2">
               Supported Formats
             </div>
-            <div className="space-y-1 text-sm text-[var(--text-secondary)]">
+            <div className="space-y-1 text-sm text-(--text-secondary)">
               <div>
                 • <strong>csTimer:</strong> Standard csTimer export format
               </div>
@@ -561,7 +561,7 @@ export default function ImportModal({
                 isImporting ||
                 importResult?.success
               }
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:bg-[var(--surface-elevated)] disabled:text-[var(--text-muted)] text-white rounded-lg font-medium transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-(--primary) hover:bg-(--primary-hover) disabled:bg-(--surface-elevated) disabled:text-(--text-muted) text-white rounded-lg font-medium transition-colors"
             >
               <Upload className="w-4 h-4" />
               {isImporting
@@ -573,7 +573,7 @@ export default function ImportModal({
             <button
               onClick={onClose}
               disabled={isImporting}
-              className="px-4 py-2 bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--border)] disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-medium transition-colors"
+              className="px-4 py-2 bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-medium transition-colors"
             >
               {importResult?.success ? "Close" : "Cancel"}
             </button>

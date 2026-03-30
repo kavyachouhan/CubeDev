@@ -234,10 +234,10 @@ export default function SessionManager({
       >
         <button
           onClick={toggleExpanded}
-          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
           title={isExpanded ? "Hide session" : "Show session"}
         >
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+        <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
           Session
         </h3>
           {isExpanded ? (
@@ -249,7 +249,7 @@ export default function SessionManager({
         <div className="flex items-center gap-2">
           <button
             onClick={toggleExpanded}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={isExpanded ? "Hide session" : "Show session"}
           >
             {isExpanded ? (
@@ -275,21 +275,21 @@ export default function SessionManager({
           {/* Dropdown button */}
           <button
             onClick={() => setIsDropdownOpen((v) => !v)}
-            className="w-full flex items-center justify-between p-2 md:p-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)] transition-colors"
+            className="w-full flex items-center justify-between p-2 md:p-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
           >
             <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-              <FolderOpen className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+              <FolderOpen className="w-4 h-4 text-(--primary) shrink-0" />
               <div className="text-left min-w-0 flex-1">
-                <div className="font-medium text-[var(--text-primary)] font-statement truncate">
+                <div className="font-medium text-(--text-primary) font-statement truncate">
                   {currentSession.name}
                 </div>
-                <div className="text-xs text-[var(--text-muted)] font-inter truncate">
+                <div className="text-xs text-(--text-muted) font-inter truncate">
                   {getLiveSolveCount(currentSession.id)} solves
                 </div>
               </div>
             </div>
             <ChevronDown
-              className={`w-4 h-4 text-[var(--text-secondary)] transition-transform flex-shrink-0 ${
+              className={`w-4 h-4 text-(--text-secondary) transition-transform shrink-0 ${
                 isDropdownOpen ? "rotate-180" : ""
               }`}
             />
@@ -297,9 +297,9 @@ export default function SessionManager({
 
           {/* Dropdown */}
           {isDropdownOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl z-[9999] max-h-80 overflow-hidden">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-80 overflow-hidden">
               {/* Create New Session */}
-              <div className="p-3 border-b border-[var(--border)] bg-[var(--surface-elevated)]">
+              <div className="p-3 border-b border-(--border) bg-(--surface-elevated)">
                 {isCreating ? (
                   <div className="relative">
                     <input
@@ -307,7 +307,7 @@ export default function SessionManager({
                       value={newSessionName}
                       onChange={(e) => setNewSessionName(e.target.value)}
                       placeholder="Session name..."
-                      className="w-full px-3 py-2 pr-16 bg-[var(--background)] border border-[var(--border)] rounded-md text-sm font-inter text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                      className="w-full px-3 py-2 pr-16 bg-(--background) border border-(--border) rounded-md text-sm font-inter text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
                       autoFocus
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -328,7 +328,7 @@ export default function SessionManager({
                     <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
                       <button
                         onClick={handleCreateSession}
-                        className="p-1.5 bg-[var(--surface)] text-white rounded hover:bg-[var(--success)]/80 transition-colors"
+                        className="p-1.5 bg-(--surface) text-white rounded hover:bg-(--success)/80 transition-colors"
                         title="Create session"
                       >
                         <Check className="w-3 h-3" />
@@ -338,7 +338,7 @@ export default function SessionManager({
                           setIsCreating(false);
                           setNewSessionName("");
                         }}
-                        className="p-1.5 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] rounded transition-colors"
+                        className="p-1.5 bg-(--surface) border border-(--border) text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border-hover) rounded transition-colors"
                         title="Cancel"
                       >
                         <X className="w-3 h-3" />
@@ -348,7 +348,7 @@ export default function SessionManager({
                 ) : (
                   <button
                     onClick={() => setIsCreating(true)}
-                    className="w-full flex items-center gap-2 p-2 text-[var(--primary)] hover:bg-[var(--surface)] rounded-md transition-colors"
+                    className="w-full flex items-center gap-2 p-2 text-(--primary) hover:bg-(--surface) rounded-md transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     <span className="text-sm font-medium font-button">
@@ -363,10 +363,10 @@ export default function SessionManager({
                 {sessions.map((session) => (
                   <div
                     key={session.id}
-                    className={`group flex items-center justify-between p-3 hover:bg-[var(--surface-elevated)] transition-colors border-b border-[var(--border)]/50 last:border-b-0 ${
+                    className={`group flex items-center justify-between p-3 hover:bg-(--surface-elevated) transition-colors border-b border-(--border)/50 last:border-b-0 ${
                       session.id === currentSession.id
-                        ? "bg-[var(--primary)]/20 border-[var(--primary)]/30"
-                        : "bg-[var(--background)]"
+                        ? "bg-(--primary)/20 border-(--primary)/30"
+                        : "bg-(--background)"
                     }`}
                   >
                     <div
@@ -384,7 +384,7 @@ export default function SessionManager({
                             type="text"
                             value={renameValue}
                             onChange={(e) => setRenameValue(e.target.value)}
-                            className="w-full px-2 py-1 pr-14 bg-[var(--surface-elevated)] border border-[var(--border)] rounded text-sm font-inter text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                            className="w-full px-2 py-1 pr-14 bg-(--surface-elevated) border border-(--border) rounded text-sm font-inter text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
                             autoFocus
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
@@ -408,7 +408,7 @@ export default function SessionManager({
                                 e.stopPropagation();
                                 handleRenameSession(session.id);
                               }}
-                              className="p-1 bg-[var(--surface)] text-white rounded hover:bg-[var(--success)]/80 transition-colors"
+                              className="p-1 bg-(--surface) text-white rounded hover:bg-(--success)/80 transition-colors"
                               title="Save changes"
                             >
                               <Check className="w-3 h-3" />
@@ -419,7 +419,7 @@ export default function SessionManager({
                                 setIsRenaming(null);
                                 setRenameValue("");
                               }}
-                              className="p-1 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] rounded transition-colors"
+                              className="p-1 bg-(--surface) border border-(--border) text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border-hover) rounded transition-colors"
                               title="Cancel editing"
                             >
                               <X className="w-3 h-3" />
@@ -428,10 +428,10 @@ export default function SessionManager({
                         </div>
                       ) : (
                         <div>
-                          <div className="font-medium text-[var(--text-primary)] font-statement truncate">
+                          <div className="font-medium text-(--text-primary) font-statement truncate">
                             {session.name}
                           </div>
-                          <div className="text-xs text-[var(--text-muted)] font-inter truncate">
+                          <div className="text-xs text-(--text-muted) font-inter truncate">
                             {getLiveSolveCount(session.id)} solves
                           </div>
                         </div>
@@ -439,14 +439,14 @@ export default function SessionManager({
                     </div>
 
                     {isRenaming !== session.id && (
-                      <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0">
+                      <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setIsRenaming(session.id);
                             setRenameValue(session.name);
                           }}
-                          className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--surface)] rounded-md transition-colors"
+                          className="p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--surface) rounded-md transition-colors"
                           title="Rename session"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -457,7 +457,7 @@ export default function SessionManager({
                               e.stopPropagation();
                               handleDeleteSession(session.id);
                             }}
-                            className="p-2 text-[var(--text-muted)] hover:text-[var(--error)] hover:bg-[var(--surface)] rounded-md transition-colors"
+                            className="p-2 text-(--text-muted) hover:text-(--error) hover:bg-(--surface) rounded-md transition-colors"
                             title="Delete session"
                           >
                             <Trash2 className="w-4 h-4" />

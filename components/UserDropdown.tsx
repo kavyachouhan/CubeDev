@@ -63,7 +63,7 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
       onMouseLeave={handleMouseLeave}
     >
       {/* User Info Trigger */}
-      <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[var(--surface-elevated)] transition-all duration-200 group">
+      <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-(--surface-elevated) transition-all duration-200 group">
         {user.avatar && (
           <Image
             src={user.avatar.url || user.avatar}
@@ -74,25 +74,25 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
           />
         )}
         <div className="hidden lg:block text-left">
-          <div className="text-sm font-semibold text-[var(--text-primary)] font-button">
+          <div className="text-sm font-semibold text-(--text-primary) font-button">
             {user.name}
           </div>
           {user.wcaId && (
-            <div className="text-xs text-[var(--text-secondary)] font-inter">
+            <div className="text-xs text-(--text-secondary) font-inter">
               {user.wcaId}
             </div>
           )}
         </div>
         <ChevronDown
-          className={`w-4 h-4 text-[var(--text-secondary)] transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          className={`w-4 h-4 text-(--text-secondary) transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-56 bg-[var(--background)] border border-[var(--border)] rounded-lg shadow-lg z-50 py-2">
+        <div className="absolute right-0 top-full mt-2 w-56 bg-(--background) border border-(--border) rounded-lg shadow-lg z-50 py-2">
           {/* User Info Header */}
-          <div className="px-4 py-3 border-b border-[var(--border)]">
+          <div className="px-4 py-3 border-b border-(--border)">
             <div className="flex items-center gap-3">
               {user.avatar && (
                 <Image
@@ -104,11 +104,11 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
                 />
               )}
               <div>
-                <div className="font-semibold text-[var(--text-primary)] font-button">
+                <div className="font-semibold text-(--text-primary) font-button">
                   {user.name}
                 </div>
                 {user.wcaId && (
-                  <div className="text-sm text-[var(--text-secondary)] font-inter">
+                  <div className="text-sm text-(--text-secondary) font-inter">
                     {user.wcaId}
                   </div>
                 )}
@@ -120,7 +120,7 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
           <div className="py-2">
             <Link
               href="/cube-lab/timer"
-              className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+              className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
               onClick={() => setIsOpen(false)}
             >
               <Box className="w-4 h-4" />
@@ -130,7 +130,7 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
             {user.wcaId && (
               <Link
                 href={`/cuber/${user.wcaId}`}
-                className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+                className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
                 onClick={() => setIsOpen(false)}
               >
                 <User className="w-4 h-4" />
@@ -140,7 +140,7 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
 
             <Link
               href="/me"
-              className="flex items-center gap-3 px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+              className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
               onClick={() => setIsOpen(false)}
             >
               <Settings className="w-4 h-4" />
@@ -149,13 +149,13 @@ export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
           </div>
 
           {/* Sign Out */}
-          <div className="border-t border-[var(--border)] pt-2">
+          <div className="border-t border-(--border) pt-2">
             <button
               onClick={() => {
                 onSignOut();
                 setIsOpen(false);
               }}
-              className="flex items-center gap-3 px-4 py-2 w-full text-left text-[var(--text-secondary)] hover:text-[var(--error)] hover:bg-[var(--surface-elevated)] transition-colors font-inter"
+              className="flex items-center gap-3 px-4 py-2 w-full text-left text-(--text-secondary) hover:text-(--error) hover:bg-(--surface-elevated) transition-colors font-inter"
             >
               <LogOut className="w-4 h-4" />
               Sign Out

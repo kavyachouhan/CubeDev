@@ -117,30 +117,30 @@ export default function WeeklySummaryCard({
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <StatCard
             icon={Clock}
-            iconColor="bg-[var(--primary)]/10 text-[var(--primary)]"
+            iconColor="bg-(--primary)/10 text-(--primary)"
             label="Practice"
             value={formatDuration(progressStats.weekly.practiceMinutes)}
           />
           <StatCard
             icon={BarChart3}
-            iconColor="bg-[var(--accent)]/10 text-[var(--accent)]"
+            iconColor="bg-(--accent)/10 text-(--accent)"
             label="Solves"
             value={progressStats.weekly.solves.toLocaleString()}
           />
           <StatCard
             icon={Target}
-            iconColor="bg-[var(--success)]/10 text-[var(--success)]"
+            iconColor="bg-(--success)/10 text-(--success)"
             label="Average"
             value={
               progressStats.weekly.average
                 ? formatTime(progressStats.weekly.average)
                 : "—"
             }
-            valueColor="text-[var(--success)]"
+            valueColor="text-(--success)"
           />
           <StatCard
             icon={Calendar}
-            iconColor="bg-[var(--warning)]/10 text-[var(--warning)]"
+            iconColor="bg-(--warning)/10 text-(--warning)"
             label="Active"
             value={`${progressStats.weekly.activeDays} days`}
           />

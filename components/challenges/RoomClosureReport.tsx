@@ -90,7 +90,7 @@ export default function RoomClosureReport({
       case 3:
         return "border-orange-200";
       default:
-        return "border-[var(--border)]";
+        return "border-(--border)";
     }
   };
 
@@ -103,7 +103,7 @@ export default function RoomClosureReport({
       case 3:
         return "bg-orange-50 dark:bg-orange-900/10";
       default:
-        return "bg-[var(--surface-elevated)]";
+        return "bg-(--surface-elevated)";
     }
   };
 
@@ -125,20 +125,20 @@ export default function RoomClosureReport({
       {/* Report Header */}
       <div className="timer-card">
         <div className="text-center space-y-4">
-          <div className="w-16 h-16 bg-[var(--primary)] rounded-full flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 bg-(--primary) rounded-full flex items-center justify-center mx-auto">
             <Trophy className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] font-statement mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-(--text-primary) font-statement mb-2">
               Challenge Complete
             </h1>
-            <h2 className="text-xl text-[var(--text-secondary)] font-statement mb-4">
+            <h2 className="text-xl text-(--text-secondary) font-statement mb-4">
               {room.name}
             </h2>
           </div>
 
           {/* Room Info */}
-          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-[var(--text-secondary)]">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-(--text-secondary)">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               <span>Ended {formatDate(room.expiresAt)}</span>
@@ -149,43 +149,43 @@ export default function RoomClosureReport({
 
       {/* Statistics Overview */}
       <div className="timer-card">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement mb-4">
+        <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-4">
           Challenge Statistics
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
-            <TrendingUp className="w-6 h-6 text-[var(--primary)] mx-auto mb-2" />
-            <div className="text-2xl font-bold text-[var(--text-primary)] font-statement">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+            <TrendingUp className="w-6 h-6 text-(--primary) mx-auto mb-2" />
+            <div className="text-2xl font-bold text-(--text-primary) font-statement">
               {completedCount}
             </div>
-            <div className="text-sm text-[var(--text-muted)] font-inter">
+            <div className="text-sm text-(--text-muted) font-inter">
               Completed
             </div>
           </div>
-          <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
             <Clock className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-[var(--text-primary)] font-statement">
+            <div className="text-2xl font-bold text-(--text-primary) font-statement">
               {Math.round(completionRate)}%
             </div>
-            <div className="text-sm text-[var(--text-muted)] font-inter">
+            <div className="text-sm text-(--text-muted) font-inter">
               Completion Rate
             </div>
           </div>
-          <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
             <Trophy className="w-6 h-6 text-yellow-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-[var(--text-primary)] font-statement">
+            <div className="text-2xl font-bold text-(--text-primary) font-statement">
               {room.format.toUpperCase()}
             </div>
-            <div className="text-sm text-[var(--text-muted)] font-inter">
+            <div className="text-sm text-(--text-muted) font-inter">
               Format
             </div>
           </div>
-          <div className="text-center p-3 bg-[var(--surface-elevated)] rounded-lg">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
             <Users className="w-6 h-6 text-green-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-[var(--text-primary)] font-statement">
+            <div className="text-2xl font-bold text-(--text-primary) font-statement">
               {totalParticipants}
             </div>
-            <div className="text-sm text-[var(--text-muted)] font-inter">
+            <div className="text-sm text-(--text-muted) font-inter">
               Total Participants
             </div>
           </div>
@@ -195,7 +195,7 @@ export default function RoomClosureReport({
       {/* Podium Winners */}
       {podiumWinners.length > 0 && (
         <div className="timer-card">
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement mb-6">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-6">
             Podium Winners
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -219,7 +219,7 @@ export default function RoomClosureReport({
 
                   {/* User Info */}
                   <div className="space-y-1">
-                    <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-[var(--primary)] text-white font-bold text-lg mx-auto">
+                    <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-white font-bold text-lg mx-auto">
                       {participant.user?.avatar &&
                       !(
                         participant.user?.isDeleted ||
@@ -267,7 +267,7 @@ export default function RoomClosureReport({
                           : participant.user?.name?.[0] || "?"}
                       </span>
                     </div>
-                    <h4 className="font-semibold text-[var(--text-primary)] font-statement">
+                    <h4 className="font-semibold text-(--text-primary) font-statement">
                       {participant.user?.isDeleted ||
                       participant.wasDeletedWhenJoined
                         ? "Deleted User"
@@ -278,7 +278,7 @@ export default function RoomClosureReport({
                         participant.user?.isDeleted ||
                         participant.wasDeletedWhenJoined
                       ) && (
-                        <p className="text-xs text-[var(--text-muted)] font-mono bg-[var(--surface-elevated)] px-2 py-1 rounded-full inline-block">
+                        <p className="text-xs text-(--text-muted) font-mono bg-(--surface-elevated) px-2 py-1 rounded-full inline-block">
                           {participant.user.wcaId}
                         </p>
                       )}
@@ -286,12 +286,12 @@ export default function RoomClosureReport({
 
                   {/* Results */}
                   <div className="space-y-2">
-                    <div className="font-mono text-xl font-bold text-[var(--text-primary)]">
+                    <div className="font-mono text-xl font-bold text-(--text-primary)">
                       {participant.average
                         ? formatTime(participant.average)
                         : "DNF"}
                     </div>
-                    <div className="text-sm text-[var(--text-muted)] font-inter">
+                    <div className="text-sm text-(--text-muted) font-inter">
                       Best:{" "}
                       <span className="font-mono">
                         {participant.bestSingle
@@ -309,14 +309,14 @@ export default function RoomClosureReport({
 
       {/* Full Leaderboard */}
       <div className="timer-card">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement mb-4">
+        <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-4">
           Complete Results
         </h3>
 
         {/* Completed Participants */}
         {rankedParticipants.length > 0 && (
           <div className="space-y-3 mb-6">
-            <h4 className="text-sm font-medium text-[var(--text-primary)] font-inter border-b border-[var(--border)] pb-2">
+            <h4 className="text-sm font-medium text-(--text-primary) font-inter border-b border-(--border) pb-2">
               Completed ({rankedParticipants.length})
             </h4>
             <div className="space-y-2">
@@ -324,7 +324,7 @@ export default function RoomClosureReport({
                 <button
                   key={participant._id}
                   onClick={() => setSelectedParticipant(participant)}
-                  className="w-full flex items-center gap-3 p-4 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)] hover:border-[var(--primary)] transition-all duration-200 cursor-pointer"
+                  className="w-full flex items-center gap-3 p-4 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) hover:border-(--primary) transition-all duration-200 cursor-pointer"
                 >
                   {/* Rank */}
                   <div
@@ -336,7 +336,7 @@ export default function RoomClosureReport({
                   </div>
 
                   {/* User Avatar */}
-                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-[var(--primary)] text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-white font-bold text-sm">
                     {participant.user?.avatar &&
                     !(
                       participant.user?.isDeleted ||
@@ -387,7 +387,7 @@ export default function RoomClosureReport({
 
                   {/* User Info */}
                   <div className="flex-1 text-left">
-                    <div className="font-semibold text-[var(--text-primary)] font-inter">
+                    <div className="font-semibold text-(--text-primary) font-inter">
                       {participant.user?.isDeleted ||
                       participant.wasDeletedWhenJoined
                         ? "Deleted User"
@@ -398,7 +398,7 @@ export default function RoomClosureReport({
                         participant.user?.isDeleted ||
                         participant.wasDeletedWhenJoined
                       ) && (
-                        <div className="text-xs text-[var(--text-muted)] font-mono">
+                        <div className="text-xs text-(--text-muted) font-mono">
                           {participant.user.wcaId}
                         </div>
                       )}
@@ -406,12 +406,12 @@ export default function RoomClosureReport({
 
                   {/* Results */}
                   <div className="text-right">
-                    <div className="font-mono text-lg font-bold text-[var(--text-primary)]">
+                    <div className="font-mono text-lg font-bold text-(--text-primary)">
                       {participant.average
                         ? formatTime(participant.average)
                         : "DNF"}
                     </div>
-                    <div className="text-xs text-[var(--text-muted)] font-inter">
+                    <div className="text-xs text-(--text-muted) font-inter">
                       Best:{" "}
                       <span className="font-mono">
                         {participant.bestSingle
@@ -429,7 +429,7 @@ export default function RoomClosureReport({
         {/* Incomplete Participants */}
         {incompleteParticipants.length > 0 && (
           <div className="space-y-3">
-            <h4 className="text-sm font-medium text-[var(--text-secondary)] font-inter border-b border-[var(--border)] pb-2">
+            <h4 className="text-sm font-medium text-(--text-secondary) font-inter border-b border-(--border) pb-2">
               Did Not Complete ({incompleteParticipants.length})
             </h4>
             <div className="space-y-2">
@@ -437,7 +437,7 @@ export default function RoomClosureReport({
                 <button
                   key={participant._id}
                   onClick={() => setSelectedParticipant(participant)}
-                  className="w-full flex items-center gap-3 p-4 bg-[var(--surface-elevated)]/60 hover:bg-[var(--surface-elevated)]/80 rounded-lg border border-[var(--border)]/50 transition-all duration-200 cursor-pointer"
+                  className="w-full flex items-center gap-3 p-4 bg-(--surface-elevated)/60 hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border)/50 transition-all duration-200 cursor-pointer"
                 >
                   {/* User Avatar */}
                   <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-gray-400 text-white font-bold text-sm">
@@ -496,7 +496,7 @@ export default function RoomClosureReport({
 
                   {/* User Info */}
                   <div className="flex-1 text-left">
-                    <div className="font-semibold text-[var(--text-secondary)] font-inter">
+                    <div className="font-semibold text-(--text-secondary) font-inter">
                       {participant.user?.isDeleted ||
                       participant.wasDeletedWhenJoined
                         ? "Deleted User"
@@ -507,7 +507,7 @@ export default function RoomClosureReport({
                         participant.user?.isDeleted ||
                         participant.wasDeletedWhenJoined
                       ) && (
-                        <div className="text-xs text-[var(--text-muted)] font-mono">
+                        <div className="text-xs text-(--text-muted) font-mono">
                           {participant.user.wcaId}
                         </div>
                       )}
@@ -515,11 +515,11 @@ export default function RoomClosureReport({
 
                   {/* Progress */}
                   <div className="text-right">
-                    <div className="text-sm font-medium text-[var(--text-secondary)] font-inter">
+                    <div className="text-sm font-medium text-(--text-secondary) font-inter">
                       {participant.solvesCompleted || 0} /{" "}
                       {participant.totalSolves || room.scrambles?.length || 5}
                     </div>
-                    <div className="text-xs text-[var(--text-muted)] font-inter">
+                    <div className="text-xs text-(--text-muted) font-inter">
                       Incomplete
                     </div>
                   </div>

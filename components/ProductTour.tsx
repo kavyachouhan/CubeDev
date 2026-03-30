@@ -277,7 +277,7 @@ export default function ProductTour({
         {/* */}
         {highlightRect && !isCenterPlacement && (
           <div
-            className="absolute border-2 border-[var(--primary)] rounded-lg transition-all duration-300 pointer-events-auto cursor-pointer"
+            className="absolute border-2 border-(--primary) rounded-lg transition-all duration-300 pointer-events-auto cursor-pointer"
             style={{
               top: highlightRect.top - 8,
               left: highlightRect.left - 8,
@@ -337,17 +337,17 @@ export default function ProductTour({
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
                 {step.icon && (
-                  <div className="p-2 bg-[var(--primary)]/10 rounded-lg shrink-0">
-                    <span className="text-[var(--primary)]">{step.icon}</span>
+                  <div className="p-2 bg-(--primary)/10 rounded-lg shrink-0">
+                    <span className="text-(--primary)">{step.icon}</span>
                   </div>
                 )}
-                <h3 className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                <h3 className="text-lg font-bold text-(--text-primary) font-statement">
                   {step.title}
                 </h3>
               </div>
               <button
                 onClick={handleSkip}
-                className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors rounded-lg hover:bg-[var(--surface-elevated)]"
+                className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors rounded-lg hover:bg-(--surface-elevated)"
                 aria-label="Close tour"
               >
                 <X className="w-5 h-5" />
@@ -355,13 +355,13 @@ export default function ProductTour({
             </div>
 
             {/* Content */}
-            <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
+            <p className="text-sm text-(--text-secondary) mb-4 leading-relaxed">
               {step.content}
             </p>
 
             {/* Hint to click element */}
             {!isCenterPlacement && (
-              <p className="text-xs text-[var(--text-muted)] mb-3 italic">
+              <p className="text-xs text-(--text-muted) mb-3 italic">
                 Click the highlighted element to interact and continue
               </p>
             )}
@@ -373,10 +373,10 @@ export default function ProductTour({
                   key={index}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
                     index === currentStep
-                      ? "w-6 bg-[var(--primary)]"
+                      ? "w-6 bg-(--primary)"
                       : index < currentStep
-                        ? "w-1.5 bg-[var(--primary)]/60"
-                        : "w-1.5 bg-[var(--border)]"
+                        ? "w-1.5 bg-(--primary)/60"
+                        : "w-1.5 bg-(--border)"
                   }`}
                 />
               ))}
@@ -386,7 +386,7 @@ export default function ProductTour({
             <div className="flex items-center justify-between">
               <button
                 onClick={handleSkip}
-                className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                className="text-sm text-(--text-muted) hover:text-(--text-primary) transition-colors"
               >
                 Skip tour
               </button>
@@ -394,7 +394,7 @@ export default function ProductTour({
                 {!isFirstStep && (
                   <button
                     onClick={handlePrev}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-[var(--border)] rounded-lg hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] transition-colors"
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-(--border) rounded-lg hover:bg-(--surface-elevated) text-(--text-primary) transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     Back
@@ -402,7 +402,7 @@ export default function ProductTour({
                 )}
                 <button
                   onClick={handleNext}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors"
                 >
                   {isLastStep ? (
                     <>
@@ -420,7 +420,7 @@ export default function ProductTour({
             </div>
 
             {/* Step counter */}
-            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-[var(--text-muted)]">
+            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-(--text-muted)">
               {currentStep + 1} of {steps.length}
             </div>
           </div>

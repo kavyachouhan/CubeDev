@@ -61,17 +61,17 @@ export default function JoinRoomModal({ onClose }: JoinRoomModalProps) {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div>
-                <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+                <h2 className="text-xl font-bold text-(--text-primary) font-statement">
                   Join Challenge
                 </h2>
-                <p className="text-sm text-[var(--text-secondary)] font-inter">
+                <p className="text-sm text-(--text-secondary) font-inter">
                   Enter a room code to join an existing challenge
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-lg transition-colors"
+              className="p-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -80,7 +80,7 @@ export default function JoinRoomModal({ onClose }: JoinRoomModalProps) {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] font-inter mb-2">
+              <label className="block text-sm font-medium text-(--text-primary) font-inter mb-2">
                 Room Code
               </label>
               <div className="relative">
@@ -93,18 +93,18 @@ export default function JoinRoomModal({ onClose }: JoinRoomModalProps) {
                   }}
                   placeholder="ABC123"
                   maxLength={6}
-                  className="w-full px-4 py-3 pl-12 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors font-mono text-lg tracking-wider text-center"
+                  className="w-full px-4 py-3 pl-12 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) transition-colors font-mono text-lg tracking-wider text-center"
                   required
                 />
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-(--text-muted)" />
               </div>
               {error && (
                 <div className="mt-2 p-3 rounded-lg flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
                   <p className="text-sm text-red-500 font-inter">{error}</p>
                 </div>
               )}
-              <p className="text-xs text-[var(--text-muted)] font-inter mt-2 text-center">
+              <p className="text-xs text-(--text-muted) font-inter mt-2 text-center">
                 Room codes are 6 characters long (letters and numbers)
               </p>
             </div>
@@ -129,11 +129,11 @@ export default function JoinRoomModal({ onClose }: JoinRoomModalProps) {
           </form>
 
           {/* Help Text */}
-          <div className="mt-6 p-4 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg">
-            <h3 className="text-sm font-medium text-[var(--text-primary)] font-inter mb-2">
+          <div className="mt-6 p-4 bg-(--surface-elevated) border border-(--border) rounded-lg">
+            <h3 className="text-sm font-medium text-(--text-primary) font-inter mb-2">
               How to join a room
             </h3>
-            <ul className="text-sm text-[var(--text-secondary)] font-inter space-y-1">
+            <ul className="text-sm text-(--text-secondary) font-inter space-y-1">
               <li>• Get a room code from the room creator</li>
               <li>• Enter the 6-character code above</li>
               <li>• You'll be taken to the room to start solving</li>

@@ -157,10 +157,10 @@ export default function TimeDistributionChart({
       <div className="flex items-center justify-between">
         <button
           onClick={() => setIsVisible(!isVisible)}
-          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
           title={isVisible ? "Hide chart" : "Show chart"}
         >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             Time Distribution
           </h3>
           {isVisible ? (
@@ -171,7 +171,7 @@ export default function TimeDistributionChart({
         </button>
         <button
           onClick={() => setIsVisible(!isVisible)}
-          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+          className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
           title={isVisible ? "Hide chart" : "Show chart"}
         >
           {isVisible ? (
@@ -188,21 +188,21 @@ export default function TimeDistributionChart({
             <>
               {/* Quick Stats Cards */}
               <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-                <div className="bg-[var(--surface-elevated)] rounded-lg p-3 sm:p-4 border border-[var(--border)]">
+                <div className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)">
                   <div className="flex items-center gap-2 mb-2">
-                    <Target className="w-4 h-4 text-[var(--success)]" />
-                    <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-medium">
+                    <Target className="w-4 h-4 text-(--success)" />
+                    <div className="text-xs text-(--text-muted) uppercase tracking-wide font-medium">
                       Typical
                     </div>
                   </div>
-                  <div className="text-sm sm:text-base font-bold text-[var(--success)] font-mono">
+                  <div className="text-sm sm:text-base font-bold text-(--success) font-mono">
                     {formatTime(distributionData.stats.median)}
                   </div>
                 </div>
-                <div className="bg-[var(--surface-elevated)] rounded-lg p-3 sm:p-4 border border-[var(--border)]">
+                <div className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)">
                   <div className="flex items-center gap-2 mb-2">
-                    <BarChart3 className="w-4 h-4 text-[var(--accent)]" />
-                    <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-medium">
+                    <BarChart3 className="w-4 h-4 text-(--accent)" />
+                    <div className="text-xs text-(--text-muted) uppercase tracking-wide font-medium">
                       Stability
                     </div>
                   </div>
@@ -225,8 +225,8 @@ export default function TimeDistributionChart({
               </div>
 
               {/* Time Ranges */}
-              <div className="bg-[var(--surface-elevated)] rounded-lg p-4 sm:p-5 border border-[var(--border)] space-y-5">
-                <div className="text-base sm:text-lg font-semibold text-[var(--text-primary)] border-b border-[var(--border)] pb-3">
+              <div className="bg-(--surface-elevated) rounded-lg p-4 sm:p-5 border border-(--border) space-y-5">
+                <div className="text-base sm:text-lg font-semibold text-(--text-primary) border-b border-(--border) pb-3">
                   Your Time Ranges
                 </div>
 
@@ -249,7 +249,7 @@ export default function TimeDistributionChart({
                             <div
                               className={`w-4 h-4 rounded-full ${isHighest ? "bg-blue-500" : "bg-blue-400"}`}
                             />
-                            <span className="font-mono text-sm sm:text-base text-[var(--text-primary)] font-medium">
+                            <span className="font-mono text-sm sm:text-base text-(--text-primary) font-medium">
                               {formatTime(bucket.min)} -{" "}
                               {formatTime(bucket.max)}
                             </span>
@@ -259,12 +259,12 @@ export default function TimeDistributionChart({
                               </span>
                             )}
                           </div>
-                          <div className="text-[var(--text-muted)] text-sm font-medium">
+                          <div className="text-(--text-muted) text-sm font-medium">
                             {bucket.count} solve{bucket.count !== 1 ? "s" : ""}{" "}
                             ({bucket.percentage.toFixed(1)}%)
                           </div>
                         </div>
-                        <div className="w-full bg-[var(--surface)] rounded-full h-3">
+                        <div className="w-full bg-(--surface) rounded-full h-3">
                           <div
                             className={`h-3 rounded-full transition-all duration-500 ${
                               isHighest
@@ -280,11 +280,11 @@ export default function TimeDistributionChart({
                 </div>
 
                 {/* Performance Insights */}
-                <div className="mt-6 p-4 sm:p-5 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
-                  <div className="text-base sm:text-lg font-semibold text-[var(--text-primary)] mb-3">
+                <div className="mt-6 p-4 sm:p-5 bg-(--surface) rounded-lg border border-(--border)">
+                  <div className="text-base sm:text-lg font-semibold text-(--text-primary) mb-3">
                     Performance Summary
                   </div>
-                  <div className="space-y-2 text-sm text-[var(--text-muted)]">
+                  <div className="space-y-2 text-sm text-(--text-muted)">
                     <div className="flex flex-wrap items-center gap-1">
                       <span>• Your fastest solve:</span>
                       <span className="font-mono text-emerald-400 font-medium">
@@ -317,13 +317,13 @@ export default function TimeDistributionChart({
                     </div>
                     <div className="flex flex-wrap items-center gap-1">
                       <span>• 50% of your solves are faster than</span>
-                      <span className="font-mono text-[var(--text-primary)] font-medium">
+                      <span className="font-mono text-(--text-primary) font-medium">
                         {formatTime(distributionData.stats.median)}
                       </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-1">
                       <span>• 25% of your solves are faster than</span>
-                      <span className="font-mono text-[var(--text-primary)] font-medium">
+                      <span className="font-mono text-(--text-primary) font-medium">
                         {formatTime(distributionData.stats.q1)}
                       </span>
                     </div>
@@ -333,13 +333,13 @@ export default function TimeDistributionChart({
             </>
           ) : (
             <div className="text-center py-8">
-              <div className="w-16 h-16 mx-auto mb-4 bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center border border-[var(--border)]">
-                <BarChart3 className="w-8 h-8 text-[var(--text-muted)]" />
+              <div className="w-16 h-16 mx-auto mb-4 bg-(--surface-elevated) rounded-lg flex items-center justify-center border border-(--border)">
+                <BarChart3 className="w-8 h-8 text-(--text-muted)" />
               </div>
-              <div className="text-[var(--text-secondary)]">
+              <div className="text-(--text-secondary)">
                 No data to display
               </div>
-              <div className="text-sm text-[var(--text-muted)] mt-2">
+              <div className="text-sm text-(--text-muted) mt-2">
                 Start solving to see your time distribution!
               </div>
             </div>

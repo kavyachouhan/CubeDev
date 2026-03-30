@@ -52,7 +52,7 @@ export default function TimeBreakdown({ metrics }: TimeBreakdownProps) {
 
   return (
     <div className="timer-card">
-      <h3 className="text-lg font-bold text-[var(--text-primary)] font-statement mb-6">
+      <h3 className="text-lg font-bold text-(--text-primary) font-statement mb-6">
         Time Breakdown
       </h3>
       <div className="space-y-5">
@@ -63,15 +63,15 @@ export default function TimeBreakdown({ metrics }: TimeBreakdownProps) {
                 <div className={`p-1.5 rounded-lg ${item.bg}`}>
                   <item.icon className={`w-4 h-4 ${item.text}`} />
                 </div>
-                <span className="text-sm text-[var(--text-secondary)]">
+                <span className="text-sm text-(--text-secondary)">
                   {item.label}
                 </span>
               </div>
-              <span className="text-sm font-semibold text-[var(--text-primary)] font-statement">
+              <span className="text-sm font-semibold text-(--text-primary) font-statement">
                 {formatTime(item.value)} ({item.percentage.toFixed(0)}%)
               </span>
             </div>
-            <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+            <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
               <div
                 className={`h-full ${item.barColor} transition-all duration-300`}
                 style={{ width: `${Math.min(item.percentage, 100)}%` }}
@@ -80,12 +80,12 @@ export default function TimeBreakdown({ metrics }: TimeBreakdownProps) {
           </div>
         ))}
 
-        <div className="pt-4 mt-4 border-t border-[var(--border)]">
-          <div className="flex justify-between items-center p-3 rounded-lg bg-[var(--surface-elevated)]">
-            <span className="text-sm font-semibold text-[var(--text-primary)]">
+        <div className="pt-4 mt-4 border-t border-(--border)">
+          <div className="flex justify-between items-center p-3 rounded-lg bg-(--surface-elevated)">
+            <span className="text-sm font-semibold text-(--text-primary)">
               Total Average
             </span>
-            <span className="text-lg font-bold text-[var(--primary)] font-statement">
+            <span className="text-lg font-bold text-(--primary) font-statement">
               {formatTime(totalTime)}
             </span>
           </div>

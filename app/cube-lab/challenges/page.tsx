@@ -59,7 +59,7 @@ export default function ChallengesPage() {
           {/* Main Action Section */}
           <div className="timer-card">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-6">
-              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] font-statement">
+              <h1 className="text-2xl sm:text-3xl font-bold text-(--text-primary) font-statement">
                 Challenge Rooms
               </h1>
 
@@ -67,7 +67,7 @@ export default function ChallengesPage() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
-                  className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary)]/90 transition-colors font-inter font-medium w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary)/90 transition-colors font-inter font-medium w-full sm:w-auto"
                 >
                   <Plus className="w-4 h-4" />
                   <span className="sm:inline">Quick Action</span>
@@ -77,16 +77,16 @@ export default function ChallengesPage() {
                 </button>
 
                 {showDropdown && (
-                  <div className="absolute top-full left-0 sm:right-0 sm:left-auto mt-2 w-full sm:w-48 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg shadow-lg py-2 z-10">
+                  <div className="absolute top-full left-0 sm:right-0 sm:left-auto mt-2 w-full sm:w-48 bg-(--surface-elevated) border border-(--border) rounded-lg shadow-lg py-2 z-10">
                     <button
                       onClick={() => {
                         setShowCreateModal(true);
                         setShowDropdown(false);
                       }}
-                      className="w-full px-4 py-3 sm:py-2 text-left hover:bg-[var(--border)] transition-colors flex items-center gap-3"
+                      className="w-full px-4 py-3 sm:py-2 text-left hover:bg-(--border) transition-colors flex items-center gap-3"
                     >
-                      <Plus className="w-4 h-4 text-[var(--primary)]" />
-                      <span className="font-inter text-[var(--text-primary)]">
+                      <Plus className="w-4 h-4 text-(--primary)" />
+                      <span className="font-inter text-(--text-primary)">
                         Create Room
                       </span>
                     </button>
@@ -95,23 +95,23 @@ export default function ChallengesPage() {
                         setShowJoinModal(true);
                         setShowDropdown(false);
                       }}
-                      className="w-full px-4 py-3 sm:py-2 text-left hover:bg-[var(--border)] transition-colors flex items-center gap-3"
+                      className="w-full px-4 py-3 sm:py-2 text-left hover:bg-(--border) transition-colors flex items-center gap-3"
                     >
-                      <Users className="w-4 h-4 text-[var(--primary)]" />
-                      <span className="font-inter text-[var(--text-primary)]">
+                      <Users className="w-4 h-4 text-(--primary)" />
+                      <span className="font-inter text-(--text-primary)">
                         Join Room
                       </span>
                     </button>
-                    <div className="border-t border-[var(--border)] my-2"></div>
+                    <div className="border-t border-(--border) my-2"></div>
                     <button
                       onClick={() => {
                         setShowRecentModal(true);
                         setShowDropdown(false);
                       }}
-                      className="w-full px-4 py-3 sm:py-2 text-left hover:bg-[var(--border)] transition-colors flex items-center gap-3"
+                      className="w-full px-4 py-3 sm:py-2 text-left hover:bg-(--border) transition-colors flex items-center gap-3"
                     >
-                      <History className="w-4 h-4 text-[var(--primary)]" />
-                      <span className="font-inter text-[var(--text-primary)]">
+                      <History className="w-4 h-4 text-(--primary)" />
+                      <span className="font-inter text-(--text-primary)">
                         Recent Rooms
                       </span>
                     </button>
@@ -122,48 +122,48 @@ export default function ChallengesPage() {
 
             {/* Challenge Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="p-4 sm:p-5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-elevated)]/80 transition-colors">
+              <div className="p-4 sm:p-5 bg-(--surface-elevated) border border-(--border) rounded-lg hover:bg-(--surface-elevated)/80 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[var(--primary)] rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-(--primary) rounded-lg flex items-center justify-center">
                     <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm text-[var(--text-muted)] font-inter">
+                    <p className="text-sm text-(--text-muted) font-inter">
                       Rooms Won
                     </p>
-                    <p className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] font-statement">
+                    <p className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement">
                       {challengeStats?.roomsWon ?? "-"}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 sm:p-5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-elevated)]/80 transition-colors">
+              <div className="p-4 sm:p-5 bg-(--surface-elevated) border border-(--border) rounded-lg hover:bg-(--surface-elevated)/80 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-[var(--primary)] rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-(--primary) rounded-lg flex items-center justify-center">
                     <Users className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm text-[var(--text-muted)] font-inter">
+                    <p className="text-sm text-(--text-muted) font-inter">
                       Participated
                     </p>
-                    <p className="text-2xl font-bold text-[var(--text-primary)] font-statement">
+                    <p className="text-2xl font-bold text-(--text-primary) font-statement">
                       {challengeStats?.roomsParticipated ?? "-"}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 sm:p-5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface-elevated)]/80 transition-colors">
+              <div className="p-4 sm:p-5 bg-(--surface-elevated) border border-(--border) rounded-lg hover:bg-(--surface-elevated)/80 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[var(--primary)] rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-(--primary) rounded-lg flex items-center justify-center">
                     <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm text-[var(--text-muted)] font-inter">
+                    <p className="text-sm text-(--text-muted) font-inter">
                       Rooms Created
                     </p>
-                    <p className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] font-statement">
+                    <p className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement">
                       {challengeStats?.roomsCreated ?? "-"}
                     </p>
                   </div>

@@ -246,10 +246,10 @@ export default function DataManagementSection() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+              <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
                 Data Management
               </h3>
-              <p className="text-sm text-[var(--text-muted)]">
+              <p className="text-sm text-(--text-muted)">
                 Import and export your solve data
               </p>
             </div>
@@ -259,29 +259,29 @@ export default function DataManagementSection() {
         <div className="space-y-6">
           {/* Data Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-            <div className="bg-[var(--surface-elevated)] rounded-lg p-3 md:p-4 border border-[var(--border)]">
-              <div className="text-lg md:text-2xl font-bold text-[var(--text-primary)]">
+            <div className="bg-(--surface-elevated) rounded-lg p-3 md:p-4 border border-(--border)">
+              <div className="text-lg md:text-2xl font-bold text-(--text-primary)">
                 {(solveCount ?? timerSolves.length).toLocaleString()}
               </div>
-              <div className="text-xs md:text-sm text-[var(--text-muted)]">
+              <div className="text-xs md:text-sm text-(--text-muted)">
                 Total Solves
               </div>
             </div>
 
-            <div className="bg-[var(--surface-elevated)] rounded-lg p-3 md:p-4 border border-[var(--border)]">
-              <div className="text-lg md:text-2xl font-bold text-[var(--text-primary)]">
+            <div className="bg-(--surface-elevated) rounded-lg p-3 md:p-4 border border-(--border)">
+              <div className="text-lg md:text-2xl font-bold text-(--text-primary)">
                 {timerSessions.length}
               </div>
-              <div className="text-xs md:text-sm text-[var(--text-muted)]">
+              <div className="text-xs md:text-sm text-(--text-muted)">
                 Sessions
               </div>
             </div>
 
-            <div className="bg-[var(--surface-elevated)] rounded-lg p-3 md:p-4 border border-[var(--border)] col-span-2 lg:col-span-1">
-              <div className="text-lg md:text-2xl font-bold text-[var(--text-primary)]">
+            <div className="bg-(--surface-elevated) rounded-lg p-3 md:p-4 border border-(--border) col-span-2 lg:col-span-1">
+              <div className="text-lg md:text-2xl font-bold text-(--text-primary)">
                 {new Set(timerSolves.map((s) => s.event)).size}
               </div>
-              <div className="text-xs md:text-sm text-[var(--text-muted)]">
+              <div className="text-xs md:text-sm text-(--text-muted)">
                 Events
               </div>
             </div>
@@ -293,7 +293,7 @@ export default function DataManagementSection() {
             <button
               onClick={handleExport}
               disabled={isExporting || (solveCount ?? timerSolves.length) === 0}
-              className="flex items-center justify-center gap-2 px-4 py-2 md:py-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+              className="flex items-center justify-center gap-2 px-4 py-2 md:py-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) rounded-lg text-(--text-primary) font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
             >
               {isExporting ? (
                 <>
@@ -311,7 +311,7 @@ export default function DataManagementSection() {
             {/* Import Button */}
             <button
               onClick={() => setIsImportModalOpen(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2 md:py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg font-medium transition-colors text-sm md:text-base"
+              className="flex items-center justify-center gap-2 px-4 py-2 md:py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-medium transition-colors text-sm md:text-base"
             >
               <Upload className="w-4 h-4" />
               Import Data
@@ -319,10 +319,10 @@ export default function DataManagementSection() {
           </div>
 
           {/* Info Section */}
-          <div className="bg-[var(--surface-elevated)] rounded-lg p-3 md:p-4 border border-[var(--border)]">
+          <div className="bg-(--surface-elevated) rounded-lg p-3 md:p-4 border border-(--border)">
             <div className="flex items-start gap-3">
-              <div className="text-xs md:text-sm text-[var(--text-secondary)]">
-                <div className="font-medium text-[var(--text-primary)] mb-2">
+              <div className="text-xs md:text-sm text-(--text-secondary)">
+                <div className="font-medium text-(--text-primary) mb-2">
                   Export includes:
                 </div>
                 <div className="space-y-1">

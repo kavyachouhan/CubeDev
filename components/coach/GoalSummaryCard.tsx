@@ -74,14 +74,14 @@ export default function GoalSummaryCard({
     switch (status) {
       case "achieved":
         return (
-          <span className="flex items-center gap-1 text-xs text-[var(--success)] px-1.5 py-0.5 bg-[var(--success)]/10 rounded-full whitespace-nowrap shrink-0">
+          <span className="flex items-center gap-1 text-xs text-(--success) px-1.5 py-0.5 bg-(--success)/10 rounded-full whitespace-nowrap shrink-0">
             <Trophy className="w-3 h-3" />
             Achieved
           </span>
         );
       case "expired":
         return (
-          <span className="flex items-center gap-1 text-xs text-[var(--warning)] px-1.5 py-0.5 bg-[var(--warning)]/10 rounded-full whitespace-nowrap shrink-0">
+          <span className="flex items-center gap-1 text-xs text-(--warning) px-1.5 py-0.5 bg-(--warning)/10 rounded-full whitespace-nowrap shrink-0">
             <AlertTriangle className="w-3 h-3" />
             Overdue
           </span>
@@ -94,18 +94,18 @@ export default function GoalSummaryCard({
   const getTargetDateDisplay = () => {
     if (status === "expired") {
       return (
-        <span className="font-medium text-[var(--warning)]">
+        <span className="font-medium text-(--warning)">
           {Math.abs(daysRemaining)} days overdue
         </span>
       );
     }
     if (status === "achieved") {
       return (
-        <span className="font-medium text-[var(--success)]">Goal reached!</span>
+        <span className="font-medium text-(--success)">Goal reached!</span>
       );
     }
     return (
-      <span className="font-medium text-[var(--primary)]">
+      <span className="font-medium text-(--primary)">
         {new Date(profile.targetDate).toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
@@ -119,18 +119,18 @@ export default function GoalSummaryCard({
     switch (status) {
       case "achieved":
         return {
-          bg: "bg-[var(--success)]/10",
-          icon: "text-[var(--success)]",
+          bg: "bg-(--success)/10",
+          icon: "text-(--success)",
         };
       case "expired":
         return {
-          bg: "bg-[var(--warning)]/10",
-          icon: "text-[var(--warning)]",
+          bg: "bg-(--warning)/10",
+          icon: "text-(--warning)",
         };
       default:
         return {
-          bg: "bg-[var(--primary)]/10",
-          icon: "text-[var(--primary)]",
+          bg: "bg-(--primary)/10",
+          icon: "text-(--primary)",
         };
     }
   };
@@ -146,7 +146,7 @@ export default function GoalSummaryCard({
   return (
     <>
       <div
-        className={`timer-card ${status === "achieved" ? "border-[var(--success)]" : status === "expired" ? "border-[var(--warning)]" : ""}`}
+        className={`timer-card ${status === "achieved" ? "border-(--success)" : status === "expired" ? "border-(--warning)" : ""}`}
         data-tour="goal-summary"
       >
         <div className="flex flex-col gap-3">
@@ -160,12 +160,12 @@ export default function GoalSummaryCard({
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs text-[var(--text-muted)]">
+                  <span className="text-xs text-(--text-muted)">
                     Your Goal
                   </span>
                   {getStatusBadge()}
                 </div>
-                <span className="font-bold text-[var(--text-primary)] block truncate">
+                <span className="font-bold text-(--text-primary) block truncate">
                   {profile.goalType === "custom"
                     ? `CUSTOM (${profile.customGoalTime ? (profile.customGoalTime / 1000).toFixed(2) + "s" : "Set"})`
                     : profile.goalType.replace("-", " ").toUpperCase()}
@@ -175,7 +175,7 @@ export default function GoalSummaryCard({
             <div className="flex items-center gap-2 shrink-0">
               {/* Target date - desktop only, inline with actions */}
               <div className="hidden sm:flex items-center gap-2">
-                <span className="text-xs text-[var(--text-muted)]">
+                <span className="text-xs text-(--text-muted)">
                   {status === "expired"
                     ? "Status"
                     : status === "achieved"
@@ -186,23 +186,23 @@ export default function GoalSummaryCard({
               </div>
               <button
                 onClick={() => setShowEditModal(true)}
-                className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+                className="p-1.5 rounded-lg hover:bg-(--surface-elevated) transition-colors"
                 title="Edit goal"
               >
-                <Pencil className="w-4 h-4 text-[var(--text-muted)] hover:text-[var(--primary)]" />
+                <Pencil className="w-4 h-4 text-(--text-muted) hover:text-(--primary)" />
               </button>
               <button
                 onClick={() => setShowNewGoalModal(true)}
-                className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
+                className="p-1.5 rounded-lg hover:bg-(--surface-elevated) transition-colors"
                 title="Set new goal"
               >
-                <Plus className="w-4 h-4 text-[var(--text-muted)] hover:text-[var(--primary)]" />
+                <Plus className="w-4 h-4 text-(--text-muted) hover:text-(--primary)" />
               </button>
             </div>
           </div>
           {/* Mobile only: target date below */}
           <div className="flex items-center gap-2 pl-[52px] sm:hidden">
-            <span className="text-xs text-[var(--text-muted)]">
+            <span className="text-xs text-(--text-muted)">
               {status === "expired"
                 ? "Status"
                 : status === "achieved"

@@ -61,7 +61,7 @@ export default function TimerCustomization() {
     <div className="space-y-6">
       {/* Font Size */}
       <div>
-        <label className="text-sm font-medium text-[var(--text-secondary)] mb-3 block">
+        <label className="text-sm font-medium text-(--text-secondary) mb-3 block">
           Timer Font Size
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
@@ -73,13 +73,13 @@ export default function TimerCustomization() {
                 p-3 rounded-lg border-2 transition-all text-center
                 ${
                   timerFontSize === size.value
-                    ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
-                    : "border-[var(--border)] hover:border-[var(--border-hover)] text-[var(--text-secondary)]"
+                    ? "border-(--primary) bg-(--primary)/10 text-(--primary)"
+                    : "border-(--border) hover:border-(--border-hover) text-(--text-secondary)"
                 }
               `}
             >
               <div className="text-xs sm:text-sm font-medium">{size.label}</div>
-              <div className="text-xs text-[var(--text-muted)] mt-1">
+              <div className="text-xs text-(--text-muted) mt-1">
                 {size.example}
               </div>
             </button>
@@ -89,7 +89,7 @@ export default function TimerCustomization() {
 
       {/* Font Family */}
       <div>
-        <label className="text-sm font-medium text-[var(--text-secondary)] mb-3 block">
+        <label className="text-sm font-medium text-(--text-secondary) mb-3 block">
           Timer Font Style
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
@@ -101,19 +101,19 @@ export default function TimerCustomization() {
                 p-4 rounded-lg border-2 transition-all
                 ${
                   timerFontFamily === family.value
-                    ? "border-[var(--primary)] bg-[var(--primary)]/10"
-                    : "border-[var(--border)] hover:border-[var(--border-hover)]"
+                    ? "border-(--primary) bg-(--primary)/10"
+                    : "border-(--border) hover:border-(--border-hover)"
                 }
               `}
             >
-              <div className="text-sm font-medium text-[var(--text-secondary)] mb-2">
+              <div className="text-sm font-medium text-(--text-secondary) mb-2">
                 {family.label}
               </div>
               <div
                 className={`text-2xl ${family.style} ${
                   timerFontFamily === family.value
-                    ? "text-[var(--primary)]"
-                    : "text-[var(--text-primary)]"
+                    ? "text-(--primary)"
+                    : "text-(--text-primary)"
                 }`}
               >
                 12.34
@@ -125,7 +125,7 @@ export default function TimerCustomization() {
 
       {/* Timer Display Mode */}
       <div>
-        <label className="text-sm font-medium text-[var(--text-secondary)] mb-3 block">
+        <label className="text-sm font-medium text-(--text-secondary) mb-3 block">
           Timer Display Mode
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
@@ -137,21 +137,21 @@ export default function TimerCustomization() {
                 p-4 rounded-lg border-2 transition-all text-left
                 ${
                   timerUpdateMode === mode.value
-                    ? "border-[var(--primary)] bg-[var(--primary)]/10"
-                    : "border-[var(--border)] hover:border-[var(--border-hover)]"
+                    ? "border-(--primary) bg-(--primary)/10"
+                    : "border-(--border) hover:border-(--border-hover)"
                 }
               `}
             >
               <div
                 className={`text-sm font-medium mb-1 ${
                   timerUpdateMode === mode.value
-                    ? "text-[var(--primary)]"
-                    : "text-[var(--text-secondary)]"
+                    ? "text-(--primary)"
+                    : "text-(--text-secondary)"
                 }`}
               >
                 {mode.label}
               </div>
-              <div className="text-xs text-[var(--text-muted)]">
+              <div className="text-xs text-(--text-muted)">
                 {mode.description}
               </div>
             </button>

@@ -180,22 +180,22 @@ export function AdminDropdown<T extends string | number = string>({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`flex items-center gap-2 px-3 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg hover:border-[var(--primary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-[var(--border)] ${buttonClassName}`}
+        className={`flex items-center gap-2 px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg hover:border-(--primary) transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-(--border) ${buttonClassName}`}
       >
         {icon && <span className="shrink-0">{icon}</span>}
         {selectedOption?.icon && (
           <span className="shrink-0">{selectedOption.icon}</span>
         )}
-        <span className="text-sm font-medium text-[var(--text-primary)] font-inter truncate">
+        <span className="text-sm font-medium text-(--text-primary) font-inter truncate">
           {selectedOption?.label || placeholder}
         </span>
         {showCount && selectedOption?.count !== undefined && (
-          <span className="text-xs text-[var(--text-muted)] font-inter">
+          <span className="text-xs text-(--text-muted) font-inter">
             ({selectedOption.count.toLocaleString()})
           </span>
         )}
         <ChevronDown
-          className={`w-4 h-4 text-[var(--text-muted)] transition-transform shrink-0 ${
+          className={`w-4 h-4 text-(--text-muted) transition-transform shrink-0 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -223,13 +223,13 @@ export function AdminDropdown<T extends string | number = string>({
             }}
           >
             {searchable && (
-              <div className="p-2 border-b border-[var(--border)]">
+              <div className="p-2 border-b border-(--border)">
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search..."
-                  className="w-full px-3 py-2 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-md text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter"
+                  className="w-full px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-md text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter"
                   autoFocus
                 />
               </div>
@@ -241,7 +241,7 @@ export function AdminDropdown<T extends string | number = string>({
               }}
             >
               {filteredOptions.length === 0 ? (
-                <div className="px-3 py-4 text-sm text-[var(--text-muted)] text-center font-inter">
+                <div className="px-3 py-4 text-sm text-(--text-muted) text-center font-inter">
                   No options found
                 </div>
               ) : (
@@ -253,10 +253,10 @@ export function AdminDropdown<T extends string | number = string>({
                       !option.disabled && handleSelect(option.value)
                     }
                     disabled={option.disabled}
-                    className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-[var(--surface-elevated)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-(--surface-elevated) transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                       option.value === value
-                        ? "bg-[var(--primary)]/10 text-[var(--primary)]"
-                        : "text-[var(--text-primary)]"
+                        ? "bg-(--primary)/10 text-(--primary)"
+                        : "text-(--text-primary)"
                     }`}
                   >
                     {option.icon && (
@@ -267,13 +267,13 @@ export function AdminDropdown<T extends string | number = string>({
                         {option.label}
                       </span>
                       {option.description && (
-                        <span className="text-xs text-[var(--text-muted)] font-inter block truncate">
+                        <span className="text-xs text-(--text-muted) font-inter block truncate">
                           {option.description}
                         </span>
                       )}
                     </div>
                     {showCount && option.count !== undefined && (
-                      <span className="text-xs text-[var(--text-muted)] font-inter shrink-0">
+                      <span className="text-xs text-(--text-muted) font-inter shrink-0">
                         {option.count.toLocaleString()}
                       </span>
                     )}
@@ -533,7 +533,7 @@ export function AdminFilterDropdown<T extends string = string>({
   return (
     <div className={`${className}`}>
       {label && (
-        <span className="text-xs text-[var(--text-muted)] font-inter mb-1 block">
+        <span className="text-xs text-(--text-muted) font-inter mb-1 block">
           {label}
         </span>
       )}
@@ -541,18 +541,18 @@ export function AdminFilterDropdown<T extends string = string>({
         ref={triggerRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg hover:border-[var(--primary)] transition-colors text-sm"
+        className="flex items-center gap-2 px-3 py-1.5 bg-(--surface-elevated) border border-(--border) rounded-lg hover:border-(--primary) transition-colors text-sm"
       >
-        <span className="text-[var(--text-primary)] font-inter">
+        <span className="text-(--text-primary) font-inter">
           {selectedOption?.label || "Select"}
         </span>
         {showCounts && selectedOption?.count !== undefined && (
-          <span className="text-xs text-[var(--text-muted)]">
+          <span className="text-xs text-(--text-muted)">
             ({selectedOption.count})
           </span>
         )}
         <ChevronDown
-          className={`w-3.5 h-3.5 text-[var(--text-muted)] transition-transform ${
+          className={`w-3.5 h-3.5 text-(--text-muted) transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
         />

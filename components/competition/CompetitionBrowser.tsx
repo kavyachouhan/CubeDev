@@ -365,14 +365,14 @@ export default function CompetitionBrowser() {
 
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Tab Navigation */}
-        <div className="border-b border-[var(--border)]">
+        <div className="border-b border-(--border)">
           <nav className="flex space-x-4 sm:space-x-6 overflow-x-auto">
             <button
               onClick={() => handleTabChange("browse")}
               className={`flex items-center gap-2 py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                 activeTab === "browse"
-                  ? "border-[var(--primary)] text-[var(--primary)]"
-                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
               }`}
             >
               <Compass className="w-4 h-4" />
@@ -383,8 +383,8 @@ export default function CompetitionBrowser() {
               onClick={() => handleTabChange("registered")}
               className={`flex items-center gap-2 py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                 activeTab === "registered"
-                  ? "border-[var(--primary)] text-[var(--primary)]"
-                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
               }`}
             >
               <CircleCheck className="w-4 h-4" />
@@ -395,8 +395,8 @@ export default function CompetitionBrowser() {
               onClick={() => handleTabChange("history")}
               className={`flex items-center gap-2 py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                 activeTab === "history"
-                  ? "border-[var(--primary)] text-[var(--primary)]"
-                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                  ? "border-(--primary) text-(--primary)"
+                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
               }`}
             >
               <History className="w-4 h-4" />
@@ -427,7 +427,7 @@ export default function CompetitionBrowser() {
             <div className="timer-card">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center justify-between w-full text-[var(--text-primary)] font-medium"
+                className="flex items-center justify-between w-full text-(--text-primary) font-medium"
               >
                 <span className="flex items-center gap-2">
                   <Filter className="w-4 h-4" />
@@ -445,13 +445,13 @@ export default function CompetitionBrowser() {
                   {/* Events */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm text-[var(--text-secondary)]">
+                      <label className="text-sm text-(--text-secondary)">
                         Events
                       </label>
                       {selectedEvents.length > 0 && (
                         <button
                           onClick={() => setSelectedEvents([])}
-                          className="text-xs text-[var(--primary)] hover:underline"
+                          className="text-xs text-(--primary) hover:underline"
                         >
                           Clear ({selectedEvents.length})
                         </button>
@@ -465,8 +465,8 @@ export default function CompetitionBrowser() {
                           title={event.name}
                           className={`p-1.5 sm:p-2 rounded-lg border transition-all ${
                             selectedEvents.includes(event.id)
-                              ? "border-[var(--primary)] bg-[var(--primary)]/20"
-                              : "border-[var(--border)] hover:border-[var(--border-hover)] bg-[var(--surface)]"
+                              ? "border-(--primary) bg-(--primary)/20"
+                              : "border-(--border) hover:border-(--border-hover) bg-(--surface)"
                           }`}
                         >
                           <Image
@@ -490,17 +490,17 @@ export default function CompetitionBrowser() {
                       label="Region"
                     />
                     <div>
-                      <label className="text-sm text-[var(--text-secondary)] mb-1.5 block">
+                      <label className="text-sm text-(--text-secondary) mb-1.5 block">
                         Search
                       </label>
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
                         <input
                           type="text"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           placeholder="Name or city..."
-                          className="w-full pl-9 pr-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                          className="w-full pl-9 pr-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-sm placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary)"
                         />
                       </div>
                     </div>
@@ -508,7 +508,7 @@ export default function CompetitionBrowser() {
 
                   {/* Time Filter */}
                   <div>
-                    <label className="text-sm text-[var(--text-secondary)] mb-1.5 block">
+                    <label className="text-sm text-(--text-secondary) mb-1.5 block">
                       When
                     </label>
                     <div className="flex gap-2">
@@ -519,8 +519,8 @@ export default function CompetitionBrowser() {
                             onClick={() => setTimeFilter(f)}
                             className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                               timeFilter === f
-                                ? "bg-[var(--primary)] text-white"
-                                : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)]/80"
+                                ? "bg-(--primary) text-white"
+                                : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated)/80"
                             }`}
                           >
                             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -539,7 +539,7 @@ export default function CompetitionBrowser() {
                         setSearchQuery("");
                         setSelectedRegion("all");
                       }}
-                      className="text-sm text-[var(--primary)] hover:underline"
+                      className="text-sm text-(--primary) hover:underline"
                     >
                       Reset All Filters
                     </button>
@@ -549,12 +549,12 @@ export default function CompetitionBrowser() {
             </div>
 
             {/* Results info */}
-            <div className="flex items-center justify-between text-xs sm:text-sm text-[var(--text-muted)]">
+            <div className="flex items-center justify-between text-xs sm:text-sm text-(--text-muted)">
               <span className="flex items-center gap-2">
                 {filteredCompetitions.length} competition
                 {filteredCompetitions.length !== 1 ? "s" : ""}
                 {isRefreshing && (
-                  <span className="flex items-center gap-1 text-[var(--primary)]">
+                  <span className="flex items-center gap-1 text-(--primary)">
                     <RefreshCw className="w-3 h-3 animate-spin" />
                     <span className="hidden sm:inline">Updating...</span>
                   </span>
@@ -572,18 +572,18 @@ export default function CompetitionBrowser() {
               <CompetitionCardsSkeleton count={5} />
             ) : error ? (
               <div className="timer-card text-center py-8">
-                <p className="text-[var(--error)] mb-4">{error}</p>
+                <p className="text-(--error) mb-4">{error}</p>
                 <button
                   onClick={() => fetchCompetitions()}
-                  className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg"
+                  className="px-4 py-2 bg-(--primary) text-white rounded-lg"
                 >
                   Retry
                 </button>
               </div>
             ) : paginatedCompetitions.length === 0 ? (
               <div className="timer-card text-center py-12">
-                <Trophy className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-                <p className="text-[var(--text-secondary)]">
+                <Trophy className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
+                <p className="text-(--text-secondary)">
                   No competitions found
                 </p>
               </div>
@@ -595,14 +595,14 @@ export default function CompetitionBrowser() {
                     <Link
                       key={comp.id}
                       href={`/cube-lab/competitions/${comp.id}`}
-                      className="timer-card hover:border-[var(--primary)]/50 transition-all group"
+                      className="timer-card hover:border-(--primary)/50 transition-all group"
                     >
                       <div className="flex flex-col gap-3">
                         {/* Header Row - Date, Status, CTA */}
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <div className="flex items-center gap-1.5 text-xs sm:text-sm text-[var(--text-primary)]">
-                              <Calendar className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                            <div className="flex items-center gap-1.5 text-xs sm:text-sm text-(--text-primary)">
+                              <Calendar className="w-3.5 h-3.5 text-(--text-muted)" />
                               <span className="font-medium">
                                 {formatDateRange(
                                   comp.start_date,
@@ -616,7 +616,7 @@ export default function CompetitionBrowser() {
                               {status.label}
                             </span>
                           </div>
-                          <span className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-[var(--primary)] text-white text-xs sm:text-sm font-medium rounded-lg group-hover:bg-[var(--primary-hover)] transition-colors whitespace-nowrap">
+                          <span className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-(--primary) text-white text-xs sm:text-sm font-medium rounded-lg group-hover:bg-(--primary-hover) transition-colors whitespace-nowrap">
                             <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             <span className="hidden sm:inline">Simulate</span>
                           </span>
@@ -624,10 +624,10 @@ export default function CompetitionBrowser() {
 
                         {/* Competition Info */}
                         <div className="space-y-2">
-                          <h3 className="font-semibold text-[var(--text-primary)] group-hover:text-[var(--primary)] transition-colors text-sm sm:text-base">
+                          <h3 className="font-semibold text-(--text-primary) group-hover:text-(--primary) transition-colors text-sm sm:text-base">
                             {comp.name}
                           </h3>
-                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--text-muted)]">
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-(--text-muted)">
                             <span className="flex items-center gap-1">
                               <MapPin className="w-3 h-3" />
                               {comp.city}, {comp.country_iso2}
@@ -650,7 +650,7 @@ export default function CompetitionBrowser() {
                             return event ? (
                               <div
                                 key={eventId}
-                                className="p-1 rounded bg-[var(--surface-elevated)]"
+                                className="p-1 rounded bg-(--surface-elevated)"
                                 title={event.name}
                               >
                                 <Image
@@ -664,7 +664,7 @@ export default function CompetitionBrowser() {
                             ) : null;
                           })}
                           {comp.event_ids.length > 12 && (
-                            <span className="px-1.5 py-0.5 text-xs text-[var(--text-muted)] bg-[var(--surface-elevated)] rounded">
+                            <span className="px-1.5 py-0.5 text-xs text-(--text-muted) bg-(--surface-elevated) rounded">
                               +{comp.event_ids.length - 12}
                             </span>
                           )}
@@ -685,7 +685,7 @@ export default function CompetitionBrowser() {
                       setCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={currentPage === 1}
-                    className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-primary)] rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
+                    className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     <span className="hidden sm:inline">Previous</span>
@@ -711,8 +711,8 @@ export default function CompetitionBrowser() {
                           onClick={() => setCurrentPage(pageNumber)}
                           className={`w-10 h-10 rounded-lg font-medium transition-all duration-200 ${
                             currentPage === pageNumber
-                              ? "bg-[var(--primary)] text-white"
-                              : "bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-primary)]"
+                              ? "bg-(--primary) text-white"
+                              : "bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary)"
                           }`}
                         >
                           {pageNumber}
@@ -722,10 +722,10 @@ export default function CompetitionBrowser() {
 
                     {totalPages > 5 && currentPage < totalPages - 2 && (
                       <>
-                        <span className="text-[var(--text-muted)]">...</span>
+                        <span className="text-(--text-muted)">...</span>
                         <button
                           onClick={() => setCurrentPage(totalPages)}
-                          className="w-10 h-10 rounded-lg bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-primary)] font-medium transition-all duration-200"
+                          className="w-10 h-10 rounded-lg bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) font-medium transition-all duration-200"
                         >
                           {totalPages}
                         </button>
@@ -738,7 +738,7 @@ export default function CompetitionBrowser() {
                       setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                     }
                     disabled={currentPage === totalPages}
-                    className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] hover:border-[var(--primary)] text-[var(--text-primary)] rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
+                    className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
                   >
                     <span className="hidden sm:inline">Next</span>
                     <span className="sm:hidden">NEXT</span>

@@ -163,20 +163,20 @@ function WCACallbackContent() {
   }, [searchParams, router]);
 
   return (
-    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+    <div className="min-h-screen bg-(--background) flex items-center justify-center">
       <div className="container-responsive">
         <div className="max-w-md mx-auto text-center">
           <div className="timer-card">
             {status === "loading" && (
               <>
                 <div className="flex justify-center mb-6">
-                  <div className="w-12 h-12 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-12 h-12 border-4 border-(--primary) border-t-transparent rounded-full animate-spin"></div>
                 </div>
-                <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4 font-statement">
+                <h1 className="text-2xl font-bold text-(--text-primary) mb-4 font-statement">
                   Authenticating with{" "}
-                  <span className="text-[var(--primary)]">WCA</span>
+                  <span className="text-(--primary)">WCA</span>
                 </h1>
-                <p className="text-[var(--text-secondary)] font-inter">
+                <p className="text-(--text-secondary) font-inter">
                   Please wait while we complete your sign-in...
                 </p>
               </>
@@ -185,7 +185,7 @@ function WCACallbackContent() {
             {status === "success" && (
               <>
                 <div className="flex justify-center mb-6">
-                  <div className="w-12 h-12 bg-[var(--success)] rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-(--success) rounded-full flex items-center justify-center">
                     <svg
                       className="w-6 h-6 text-white"
                       fill="none"
@@ -201,13 +201,13 @@ function WCACallbackContent() {
                     </svg>
                   </div>
                 </div>
-                <h1 className="text-2xl font-bold text-[var(--success)] mb-4 font-statement">
+                <h1 className="text-2xl font-bold text-(--success) mb-4 font-statement">
                   Success!
                 </h1>
-                <p className="text-[var(--text-secondary)] font-inter">
+                <p className="text-(--text-secondary) font-inter">
                   {message}
                 </p>
-                <p className="text-sm text-[var(--text-muted)] mt-2 font-inter">
+                <p className="text-sm text-(--text-muted) mt-2 font-inter">
                   Redirecting you...
                 </p>
               </>
@@ -216,7 +216,7 @@ function WCACallbackContent() {
             {status === "error" && (
               <>
                 <div className="flex justify-center mb-6">
-                  <div className="w-12 h-12 bg-[var(--error)] rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-(--error) rounded-full flex items-center justify-center">
                     <svg
                       className="w-6 h-6 text-white"
                       fill="none"
@@ -232,15 +232,15 @@ function WCACallbackContent() {
                     </svg>
                   </div>
                 </div>
-                <h1 className="text-2xl font-bold text-[var(--error)] mb-4 font-statement">
+                <h1 className="text-2xl font-bold text-(--error) mb-4 font-statement">
                   Authentication Failed
                 </h1>
-                <p className="text-[var(--text-secondary)] mb-6 font-inter">
+                <p className="text-(--text-secondary) mb-6 font-inter">
                   {message}
                 </p>
                 <button
                   onClick={() => router.push("/")}
-                  className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white font-semibold rounded-lg transition-all duration-200 font-button"
+                  className="px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white font-semibold rounded-lg transition-all duration-200 font-button"
                 >
                   Return to Home
                 </button>
@@ -255,17 +255,17 @@ function WCACallbackContent() {
 
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+    <div className="min-h-screen bg-(--background) flex items-center justify-center">
       <div className="container-responsive">
         <div className="max-w-md mx-auto text-center">
           <div className="timer-card">
             <div className="flex justify-center mb-6">
-              <div className="w-12 h-12 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-12 h-12 border-4 border-(--primary) border-t-transparent rounded-full animate-spin"></div>
             </div>
-            <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4 font-statement">
+            <h1 className="text-2xl font-bold text-(--text-primary) mb-4 font-statement">
               Loading...
             </h1>
-            <p className="text-[var(--text-secondary)] font-inter">
+            <p className="text-(--text-secondary) font-inter">
               Preparing authentication...
             </p>
           </div>

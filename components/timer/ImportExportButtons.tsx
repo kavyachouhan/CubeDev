@@ -120,10 +120,10 @@ export default function ImportExportButtons({
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+            className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
             title={isExpanded ? "Hide data management" : "Show data management"}
           >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             Data Management
           </h3>
             {isExpanded ? (
@@ -134,7 +134,7 @@ export default function ImportExportButtons({
           </button>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={isExpanded ? "Hide data management" : "Show data management"}
           >
             {isExpanded ? (
@@ -147,7 +147,7 @@ export default function ImportExportButtons({
 
         {isExpanded && (
           <div className="space-y-3">
-            <div className="text-sm text-[var(--text-secondary)] mb-4">
+            <div className="text-sm text-(--text-secondary) mb-4">
               Import and export your timer data.
             </div>
 
@@ -155,7 +155,7 @@ export default function ImportExportButtons({
               {/* Export Button */}
               <button
                 onClick={handleExport}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/80 border border-[var(--border)] rounded-lg text-[var(--text-primary)] font-medium transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) rounded-lg text-(--text-primary) font-medium transition-colors"
               >
                 <Download className="w-4 h-4" />
                 Export Data
@@ -164,7 +164,7 @@ export default function ImportExportButtons({
               {/* Import Button */}
               <button
                 onClick={() => setIsImportModalOpen(true)}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg font-medium transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-medium transition-colors"
               >
                 <Upload className="w-4 h-4" />
                 Import Data

@@ -25,12 +25,12 @@ export default function AtmosphereControls({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Volume2 className="w-4 h-4 text-[var(--text-muted)]" />
-            <span className="text-sm font-medium text-[var(--text-primary)]">
+            <Volume2 className="w-4 h-4 text-(--text-muted)" />
+            <span className="text-sm font-medium text-(--text-primary)">
               Crowd Noise
             </span>
           </div>
-          <span className="text-sm text-[var(--text-muted)]">
+          <span className="text-sm text-(--text-muted)">
             {atmosphere.crowdNoise}%
           </span>
         </div>
@@ -42,9 +42,9 @@ export default function AtmosphereControls({
           onChange={(e) =>
             updateSetting("crowdNoise", parseInt(e.target.value))
           }
-          className="w-full h-2 bg-[var(--surface-elevated)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
+          className="w-full h-2 bg-(--surface-elevated) rounded-lg appearance-none cursor-pointer accent-(--primary)"
         />
-        <div className="flex justify-between text-xs text-[var(--text-muted)]">
+        <div className="flex justify-between text-xs text-(--text-muted)">
           <span>Silent</span>
           <span>Moderate</span>
           <span>Loud</span>
@@ -55,12 +55,12 @@ export default function AtmosphereControls({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Brain className="w-4 h-4 text-[var(--text-muted)]" />
-            <span className="text-sm font-medium text-[var(--text-primary)]">
+            <Brain className="w-4 h-4 text-(--text-muted)" />
+            <span className="text-sm font-medium text-(--text-primary)">
               Competition Pressure
             </span>
           </div>
-          <span className="text-sm text-[var(--text-muted)]">
+          <span className="text-sm text-(--text-muted)">
             {atmosphere.pressure}%
           </span>
         </div>
@@ -70,14 +70,14 @@ export default function AtmosphereControls({
           max="100"
           value={atmosphere.pressure}
           onChange={(e) => updateSetting("pressure", parseInt(e.target.value))}
-          className="w-full h-2 bg-[var(--surface-elevated)] rounded-lg appearance-none cursor-pointer accent-[var(--warning)]"
+          className="w-full h-2 bg-(--surface-elevated) rounded-lg appearance-none cursor-pointer accent-(--warning)"
         />
-        <div className="flex justify-between text-xs text-[var(--text-muted)]">
+        <div className="flex justify-between text-xs text-(--text-muted)">
           <span>Relaxed</span>
           <span>Normal</span>
           <span>Intense</span>
         </div>
-        <p className="text-xs text-[var(--text-muted)]">
+        <p className="text-xs text-(--text-muted)">
           Higher pressure adds visual cues and subtle timing variations to
           simulate real competition stress
         </p>
@@ -89,8 +89,8 @@ export default function AtmosphereControls({
         <div
           className={`p-4 rounded-lg border cursor-pointer transition-all ${
             atmosphere.distractions
-              ? "border-[var(--primary)] bg-[var(--primary)]/10"
-              : "border-[var(--border)] hover:border-[var(--primary)]/50"
+              ? "border-(--primary) bg-(--primary)/10"
+              : "border-(--border) hover:border-(--primary)/50"
           }`}
           onClick={() =>
             updateSetting("distractions", !atmosphere.distractions)
@@ -98,15 +98,15 @@ export default function AtmosphereControls({
         >
           <div className="flex items-center gap-2 mb-2">
             <Zap
-              className={`w-4 h-4 ${atmosphere.distractions ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`}
+              className={`w-4 h-4 ${atmosphere.distractions ? "text-(--primary)" : "text-(--text-muted)"}`}
             />
             <span
-              className={`text-sm font-medium ${atmosphere.distractions ? "text-[var(--primary)]" : "text-[var(--text-primary)]"}`}
+              className={`text-sm font-medium ${atmosphere.distractions ? "text-(--primary)" : "text-(--text-primary)"}`}
             >
               Distractions
             </span>
           </div>
-          <p className="text-xs text-[var(--text-muted)]">
+          <p className="text-xs text-(--text-muted)">
             Random visual/audio distractions like camera flashes
           </p>
         </div>
@@ -115,22 +115,22 @@ export default function AtmosphereControls({
         <div
           className={`p-4 rounded-lg border cursor-pointer transition-all ${
             atmosphere.timerDelay
-              ? "border-[var(--primary)] bg-[var(--primary)]/10"
-              : "border-[var(--border)] hover:border-[var(--primary)]/50"
+              ? "border-(--primary) bg-(--primary)/10"
+              : "border-(--border) hover:border-(--primary)/50"
           }`}
           onClick={() => updateSetting("timerDelay", !atmosphere.timerDelay)}
         >
           <div className="flex items-center gap-2 mb-2">
             <Timer
-              className={`w-4 h-4 ${atmosphere.timerDelay ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`}
+              className={`w-4 h-4 ${atmosphere.timerDelay ? "text-(--primary)" : "text-(--text-muted)"}`}
             />
             <span
-              className={`text-sm font-medium ${atmosphere.timerDelay ? "text-[var(--primary)]" : "text-[var(--text-primary)]"}`}
+              className={`text-sm font-medium ${atmosphere.timerDelay ? "text-(--primary)" : "text-(--text-primary)"}`}
             >
               Timer Delay
             </span>
           </div>
-          <p className="text-xs text-[var(--text-muted)]">
+          <p className="text-xs text-(--text-muted)">
             Slight random delays like real stackmat timers
           </p>
         </div>
@@ -139,8 +139,8 @@ export default function AtmosphereControls({
         <div
           className={`p-4 rounded-lg border cursor-pointer transition-all ${
             atmosphere.judgeInteractions
-              ? "border-[var(--primary)] bg-[var(--primary)]/10"
-              : "border-[var(--border)] hover:border-[var(--primary)]/50"
+              ? "border-(--primary) bg-(--primary)/10"
+              : "border-(--border) hover:border-(--primary)/50"
           }`}
           onClick={() =>
             updateSetting("judgeInteractions", !atmosphere.judgeInteractions)
@@ -148,23 +148,23 @@ export default function AtmosphereControls({
         >
           <div className="flex items-center gap-2 mb-2">
             <Users
-              className={`w-4 h-4 ${atmosphere.judgeInteractions ? "text-[var(--primary)]" : "text-[var(--text-muted)]"}`}
+              className={`w-4 h-4 ${atmosphere.judgeInteractions ? "text-(--primary)" : "text-(--text-muted)"}`}
             />
             <span
-              className={`text-sm font-medium ${atmosphere.judgeInteractions ? "text-[var(--primary)]" : "text-[var(--text-primary)]"}`}
+              className={`text-sm font-medium ${atmosphere.judgeInteractions ? "text-(--primary)" : "text-(--text-primary)"}`}
             >
               Judge Sim
             </span>
           </div>
-          <p className="text-xs text-[var(--text-muted)]">
+          <p className="text-xs text-(--text-muted)">
             Confirm results with judge prompts
           </p>
         </div>
       </div>
 
       {/* Preset Buttons */}
-      <div className="pt-4 border-t border-[var(--border)]">
-        <div className="text-xs text-[var(--text-muted)] mb-3">
+      <div className="pt-4 border-t border-(--border)">
+        <div className="text-xs text-(--text-muted) mb-3">
           Quick Presets
         </div>
         <div className="flex flex-wrap gap-2">
@@ -178,7 +178,7 @@ export default function AtmosphereControls({
                 judgeInteractions: false,
               })
             }
-            className="px-3 py-1.5 text-sm border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
           >
             Practice Mode
           </button>
@@ -192,7 +192,7 @@ export default function AtmosphereControls({
                 judgeInteractions: true,
               })
             }
-            className="px-3 py-1.5 text-sm border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
           >
             Local Comp
           </button>
@@ -206,7 +206,7 @@ export default function AtmosphereControls({
                 judgeInteractions: true,
               })
             }
-            className="px-3 py-1.5 text-sm border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
           >
             Major Championship
           </button>
@@ -220,7 +220,7 @@ export default function AtmosphereControls({
                 judgeInteractions: true,
               })
             }
-            className="px-3 py-1.5 text-sm border border-[var(--warning)] text-[var(--warning)] rounded-lg hover:bg-[var(--warning)]/10"
+            className="px-3 py-1.5 text-sm border border-(--warning) text-(--warning) rounded-lg hover:bg-(--warning)/10"
           >
             World Finals
           </button>

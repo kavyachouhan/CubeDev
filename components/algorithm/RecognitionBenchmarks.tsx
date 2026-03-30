@@ -167,12 +167,12 @@ export default function RecognitionBenchmarks({
   if (totalCases === 0) {
     return (
       <div className="timer-card">
-        <h3 className="text-lg font-bold text-[var(--text-primary)] font-statement mb-4">
+        <h3 className="text-lg font-bold text-(--text-primary) font-statement mb-4">
           Recognition Benchmarks
         </h3>
         <div className="text-center py-6">
-          <AlertTriangle className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-          <p className="text-[var(--text-muted)]">
+          <AlertTriangle className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
+          <p className="text-(--text-muted)">
             Start practicing to see your recognition benchmarks
           </p>
         </div>
@@ -182,7 +182,7 @@ export default function RecognitionBenchmarks({
 
   return (
     <div className="timer-card">
-      <h3 className="text-lg font-bold text-[var(--text-primary)] font-statement mb-6">
+      <h3 className="text-lg font-bold text-(--text-primary) font-statement mb-6">
         Recognition Benchmarks
       </h3>
 
@@ -199,10 +199,10 @@ export default function RecognitionBenchmarks({
               {currentLevel.label}
             </span>
           </div>
-          <p className="text-sm text-[var(--text-secondary)] text-center">
+          <p className="text-sm text-(--text-secondary) text-center">
             {currentLevel.description}
           </p>
-          <div className="mt-3 text-sm text-[var(--text-muted)] text-center">
+          <div className="mt-3 text-sm text-(--text-muted) text-center">
             Avg: {formatTime(averageRecognitionTime)} | Best:{" "}
             {formatTime(fastestRecognition)}
           </div>
@@ -212,7 +212,7 @@ export default function RecognitionBenchmarks({
         {showGoals && nextLevel && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-[var(--text-muted)]">
+              <span className="text-(--text-muted)">
                 Progress to {nextLevel.label}
               </span>
               <span
@@ -221,13 +221,13 @@ export default function RecognitionBenchmarks({
                 Target: {formatTime(nextLevel.threshold)}
               </span>
             </div>
-            <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+            <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
               <div
                 className={`h-full transition-all duration-500 ${getLevelStyles(nextLevel.level).activeBg}`}
                 style={{ width: `${progressToNextLevel}%` }}
               />
             </div>
-            <div className="text-xs text-[var(--text-muted)] text-right">
+            <div className="text-xs text-(--text-muted) text-right">
               {isNaN(progressToNextLevel) ? 0 : progressToNextLevel.toFixed(0)}%
               there
             </div>
@@ -235,8 +235,8 @@ export default function RecognitionBenchmarks({
         )}
 
         {/* Benchmark Tiers */}
-        <div className="pt-4 border-t border-[var(--border)]">
-          <h4 className="text-sm font-semibold text-[var(--text-muted)] mb-3">
+        <div className="pt-4 border-t border-(--border)">
+          <h4 className="text-sm font-semibold text-(--text-muted) mb-3">
             Benchmark Tiers
           </h4>
           <div className="space-y-2">
@@ -251,17 +251,17 @@ export default function RecognitionBenchmarks({
                     className={`flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
                       isActive
                         ? `${styles.bg} ${styles.border} border`
-                        : "bg-[var(--surface-elevated)]"
+                        : "bg-(--surface-elevated)"
                     }`}
                   >
                     <span
                       className={`text-sm font-medium ${
-                        isActive ? styles.text : "text-[var(--text-secondary)]"
+                        isActive ? styles.text : "text-(--text-secondary)"
                       }`}
                     >
                       {benchmark.label}
                     </span>
-                    <span className="text-sm text-[var(--text-muted)]">
+                    <span className="text-sm text-(--text-muted)">
                       &lt; {formatTime(benchmark.threshold)}
                     </span>
                   </div>
@@ -273,10 +273,10 @@ export default function RecognitionBenchmarks({
 
         {/* Tips Section */}
         {tips.length > 0 && (
-          <div className="pt-4 border-t border-[var(--border)]">
+          <div className="pt-4 border-t border-(--border)">
             <div className="flex items-center gap-2 mb-3">
-              <Lightbulb className="w-4 h-4 text-[var(--primary)]" />
-              <h4 className="text-sm font-semibold text-[var(--text-primary)]">
+              <Lightbulb className="w-4 h-4 text-(--primary)" />
+              <h4 className="text-sm font-semibold text-(--text-primary)">
                 Tips to Improve
               </h4>
             </div>
@@ -284,9 +284,9 @@ export default function RecognitionBenchmarks({
               {tips.map((tip, index) => (
                 <li
                   key={index}
-                  className="flex items-start gap-2 text-sm text-[var(--text-secondary)]"
+                  className="flex items-start gap-2 text-sm text-(--text-secondary)"
                 >
-                  <span className="w-1 h-1 rounded-full bg-[var(--text-muted)] mt-2 flex-shrink-0" />
+                  <span className="w-1 h-1 rounded-full bg-(--text-muted) mt-2 shrink-0" />
                   {tip}
                 </li>
               ))}

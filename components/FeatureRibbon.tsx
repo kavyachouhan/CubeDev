@@ -109,7 +109,7 @@ export default function FeatureRibbon({
           absolute font-semibold font-inter uppercase tracking-wider text-center
           ${sizeClasses}
           ${isTopRight ? "rotate-45 origin-center top-2 -right-1" : "-rotate-45 origin-center top-2 -left-1"}
-          ${isActive ? "bg-white/90 text-[var(--primary)]" : "text-white"}
+          ${isActive ? "bg-white/90 text-(--primary)" : "text-white"}
         `}
         style={{
           backgroundColor: isActive ? undefined : config.bgColor,

@@ -68,10 +68,10 @@ function StatCard({
           </div>
         )}
       </div>
-      <div className="text-2xl font-bold text-[var(--text-primary)] font-statement mb-1">
+      <div className="text-2xl font-bold text-(--text-primary) font-statement mb-1">
         {value}
       </div>
-      <div className="text-sm text-[var(--text-muted)]">{label}</div>
+      <div className="text-sm text-(--text-muted)">{label}</div>
     </div>
   );
 }

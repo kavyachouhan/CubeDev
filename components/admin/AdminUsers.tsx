@@ -46,6 +46,7 @@ import {
   Percent,
   Clock,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 
 // Register ChartJS components
@@ -149,9 +150,9 @@ function CollapsibleCard({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={toggleOpen}
-          className="flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
         >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             {title}
           </h3>
           {isOpen ? (
@@ -164,7 +165,7 @@ function CollapsibleCard({
           {headerExtra}
           <button
             onClick={toggleOpen}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={isOpen ? "Hide" : "Show"}
           >
             {isOpen ? (
@@ -185,31 +186,31 @@ function StatCard({
   title,
   value,
   icon: Icon,
-  iconColor = "text-[var(--primary)]",
-  iconBgColor = "bg-[var(--primary)]/10",
+  iconColor = "text-(--primary)",
+  iconBgColor = "bg-(--primary)/10",
   subValue,
   trend,
 }: {
   title: string;
   value: string | number;
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconColor?: string;
   iconBgColor?: string;
   subValue?: string;
   trend?: { value: number; label: string };
 }) {
   return (
-    <div className="bg-[var(--surface-elevated)] rounded-xl p-3 sm:p-4 border border-[var(--border)]">
+    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
       <div className="flex items-center gap-2 sm:gap-3">
         <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
           <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate font-inter">
+          <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate font-inter">
             {title}
           </div>
           <div className="flex items-center gap-2">
-            <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-statement">
+            <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
               {typeof value === "number" ? value.toLocaleString() : value}
             </div>
             {trend && (
@@ -228,7 +229,7 @@ function StatCard({
             )}
           </div>
           {subValue && (
-            <div className="text-xs text-[var(--text-muted)] font-inter">
+            <div className="text-xs text-(--text-muted) font-inter">
               {subValue}
             </div>
           )}
@@ -243,7 +244,7 @@ function ProgressBar({
   label,
   value,
   total,
-  color = "bg-[var(--primary)]",
+  color = "bg-(--primary)",
 }: {
   label: string;
   value: number;
@@ -254,12 +255,12 @@ function ProgressBar({
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-sm">
-        <span className="text-[var(--text-secondary)] font-inter">{label}</span>
-        <span className="text-[var(--text-primary)] font-medium font-inter">
+        <span className="text-(--text-secondary) font-inter">{label}</span>
+        <span className="text-(--text-primary) font-medium font-inter">
           {value.toLocaleString()} ({percentage.toFixed(1)}%)
         </span>
       </div>
-      <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+      <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
         <div
           className={`h-full ${color} rounded-full transition-all duration-500`}
           style={{ width: `${percentage}%` }}
@@ -282,12 +283,12 @@ function BarChart({
       {data.map((item, idx) => (
         <div key={idx} className="flex-1 flex flex-col items-center gap-1">
           <div
-            className="w-full bg-[var(--primary)] rounded-t transition-all duration-500 min-h-[4px]"
+            className="w-full bg-(--primary) rounded-t transition-all duration-500 min-h-[4px]"
             style={{
               height: `${maxValue > 0 ? (item.value / maxValue) * 100 : 0}%`,
             }}
           />
-          <span className="text-[10px] text-[var(--text-muted)] font-inter truncate max-w-full">
+          <span className="text-[10px] text-(--text-muted) font-inter truncate max-w-full">
             {item.label}
           </span>
         </div>
@@ -318,13 +319,13 @@ function ColorSchemeChart({
           <div
             className={`w-3 h-3 rounded-full ${colors[scheme] || "bg-gray-500"}`}
           />
-          <span className="text-sm text-[var(--text-secondary)] font-inter capitalize flex-1">
+          <span className="text-sm text-(--text-secondary) font-inter capitalize flex-1">
             {scheme}
           </span>
-          <span className="text-sm text-[var(--text-primary)] font-medium font-inter">
+          <span className="text-sm text-(--text-primary) font-medium font-inter">
             {count}
           </span>
-          <span className="text-xs text-[var(--text-muted)] font-inter w-12 text-right">
+          <span className="text-xs text-(--text-muted) font-inter w-12 text-right">
             {total > 0 ? ((count / total) * 100).toFixed(0) : 0}%
           </span>
         </div>
@@ -339,7 +340,7 @@ function ThemeDistributionChart({
 }: {
   distribution: Record<string, number>;
 }) {
-  const icons: Record<string, React.ElementType> = {
+  const icons: Record<string, LucideIcon> = {
     light: Sun,
     dark: Moon,
     auto: Monitor,
@@ -353,16 +354,16 @@ function ThemeDistributionChart({
         return (
           <div
             key={mode}
-            className="bg-[var(--surface)] rounded-lg p-3 text-center border border-[var(--border)]"
+            className="bg-(--surface) rounded-lg p-3 text-center border border-(--border)"
           >
-            <Icon className="w-5 h-5 mx-auto mb-1 text-[var(--text-secondary)]" />
-            <div className="text-lg font-bold text-[var(--text-primary)] font-statement">
+            <Icon className="w-5 h-5 mx-auto mb-1 text-(--text-secondary)" />
+            <div className="text-lg font-bold text-(--text-primary) font-statement">
               {count}
             </div>
-            <div className="text-xs text-[var(--text-muted)] capitalize font-inter">
+            <div className="text-xs text-(--text-muted) capitalize font-inter">
               {mode}
             </div>
-            <div className="text-xs text-[var(--text-muted)] font-inter">
+            <div className="text-xs text-(--text-muted) font-inter">
               {total > 0 ? ((count / total) * 100).toFixed(0) : 0}%
             </div>
           </div>
@@ -387,13 +388,13 @@ function UserDetailsModal({
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div className="timer-card max-w-lg w-full">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 w-48 bg-[var(--surface-elevated)] rounded" />
-            <div className="h-4 w-32 bg-[var(--surface-elevated)] rounded" />
+            <div className="h-8 w-48 bg-(--surface-elevated) rounded" />
+            <div className="h-4 w-32 bg-(--surface-elevated) rounded" />
             <div className="grid grid-cols-2 gap-4">
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-16 bg-[var(--surface-elevated)] rounded-lg"
+                  className="h-16 bg-(--surface-elevated) rounded-lg"
                 />
               ))}
             </div>
@@ -417,15 +418,15 @@ function UserDetailsModal({
                 alt={user.name}
                 width={48}
                 height={48}
-                className="w-12 h-12 rounded-full object-cover border-2 border-[var(--primary)]"
+                className="w-12 h-12 rounded-full object-cover border-2 border-(--primary)"
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-[var(--primary)]/10 flex items-center justify-center">
-                <User className="w-6 h-6 text-[var(--primary)]" />
+              <div className="w-12 h-12 rounded-full bg-(--primary)/10 flex items-center justify-center">
+                <User className="w-6 h-6 text-(--primary)" />
               </div>
             )}
             <div>
-              <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+              <h2 className="text-xl font-bold text-(--text-primary) font-statement">
                 {user.name}
               </h2>
               <div className="flex items-center gap-2">
@@ -433,13 +434,13 @@ function UserDetailsModal({
                   href={`https://www.worldcubeassociation.org/persons/${user.wcaId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-[var(--primary)] hover:underline font-inter flex items-center gap-1"
+                  className="text-sm text-(--primary) hover:underline font-inter flex items-center gap-1"
                 >
                   {user.wcaId}
                   <ExternalLink className="w-3 h-3" />
                 </a>
                 {user.isDeleted && (
-                  <span className="px-2 py-0.5 text-xs bg-[var(--error)]/10 text-[var(--error)] rounded-full">
+                  <span className="px-2 py-0.5 text-xs bg-(--error)/10 text-(--error) rounded-full">
                     Deleted
                   </span>
                 )}
@@ -448,7 +449,7 @@ function UserDetailsModal({
           </div>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -457,7 +458,7 @@ function UserDetailsModal({
         {/* User Info */}
         <div className="space-y-6">
           <div>
-            <h4 className="text-sm font-medium text-[var(--text-muted)] mb-3 font-inter uppercase tracking-wide">
+            <h4 className="text-sm font-medium text-(--text-muted) mb-3 font-inter uppercase tracking-wide">
               Account Information
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -486,19 +487,19 @@ function UserDetailsModal({
           </div>
 
           {/* Email */}
-          <div className="bg-[var(--surface-elevated)] rounded-xl p-4 border border-[var(--border)]">
-            <div className="flex items-center gap-2 text-[var(--text-muted)] mb-2">
+          <div className="bg-(--surface-elevated) rounded-xl p-4 border border-(--border)">
+            <div className="flex items-center gap-2 text-(--text-muted) mb-2">
               <Mail className="w-4 h-4" />
               <span className="text-sm font-inter">Email</span>
             </div>
-            <p className="text-sm font-medium text-[var(--text-primary)] font-inter">
+            <p className="text-sm font-medium text-(--text-primary) font-inter">
               {user.email || "Not provided"}
             </p>
           </div>
 
           {/* Activity Stats */}
           <div>
-            <h4 className="text-sm font-medium text-[var(--text-muted)] mb-3 font-inter uppercase tracking-wide">
+            <h4 className="text-sm font-medium text-(--text-muted) mb-3 font-inter uppercase tracking-wide">
               Activity Stats
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -552,40 +553,40 @@ function UserDetailsModal({
           </div>
 
           {/* Settings */}
-          <div className="bg-[var(--surface-elevated)] rounded-xl p-4 border border-[var(--border)]">
-            <h4 className="text-sm font-medium text-[var(--text-primary)] mb-3 font-statement">
+          <div className="bg-(--surface-elevated) rounded-xl p-4 border border-(--border)">
+            <h4 className="text-sm font-medium text-(--text-primary) mb-3 font-statement">
               User Settings
             </h4>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--text-muted)] font-inter">
+                <span className="text-(--text-muted) font-inter">
                   Theme Mode
                 </span>
-                <span className="text-[var(--text-primary)] font-inter capitalize">
+                <span className="text-(--text-primary) font-inter capitalize">
                   {user.themeMode || "auto"}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--text-muted)] font-inter">
+                <span className="text-(--text-muted) font-inter">
                   Color Scheme
                 </span>
-                <span className="text-[var(--text-primary)] font-inter capitalize">
+                <span className="text-(--text-primary) font-inter capitalize">
                   {user.colorScheme || "blue"}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--text-muted)] font-inter">
+                <span className="text-(--text-muted) font-inter">
                   Profile Hidden
                 </span>
-                <span className="text-[var(--text-primary)] font-inter">
+                <span className="text-(--text-primary) font-inter">
                   {user.hideProfile ? "Yes" : "No"}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--text-muted)] font-inter">
+                <span className="text-(--text-muted) font-inter">
                   Challenge Stats Hidden
                 </span>
-                <span className="text-[var(--text-primary)] font-inter">
+                <span className="text-(--text-primary) font-inter">
                   {user.hideChallengeStats ? "Yes" : "No"}
                 </span>
               </div>
@@ -597,7 +598,7 @@ function UserDetailsModal({
         <div className="mt-6 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--border)] text-[var(--text-primary)] font-medium rounded-lg transition-colors font-inter"
+            className="px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-lg transition-colors font-inter"
           >
             Close
           </button>
@@ -657,7 +658,7 @@ function DistributionBar({
 }) {
   return (
     <div className="space-y-3">
-      <div className="flex h-3 rounded-full overflow-hidden bg-[var(--surface)]">
+      <div className="flex h-3 rounded-full overflow-hidden bg-(--surface)">
         {items.map((item, idx) => (
           <div
             key={idx}
@@ -672,7 +673,7 @@ function DistributionBar({
         {items.map((item, idx) => (
           <div key={idx} className="flex items-center gap-1.5">
             <div className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
-            <span className="text-xs text-[var(--text-secondary)] font-inter">
+            <span className="text-xs text-(--text-secondary) font-inter">
               {item.label}: {item.value} (
               {total > 0 ? ((item.value / total) * 100).toFixed(0) : 0}%)
             </span>
@@ -691,7 +692,7 @@ function CompactStatRow({
   items: Array<{
     label: string;
     value: string | number;
-    icon?: React.ElementType;
+    icon?: LucideIcon;
   }>;
   gridCols?: 3 | 4;
 }) {
@@ -705,16 +706,16 @@ function CompactStatRow({
       {items.map((item, idx) => (
         <div
           key={idx}
-          className="flex items-center gap-2 bg-[var(--surface-elevated)] rounded-lg p-2.5 border border-[var(--border)]"
+          className="flex items-center gap-2 bg-(--surface-elevated) rounded-lg p-2.5 border border-(--border)"
         >
           {item.icon && (
-            <item.icon className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+            <item.icon className="w-3.5 h-3.5 text-(--text-muted)" />
           )}
           <div className="min-w-0 flex-1">
-            <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide truncate font-inter">
+            <div className="text-[10px] text-(--text-muted) uppercase tracking-wide truncate font-inter">
               {item.label}
             </div>
-            <div className="text-sm font-semibold text-[var(--text-primary)] font-statement">
+            <div className="text-sm font-semibold text-(--text-primary) font-statement">
               {typeof item.value === "number"
                 ? item.value.toLocaleString()
                 : item.value}
@@ -923,7 +924,7 @@ function UserAnalyticsOverview() {
           {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="h-20 bg-[var(--surface-elevated)] rounded-xl animate-pulse"
+              className="h-20 bg-(--surface-elevated) rounded-xl animate-pulse"
             />
           ))}
         </div>
@@ -937,7 +938,7 @@ function UserAnalyticsOverview() {
       <div className="flex justify-end">
         <button
           onClick={handleExportAnalytics}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] transition-colors font-inter"
+          className="flex items-center gap-2 px-3 py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter"
         >
           <Download className="w-4 h-4" />
           Export Analytics
@@ -1065,7 +1066,7 @@ function UserAnalyticsOverview() {
             {weeklyChartData ? (
               <Bar data={weeklyChartData} options={barChartOptions} />
             ) : (
-              <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-sm">
+              <div className="flex items-center justify-center h-full text-(--text-muted) text-sm">
                 No registration data
               </div>
             )}
@@ -1082,7 +1083,7 @@ function UserAnalyticsOverview() {
             {monthlyChartData ? (
               <Bar data={monthlyChartData} options={barChartOptions} />
             ) : (
-              <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-sm">
+              <div className="flex items-center justify-center h-full text-(--text-muted) text-sm">
                 No monthly data
               </div>
             )}
@@ -1099,21 +1100,21 @@ function UserAnalyticsOverview() {
         <div className="space-y-2 mt-2">
           {analytics.geography.topCountries.slice(0, 8).map((c, idx) => (
             <div key={c.country} className="flex items-center gap-3">
-              <span className="text-xs text-[var(--text-muted)] font-inter w-4">
+              <span className="text-xs text-(--text-muted) font-inter w-4">
                 {idx + 1}
               </span>
-              <span className="text-sm font-medium text-[var(--text-primary)] font-inter w-8">
+              <span className="text-sm font-medium text-(--text-primary) font-inter w-8">
                 {c.country}
               </span>
-              <div className="flex-1 h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+              <div className="flex-1 h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[var(--primary)] rounded-full"
+                  className="h-full bg-(--primary) rounded-full"
                   style={{
                     width: `${analytics.totalUsers > 0 ? (c.count / analytics.totalUsers) * 100 : 0}%`,
                   }}
                 />
               </div>
-              <span className="text-sm text-[var(--text-secondary)] font-inter w-12 text-right">
+              <span className="text-sm text-(--text-secondary) font-inter w-12 text-right">
                 {c.count}
               </span>
             </div>
@@ -1133,7 +1134,7 @@ function UserAnalyticsOverview() {
             {genderDoughnutData ? (
               <Doughnut data={genderDoughnutData} options={doughnutOptions} />
             ) : (
-              <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-sm">
+              <div className="flex items-center justify-center h-full text-(--text-muted) text-sm">
                 No gender data
               </div>
             )}
@@ -1168,17 +1169,17 @@ function UserAnalyticsOverview() {
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex flex-col items-center gap-2 bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)] text-center"
+                  className="flex flex-col items-center gap-2 bg-(--surface-elevated) rounded-lg p-3 border border-(--border) text-center"
                 >
                   {item.icon && (
-                    <item.icon className="w-4 h-4 text-[var(--text-muted)]" />
+                    <item.icon className="w-4 h-4 text-(--text-muted)" />
                   )}
-                  <div className="text-lg font-bold text-[var(--text-primary)] font-statement">
+                  <div className="text-lg font-bold text-(--text-primary) font-statement">
                     {typeof item.value === "number"
                       ? item.value.toLocaleString()
                       : item.value}
                   </div>
-                  <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide font-inter leading-tight">
+                  <div className="text-[10px] text-(--text-muted) uppercase tracking-wide font-inter leading-tight">
                     {item.label}
                   </div>
                 </div>
@@ -1214,7 +1215,7 @@ function UserAnalyticsOverview() {
                 options={doughnutOptions}
               />
             ) : (
-              <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-sm">
+              <div className="flex items-center justify-center h-full text-(--text-muted) text-sm">
                 No color scheme data
               </div>
             )}
@@ -1368,13 +1369,13 @@ export default function AdminUsers() {
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
             <input
               type="text"
               placeholder="Search by name, WCA ID, or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent font-inter text-sm transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm transition-all"
             />
           </div>
 
@@ -1384,9 +1385,9 @@ export default function AdminUsers() {
               type="checkbox"
               checked={includeDeleted}
               onChange={(e) => setIncludeDeleted(e.target.checked)}
-              className="w-4 h-4 rounded border-[var(--border)] bg-[var(--surface-elevated)] text-[var(--primary)] focus:ring-[var(--primary)]"
+              className="w-4 h-4 rounded border-(--border) bg-(--surface-elevated) text-(--primary) focus:ring-(--primary)"
             />
-            <span className="text-sm text-[var(--text-secondary)] font-inter">
+            <span className="text-sm text-(--text-secondary) font-inter">
               Include deleted
             </span>
           </label>
@@ -1402,7 +1403,7 @@ export default function AdminUsers() {
           <button
             onClick={handleExportUsers}
             disabled={!users || users.length === 0}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-[var(--surface-elevated)] hover:bg-[var(--border)] border border-[var(--border)] rounded-md text-[var(--text-secondary)] transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
             title="Export user list as CSV"
           >
             <Download className="w-3.5 h-3.5" />
@@ -1415,55 +1416,53 @@ export default function AdminUsers() {
             {[...Array(10)].map((_, i) => (
               <div
                 key={i}
-                className="flex items-center gap-4 animate-pulse py-3 border-b border-[var(--border)] last:border-0"
+                className="flex items-center gap-4 animate-pulse py-3 border-b border-(--border) last:border-0"
               >
-                <div className="w-10 h-10 rounded-full bg-[var(--surface-elevated)] shrink-0" />
+                <div className="w-10 h-10 rounded-full bg-(--surface-elevated) shrink-0" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 w-32 bg-[var(--surface-elevated)] rounded" />
-                  <div className="h-3 w-24 bg-[var(--surface-elevated)] rounded" />
+                  <div className="h-4 w-32 bg-(--surface-elevated) rounded" />
+                  <div className="h-3 w-24 bg-(--surface-elevated) rounded" />
                 </div>
               </div>
             ))}
           </div>
         ) : users.length === 0 ? (
           <div className="py-8 text-center">
-            <User className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-            <p className="text-[var(--text-muted)] font-inter">
-              No users found
-            </p>
+            <User className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
+            <p className="text-(--text-muted) font-inter">No users found</p>
           </div>
         ) : (
           <>
             {/* Desktop Table */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-[var(--surface-elevated)] border-y border-[var(--border)]">
+                <thead className="bg-(--surface-elevated) border-y border-(--border)">
                   <tr>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[var(--text-muted)] font-inter uppercase tracking-wider">
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
                       User
                     </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[var(--text-muted)] font-inter uppercase tracking-wider">
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
                       WCA ID
                     </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[var(--text-muted)] font-inter uppercase tracking-wider">
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
                       Country
                     </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[var(--text-muted)] font-inter uppercase tracking-wider">
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
                       Joined
                     </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[var(--text-muted)] font-inter uppercase tracking-wider">
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
                       Last Active
                     </th>
-                    <th className="text-right px-4 py-3 text-xs font-semibold text-[var(--text-muted)] font-inter uppercase tracking-wider">
+                    <th className="text-right px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--border)]">
+                <tbody className="divide-y divide-(--border)">
                   {users.map((user) => (
                     <tr
                       key={user._id}
-                      className={`hover:bg-[var(--surface-elevated)] transition-colors ${user.isDeleted ? "opacity-50" : ""}`}
+                      className={`hover:bg-(--surface-elevated) transition-colors ${user.isDeleted ? "opacity-50" : ""}`}
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
@@ -1473,18 +1472,18 @@ export default function AdminUsers() {
                               alt={user.name}
                               width={40}
                               height={40}
-                              className="w-10 h-10 rounded-full object-cover border border-[var(--border)] shrink-0"
+                              className="w-10 h-10 rounded-full object-cover border border-(--border) shrink-0"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-[var(--primary)]/10 flex items-center justify-center shrink-0">
-                              <User className="w-5 h-5 text-[var(--primary)]" />
+                            <div className="w-10 h-10 rounded-full bg-(--primary)/10 flex items-center justify-center shrink-0">
+                              <User className="w-5 h-5 text-(--primary)" />
                             </div>
                           )}
                           <div className="min-w-0">
-                            <p className="text-sm font-medium text-[var(--text-primary)] font-inter truncate">
+                            <p className="text-sm font-medium text-(--text-primary) font-inter truncate">
                               {user.name}
                               {user.isDeleted && (
-                                <span className="ml-2 text-xs text-[var(--error)]">
+                                <span className="ml-2 text-xs text-(--error)">
                                   (deleted)
                                 </span>
                               )}
@@ -1497,33 +1496,33 @@ export default function AdminUsers() {
                           href={`https://www.worldcubeassociation.org/persons/${user.wcaId}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-[var(--primary)] hover:underline font-inter"
+                          className="text-sm text-(--primary) hover:underline font-inter"
                         >
                           {user.wcaId}
                         </a>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-[var(--text-secondary)] font-inter">
+                        <span className="text-sm text-(--text-secondary) font-inter">
                           {user.countryIso2}
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-[var(--text-secondary)] font-inter">
+                        <span className="text-sm text-(--text-secondary) font-inter">
                           {formatDate(user.createdAt)}
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-[var(--text-secondary)] font-inter">
+                        <span className="text-sm text-(--text-secondary) font-inter">
                           {getTimeAgo(user.lastLoginAt)}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
                         <button
                           onClick={() => setSelectedUserId(user._id)}
-                          className="p-2 hover:bg-[var(--primary)]/10 rounded-lg transition-colors"
+                          className="p-2 hover:bg-(--primary)/10 rounded-lg transition-colors"
                           title="View details"
                         >
-                          <Eye className="w-4 h-4 text-[var(--primary)]" />
+                          <Eye className="w-4 h-4 text-(--primary)" />
                         </button>
                       </td>
                     </tr>
@@ -1537,7 +1536,7 @@ export default function AdminUsers() {
               {users.map((user) => (
                 <div
                   key={user._id}
-                  className={`bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)] ${user.isDeleted ? "opacity-50" : ""}`}
+                  className={`bg-(--surface-elevated) rounded-lg p-3 border border-(--border) ${user.isDeleted ? "opacity-50" : ""}`}
                 >
                   <div className="flex items-start gap-3">
                     {user.avatar ? (
@@ -1546,40 +1545,40 @@ export default function AdminUsers() {
                         alt={user.name}
                         width={40}
                         height={40}
-                        className="w-10 h-10 rounded-full object-cover border border-[var(--border)] shrink-0"
+                        className="w-10 h-10 rounded-full object-cover border border-(--border) shrink-0"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-[var(--primary)]/10 flex items-center justify-center shrink-0">
-                        <User className="w-5 h-5 text-[var(--primary)]" />
+                      <div className="w-10 h-10 rounded-full bg-(--primary)/10 flex items-center justify-center shrink-0">
+                        <User className="w-5 h-5 text-(--primary)" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-sm font-medium text-[var(--text-primary)] font-inter truncate">
+                        <p className="text-sm font-medium text-(--text-primary) font-inter truncate">
                           {user.name}
                           {user.isDeleted && (
-                            <span className="ml-1 text-xs text-[var(--error)]">
+                            <span className="ml-1 text-xs text-(--error)">
                               (deleted)
                             </span>
                           )}
                         </p>
                         <button
                           onClick={() => setSelectedUserId(user._id)}
-                          className="p-1.5 hover:bg-[var(--primary)]/10 rounded-lg transition-colors shrink-0"
+                          className="p-1.5 hover:bg-(--primary)/10 rounded-lg transition-colors shrink-0"
                           title="View details"
                         >
-                          <Eye className="w-4 h-4 text-[var(--primary)]" />
+                          <Eye className="w-4 h-4 text-(--primary)" />
                         </button>
                       </div>
                       <a
                         href={`https://www.worldcubeassociation.org/persons/${user.wcaId}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-[var(--primary)] hover:underline font-inter"
+                        className="text-xs text-(--primary) hover:underline font-inter"
                       >
                         {user.wcaId}
                       </a>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-[var(--text-muted)] font-inter">
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-(--text-muted) font-inter">
                         <span className="flex items-center gap-1">
                           <Globe className="w-3 h-3" />
                           {user.countryIso2}

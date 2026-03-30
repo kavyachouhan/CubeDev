@@ -225,17 +225,17 @@ export default function NotificationsModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-bold text-[var(--text-primary)] font-statement">
+            <h2 className="text-xl font-bold text-(--text-primary) font-statement">
               Notifications
             </h2>
-            <p className="text-sm text-[var(--text-muted)] mt-1 font-inter">
+            <p className="text-sm text-(--text-muted) mt-1 font-inter">
               {totalNotifications} New Notification
               {totalNotifications !== 1 ? "s" : ""}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-lg hover:bg-[var(--surface-elevated)]"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -243,13 +243,13 @@ export default function NotificationsModal({
 
         {/* Permission Banner */}
         {showPermissionBanner && (
-          <div className="mb-4 timer-card bg-[var(--primary)]/10 border border-[var(--primary)]/30 p-3 sm:p-4">
+          <div className="mb-4 timer-card bg-(--primary)/10 border border-(--primary)/30 p-3 sm:p-4">
             <div className="flex items-start gap-2 sm:gap-3">
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                <h3 className="text-sm font-semibold text-(--text-primary) mb-1 font-statement">
                   Enable Desktop Notifications
                 </h3>
-                <p className="text-xs text-[var(--text-muted)] mb-3 font-inter">
+                <p className="text-xs text-(--text-muted) mb-3 font-inter">
                   Get notified even when you're not on CubeDev. Stay on track
                   with your learning!
                 </p>
@@ -257,7 +257,7 @@ export default function NotificationsModal({
                   <button
                     onClick={handleEnableNotifications}
                     disabled={isRequestingPermission}
-                    className="w-full sm:w-auto px-4 py-2 bg-[var(--primary)] text-white text-sm font-semibold rounded-lg hover:bg-[var(--primary-hover)] transition-colors disabled:opacity-50 font-inter"
+                    className="w-full sm:w-auto px-4 py-2 bg-(--primary) text-white text-sm font-semibold rounded-lg hover:bg-(--primary-hover) transition-colors disabled:opacity-50 font-inter"
                   >
                     {isRequestingPermission
                       ? "Requesting..."
@@ -265,7 +265,7 @@ export default function NotificationsModal({
                   </button>
                   <button
                     onClick={handleDismissPrompt}
-                    className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors font-inter"
+                    className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-(--text-muted) hover:text-(--text-primary) transition-colors font-inter"
                   >
                     Maybe Later
                   </button>
@@ -273,7 +273,7 @@ export default function NotificationsModal({
               </div>
               <button
                 onClick={handleDismissPrompt}
-                className="hidden sm:block flex-shrink-0 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors p-1"
+                className="hidden sm:block shrink-0 text-(--text-muted) hover:text-(--text-primary) transition-colors p-1"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -292,13 +292,13 @@ export default function NotificationsModal({
             </div>
           ) : totalNotifications === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <div className="w-16 h-16 bg-[var(--surface-elevated)] rounded-full flex items-center justify-center mb-4">
-                <CheckCircle2 className="w-8 h-8 text-[var(--primary)]" />
+              <div className="w-16 h-16 bg-(--surface-elevated) rounded-full flex items-center justify-center mb-4">
+                <CheckCircle2 className="w-8 h-8 text-(--primary)" />
               </div>
-              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2 font-statement">
+              <h3 className="text-lg font-semibold text-(--text-primary) mb-2 font-statement">
                 All Caught Up!
               </h3>
-              <p className="text-sm text-[var(--text-muted)] text-center max-w-sm font-inter">
+              <p className="text-sm text-(--text-muted) text-center max-w-sm font-inter">
                 You have no new notifications. Great job keeping up with your
                 schedule!
               </p>
@@ -308,7 +308,7 @@ export default function NotificationsModal({
               {/* Coaching Notifications Section */}
               {inAppNotifications.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-[var(--primary)] mb-3 font-statement flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-(--primary) mb-3 font-statement flex items-center gap-2">
                     <Bell className="w-4 h-4" />
                     Coaching ({inAppNotifications.length})
                   </h3>
@@ -316,7 +316,7 @@ export default function NotificationsModal({
                     {inAppNotifications.map((notification) => (
                       <div
                         key={notification.id}
-                        className="relative timer-card bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--primary)]/40 transition-all p-4 group"
+                        className="relative timer-card bg-(--surface-elevated) border border-(--border) hover:border-(--primary)/40 transition-all p-4 group"
                         style={{
                           borderColor: `color-mix(in srgb, ${getNotificationColor(notification.type)} 20%, transparent)`,
                         }}
@@ -349,25 +349,25 @@ export default function NotificationsModal({
                                     .join(" ")}
                                 </span>
                               </div>
-                              <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                              <h4 className="text-sm font-semibold text-(--text-primary) mb-1 font-statement">
                                 {notification.title}
                               </h4>
-                              <p className="text-xs text-[var(--text-muted)] font-inter mb-1">
+                              <p className="text-xs text-(--text-muted) font-inter mb-1">
                                 {notification.body}
                               </p>
-                              <span className="text-xs text-[var(--text-muted)] font-inter flex items-center gap-1">
+                              <span className="text-xs text-(--text-muted) font-inter flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
                                 {formatTimeAgo(notification.timestamp)}
                               </span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
+                            <ChevronRight className="w-4 h-4 text-(--text-muted) group-hover:text-(--primary) transition-colors shrink-0" />
                           </div>
                         </Link>
                         <button
                           onClick={() =>
                             handleDismissInAppNotification(notification.id)
                           }
-                          className="absolute top-3 right-3 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] rounded transition-colors z-10"
+                          className="absolute top-3 right-3 p-1 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface) rounded transition-colors z-10"
                           title="Dismiss notification"
                         >
                           <X className="w-4 h-4" />
@@ -381,7 +381,7 @@ export default function NotificationsModal({
               {/* Overdue Section */}
               {overdue.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-[var(--error)] mb-3 font-statement flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-(--error) mb-3 font-statement flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     Overdue ({overdue.length})
                   </h3>
@@ -389,7 +389,7 @@ export default function NotificationsModal({
                     {overdue.map((review) => (
                       <div
                         key={review.progress._id}
-                        className="relative timer-card bg-[var(--surface-elevated)] border border-[var(--error)]/20 hover:border-[var(--error)]/40 transition-all p-4 group"
+                        className="relative timer-card bg-(--surface-elevated) border border-(--error)/20 hover:border-(--error)/40 transition-all p-4 group"
                       >
                         <Link
                           href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
@@ -399,14 +399,14 @@ export default function NotificationsModal({
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xs font-medium text-[var(--error)] font-inter px-2 py-0.5 bg-[var(--error)]/10 rounded">
+                                <span className="text-xs font-medium text-(--error) font-inter px-2 py-0.5 bg-(--error)/10 rounded">
                                   {review.set?.name}
                                 </span>
                               </div>
-                              <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                              <h4 className="text-sm font-semibold text-(--text-primary) mb-1 font-statement">
                                 {review.case?.caseName}
                               </h4>
-                              <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter">
+                              <div className="flex items-center gap-4 text-xs text-(--text-muted) font-inter">
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   {formatTimeAgo(
@@ -418,14 +418,14 @@ export default function NotificationsModal({
                                 </span>
                               </div>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
+                            <ChevronRight className="w-4 h-4 text-(--text-muted) group-hover:text-(--primary) transition-colors shrink-0" />
                           </div>
                         </Link>
                         <button
                           onClick={(e) =>
                             handleDismissNotification(e, review.progress._id)
                           }
-                          className="absolute top-3 right-3 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] rounded transition-colors z-10"
+                          className="absolute top-3 right-3 p-1 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface) rounded transition-colors z-10"
                           title="Dismiss notification"
                         >
                           <X className="w-4 h-4" />
@@ -439,7 +439,7 @@ export default function NotificationsModal({
               {/* Due Today Section */}
               {dueToday.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-[var(--warning)] mb-3 font-statement flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-(--warning) mb-3 font-statement flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     Due Today ({dueToday.length})
                   </h3>
@@ -447,7 +447,7 @@ export default function NotificationsModal({
                     {dueToday.map((review) => (
                       <div
                         key={review.progress._id}
-                        className="relative timer-card bg-[var(--surface-elevated)] border border-[var(--warning)]/20 hover:border-[var(--warning)]/40 transition-all p-4 group"
+                        className="relative timer-card bg-(--surface-elevated) border border-(--warning)/20 hover:border-(--warning)/40 transition-all p-4 group"
                       >
                         <Link
                           href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
@@ -457,14 +457,14 @@ export default function NotificationsModal({
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xs font-medium text-[var(--warning)] font-inter px-2 py-0.5 bg-[var(--warning)]/10 rounded">
+                                <span className="text-xs font-medium text-(--warning) font-inter px-2 py-0.5 bg-(--warning)/10 rounded">
                                   {review.set?.name}
                                 </span>
                               </div>
-                              <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                              <h4 className="text-sm font-semibold text-(--text-primary) mb-1 font-statement">
                                 {review.case?.caseName}
                               </h4>
-                              <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter">
+                              <div className="flex items-center gap-4 text-xs text-(--text-muted) font-inter">
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   {formatTimeAgo(
@@ -476,14 +476,14 @@ export default function NotificationsModal({
                                 </span>
                               </div>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
+                            <ChevronRight className="w-4 h-4 text-(--text-muted) group-hover:text-(--primary) transition-colors shrink-0" />
                           </div>
                         </Link>
                         <button
                           onClick={(e) =>
                             handleDismissNotification(e, review.progress._id)
                           }
-                          className="absolute top-3 right-3 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] rounded transition-colors z-10"
+                          className="absolute top-3 right-3 p-1 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface) rounded transition-colors z-10"
                           title="Dismiss notification"
                         >
                           <X className="w-4 h-4" />
@@ -497,7 +497,7 @@ export default function NotificationsModal({
               {/* Due Soon Section */}
               {dueSoon.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-[var(--primary)] mb-3 font-statement flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-(--primary) mb-3 font-statement flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     Due Soon ({dueSoon.length})
                   </h3>
@@ -505,7 +505,7 @@ export default function NotificationsModal({
                     {dueSoon.map((review) => (
                       <div
                         key={review.progress._id}
-                        className="relative timer-card bg-[var(--surface-elevated)] border border-[var(--border)] hover:border-[var(--primary)]/40 transition-all p-4 group"
+                        className="relative timer-card bg-(--surface-elevated) border border-(--border) hover:border-(--primary)/40 transition-all p-4 group"
                       >
                         <Link
                           href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
@@ -515,14 +515,14 @@ export default function NotificationsModal({
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xs font-medium text-[var(--primary)] font-inter px-2 py-0.5 bg-[var(--primary)]/10 rounded">
+                                <span className="text-xs font-medium text-(--primary) font-inter px-2 py-0.5 bg-(--primary)/10 rounded">
                                   {review.set?.name}
                                 </span>
                               </div>
-                              <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 font-statement">
+                              <h4 className="text-sm font-semibold text-(--text-primary) mb-1 font-statement">
                                 {review.case?.caseName}
                               </h4>
-                              <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-inter">
+                              <div className="flex items-center gap-4 text-xs text-(--text-muted) font-inter">
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   {formatDueTime(
@@ -534,14 +534,14 @@ export default function NotificationsModal({
                                 </span>
                               </div>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors flex-shrink-0" />
+                            <ChevronRight className="w-4 h-4 text-(--text-muted) group-hover:text-(--primary) transition-colors shrink-0" />
                           </div>
                         </Link>
                         <button
                           onClick={(e) =>
                             handleDismissNotification(e, review.progress._id)
                           }
-                          className="absolute top-3 right-3 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)] rounded transition-colors z-10"
+                          className="absolute top-3 right-3 p-1 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface) rounded transition-colors z-10"
                           title="Dismiss notification"
                         >
                           <X className="w-4 h-4" />
@@ -557,7 +557,7 @@ export default function NotificationsModal({
 
         {/* Footer Actions */}
         {totalNotifications > 0 && (
-          <div className="flex flex-col gap-3 pt-6 mt-6 border-t border-[var(--border)]">
+          <div className="flex flex-col gap-3 pt-6 mt-6 border-t border-(--border)">
             <div className="flex flex-col sm:flex-row gap-3">
               {(dueReviews?.length || 0) > 0 ? (
                 <Link
@@ -585,7 +585,7 @@ export default function NotificationsModal({
             </div>
             <button
               onClick={handleDismissAll}
-              className="w-full text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors py-2 font-inter"
+              className="w-full text-sm text-(--text-muted) hover:text-(--text-primary) transition-colors py-2 font-inter"
             >
               Dismiss All Notifications
             </button>

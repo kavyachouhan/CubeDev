@@ -338,19 +338,19 @@ export default function CoachOnboardingModal({
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl timer-card border-[var(--border)] animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-2xl timer-card border-(--border) animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex-shrink-0 pb-4 border-b border-[var(--border)]">
-          <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] font-statement">
+        <div className="shrink-0 pb-4 border-b border-(--border)">
+          <h2 className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement">
             Training Setup
           </h2>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
+          <p className="text-sm text-(--text-muted) mt-1">
             Let's create your personalized training plan
           </p>
         </div>
 
         {/* Progress Steps */}
-        <div className="flex-shrink-0 py-4 border-b border-[var(--border)]">
+        <div className="shrink-0 py-4 border-b border-(--border)">
           <div className="flex items-center justify-between">
             {STEPS.map((step, index) => {
               const Icon = step.icon;
@@ -365,10 +365,10 @@ export default function CoachOnboardingModal({
                       disabled={!isCompleted}
                       className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors ${
                         isActive
-                          ? "bg-[var(--primary)] text-white"
+                          ? "bg-(--primary) text-white"
                           : isCompleted
-                            ? "bg-[var(--success)] text-white cursor-pointer"
-                            : "bg-[var(--surface-elevated)] text-[var(--text-muted)]"
+                            ? "bg-(--success) text-white cursor-pointer"
+                            : "bg-(--surface-elevated) text-(--text-muted)"
                       }`}
                     >
                       {isCompleted ? (
@@ -380,8 +380,8 @@ export default function CoachOnboardingModal({
                     <span
                       className={`mt-1 text-[10px] sm:text-xs font-medium hidden sm:block ${
                         isActive
-                          ? "text-[var(--primary)]"
-                          : "text-[var(--text-muted)]"
+                          ? "text-(--primary)"
+                          : "text-(--text-muted)"
                       }`}
                     >
                       {step.title}
@@ -391,8 +391,8 @@ export default function CoachOnboardingModal({
                     <div
                       className={`w-6 sm:w-10 lg:w-14 h-0.5 mx-1 sm:mx-2 rounded ${
                         isCompleted
-                          ? "bg-[var(--success)]"
-                          : "bg-[var(--border)]"
+                          ? "bg-(--success)"
+                          : "bg-(--border)"
                       }`}
                     />
                   )}
@@ -408,34 +408,34 @@ export default function CoachOnboardingModal({
           {currentStep === 1 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
-                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                <h3 className="text-lg font-semibold text-(--text-primary)">
                   What's Your Current Level?
                 </h3>
-                <p className="text-sm text-[var(--text-secondary)]">
+                <p className="text-sm text-(--text-secondary)">
                   Select a recent 3x3 session so we can analyze your skill
                   level.
                 </p>
-                <p className="text-xs text-[var(--text-muted)] mt-1.5 italic">
+                <p className="text-xs text-(--text-muted) mt-1.5 italic">
                   More events coming soon!
                 </p>
               </div>
 
               {/* Session Selection */}
-              <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-sm font-medium text-[var(--text-primary)]">
+                  <h4 className="text-sm font-medium text-(--text-primary)">
                     Select a 3x3 Session
                   </h4>
-                  <span className="text-xs text-[var(--text-muted)]">
+                  <span className="text-xs text-(--text-muted)">
                     Optional
                   </span>
                 </div>
 
-                <div className="flex items-start gap-2 p-2 bg-[var(--info)]/10 border border-[var(--info)]/20 rounded-lg mb-3">
-                  <Info className="w-4 h-4 text-[var(--info)] flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-[var(--text-secondary)]">
+                <div className="flex items-start gap-2 p-2 bg-(--info)/10 border border-(--info)/20 rounded-lg mb-3">
+                  <Info className="w-4 h-4 text-(--info) shrink-0 mt-0.5" />
+                  <p className="text-xs text-(--text-secondary)">
                     For best accuracy, select a session with at least{" "}
-                    <span className="font-semibold text-[var(--info)]">
+                    <span className="font-semibold text-(--info)">
                       100 solves
                     </span>
                     .
@@ -444,12 +444,12 @@ export default function CoachOnboardingModal({
 
                 {!sessions ? (
                   <div className="flex items-center justify-center py-6">
-                    <div className="animate-spin w-5 h-5 border-2 border-[var(--primary)] border-t-transparent rounded-full" />
+                    <div className="animate-spin w-5 h-5 border-2 border-(--primary) border-t-transparent rounded-full" />
                   </div>
                 ) : filteredSessions.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-6 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
-                    <AlertCircle className="w-6 h-6 text-[var(--text-muted)] mb-2" />
-                    <p className="text-[var(--text-muted)] text-xs text-center px-2">
+                  <div className="flex flex-col items-center justify-center py-6 bg-(--surface) rounded-lg border border-(--border)">
+                    <AlertCircle className="w-6 h-6 text-(--text-muted) mb-2" />
+                    <p className="text-(--text-muted) text-xs text-center px-2">
                       No 3x3 sessions found. Select your skill level manually
                       below.
                     </p>
@@ -471,23 +471,23 @@ export default function CoachOnboardingModal({
                           }
                           className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-all text-left ${
                             isSelected
-                              ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                              : "bg-[var(--surface)] border-[var(--border)] hover:border-[var(--border-hover)]"
+                              ? "bg-(--primary)/10 border-(--primary)"
+                              : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
                           }`}
                         >
                           <div className="flex items-center gap-2">
                             <FolderOpen
                               className={`w-4 h-4 ${
                                 isSelected
-                                  ? "text-[var(--primary)]"
-                                  : "text-[var(--text-muted)]"
+                                  ? "text-(--primary)"
+                                  : "text-(--text-muted)"
                               }`}
                             />
                             <span
                               className={`text-sm font-medium ${
                                 isSelected
-                                  ? "text-[var(--primary)]"
-                                  : "text-[var(--text-primary)]"
+                                  ? "text-(--primary)"
+                                  : "text-(--text-primary)"
                               }`}
                             >
                               {session.name}
@@ -497,8 +497,8 @@ export default function CoachOnboardingModal({
                             <span
                               className={`text-xs ${
                                 hasEnoughSolves
-                                  ? "text-[var(--success)]"
-                                  : "text-[var(--text-muted)]"
+                                  ? "text-(--success)"
+                                  : "text-(--text-muted)"
                               }`}
                             >
                               {session.solveCount} solves
@@ -513,35 +513,35 @@ export default function CoachOnboardingModal({
 
               {/* Session Stats */}
               {data.selectedSessionId && selectedSessionStats && (
-                <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
                   <div className="flex items-center gap-2 mb-3">
-                    <BarChart3 className="w-4 h-4 text-[var(--primary)]" />
-                    <h4 className="text-sm font-medium text-[var(--text-primary)]">
+                    <BarChart3 className="w-4 h-4 text-(--primary)" />
+                    <h4 className="text-sm font-medium text-(--text-primary)">
                       Session Analysis
                     </h4>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="text-center p-2 bg-[var(--surface)] rounded-lg">
-                      <span className="text-[10px] text-[var(--text-muted)] block">
+                    <div className="text-center p-2 bg-(--surface) rounded-lg">
+                      <span className="text-[10px] text-(--text-muted) block">
                         Solves
                       </span>
-                      <span className="text-lg font-bold text-[var(--text-primary)]">
+                      <span className="text-lg font-bold text-(--text-primary)">
                         {selectedSessionStats.solveCount}
                       </span>
                     </div>
-                    <div className="text-center p-2 bg-[var(--surface)] rounded-lg">
-                      <span className="text-[10px] text-[var(--text-muted)] block">
+                    <div className="text-center p-2 bg-(--surface) rounded-lg">
+                      <span className="text-[10px] text-(--text-muted) block">
                         Average
                       </span>
-                      <span className="text-lg font-bold text-[var(--primary)]">
+                      <span className="text-lg font-bold text-(--primary)">
                         {formatTime(selectedSessionStats.average)}
                       </span>
                     </div>
-                    <div className="text-center p-2 bg-[var(--surface)] rounded-lg">
-                      <span className="text-[10px] text-[var(--text-muted)] block">
+                    <div className="text-center p-2 bg-(--surface) rounded-lg">
+                      <span className="text-[10px] text-(--text-muted) block">
                         Best
                       </span>
-                      <span className="text-lg font-bold text-[var(--success)]">
+                      <span className="text-lg font-bold text-(--success)">
                         {formatTime(selectedSessionStats.bestSingle)}
                       </span>
                     </div>
@@ -550,8 +550,8 @@ export default function CoachOnboardingModal({
               )}
 
               {/* Skill Level Selection */}
-              <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                <h4 className="text-sm font-medium text-[var(--text-primary)] mb-3">
+              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   {data.selectedSessionId
                     ? "Detected Skill Level"
                     : "Select Your Skill Level"}
@@ -563,20 +563,20 @@ export default function CoachOnboardingModal({
                       onClick={() => updateData({ skillLevel: level.id })}
                       className={`p-3 rounded-lg border text-left transition-all ${
                         data.skillLevel === level.id
-                          ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                          : "bg-[var(--surface)] border-[var(--border)] hover:border-[var(--border-hover)]"
+                          ? "bg-(--primary)/10 border-(--primary)"
+                          : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
                       }`}
                     >
                       <span
                         className={`text-sm font-medium block ${
                           data.skillLevel === level.id
-                            ? "text-[var(--primary)]"
-                            : "text-[var(--text-primary)]"
+                            ? "text-(--primary)"
+                            : "text-(--text-primary)"
                         }`}
                       >
                         {level.label}
                       </span>
-                      <span className="text-xs text-[var(--text-muted)]">
+                      <span className="text-xs text-(--text-muted)">
                         {level.description}
                       </span>
                     </button>
@@ -590,32 +590,32 @@ export default function CoachOnboardingModal({
           {currentStep === 2 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
-                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                <h3 className="text-lg font-semibold text-(--text-primary)">
                   What's Your Goal?
                 </h3>
-                <p className="text-sm text-[var(--text-secondary)]">
+                <p className="text-sm text-(--text-secondary)">
                   Choose a target time to work towards.
                 </p>
               </div>
 
               {/* Current Average */}
               {data.currentAverage && (
-                <div className="flex items-center justify-center gap-3 p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                  <Timer className="w-4 h-4 text-[var(--primary)]" />
-                  <span className="text-sm text-[var(--text-secondary)]">
+                <div className="flex items-center justify-center gap-3 p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                  <Timer className="w-4 h-4 text-(--primary)" />
+                  <span className="text-sm text-(--text-secondary)">
                     Your current average:
                   </span>
-                  <span className="text-lg font-bold text-[var(--primary)]">
+                  <span className="text-lg font-bold text-(--primary)">
                     {formatTimeSimple(data.currentAverage)}
                   </span>
                 </div>
               )}
 
               {/* Recommended Goals */}
-              <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
                 <div className="flex items-center gap-2 mb-3">
-                  <Trophy className="w-4 h-4 text-[var(--primary)]" />
-                  <h4 className="text-sm font-medium text-[var(--text-primary)]">
+                  <Trophy className="w-4 h-4 text-(--primary)" />
+                  <h4 className="text-sm font-medium text-(--text-primary)">
                     Recommended for your level
                   </h4>
                 </div>
@@ -632,29 +632,29 @@ export default function CoachOnboardingModal({
                         }
                         className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
                           data.goalType === goal.id
-                            ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                            : "bg-[var(--surface)] border-[var(--border)] hover:border-[var(--border-hover)]"
+                            ? "bg-(--primary)/10 border-(--primary)"
+                            : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
                         }`}
                       >
                         <div className="flex items-center gap-2">
                           <Target
                             className={`w-4 h-4 ${
                               data.goalType === goal.id
-                                ? "text-[var(--primary)]"
-                                : "text-[var(--text-muted)]"
+                                ? "text-(--primary)"
+                                : "text-(--text-muted)"
                             }`}
                           />
                           <div className="text-left">
                             <span
                               className={`text-sm font-medium block ${
                                 data.goalType === goal.id
-                                  ? "text-[var(--primary)]"
-                                  : "text-[var(--text-primary)]"
+                                  ? "text-(--primary)"
+                                  : "text-(--text-primary)"
                               }`}
                             >
                               {goal.label}
                             </span>
-                            <span className="text-xs text-[var(--text-muted)]">
+                            <span className="text-xs text-(--text-muted)">
                               {goal.description}
                             </span>
                           </div>
@@ -662,8 +662,8 @@ export default function CoachOnboardingModal({
                         <span
                           className={`text-sm font-mono ${
                             data.goalType === goal.id
-                              ? "text-[var(--primary)]"
-                              : "text-[var(--text-secondary)]"
+                              ? "text-(--primary)"
+                              : "text-(--text-secondary)"
                           }`}
                         >
                           {formatTimeSimple(goal.time)}
@@ -675,8 +675,8 @@ export default function CoachOnboardingModal({
               </div>
 
               {/* Other Goals */}
-              <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                <h4 className="text-sm font-medium text-[var(--text-primary)] mb-3">
+              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Other goals
                 </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -692,14 +692,14 @@ export default function CoachOnboardingModal({
                         }
                         className={`p-2 rounded-lg border text-center transition-all ${
                           data.goalType === goal.id
-                            ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-                            : "bg-[var(--surface)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
+                            ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
+                            : "bg-(--surface) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
                         }`}
                       >
                         <span className="text-sm font-medium block">
                           {goal.label}
                         </span>
-                        <span className="text-xs text-[var(--text-muted)]">
+                        <span className="text-xs text-(--text-muted)">
                           {formatTimeSimple(goal.time)}
                         </span>
                       </button>
@@ -714,16 +714,16 @@ export default function CoachOnboardingModal({
           {currentStep === 3 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
-                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                <h3 className="text-lg font-semibold text-(--text-primary)">
                   Set Your Timeline
                 </h3>
-                <p className="text-sm text-[var(--text-secondary)]">
+                <p className="text-sm text-(--text-secondary)">
                   When do you want to achieve your goal?
                 </p>
               </div>
 
-              <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                <h4 className="text-sm font-medium text-[var(--text-primary)] mb-3">
+              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Target Date
                 </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -745,15 +745,15 @@ export default function CoachOnboardingModal({
                         onClick={() => updateData({ targetDate: targetTime })}
                         className={`p-3 rounded-lg border text-center transition-all ${
                           isSelected
-                            ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                            : "bg-[var(--surface)] border-[var(--border)] hover:border-[var(--border-hover)]"
+                            ? "bg-(--primary)/10 border-(--primary)"
+                            : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
                         }`}
                       >
                         <span
                           className={`text-sm font-medium block ${
                             isSelected
-                              ? "text-[var(--primary)]"
-                              : "text-[var(--text-primary)]"
+                              ? "text-(--primary)"
+                              : "text-(--text-primary)"
                           }`}
                         >
                           {option.label}
@@ -764,8 +764,8 @@ export default function CoachOnboardingModal({
                 </div>
               </div>
 
-              <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                <h4 className="text-sm font-medium text-[var(--text-primary)] mb-3">
+              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Or pick a specific date
                 </h4>
                 <input
@@ -781,15 +781,15 @@ export default function CoachOnboardingModal({
                       targetDate: new Date(e.target.value).getTime(),
                     })
                   }
-                  className="w-full px-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
+                  className="w-full px-4 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all"
                 />
               </div>
 
               {data.targetDate && (
-                <div className="p-3 bg-[var(--info)]/10 border border-[var(--info)]/20 rounded-lg text-center">
-                  <span className="text-sm text-[var(--text-secondary)]">
+                <div className="p-3 bg-(--info)/10 border border-(--info)/20 rounded-lg text-center">
+                  <span className="text-sm text-(--text-secondary)">
                     Target:{" "}
-                    <span className="font-medium text-[var(--info)]">
+                    <span className="font-medium text-(--info)">
                       {new Date(data.targetDate).toLocaleDateString("en-US", {
                         weekday: "long",
                         year: "numeric",
@@ -807,17 +807,17 @@ export default function CoachOnboardingModal({
           {currentStep === 4 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
-                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                <h3 className="text-lg font-semibold text-(--text-primary)">
                   Your Commitment
                 </h3>
-                <p className="text-sm text-[var(--text-secondary)]">
+                <p className="text-sm text-(--text-secondary)">
                   How much time can you dedicate to practice?
                 </p>
               </div>
 
               {/* Daily Practice Time */}
-              <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                <h4 className="text-sm font-medium text-[var(--text-primary)] mb-3">
+              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Daily Practice Time
                 </h4>
                 <div className="grid grid-cols-3 gap-2">
@@ -829,15 +829,15 @@ export default function CoachOnboardingModal({
                       }
                       className={`p-2.5 rounded-lg border text-center transition-all ${
                         data.dailyPracticeMinutes === time.value
-                          ? "bg-[var(--primary)]/10 border-[var(--primary)]"
-                          : "bg-[var(--surface)] border-[var(--border)] hover:border-[var(--border-hover)]"
+                          ? "bg-(--primary)/10 border-(--primary)"
+                          : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
                       }`}
                     >
                       <span
                         className={`text-sm font-medium ${
                           data.dailyPracticeMinutes === time.value
-                            ? "text-[var(--primary)]"
-                            : "text-[var(--text-primary)]"
+                            ? "text-(--primary)"
+                            : "text-(--text-primary)"
                         }`}
                       >
                         {time.label}
@@ -848,8 +848,8 @@ export default function CoachOnboardingModal({
               </div>
 
               {/* Practice Days */}
-              <div className="p-4 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                <h4 className="text-sm font-medium text-[var(--text-primary)] mb-3">
+              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Practice Days
                 </h4>
                 <div className="flex flex-wrap gap-2">
@@ -867,8 +867,8 @@ export default function CoachOnboardingModal({
                         }}
                         className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
                           isSelected
-                            ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-                            : "bg-[var(--surface)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
+                            ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
+                            : "bg-(--surface) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
                         }`}
                       >
                         {day}
@@ -876,16 +876,16 @@ export default function CoachOnboardingModal({
                     );
                   })}
                 </div>
-                <p className="text-xs text-[var(--text-muted)] mt-2">
+                <p className="text-xs text-(--text-muted) mt-2">
                   {data.practiceSchedule?.length || 0} days per week selected
                 </p>
               </div>
 
               {/* Weekly Summary */}
-              <div className="p-3 bg-[var(--info)]/10 border border-[var(--info)]/20 rounded-lg text-center">
-                <span className="text-sm text-[var(--text-secondary)]">
+              <div className="p-3 bg-(--info)/10 border border-(--info)/20 rounded-lg text-center">
+                <span className="text-sm text-(--text-secondary)">
                   Total weekly practice:{" "}
-                  <span className="font-medium text-[var(--info)]">
+                  <span className="font-medium text-(--info)">
                     {(data.dailyPracticeMinutes || 0) *
                       (data.practiceSchedule?.length || 0)}{" "}
                     minutes
@@ -899,24 +899,24 @@ export default function CoachOnboardingModal({
           {currentStep === 5 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
-                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                <h3 className="text-lg font-semibold text-(--text-primary)">
                   Review Your Plan
                 </h3>
-                <p className="text-sm text-[var(--text-secondary)]">
+                <p className="text-sm text-(--text-secondary)">
                   Confirm your training setup
                 </p>
               </div>
 
               <div className="space-y-3">
                 {/* Current Level */}
-                <div className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                  <span className="text-sm text-[var(--text-muted)]">
+                <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                  <span className="text-sm text-(--text-muted)">
                     Current Level
                   </span>
-                  <span className="text-sm font-medium text-[var(--text-primary)] capitalize">
+                  <span className="text-sm font-medium text-(--text-primary) capitalize">
                     {data.skillLevel}
                     {data.currentAverage && (
-                      <span className="text-[var(--text-muted)] ml-1">
+                      <span className="text-(--text-muted) ml-1">
                         ({formatTimeSimple(data.currentAverage)})
                       </span>
                     )}
@@ -924,9 +924,9 @@ export default function CoachOnboardingModal({
                 </div>
 
                 {/* Goal */}
-                <div className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                  <span className="text-sm text-[var(--text-muted)]">Goal</span>
-                  <span className="text-sm font-medium text-[var(--primary)]">
+                <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                  <span className="text-sm text-(--text-muted)">Goal</span>
+                  <span className="text-sm font-medium text-(--primary)">
                     {data.goalType === "custom"
                       ? `Custom: ${data.customGoalTime ? (data.customGoalTime / 1000).toFixed(0) + "s" : "Set"}`
                       : data.goalType?.replace("-", " ").replace("sub", "Sub ")}
@@ -934,11 +934,11 @@ export default function CoachOnboardingModal({
                 </div>
 
                 {/* Target Date */}
-                <div className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                  <span className="text-sm text-[var(--text-muted)]">
+                <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                  <span className="text-sm text-(--text-muted)">
                     Target Date
                   </span>
-                  <span className="text-sm font-medium text-[var(--text-primary)]">
+                  <span className="text-sm font-medium text-(--text-primary)">
                     {data.targetDate
                       ? new Date(data.targetDate).toLocaleDateString("en-US", {
                           month: "short",
@@ -950,22 +950,22 @@ export default function CoachOnboardingModal({
                 </div>
 
                 {/* Practice Schedule */}
-                <div className="flex items-center justify-between p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
-                  <span className="text-sm text-[var(--text-muted)]">
+                <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                  <span className="text-sm text-(--text-muted)">
                     Practice
                   </span>
-                  <span className="text-sm font-medium text-[var(--text-primary)]">
+                  <span className="text-sm font-medium text-(--text-primary)">
                     {data.dailyPracticeMinutes} min ·{" "}
                     {data.practiceSchedule?.length || 0} days/week
                   </span>
                 </div>
 
                 {/* Weekly Total */}
-                <div className="flex items-center justify-between p-3 bg-[var(--primary)]/10 rounded-lg border border-[var(--primary)]">
-                  <span className="text-sm text-[var(--text-muted)]">
+                <div className="flex items-center justify-between p-3 bg-(--primary)/10 rounded-lg border border-(--primary)">
+                  <span className="text-sm text-(--text-muted)">
                     Weekly Total
                   </span>
-                  <span className="text-sm font-bold text-[var(--primary)]">
+                  <span className="text-sm font-bold text-(--primary)">
                     {(
                       ((data.dailyPracticeMinutes || 0) *
                         (data.practiceSchedule?.length || 0)) /
@@ -980,10 +980,10 @@ export default function CoachOnboardingModal({
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 pt-4 border-t border-[var(--border)]">
+        <div className="shrink-0 pt-4 border-t border-(--border)">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-[var(--text-muted)]">
+              <span className="text-xs text-(--text-muted)">
                 Step {currentStep} of {STEPS.length}
               </span>
             </div>
@@ -991,7 +991,7 @@ export default function CoachOnboardingModal({
               {currentStep > 1 && (
                 <button
                   onClick={handleBack}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-[var(--border)] rounded-lg hover:bg-[var(--surface-elevated)] hover:border-[var(--border-hover)] text-[var(--text-primary)] transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-(--border) rounded-lg hover:bg-(--surface-elevated) hover:border-(--border-hover) text-(--text-primary) transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   <span className="hidden sm:inline">Back</span>
@@ -1001,7 +1001,7 @@ export default function CoachOnboardingModal({
                 <button
                   onClick={handleNext}
                   disabled={!canProceed()}
-                  className="flex items-center gap-1 px-4 py-1.5 text-sm font-medium bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1 px-4 py-1.5 text-sm font-medium bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span>Continue</span>
                   <ChevronRight className="w-4 h-4" />
@@ -1010,7 +1010,7 @@ export default function CoachOnboardingModal({
                 <button
                   onClick={handleComplete}
                   disabled={isSubmitting}
-                  className="flex items-center gap-1 px-4 py-1.5 text-sm font-medium bg-[var(--success)] hover:opacity-90 text-white rounded-lg transition-opacity disabled:opacity-50"
+                  className="flex items-center gap-1 px-4 py-1.5 text-sm font-medium bg-(--success) hover:opacity-90 text-white rounded-lg transition-opacity disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>

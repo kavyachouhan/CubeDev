@@ -10,10 +10,10 @@ export default function ThemeSection() {
     <div className="timer-card">
       <div className="flex items-center gap-3 mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
             Theme & Appearance
           </h3>
-          <p className="text-sm text-[var(--text-muted)]">
+          <p className="text-sm text-(--text-muted)">
             Customize your CubeDev experience
           </p>
         </div>
@@ -21,11 +21,11 @@ export default function ThemeSection() {
 
       <div className="space-y-6">
         <ThemeModeSelector />
-        <div className="border-t border-[var(--border)]" />
+        <div className="border-t border-(--border)" />
         <ColorSchemeSelector />
-        <div className="border-t border-[var(--border)]" />
+        <div className="border-t border-(--border)" />
         <TimerCustomization />
-        <div className="border-t border-[var(--border)]" />
+        <div className="border-t border-(--border)" />
         <AccessibilitySettings />
       </div>
     </div>

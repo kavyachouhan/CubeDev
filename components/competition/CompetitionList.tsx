@@ -280,7 +280,7 @@ export default function CompetitionList({
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 text-[var(--text-primary)] font-medium"
+            className="flex items-center gap-2 text-(--text-primary) font-medium"
           >
             <Filter className="w-4 h-4" />
             <span>{showFilters ? "Hide Filters" : "Show Filters"}</span>
@@ -297,7 +297,7 @@ export default function CompetitionList({
                 setSearchQuery("");
                 setSelectedRegion("all");
               }}
-              className="text-sm text-[var(--primary)] hover:underline"
+              className="text-sm text-(--primary) hover:underline"
             >
               Reset Filters
             </button>
@@ -309,13 +309,13 @@ export default function CompetitionList({
             {/* Event Filter */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm text-[var(--text-secondary)]">
+                <label className="text-sm text-(--text-secondary)">
                   Events
                 </label>
                 {selectedEvents.length > 0 && (
                   <button
                     onClick={clearEventFilters}
-                    className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    className="text-xs text-(--text-muted) hover:text-(--text-primary)"
                   >
                     Clear ({selectedEvents.length})
                   </button>
@@ -329,8 +329,8 @@ export default function CompetitionList({
                     title={event.name}
                     className={`p-2 rounded-lg border transition-colors ${
                       selectedEvents.includes(event.id)
-                        ? "border-[var(--primary)] bg-[var(--primary)]/10"
-                        : "border-[var(--border)] hover:border-[var(--border-hover)] bg-[var(--surface)]"
+                        ? "border-(--primary) bg-(--primary)/10"
+                        : "border-(--border) hover:border-(--border-hover) bg-(--surface)"
                     }`}
                   >
                     <Image
@@ -354,17 +354,17 @@ export default function CompetitionList({
                 label="Region"
               />
               <div>
-                <label className="text-sm text-[var(--text-secondary)] mb-2 block">
+                <label className="text-sm text-(--text-secondary) mb-2 block">
                   Search
                 </label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Name or city..."
-                    className="w-full pl-10 pr-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="w-full pl-10 pr-4 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary)"
                   />
                 </div>
               </div>
@@ -372,7 +372,7 @@ export default function CompetitionList({
 
             {/* Time Filter */}
             <div>
-              <label className="text-sm text-[var(--text-secondary)] mb-2 block">
+              <label className="text-sm text-(--text-secondary) mb-2 block">
                 When
               </label>
               <div className="flex flex-wrap gap-2">
@@ -390,8 +390,8 @@ export default function CompetitionList({
                     onClick={() => setTimeFilter(filter)}
                     className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                       timeFilter === filter
-                        ? "bg-[var(--primary)] text-white"
-                        : "bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                        ? "bg-(--primary) text-white"
+                        : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary)"
                     }`}
                   >
                     {filter.charAt(0).toUpperCase() + filter.slice(1)}
@@ -401,25 +401,25 @@ export default function CompetitionList({
               {timeFilter === "custom" && (
                 <div className="flex flex-wrap gap-4 mt-3">
                   <div>
-                    <label className="text-xs text-[var(--text-muted)] block mb-1">
+                    <label className="text-xs text-(--text-muted) block mb-1">
                       Start Date
                     </label>
                     <input
                       type="date"
                       value={customStartDate}
                       onChange={(e) => setCustomStartDate(e.target.value)}
-                      className="px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                      className="px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-[var(--text-muted)] block mb-1">
+                    <label className="text-xs text-(--text-muted) block mb-1">
                       End Date
                     </label>
                     <input
                       type="date"
                       value={customEndDate}
                       onChange={(e) => setCustomEndDate(e.target.value)}
-                      className="px-3 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                      className="px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
                     />
                   </div>
                 </div>
@@ -432,9 +432,9 @@ export default function CompetitionList({
                 type="checkbox"
                 checked={showCancelled}
                 onChange={(e) => setShowCancelled(e.target.checked)}
-                className="w-4 h-4 rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                className="w-4 h-4 rounded border-(--border) text-(--primary) focus:ring-(--primary)"
               />
-              <span className="text-sm text-[var(--text-secondary)]">
+              <span className="text-sm text-(--text-secondary)">
                 Show cancelled competitions
               </span>
             </label>
@@ -443,7 +443,7 @@ export default function CompetitionList({
       </div>
 
       {/* Results Count */}
-      <div className="flex items-center justify-between text-sm text-[var(--text-muted)]">
+      <div className="flex items-center justify-between text-sm text-(--text-muted)">
         <span>
           {filteredCompetitions.length} competition
           {filteredCompetitions.length !== 1 ? "s" : ""} found
@@ -460,19 +460,19 @@ export default function CompetitionList({
         <CompetitionCardsSkeleton count={5} />
       ) : error ? (
         <div className="timer-card text-center py-8">
-          <p className="text-[var(--error)]">{error}</p>
+          <p className="text-(--error)">{error}</p>
           <button
             onClick={fetchCompetitions}
-            className="mt-4 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+            className="mt-4 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
           >
             Retry
           </button>
         </div>
       ) : paginatedCompetitions.length === 0 ? (
         <div className="timer-card text-center py-8">
-          <Trophy className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-          <p className="text-[var(--text-secondary)]">No competitions found</p>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
+          <Trophy className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
+          <p className="text-(--text-secondary)">No competitions found</p>
+          <p className="text-sm text-(--text-muted) mt-1">
             Try adjusting your filters
           </p>
         </div>
@@ -481,15 +481,15 @@ export default function CompetitionList({
           {paginatedCompetitions.map((competition) => (
             <div
               key={competition.id}
-              className={`timer-card hover:border-[var(--primary)]/50 transition-all cursor-pointer ${
+              className={`timer-card hover:border-(--primary)/50 transition-all cursor-pointer ${
                 competition.cancelled_at ? "opacity-60" : ""
               }`}
               onClick={() => setSelectedCompetition(competition)}
             >
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 {/* Date */}
-                <div className="flex-shrink-0 text-center sm:w-28">
-                  <div className="text-sm font-medium text-[var(--text-primary)]">
+                <div className="shrink-0 text-center sm:w-28">
+                  <div className="text-sm font-medium text-(--text-primary)">
                     {formatDateRange(
                       competition.start_date,
                       competition.end_date
@@ -500,16 +500,16 @@ export default function CompetitionList({
                 {/* Competition Details */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start gap-2">
-                    <h3 className="font-medium text-[var(--text-primary)] truncate">
+                    <h3 className="font-medium text-(--text-primary) truncate">
                       {competition.name}
                     </h3>
                     {competition.cancelled_at && (
-                      <span className="flex-shrink-0 px-2 py-0.5 text-xs bg-[var(--error)]/10 text-[var(--error)] rounded">
+                      <span className="shrink-0 px-2 py-0.5 text-xs bg-(--error)/10 text-(--error) rounded">
                         Cancelled
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-4 mt-1 text-sm text-[var(--text-muted)]">
+                  <div className="flex items-center gap-4 mt-1 text-sm text-(--text-muted)">
                     <span className="flex items-center gap-1">
                       <MapPin className="w-3 h-3" />
                       {competition.city}, {competition.country_iso2}
@@ -530,7 +530,7 @@ export default function CompetitionList({
                     return event ? (
                       <div
                         key={eventId}
-                        className="p-1 rounded bg-[var(--surface-elevated)]"
+                        className="p-1 rounded bg-(--surface-elevated)"
                         title={event.name}
                       >
                         <Image
@@ -544,20 +544,20 @@ export default function CompetitionList({
                     ) : null;
                   })}
                   {competition.event_ids.length > 6 && (
-                    <div className="px-2 py-1 text-xs text-[var(--text-muted)] bg-[var(--surface-elevated)] rounded">
+                    <div className="px-2 py-1 text-xs text-(--text-muted) bg-(--surface-elevated) rounded">
                       +{competition.event_ids.length - 6}
                     </div>
                   )}
                 </div>
 
                 {/* Action */}
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedCompetition(competition);
                     }}
-                    className="px-3 py-1.5 text-sm font-medium bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors flex items-center gap-1"
+                    className="px-3 py-1.5 text-sm font-medium bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors flex items-center gap-1"
                   >
                     <Play className="w-3 h-3" />
                     Simulate
@@ -575,7 +575,7 @@ export default function CompetitionList({
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="p-2 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -597,8 +597,8 @@ export default function CompetitionList({
                   onClick={() => setCurrentPage(pageNum)}
                   className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
                     currentPage === pageNum
-                      ? "bg-[var(--primary)] text-white"
-                      : "text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)]"
+                      ? "bg-(--primary) text-white"
+                      : "text-(--text-secondary) hover:bg-(--surface-elevated)"
                   }`}
                 >
                   {pageNum}
@@ -609,7 +609,7 @@ export default function CompetitionList({
           <button
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="p-2 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -619,20 +619,20 @@ export default function CompetitionList({
       {/* Event Selection Modal */}
       {selectedCompetition && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
-            <div className="sticky top-0 bg-[var(--surface)] border-b border-[var(--border)] p-4 flex items-center justify-between">
-              <h3 className="font-bold text-[var(--text-primary)]">
+          <div className="bg-(--surface) border border-(--border) rounded-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <div className="sticky top-0 bg-(--surface) border-b border-(--border) p-4 flex items-center justify-between">
+              <h3 className="font-bold text-(--text-primary)">
                 Select Event to Simulate
               </h3>
               <button
                 onClick={() => setSelectedCompetition(null)}
-                className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-4">
-              <p className="text-sm text-[var(--text-muted)] mb-4">
+              <p className="text-sm text-(--text-muted) mb-4">
                 {selectedCompetition.name}
               </p>
               <div className="grid grid-cols-3 gap-3">
@@ -645,7 +645,7 @@ export default function CompetitionList({
                         onStartSimulation(selectedCompetition, eventId);
                         setSelectedCompetition(null);
                       }}
-                      className="flex flex-col items-center gap-2 p-3 rounded-lg border border-[var(--border)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/5 transition-colors"
+                      className="flex flex-col items-center gap-2 p-3 rounded-lg border border-(--border) hover:border-(--primary) hover:bg-(--primary)/5 transition-colors"
                     >
                       <Image
                         src={event.icon}
@@ -654,7 +654,7 @@ export default function CompetitionList({
                         height={28}
                         className="opacity-80"
                       />
-                      <span className="text-xs text-[var(--text-secondary)]">
+                      <span className="text-xs text-(--text-secondary)">
                         {event.name}
                       </span>
                     </button>

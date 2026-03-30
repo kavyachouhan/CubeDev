@@ -443,10 +443,10 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
     privacySettings === undefined
   ) {
     return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+      <div className="min-h-screen bg-(--background) flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin mx-auto mb-4" />
-          <p className="text-[var(--text-secondary)] font-inter">
+          <Loader2 className="w-8 h-8 text-(--primary) animate-spin mx-auto mb-4" />
+          <p className="text-(--text-secondary) font-inter">
             Loading cuber profile...
           </p>
         </div>
@@ -460,17 +460,17 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
     const isDeletedUser = error.includes("no longer available");
 
     return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+      <div className="min-h-screen bg-(--background) flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-4">
           <AlertCircle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4 font-statement">
+          <h1 className="text-2xl font-bold text-(--text-primary) mb-4 font-statement">
             {isDeletedUser
               ? "Account Deleted"
               : isPrivacyError
                 ? "Profile Private"
                 : "Profile Not Found"}
           </h1>
-          <p className="text-[var(--text-secondary)] mb-6 font-inter">
+          <p className="text-(--text-secondary) mb-6 font-inter">
             {isDeletedUser
               ? "This user account has been deleted and is no longer available."
               : isPrivacyError
@@ -478,7 +478,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
                 : error}
           </p>
           {isPrivacyError && !isDeletedUser && (
-            <p className="text-[var(--text-muted)] text-sm font-inter">
+            <p className="text-(--text-muted) text-sm font-inter">
               Want to join CubeDev? Sign up to connect with the cubing community
               and share your progress!
             </p>
@@ -492,17 +492,17 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
     // Show skeleton loader while loading
     if (isLoading) {
       return (
-        <div className="min-h-screen bg-[var(--background)]">
+        <div className="min-h-screen bg-(--background)">
           <div className="container-responsive py-6 max-w-7xl">
             <div className="flex flex-col lg:flex-row gap-6">
               <div className="lg:w-80 lg:flex-shrink-0">
                 <ProfileSidebarSkeleton />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="h-12 bg-[var(--surface-elevated)] rounded-lg w-full mb-6" />
+                <div className="h-12 bg-(--surface-elevated) rounded-lg w-full mb-6" />
                 <div className="space-y-8">
-                  <div className="h-64 bg-[var(--surface-elevated)] rounded-lg" />
-                  <div className="h-48 bg-[var(--surface-elevated)] rounded-lg" />
+                  <div className="h-64 bg-(--surface-elevated) rounded-lg" />
+                  <div className="h-48 bg-(--surface-elevated) rounded-lg" />
                 </div>
               </div>
             </div>
@@ -512,9 +512,9 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
     }
 
     return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+      <div className="min-h-screen bg-(--background) flex items-center justify-center">
         <div className="text-center">
-          <p className="text-[var(--text-secondary)] font-inter">
+          <p className="text-(--text-secondary) font-inter">
             No profile data available.
           </p>
         </div>
@@ -525,7 +525,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
   const { person } = profileData;
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="min-h-screen bg-(--background)">
       <div className="container-responsive py-6 max-w-7xl">
         {/* Profile Header */}
         <div className="flex flex-col lg:flex-row gap-6">
@@ -542,14 +542,14 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
           {/* Right Content - Tabbed Stats */}
           <div className="flex-1 min-w-0">
             {/* Tab Navigation */}
-            <div className="border-b border-[var(--border)] mb-6">
+            <div className="border-b border-(--border) mb-6">
               <nav className="flex space-x-8 overflow-x-auto">
                 <button
                   onClick={() => handleTabChange("cubedev")}
                   className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                     currentTab === "cubedev"
-                      ? "border-[var(--primary)] text-[var(--primary)]"
-                      : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                      ? "border-(--primary) text-(--primary)"
+                      : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
                   }`}
                 >
                   CubeDev Stats
@@ -558,8 +558,8 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
                   onClick={() => handleTabChange("training")}
                   className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                     currentTab === "training"
-                      ? "border-[var(--primary)] text-[var(--primary)]"
-                      : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                      ? "border-(--primary) text-(--primary)"
+                      : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
                   }`}
                 >
                   Training
@@ -568,8 +568,8 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
                   onClick={() => handleTabChange("wca")}
                   className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                     currentTab === "wca"
-                      ? "border-[var(--primary)] text-[var(--primary)]"
-                      : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]"
+                      ? "border-(--primary) text-(--primary)"
+                      : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
                   }`}
                 >
                   WCA Stats

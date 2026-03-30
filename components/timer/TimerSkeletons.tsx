@@ -84,7 +84,7 @@ export function ScramblePreviewSkeleton() {
       <div className="flex items-center justify-between mb-4">
         <div className="h-6 skeleton-box rounded w-40" />
       </div>
-      <div className="w-full min-h-[180px] sm:min-h-[200px] skeleton-box-subtle rounded-lg flex items-center justify-center border border-[var(--border)]">
+      <div className="w-full min-h-[180px] sm:min-h-[200px] skeleton-box-subtle rounded-lg flex items-center justify-center border border-(--border)">
         <div className="h-10 skeleton-box rounded-md w-40" />
       </div>
     </div>
@@ -112,7 +112,7 @@ export function StatsDisplaySkeleton() {
           <div className="h-6 skeleton-box rounded w-12 mx-auto" />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[var(--border)]">
+      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-(--border)">
         {[1, 2].map((i) => (
           <div key={i} className="text-center">
             <div className="h-3 skeleton-box rounded w-28 mx-auto mb-2" />
@@ -135,7 +135,7 @@ export function TimerHistorySkeleton() {
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="p-3 skeleton-box-subtle rounded-lg border border-[var(--border)]"
+            className="p-3 skeleton-box-subtle rounded-lg border border-(--border)"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 flex-1">

@@ -282,12 +282,12 @@ export default function PersonalBestsCard({
         <div className="flex items-center justify-between">
           <button
             onClick={() => setShowPersonalBests(!showPersonalBests)}
-            className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+            className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
             title={
               showPersonalBests ? "Hide personal bests" : "Show personal bests"
             }
           >
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+            <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
               Personal Bests
             </h3>
             {showPersonalBests ? (
@@ -298,7 +298,7 @@ export default function PersonalBestsCard({
           </button>
           <button
             onClick={() => setShowPersonalBests(!showPersonalBests)}
-            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
             title={
               showPersonalBests ? "Hide personal bests" : "Show personal bests"
             }
@@ -313,11 +313,11 @@ export default function PersonalBestsCard({
 
         {showPersonalBests && (
           <div className="text-center py-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-[var(--surface-elevated)] rounded-lg flex items-center justify-center">
-              <Trophy className="w-8 h-8 text-[var(--text-muted)]" />
+            <div className="w-16 h-16 mx-auto mb-4 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
+              <Trophy className="w-8 h-8 text-(--text-muted)" />
             </div>
-            <div className="text-[var(--text-secondary)]">No records yet</div>
-            <div className="text-sm text-[var(--text-muted)] mt-2">
+            <div className="text-(--text-secondary)">No records yet</div>
+            <div className="text-sm text-(--text-muted) mt-2">
               Start solving to see your personal bests!
             </div>
           </div>
@@ -347,24 +347,24 @@ export default function PersonalBestsCard({
       value: displayBestSingle,
       date: personalBests?.bestSingle?.solve?.timestamp,
       icon: Trophy,
-      color: "text-[var(--warning)]",
-      bgColor: "bg-[var(--warning)]/10",
+      color: "text-(--warning)",
+      bgColor: "bg-(--warning)/10",
     },
     {
       label: "Best Ao5",
       value: displayBestAo5,
       date: personalBests?.bestAo5?.solve?.timestamp,
       icon: Target,
-      color: "text-[var(--primary)]",
-      bgColor: "bg-[var(--primary)]/10",
+      color: "text-(--primary)",
+      bgColor: "bg-(--primary)/10",
     },
     {
       label: "Best Ao12",
       value: displayBestAo12,
       date: personalBests?.bestAo12?.solve?.timestamp,
       icon: TrendingUp,
-      color: "text-[var(--accent)]",
-      bgColor: "bg-[var(--accent)]/10",
+      color: "text-(--accent)",
+      bgColor: "bg-(--accent)/10",
     },
   ];
 
@@ -373,12 +373,12 @@ export default function PersonalBestsCard({
       <div className="flex items-center justify-between">
         <button
           onClick={() => setShowPersonalBests(!showPersonalBests)}
-          className="flex items-center gap-1 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] rounded transition-colors"
+          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
           title={
             showPersonalBests ? "Hide personal bests" : "Show personal bests"
           }
         >
-          <h3 className="text-lg font-semibold text-[var(--text-primary)] font-statement hover:text-[var(--primary)] transition-colors">
+          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
             Personal Bests
           </h3>
           {showPersonalBests ? (
@@ -389,7 +389,7 @@ export default function PersonalBestsCard({
         </button>
         <button
           onClick={() => setShowPersonalBests(!showPersonalBests)}
-          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-elevated)] rounded-md transition-colors"
+          className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
           title={
             showPersonalBests ? "Hide personal bests" : "Show personal bests"
           }
@@ -406,52 +406,52 @@ export default function PersonalBestsCard({
         <>
           {/* Personal Best Times */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-            <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
               <div className="flex items-center gap-2 mb-1">
-                <div className="p-1 bg-[var(--primary)]/10 rounded">
-                  <Target className="w-3 h-3 text-[var(--primary)]" />
+                <div className="p-1 bg-(--primary)/10 rounded">
+                  <Target className="w-3 h-3 text-(--primary)" />
                 </div>
-                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                   Total
                 </div>
               </div>
-              <div className="text-sm sm:text-lg font-bold text-[var(--primary)] font-mono truncate">
+              <div className="text-sm sm:text-lg font-bold text-(--primary) font-mono truncate">
                 {displayTotalSolves.toLocaleString()}
               </div>
             </div>
 
-            <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
               <div className="flex items-center gap-2 mb-1">
-                <div className="p-1 bg-[var(--success)]/10 rounded">
-                  <Trophy className="w-3 h-3 text-[var(--success)]" />
+                <div className="p-1 bg-(--success)/10 rounded">
+                  <Trophy className="w-3 h-3 text-(--success)" />
                 </div>
-                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                   Success
                 </div>
               </div>
               <div
                 className={`text-sm sm:text-lg font-bold font-mono truncate ${
                   displaySuccessRate >= 95
-                    ? "text-[var(--success)]"
+                    ? "text-(--success)"
                     : displaySuccessRate >= 85
-                      ? "text-[var(--warning)]"
-                      : "text-[var(--error)]"
+                      ? "text-(--warning)"
+                      : "text-(--error)"
                 }`}
               >
                 {displaySuccessRate.toFixed(1)}%
               </div>
             </div>
 
-            <div className="bg-[var(--surface-elevated)] rounded-lg p-3 border border-[var(--border)]">
+            <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
               <div className="flex items-center gap-2 mb-1">
-                <div className="p-1 bg-[var(--accent)]/10 rounded">
-                  <TrendingUp className="w-3 h-3 text-[var(--accent)]" />
+                <div className="p-1 bg-(--accent)/10 rounded">
+                  <TrendingUp className="w-3 h-3 text-(--accent)" />
                 </div>
-                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                   Average
                 </div>
               </div>
-              <div className="text-sm sm:text-lg font-bold text-[var(--text-primary)] font-mono truncate">
+              <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-mono truncate">
                 {personalBests?.averageTime
                   ? formatTime(personalBests.averageTime)
                   : "—"}
@@ -461,18 +461,18 @@ export default function PersonalBestsCard({
 
           {/* Personal Best Times */}
           <div className="space-y-3">
-            <div className="text-sm font-medium text-[var(--text-primary)] border-b border-[var(--border)] pb-2">
+            <div className="text-sm font-medium text-(--text-primary) border-b border-(--border) pb-2">
               Personal Best Times
             </div>
 
             {records.map((record, index) => (
               <div
                 key={index}
-                className={`flex items-center justify-between p-3 rounded-lg ${record.bgColor} border border-[var(--border)] hover:border-[var(--border-hover)] transition-colors`}
+                className={`flex items-center justify-between p-3 rounded-lg ${record.bgColor} border border-(--border) hover:border-(--border-hover) transition-colors`}
               >
                 <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                   <div
-                    className={`p-2 ${record.bgColor} rounded-lg flex-shrink-0`}
+                    className={`p-2 ${record.bgColor} rounded-lg shrink-0`}
                   >
                     <record.icon className={`w-4 h-4 ${record.color}`} />
                   </div>
@@ -483,8 +483,8 @@ export default function PersonalBestsCard({
                       {record.label}
                     </div>
                     {record.date && (
-                      <div className="text-xs text-[var(--text-muted)] flex items-center gap-1 truncate">
-                        <Calendar className="w-3 h-3 flex-shrink-0" />
+                      <div className="text-xs text-(--text-muted) flex items-center gap-1 truncate">
+                        <Calendar className="w-3 h-3 shrink-0" />
                         <span className="truncate">
                           {formatDate(record.date)}
                         </span>
@@ -492,7 +492,7 @@ export default function PersonalBestsCard({
                     )}
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0">
+                <div className="text-right shrink-0">
                   <div
                     className={`font-mono font-bold text-sm sm:text-lg ${record.color}`}
                   >
@@ -503,18 +503,18 @@ export default function PersonalBestsCard({
             ))}
 
             {/* Current Averages */}
-            <div className="pt-4 border-t border-[var(--border)] space-y-3">
-              <div className="text-sm font-medium text-[var(--text-primary)]">
+            <div className="pt-4 border-t border-(--border) space-y-3">
+              <div className="text-sm font-medium text-(--text-primary)">
                 Current Averages
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                <div className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
                   <div>
-                    <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                    <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                       Current Ao5
                     </div>
-                    <div className="font-mono font-bold text-sm sm:text-base text-[var(--primary)] truncate">
+                    <div className="font-mono font-bold text-sm sm:text-base text-(--primary) truncate">
                       {personalBests?.currentAo5 &&
                       isFinite(personalBests.currentAo5)
                         ? formatTime(personalBests.currentAo5)
@@ -525,12 +525,12 @@ export default function PersonalBestsCard({
                   </div>
                 </div>
 
-                <div className="p-3 bg-[var(--surface-elevated)] rounded-lg border border-[var(--border)]">
+                <div className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
                   <div>
-                    <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide truncate">
+                    <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
                       Current Ao12
                     </div>
-                    <div className="font-mono font-bold text-sm sm:text-base text-[var(--accent)] truncate">
+                    <div className="font-mono font-bold text-sm sm:text-base text-(--accent) truncate">
                       {personalBests?.currentAo12 &&
                       isFinite(personalBests.currentAo12)
                         ? formatTime(personalBests.currentAo12)

@@ -280,20 +280,20 @@ export default function JudgeErrorSimulator({
         className="flex items-center justify-between w-full"
       >
         <div className="flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 text-[var(--error)]" />
+          <AlertTriangle className="w-5 h-5 text-(--error)" />
           <div className="text-left">
-            <h3 className="font-bold text-[var(--text-primary)]">
+            <h3 className="font-bold text-(--text-primary)">
               Judge Error Trainer
             </h3>
-            <p className="text-xs text-[var(--text-muted)]">
+            <p className="text-xs text-(--text-muted)">
               Practice identifying +2 penalty situations
             </p>
           </div>
         </div>
         {isExpanded ? (
-          <ChevronUp className="w-5 h-5 text-[var(--text-muted)]" />
+          <ChevronUp className="w-5 h-5 text-(--text-muted)" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-[var(--text-muted)]" />
+          <ChevronDown className="w-5 h-5 text-(--text-muted)" />
         )}
       </button>
 
@@ -301,46 +301,46 @@ export default function JudgeErrorSimulator({
         <div className="mt-4 space-y-4">
           {/* Stats Overview */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div className="p-2 bg-[var(--surface-elevated)] rounded-lg text-center">
-              <div className="text-lg font-bold text-[var(--text-primary)]">
+            <div className="p-2 bg-(--surface-elevated) rounded-lg text-center">
+              <div className="text-lg font-bold text-(--text-primary)">
                 {stats.totalAttempts}
               </div>
-              <div className="text-xs text-[var(--text-muted)]">Total</div>
+              <div className="text-xs text-(--text-muted)">Total</div>
             </div>
-            <div className="p-2 bg-[var(--surface-elevated)] rounded-lg text-center">
-              <div className="text-lg font-bold text-[var(--success)]">
+            <div className="p-2 bg-(--surface-elevated) rounded-lg text-center">
+              <div className="text-lg font-bold text-(--success)">
                 {stats.correctDecisions}
               </div>
-              <div className="text-xs text-[var(--text-muted)]">Correct</div>
+              <div className="text-xs text-(--text-muted)">Correct</div>
             </div>
-            <div className="p-2 bg-[var(--surface-elevated)] rounded-lg text-center">
-              <div className="text-lg font-bold text-[var(--warning)]">
+            <div className="p-2 bg-(--surface-elevated) rounded-lg text-center">
+              <div className="text-lg font-bold text-(--warning)">
                 {stats.falsePositives}
               </div>
-              <div className="text-xs text-[var(--text-muted)]">False +2</div>
+              <div className="text-xs text-(--text-muted)">False +2</div>
             </div>
-            <div className="p-2 bg-[var(--surface-elevated)] rounded-lg text-center">
-              <div className="text-lg font-bold text-[var(--error)]">
+            <div className="p-2 bg-(--surface-elevated) rounded-lg text-center">
+              <div className="text-lg font-bold text-(--error)">
                 {stats.falseNegatives}
               </div>
-              <div className="text-xs text-[var(--text-muted)]">Missed +2</div>
+              <div className="text-xs text-(--text-muted)">Missed +2</div>
             </div>
           </div>
 
           {/* Scenario Area */}
           {!currentScenario ? (
-            <div className="p-8 text-center border-2 border-dashed border-[var(--border)] rounded-xl">
-              <AlertTriangle className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
-              <h4 className="text-lg font-medium text-[var(--text-primary)] mb-2">
+            <div className="p-8 text-center border-2 border-dashed border-(--border) rounded-xl">
+              <AlertTriangle className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
+              <h4 className="text-lg font-medium text-(--text-primary) mb-2">
                 Judge Decision Practice
               </h4>
-              <p className="text-sm text-[var(--text-muted)] mb-4 max-w-md mx-auto">
+              <p className="text-sm text-(--text-muted) mb-4 max-w-md mx-auto">
                 Practice identifying whether situations require a +2 penalty
                 according to WCA regulations.
               </p>
               <button
                 onClick={startPractice}
-                className="px-6 py-3 bg-[var(--primary)] text-white font-medium rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+                className="px-6 py-3 bg-(--primary) text-white font-medium rounded-lg hover:bg-(--primary-hover) transition-colors"
               >
                 Start Practice
               </button>
@@ -350,25 +350,25 @@ export default function JudgeErrorSimulator({
               className={`p-6 rounded-xl border-2 transition-all ${
                 showResult
                   ? userAnswer === currentScenario.isPenalty
-                    ? "border-[var(--success)] bg-[var(--success)]/5"
-                    : "border-[var(--error)] bg-[var(--error)]/5"
-                  : "border-[var(--border)] bg-[var(--surface)]"
+                    ? "border-(--success) bg-(--success)/5"
+                    : "border-(--error) bg-(--error)/5"
+                  : "border-(--border) bg-(--surface)"
               }`}
             >
               {/* Scenario Type Badge */}
               <div className="flex items-center gap-2 mb-4">
-                <span className="px-2 py-1 text-xs font-medium bg-[var(--surface-elevated)] text-[var(--text-secondary)] rounded">
+                <span className="px-2 py-1 text-xs font-medium bg-(--surface-elevated) text-(--text-secondary) rounded">
                   {getTypeLabel(currentScenario.type)}
                 </span>
               </div>
 
               {/* Scenario Description */}
               <div className="mb-6">
-                <p className="text-lg text-[var(--text-primary)] font-medium">
+                <p className="text-lg text-(--text-primary) font-medium">
                   {currentScenario.description}
                 </p>
                 {currentScenario.threshold && (
-                  <p className="text-sm text-[var(--text-muted)] mt-1">
+                  <p className="text-sm text-(--text-muted) mt-1">
                     (WCA regulation: &gt;45° misalignment = +2 penalty)
                   </p>
                 )}
@@ -379,14 +379,14 @@ export default function JudgeErrorSimulator({
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <button
                     onClick={() => submitAnswer(false)}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 border-2 border-[var(--success)] text-[var(--success)] font-medium rounded-lg hover:bg-[var(--success)]/10 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 border-2 border-(--success) text-(--success) font-medium rounded-lg hover:bg-(--success)/10 transition-colors"
                   >
                     <Check className="w-5 h-5" />
                     No Penalty
                   </button>
                   <button
                     onClick={() => submitAnswer(true)}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 border-2 border-[var(--error)] text-[var(--error)] font-medium rounded-lg hover:bg-[var(--error)]/10 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 border-2 border-(--error) text-(--error) font-medium rounded-lg hover:bg-(--error)/10 transition-colors"
                   >
                     <X className="w-5 h-5" />
                     +2 Penalty
@@ -398,28 +398,28 @@ export default function JudgeErrorSimulator({
                   <div
                     className={`flex items-center gap-3 p-4 rounded-lg ${
                       userAnswer === currentScenario.isPenalty
-                        ? "bg-[var(--success)]/20"
-                        : "bg-[var(--error)]/20"
+                        ? "bg-(--success)/20"
+                        : "bg-(--error)/20"
                     }`}
                   >
                     {userAnswer === currentScenario.isPenalty ? (
-                      <Check className="w-6 h-6 text-[var(--success)]" />
+                      <Check className="w-6 h-6 text-(--success)" />
                     ) : (
-                      <X className="w-6 h-6 text-[var(--error)]" />
+                      <X className="w-6 h-6 text-(--error)" />
                     )}
                     <div>
                       <div
                         className={`font-bold ${
                           userAnswer === currentScenario.isPenalty
-                            ? "text-[var(--success)]"
-                            : "text-[var(--error)]"
+                            ? "text-(--success)"
+                            : "text-(--error)"
                         }`}
                       >
                         {userAnswer === currentScenario.isPenalty
                           ? "Correct!"
                           : "Incorrect"}
                       </div>
-                      <div className="text-sm text-[var(--text-secondary)]">
+                      <div className="text-sm text-(--text-secondary)">
                         {currentScenario.isPenalty
                           ? "This IS a +2 penalty situation"
                           : "This is NOT a penalty situation"}
@@ -428,10 +428,10 @@ export default function JudgeErrorSimulator({
                   </div>
 
                   {/* Explanation */}
-                  <div className="p-3 bg-[var(--surface-elevated)] rounded-lg">
+                  <div className="p-3 bg-(--surface-elevated) rounded-lg">
                     <div className="flex items-start gap-2">
-                      <Info className="w-4 h-4 text-[var(--info)] mt-0.5 shrink-0" />
-                      <div className="text-sm text-[var(--text-secondary)]">
+                      <Info className="w-4 h-4 text-(--info) mt-0.5 shrink-0" />
+                      <div className="text-sm text-(--text-secondary)">
                         {currentScenario.type === "misalignment" &&
                           "According to WCA Regulation 10f, a misalignment greater than 45° requires a +2 penalty."}
                         {currentScenario.type === "timer-stop" &&
@@ -447,7 +447,7 @@ export default function JudgeErrorSimulator({
                   {/* Next Button */}
                   <button
                     onClick={startPractice}
-                    className="w-full py-3 bg-[var(--primary)] text-white font-medium rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+                    className="w-full py-3 bg-(--primary) text-white font-medium rounded-lg hover:bg-(--primary-hover) transition-colors"
                   >
                     Next Scenario
                   </button>
@@ -457,8 +457,8 @@ export default function JudgeErrorSimulator({
           )}
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
-            <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
+          <div className="flex items-center justify-between pt-4 border-t border-(--border)">
+            <div className="flex items-center gap-4 text-sm text-(--text-muted)">
               <span className="flex items-center gap-1">
                 <Target className="w-4 h-4" />
                 {accuracy}% accuracy
@@ -467,7 +467,7 @@ export default function JudgeErrorSimulator({
             {stats.totalAttempts > 0 && (
               <button
                 onClick={resetStats}
-                className="flex items-center gap-1 px-2 py-1 text-xs text-[var(--error)] hover:bg-[var(--error)]/10 rounded transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs text-(--error) hover:bg-(--error)/10 rounded transition-colors"
               >
                 <RotateCcw className="w-3 h-3" />
                 Reset Stats

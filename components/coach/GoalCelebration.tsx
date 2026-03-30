@@ -283,16 +283,16 @@ export default function GoalCelebration({
             "goal-celebration-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
         }}
       >
-        <div className="flex flex-col items-center gap-2 sm:gap-3 px-6 sm:px-8 py-5 sm:py-6 rounded-xl bg-[var(--surface)] border-2 border-[var(--success)] shadow-2xl max-w-[90vw] sm:max-w-md">
+        <div className="flex flex-col items-center gap-2 sm:gap-3 px-6 sm:px-8 py-5 sm:py-6 rounded-xl bg-(--surface) border-2 border-(--success) shadow-2xl max-w-[90vw] sm:max-w-md">
           <div className="flex items-center gap-2">
-            <PartyPopper className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--success)]" />
-            <Trophy className="w-7 h-7 sm:w-8 sm:h-8 text-[var(--success)]" />
-            <PartyPopper className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--success)]" />
+            <PartyPopper className="w-5 h-5 sm:w-6 sm:h-6 text-(--success)" />
+            <Trophy className="w-7 h-7 sm:w-8 sm:h-8 text-(--success)" />
+            <PartyPopper className="w-5 h-5 sm:w-6 sm:h-6 text-(--success)" />
           </div>
-          <span className="text-lg sm:text-xl font-bold text-[var(--success)]">
+          <span className="text-lg sm:text-xl font-bold text-(--success)">
             Goal Achieved!
           </span>
-          <span className="text-base sm:text-lg font-semibold text-[var(--text-primary)]">
+          <span className="text-base sm:text-lg font-semibold text-(--text-primary)">
             {formatGoalType(
               goalType,
               customGoalTime ? formatGoalTime(customGoalTime) : undefined,
@@ -300,10 +300,10 @@ export default function GoalCelebration({
           </span>
           {timeValue && (
             <div className="flex flex-col items-center gap-1">
-              <span className="text-xs sm:text-sm text-[var(--text-muted)]">
+              <span className="text-xs sm:text-sm text-(--text-muted)">
                 Current Average
               </span>
-              <span className="text-xl sm:text-2xl font-bold text-[var(--primary)] font-mono">
+              <span className="text-xl sm:text-2xl font-bold text-(--primary) font-mono">
                 {timeValue}
               </span>
             </div>
