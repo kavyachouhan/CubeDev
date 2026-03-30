@@ -46,6 +46,7 @@ import {
   Percent,
   Clock,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 
 // Register ChartJS components
@@ -192,7 +193,7 @@ function StatCard({
 }: {
   title: string;
   value: string | number;
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconColor?: string;
   iconBgColor?: string;
   subValue?: string;
@@ -339,7 +340,7 @@ function ThemeDistributionChart({
 }: {
   distribution: Record<string, number>;
 }) {
-  const icons: Record<string, React.ElementType> = {
+  const icons: Record<string, LucideIcon> = {
     light: Sun,
     dark: Moon,
     auto: Monitor,
@@ -691,7 +692,7 @@ function CompactStatRow({
   items: Array<{
     label: string;
     value: string | number;
-    icon?: React.ElementType;
+    icon?: LucideIcon;
   }>;
   gridCols?: 3 | 4;
 }) {
@@ -1428,9 +1429,7 @@ export default function AdminUsers() {
         ) : users.length === 0 ? (
           <div className="py-8 text-center">
             <User className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
-            <p className="text-(--text-muted) font-inter">
-              No users found
-            </p>
+            <p className="text-(--text-muted) font-inter">No users found</p>
           </div>
         ) : (
           <>

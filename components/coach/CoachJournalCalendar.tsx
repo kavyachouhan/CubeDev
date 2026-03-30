@@ -18,6 +18,7 @@ import {
   Frown,
   Battery,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import {
   format,
   startOfMonth,
@@ -68,7 +69,7 @@ interface CoachJournalCalendarProps {
 
 type ViewMode = "month" | "list";
 
-const moodIcons: Record<string, React.ElementType> = {
+const moodIcons: Record<string, LucideIcon> = {
   great: Smile,
   good: Smile,
   okay: Meh,
@@ -476,9 +477,7 @@ export default function CoachJournalCalendar({
           <div className="p-3 bg-(--surface-elevated) rounded-lg">
             <div className="flex items-center gap-2 mb-1">
               <CalendarIcon className="w-4 h-4 text-(--primary)" />
-              <span className="text-xs text-(--text-muted)">
-                Active Days
-              </span>
+              <span className="text-xs text-(--text-muted)">Active Days</span>
             </div>
             <p className="text-xl font-bold text-(--text-primary)">
               {activeDaysCount}
@@ -496,9 +495,7 @@ export default function CoachJournalCalendar({
           <div className="p-3 bg-(--surface-elevated) rounded-lg">
             <div className="flex items-center gap-2 mb-1">
               <Clock className="w-4 h-4 text-(--primary)" />
-              <span className="text-xs text-(--text-muted)">
-                Total Time
-              </span>
+              <span className="text-xs text-(--text-muted)">Total Time</span>
             </div>
             <p className="text-xl font-bold text-(--text-primary)">
               {formatDuration(monthTotalTime)}

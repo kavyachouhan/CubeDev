@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Calendar, BookOpen, TrendingUp, Heart, X } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -84,7 +85,7 @@ interface CoachDashboardProps {
 
 type TabId = "plan" | "journal" | "progress";
 
-const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
+const TABS: { id: TabId; label: string; icon: LucideIcon }[] = [
   { id: "plan", label: "Training Plan", icon: Calendar },
   { id: "journal", label: "Journal", icon: BookOpen },
   { id: "progress", label: "Progress", icon: TrendingUp },

@@ -11,6 +11,7 @@ import {
   Battery,
   Target,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
 
 interface JournalEntry {
@@ -42,7 +43,7 @@ interface CoachJournalListProps {
   onNewEntry?: () => void;
 }
 
-const moodIcons: Record<string, React.ElementType> = {
+const moodIcons: Record<string, LucideIcon> = {
   great: Smile,
   good: Smile,
   okay: Meh,

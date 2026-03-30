@@ -37,6 +37,7 @@ import {
   Monitor,
   Globe,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 // Register ChartJS components
 ChartJS.register(
@@ -208,7 +209,7 @@ function StatCard({
 }: {
   title: string;
   value: string | number;
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconColor?: string;
   iconBgColor?: string;
   subValue?: string;

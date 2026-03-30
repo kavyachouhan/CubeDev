@@ -33,6 +33,7 @@ import {
   Trophy,
   X,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -220,7 +221,7 @@ function StatCard({
 }: {
   title: string;
   value: string | number;
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconColor?: string;
   iconBgColor?: string;
   subValue?: string;
@@ -347,7 +348,7 @@ function MoodDistributionChart({
 }) {
   const moodConfig: Record<
     string,
-    { icon: React.ElementType; color: string; bgColor: string }
+    { icon: LucideIcon; color: string; bgColor: string }
   > = {
     great: { icon: Heart, color: "text-green-500", bgColor: "bg-green-500/10" },
     good: { icon: Smile, color: "text-blue-500", bgColor: "bg-blue-500/10" },
@@ -657,9 +658,7 @@ function ProfileDetailsModal({
 
           <div className="bg-(--surface-elevated) rounded-xl p-4 border border-(--border)">
             <div className="flex justify-between text-sm">
-              <span className="text-(--text-muted) font-inter">
-                Status
-              </span>
+              <span className="text-(--text-muted) font-inter">Status</span>
               <span
                 className={`font-inter ${profile.onboardingCompleted ? "text-green-500" : "text-yellow-500"}`}
               >
@@ -667,9 +666,7 @@ function ProfileDetailsModal({
               </span>
             </div>
             <div className="flex justify-between text-sm mt-2">
-              <span className="text-(--text-muted) font-inter">
-                Created
-              </span>
+              <span className="text-(--text-muted) font-inter">Created</span>
               <span className="text-(--text-primary) font-inter">
                 {formatDate(profile.createdAt)}
               </span>
@@ -742,9 +739,7 @@ function ProgressRing({
           </span>
         </div>
       </div>
-      <p className="mt-2 text-sm text-(--text-secondary) font-inter">
-        {label}
-      </p>
+      <p className="mt-2 text-sm text-(--text-secondary) font-inter">{label}</p>
     </div>
   );
 }

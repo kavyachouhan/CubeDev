@@ -44,6 +44,7 @@ import {
   AlertCircle,
   Zap,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 // Register ChartJS components
 ChartJS.register(
@@ -260,7 +261,7 @@ function StatCard({
 }: {
   title: string;
   value: string | number;
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconColor?: string;
   iconBgColor?: string;
   subValue?: string;
@@ -374,9 +375,7 @@ function ChallengeRoomCard({
             <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter truncate">
               by {room.creatorName}{" "}
               {room.creatorWcaId && (
-                <span className="text-(--primary)">
-                  ({room.creatorWcaId})
-                </span>
+                <span className="text-(--primary)">({room.creatorWcaId})</span>
               )}
             </p>
           )}
@@ -409,9 +408,7 @@ function ChallengeRoomCard({
           </p>
           <p className="font-medium text-(--text-primary) font-inter text-xs sm:text-sm">
             {completedCount}{" "}
-            <span className="text-(--text-muted)">
-              ({completionRate}%)
-            </span>
+            <span className="text-(--text-muted)">({completionRate}%)</span>
           </p>
         </div>
         <div>
@@ -843,9 +840,7 @@ function SendChallengeNotificationModal({
                       }}
                       className="w-full px-3 py-2 text-left hover:bg-(--surface) transition-colors text-sm font-inter"
                     >
-                      <span className="text-(--text-primary)">
-                        {user.name}
-                      </span>
+                      <span className="text-(--text-primary)">{user.name}</span>
                       <span className="text-(--text-muted) ml-2">
                         ({user.wcaId}) - {user.participationCount} rooms
                       </span>

@@ -14,6 +14,7 @@ import {
   Timer,
   Flag,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 const EVENT_NAMES: Record<string, string> = {
   "222": "2x2",
@@ -147,8 +148,7 @@ export default function GoalDetailModal({
 
   if (!mounted || !isOpen) return null;
 
-  const targetTime =
-    goal.customGoalTime || GOAL_TIMES[goal.goalType] || 20000;
+  const targetTime = goal.customGoalTime || GOAL_TIMES[goal.goalType] || 20000;
   const endPoint = goal.endDate || Date.now();
   const durationDays = getDurationDays(goal.startDate, endPoint);
   const totalPlannedDays = getDurationDays(goal.startDate, goal.targetDate);
@@ -193,7 +193,9 @@ export default function GoalDetailModal({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 min-w-0">
                 <StatusIcon className={`w-5 h-5 ${config.color} shrink-0`} />
-                <span className={`text-sm font-semibold ${config.color} font-statement`}>
+                <span
+                  className={`text-sm font-semibold ${config.color} font-statement`}
+                >
                   {config.label}
                 </span>
               </div>
@@ -214,9 +216,13 @@ export default function GoalDetailModal({
               <span className="text-xs text-(--text-muted) font-inter">
                 {goal.progressPercentage.toFixed(0)}% complete
               </span>
-              <span className={`text-xs font-medium font-inter ${
-                goal.progressPercentage >= 100 ? "text-(--success)" : config.color
-              }`}>
+              <span
+                className={`text-xs font-medium font-inter ${
+                  goal.progressPercentage >= 100
+                    ? "text-(--success)"
+                    : config.color
+                }`}
+              >
                 {goal.progressPercentage >= 100 ? "Complete" : "In progress"}
               </span>
             </div>
@@ -270,9 +276,7 @@ export default function GoalDetailModal({
                       value={`${improvement > 0 ? "-" : "+"}${formatTime(Math.abs(improvement))}`}
                       icon={improvement > 0 ? TrendingDown : TrendingUp}
                       valueColor={
-                        improvement > 0
-                          ? "text-(--success)"
-                          : "text-(--error)"
+                        improvement > 0 ? "text-(--success)" : "text-(--error)"
                       }
                     />
                   </>
@@ -365,10 +369,7 @@ export default function GoalDetailModal({
 
         {/* Footer */}
         <div className="flex gap-3 pt-6 mt-6 border-t border-(--border)">
-          <button
-            onClick={onClose}
-            className="flex-1 btn-secondary"
-          >
+          <button onClick={onClose} className="flex-1 btn-secondary">
             Close
           </button>
         </div>
@@ -387,7 +388,7 @@ function InfoRow({
 }: {
   label: string;
   value: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   valueColor?: string;
   sublabel?: string;
   sublabelColor?: string;

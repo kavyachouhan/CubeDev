@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ReactNode } from "react";
 import { Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 // Hook to detect current theme
 export function useEffectiveTheme() {
@@ -190,7 +191,7 @@ export function CollapsibleSection({
 
 // Stat Card Component for consistent styling
 interface StatCardProps {
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconColor: string;
   label: string;
   value: string | number;

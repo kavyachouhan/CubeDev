@@ -18,6 +18,7 @@ import {
   Eye,
   History,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import GoalShareMenu from "../coach/GoalShareMenu";
 import GoalDetailModal from "../coach/progress/GoalDetailModal";
 
@@ -334,9 +335,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
             <span className="text-(--text-muted)">Progress</span>
             <span
               className={`font-bold text-base sm:text-lg ${
-                status === "achieved"
-                  ? "text-(--success)"
-                  : "text-(--primary)"
+                status === "achieved" ? "text-(--success)" : "text-(--primary)"
               }`}
             >
               {progressPercentage.toFixed(0)}%
@@ -345,9 +344,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
           <div className="relative h-3 sm:h-4 bg-(--surface-elevated) rounded-full overflow-hidden border border-(--border)">
             <div
               className={`absolute h-full transition-all duration-500 rounded-full ${
-                status === "achieved"
-                  ? "bg-(--success)"
-                  : "bg-(--primary)"
+                status === "achieved" ? "bg-(--success)" : "bg-(--primary)"
               }`}
               style={{ width: `${Math.min(100, progressPercentage)}%` }}
             />
@@ -370,9 +367,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
                 ? `-${formatTime(improvement)}`
                 : formatTime(Math.abs(improvement))
             }
-            valueColor={
-              improvement > 0 ? "text-(--success)" : "text-(--error)"
-            }
+            valueColor={improvement > 0 ? "text-(--success)" : "text-(--error)"}
           />
           <StatCard
             icon={Calendar}
@@ -396,9 +391,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
                   ? `${Math.abs(daysRemaining)}d`
                   : `${daysRemaining}d`
             }
-            valueColor={
-              status === "expired" ? "text-(--warning)" : undefined
-            }
+            valueColor={status === "expired" ? "text-(--warning)" : undefined}
           />
           <StatCard
             icon={Clock}
@@ -580,7 +573,11 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
                         endDate: goal.endDate,
                         startingAverage: goal.startingAverage,
                         finalAverage: goal.finalAverage,
-                        status: goal.status as "achieved" | "expired" | "replaced" | "active",
+                        status: goal.status as
+                          | "achieved"
+                          | "expired"
+                          | "replaced"
+                          | "active",
                         progressPercentage: goalProgress,
                       })
                     }
@@ -632,7 +629,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
 
 // Stat Card Component - Matches CubeDevStats design pattern exactly
 interface StatCardProps {
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconColor: string;
   bgColor: string;
   label: string;
@@ -714,7 +711,10 @@ function TimelineItem({
 
   // Calculate duration
   const durationMs = (endDate || Date.now()) - startDate;
-  const durationDays = Math.max(1, Math.ceil(durationMs / (24 * 60 * 60 * 1000)));
+  const durationDays = Math.max(
+    1,
+    Math.ceil(durationMs / (24 * 60 * 60 * 1000)),
+  );
 
   // Improvement
   const improvement =
@@ -778,17 +778,13 @@ function TimelineItem({
             <Clock className="w-3 h-3" />
             {durationDays}d
           </span>
-          <span
-            className={status === "achieved" ? "text-(--success)" : ""}
-          >
+          <span className={status === "achieved" ? "text-(--success)" : ""}>
             Progress: {progress.toFixed(0)}%
           </span>
           {improvement !== undefined && improvement !== 0 && (
             <span
               className={`flex items-center gap-1 ${
-                improvement > 0
-                  ? "text-(--success)"
-                  : "text-(--error)"
+                improvement > 0 ? "text-(--success)" : "text-(--error)"
               }`}
             >
               <TrendingDown className="w-3 h-3" />

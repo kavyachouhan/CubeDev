@@ -214,7 +214,7 @@ export function EmptyState({
   title,
   description,
 }: {
-  icon: React.ElementType;
+  icon: React.ElementType<{ className?: string }>;
   title: string;
   description?: string;
 }) {

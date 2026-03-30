@@ -24,6 +24,7 @@ import {
   Loader2,
   Play,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -83,7 +84,7 @@ interface DailyJournalModalProps {
 
 type Mood = "great" | "good" | "okay" | "frustrated" | "tired";
 
-const MOODS: { id: Mood; label: string; icon: React.ElementType }[] = [
+const MOODS: { id: Mood; label: string; icon: LucideIcon }[] = [
   { id: "great", label: "Great", icon: Laugh },
   { id: "good", label: "Good", icon: Smile },
   { id: "okay", label: "Okay", icon: Meh },
@@ -1181,9 +1182,7 @@ export default function DailyJournalModal({
                       <div
                         key={activityIndex}
                         className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
-                          isCompleted
-                            ? "bg-(--success)/10"
-                            : "bg-(--surface)"
+                          isCompleted ? "bg-(--success)/10" : "bg-(--surface)"
                         }`}
                       >
                         <button

@@ -22,12 +22,13 @@ import {
   Play,
   ThumbsUp,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import FAQSearchResults from "./FAQSearchResults";
 import { HelpCenterSkeleton } from "@/components/SkeletonLoaders";
 
 // Map of icon names to components
-const ICON_MAP: Record<string, React.ElementType> = {
+const ICON_MAP: Record<string, LucideIcon> = {
   Timer,
   BarChart3,
   GraduationCap,
@@ -44,7 +45,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   HelpCircle,
 };
 
-export function getIconComponent(iconName: string): React.ElementType {
+export function getIconComponent(iconName: string): LucideIcon {
   return ICON_MAP[iconName] || HelpCircle;
 }
 

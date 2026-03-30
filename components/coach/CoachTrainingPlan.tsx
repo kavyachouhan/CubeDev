@@ -17,6 +17,7 @@ import {
   SkipForward,
   Plus,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -72,7 +73,7 @@ const DAYS_OF_WEEK = [
 ];
 const SHORT_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const activityIcons: Record<string, React.ElementType> = {
+const activityIcons: Record<string, LucideIcon> = {
   "timed-solves": Clock,
   "untimed-practice": Pause,
   "algorithm-drill": Brain,
@@ -228,9 +229,7 @@ export default function CoachTrainingPlan({
               key={dayIndex}
               data-tour={dayIndex === 0 ? "daily-plan" : undefined}
               className={`timer-card !p-0 overflow-hidden ${
-                isTodayPlan
-                  ? "!border-(--primary) !bg-(--primary)/5"
-                  : ""
+                isTodayPlan ? "!border-(--primary) !bg-(--primary)/5" : ""
               }`}
             >
               {/* Day Header */}
@@ -293,10 +292,7 @@ export default function CoachTrainingPlan({
                       {completedActivities}/{totalActivities}
                     </span>
                   )}
-                  <button
-                    onClick={() => toggleDay(dayIndex)}
-                    className="p-1"
-                  >
+                  <button onClick={() => toggleDay(dayIndex)} className="p-1">
                     {isExpanded ? (
                       <ChevronDown className="w-5 h-5 text-(--text-muted)" />
                     ) : (

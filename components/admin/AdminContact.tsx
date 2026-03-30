@@ -35,6 +35,7 @@ import {
   RefreshCw,
   FileText,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import {
   Chart as ChartJS,
@@ -274,7 +275,7 @@ function StatCard({
 }: {
   title: string;
   value: string | number;
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconColor?: string;
   iconBgColor?: string;
   subValue?: string;

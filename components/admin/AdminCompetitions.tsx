@@ -33,6 +33,7 @@ import {
   X,
   ExternalLink,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import {
   Chart as ChartJS,
@@ -192,7 +193,7 @@ function StatCard({
 }: {
   title: string;
   value: string | number;
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconColor?: string;
   iconBgColor?: string;
   subValue?: string;
@@ -363,9 +364,7 @@ function EventBar({
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-sm">
-        <span className="text-(--text-secondary) font-inter">
-          {eventName}
-        </span>
+        <span className="text-(--text-secondary) font-inter">{eventName}</span>
         <div className="flex items-center gap-2">
           <span className="text-xs text-(--text-muted) font-inter">
             {results} results
@@ -1462,10 +1461,7 @@ export default function AdminCompetitions() {
           {isLoading ? (
             <div className="animate-pulse space-y-2">
               {[...Array(5)].map((_, i) => (
-                <div
-                  key={i}
-                  className="h-6 bg-(--surface-elevated) rounded"
-                />
+                <div key={i} className="h-6 bg-(--surface-elevated) rounded" />
               ))}
             </div>
           ) : analytics.topCountries.length > 0 ? (

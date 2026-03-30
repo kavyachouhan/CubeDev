@@ -24,6 +24,7 @@ import {
   EyeOff,
   RefreshCw,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { StatCardSkeleton, ListItemSkeleton } from "./AdminSkeletons";
 
 // Stat Card Component
@@ -36,7 +37,7 @@ function StatCard({
 }: {
   title: string;
   value: string | number;
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconColor?: string;
   iconBgColor?: string;
 }) {

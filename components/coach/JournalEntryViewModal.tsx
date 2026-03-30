@@ -30,6 +30,7 @@ import {
   ChevronUp,
   Play,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import {
   isVideoFile,
   isVideoUrl,
@@ -68,7 +69,7 @@ interface JournalEntryViewModalProps {
   onDeleted: () => void;
 }
 
-const moodIcons: Record<string, React.ElementType> = {
+const moodIcons: Record<string, LucideIcon> = {
   great: Laugh,
   good: Smile,
   okay: Meh,
@@ -227,7 +228,13 @@ export default function JournalEntryViewModal({
   // Fetch tasks for the entry date
   const tasksForDate = useQuery(
     api.coach.getTasksForDate,
-    entry ? { userId: entry.userId, date: entry.entryDate, dayOfWeek: entryDayOfWeek } : "skip",
+    entry
+      ? {
+          userId: entry.userId,
+          date: entry.entryDate,
+          dayOfWeek: entryDayOfWeek,
+        }
+      : "skip",
   );
 
   // Get tasks from the fetched data
@@ -353,9 +360,7 @@ export default function JournalEntryViewModal({
                 <MoodIcon className={`w-6 h-6 ${moodColors[entry.mood]}`} />
               </div>
               <div>
-                <span className="text-xs text-(--text-muted) block">
-                  Mood
-                </span>
+                <span className="text-xs text-(--text-muted) block">Mood</span>
                 <p className="text-lg font-semibold text-(--text-primary)">
                   {moodLabels[entry.mood]}
                 </p>
