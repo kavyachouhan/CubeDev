@@ -2,6 +2,8 @@ import { v } from "convex/values";
 import { mutation, query, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 
+const TIMER_IMPORT_ONBOARDING_REMINDER_MS = 7 * 24 * 60 * 60 * 1000;
+
 // Upsert (create or update) user profile
 export const upsertUser = mutation({
   args: {
@@ -235,6 +237,39 @@ export const updateThemeSettings = mutation({
   },
 });
 
+// Dismiss timer import onboarding and schedule the next reminder.
+export const dismissTimerImportOnboarding = mutation({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    await ctx.db.patch(args.userId, {
+      timerImportOnboardingLastDismissedAt: now,
+      timerImportOnboardingNextPromptAt:
+        now + TIMER_IMPORT_ONBOARDING_REMINDER_MS,
+      updatedAt: now,
+    });
+  },
+});
+
+// Mark timer import onboarding as completed.
+export const completeTimerImportOnboarding = mutation({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    await ctx.db.patch(args.userId, {
+      timerImportOnboardingCompletedAt: now,
+      timerImportOnboardingNextPromptAt: undefined,
+      updatedAt: now,
+    });
+  },
+});
+
 // Delete user account (anonymize data and remove personal info)
 export const deleteUserAccount = mutation({
   args: {
@@ -455,13 +490,13 @@ export const saveSolve = mutation({
         v.object({
           phase: v.string(),
           time: v.number(),
-        })
-      )
+        }),
+      ),
     ),
     splitMethod: v.optional(v.string()),
     microPausesMs: v.optional(v.array(v.number())),
     timerMode: v.optional(
-      v.union(v.literal("normal"), v.literal("manual"), v.literal("stackmat"))
+      v.union(v.literal("normal"), v.literal("manual"), v.literal("stackmat")),
     ),
   },
   handler: async (ctx, args) => {
@@ -528,8 +563,8 @@ export const batchImportSolves = mutation({
             v.object({
               phase: v.string(),
               time: v.number(),
-            })
-          )
+            }),
+          ),
         ),
         splitMethod: v.optional(v.string()),
         microPausesMs: v.optional(v.array(v.number())),
@@ -537,10 +572,10 @@ export const batchImportSolves = mutation({
           v.union(
             v.literal("normal"),
             v.literal("manual"),
-            v.literal("stackmat")
-          )
+            v.literal("stackmat"),
+          ),
         ),
-      })
+      }),
     ),
   },
   handler: async (ctx, args) => {
@@ -594,7 +629,7 @@ export const batchImportSolves = mutation({
         {
           userId: args.userId,
           event,
-        }
+        },
       );
     }
 
@@ -715,7 +750,7 @@ export const deleteSolve = mutation({
         {
           userId,
           event,
-        }
+        },
       );
     }
   },
@@ -753,7 +788,7 @@ export const updateSolve = mutation({
     solveId: v.id("solves"),
     time: v.optional(v.number()),
     penalty: v.optional(
-      v.union(v.literal("none"), v.literal("+2"), v.literal("DNF"))
+      v.union(v.literal("none"), v.literal("+2"), v.literal("DNF")),
     ),
     comment: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
@@ -789,7 +824,7 @@ export const updateSolve = mutation({
         {
           userId: solve.userId,
           event: solve.event,
-        }
+        },
       );
     } else {
       await ctx.db.patch(solveId, updates);
@@ -813,9 +848,7 @@ export const getUserStats = query({
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .collect();
 
-    const eventStatsMap = new Map(
-      eventStats.map((s) => [s.event, s])
-    );
+    const eventStatsMap = new Map(eventStats.map((s) => [s.event, s]));
 
     // Map sessions to stats using pre-computed data
     const stats = sessions.map((session) => {
@@ -858,7 +891,10 @@ export const getUserAccountStatus = query({
       .query("userEventStats")
       .withIndex("by_user", (q) => q.eq("userId", user._id))
       .collect();
-    const solveCount = eventStats.reduce((total, stat) => total + stat.totalSolves, 0);
+    const solveCount = eventStats.reduce(
+      (total, stat) => total + stat.totalSolves,
+      0,
+    );
 
     // Count challenge room participations
     const roomParticipations = await ctx.db
@@ -897,7 +933,7 @@ export const dismissNotification = mutation({
 
     // Check if already dismissed
     const alreadyDismissed = dismissedNotifications.some(
-      (d) => d.progressId === progressId
+      (d) => d.progressId === progressId,
     );
 
     if (alreadyDismissed) {
@@ -930,7 +966,7 @@ export const undismissNotification = mutation({
 
     // Remove from dismissed list
     const updatedDismissed = dismissedNotifications.filter(
-      (d) => d.progressId !== progressId
+      (d) => d.progressId !== progressId,
     );
 
     await ctx.db.patch(userId, {
@@ -1024,7 +1060,7 @@ export const recalculateUserEventStats = internalMutation({
     const solves = await ctx.db
       .query("solves")
       .withIndex("by_user_event", (q) =>
-        q.eq("userId", args.userId).eq("event", args.event)
+        q.eq("userId", args.userId).eq("event", args.event),
       )
       .collect();
 
@@ -1038,7 +1074,7 @@ export const recalculateUserEventStats = internalMutation({
 
     // Extract times (truncated for singles, with Infinity for DNF)
     const times = solves.map((s) =>
-      s.penalty === "DNF" ? Infinity : truncToCentisMs(s.finalTime)
+      s.penalty === "DNF" ? Infinity : truncToCentisMs(s.finalTime),
     );
 
     // Best single (excluding DNFs)
@@ -1055,7 +1091,7 @@ export const recalculateUserEventStats = internalMutation({
     const overallAverage =
       nonDnfTimes.length > 0
         ? roundToCentisMs(
-            nonDnfTimes.reduce((a, b) => a + b, 0) / nonDnfTimes.length
+            nonDnfTimes.reduce((a, b) => a + b, 0) / nonDnfTimes.length,
           )
         : undefined;
 
@@ -1076,7 +1112,7 @@ export const recalculateUserEventStats = internalMutation({
     const existingStats = await ctx.db
       .query("userEventStats")
       .withIndex("by_user_event", (q) =>
-        q.eq("userId", args.userId).eq("event", args.event)
+        q.eq("userId", args.userId).eq("event", args.event),
       )
       .first();
 
@@ -1127,7 +1163,7 @@ export const getUserEventStatsByEvent = query({
     return await ctx.db
       .query("userEventStats")
       .withIndex("by_user_event", (q) =>
-        q.eq("userId", args.userId).eq("event", args.event)
+        q.eq("userId", args.userId).eq("event", args.event),
       )
       .first();
   },
@@ -1164,7 +1200,7 @@ export const recalculateAllUserStats = mutation({
       const totalNonDnfSolves = nonDnfSolves.length;
 
       const times = eventSolves.map((s) =>
-        s.penalty === "DNF" ? Infinity : truncToCentisMs(s.finalTime)
+        s.penalty === "DNF" ? Infinity : truncToCentisMs(s.finalTime),
       );
 
       const nonDnfTimes = times.filter((t) => isFinite(t));
@@ -1178,7 +1214,7 @@ export const recalculateAllUserStats = mutation({
       const overallAverage =
         nonDnfTimes.length > 0
           ? roundToCentisMs(
-              nonDnfTimes.reduce((a, b) => a + b, 0) / nonDnfTimes.length
+              nonDnfTimes.reduce((a, b) => a + b, 0) / nonDnfTimes.length,
             )
           : undefined;
 
@@ -1199,7 +1235,7 @@ export const recalculateAllUserStats = mutation({
       const existingStats = await ctx.db
         .query("userEventStats")
         .withIndex("by_user_event", (q) =>
-          q.eq("userId", args.userId).eq("event", event)
+          q.eq("userId", args.userId).eq("event", event),
         )
         .first();
 
@@ -1251,7 +1287,8 @@ export const getSolveHeatmapData = query({
       .collect();
 
     // Aggregate by date — only return date keys and counts
-    const dateCounts: Record<string, { count: number; events: Set<string> }> = {};
+    const dateCounts: Record<string, { count: number; events: Set<string> }> =
+      {};
     for (const solve of solves) {
       const dateKey = new Date(solve.solveDate).toISOString().split("T")[0];
       if (!dateCounts[dateKey]) {

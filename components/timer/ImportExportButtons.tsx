@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Download, Upload, ChevronDown, ChevronRight, Eye, EyeOff } from "lucide-react";
+import {
+  Download,
+  Upload,
+  ChevronDown,
+  ChevronRight,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import ImportModal from "./ImportModal";
 
 interface TimerRecord {
@@ -30,6 +37,8 @@ interface ImportExportButtonsProps {
   history: TimerRecord[];
   sessions: Session[];
   onImport: (solves: TimerRecord[]) => Promise<void>;
+  isImportModalOpen?: boolean;
+  onImportModalOpenChange?: (isOpen: boolean) => void;
 }
 
 // Persistent boolean that reads/writes localStorage on first render
@@ -55,12 +64,26 @@ export default function ImportExportButtons({
   history,
   sessions,
   onImport,
+  isImportModalOpen,
+  onImportModalOpenChange,
 }: ImportExportButtonsProps) {
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [internalImportModalOpen, setInternalImportModalOpen] = useState(false);
   const [isExpanded, setIsExpanded] = usePersistentBool(
     "cubelab-import-export-expanded",
-    false
+    false,
   );
+
+  const isImportModalControlled = typeof isImportModalOpen === "boolean";
+  const importModalOpen = isImportModalControlled
+    ? isImportModalOpen
+    : internalImportModalOpen;
+
+  const setImportModalOpen = (open: boolean) => {
+    if (!isImportModalControlled) {
+      setInternalImportModalOpen(open);
+    }
+    onImportModalOpenChange?.(open);
+  };
 
   // Export timer data to TXT format
   const handleExport = () => {
@@ -123,9 +146,9 @@ export default function ImportExportButtons({
             className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
             title={isExpanded ? "Hide data management" : "Show data management"}
           >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            Data Management
-          </h3>
+            <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
+              Data Management
+            </h3>
             {isExpanded ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
@@ -163,7 +186,7 @@ export default function ImportExportButtons({
 
               {/* Import Button */}
               <button
-                onClick={() => setIsImportModalOpen(true)}
+                onClick={() => setImportModalOpen(true)}
                 className="flex items-center justify-center gap-2 px-4 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-medium transition-colors"
               >
                 <Upload className="w-4 h-4" />
@@ -176,8 +199,8 @@ export default function ImportExportButtons({
 
       {/* Import Modal */}
       <ImportModal
-        isOpen={isImportModalOpen}
-        onClose={() => setIsImportModalOpen(false)}
+        isOpen={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
         onImport={onImport}
       />
     </>

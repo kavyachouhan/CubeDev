@@ -29,6 +29,286 @@ interface ImportModalProps {
   onImport: (solves: TimerRecord[]) => Promise<void>;
 }
 
+const CSTIMER_SESSION_KEY_REGEX = /^session(\d+)$/i;
+
+const CSTIMER_EVENT_MAP: Record<string, string> = {
+  "222": "222",
+  "333": "333",
+  "444": "444",
+  "555": "555",
+  "666": "666",
+  "777": "777",
+  "333oh": "333oh",
+  "333bf": "333bf",
+  "333fm": "333fm",
+  "333ft": "333ft",
+  "333mbf": "333mbf",
+  "444bf": "444bf",
+  "555bf": "555bf",
+  minx: "minx",
+  pyram: "pyram",
+  clock: "clock",
+  skewb: "skewb",
+  sq1: "sq1",
+  sqrs: "sq1",
+};
+
+function parseDelimitedLine(line: string, delimiter: string): string[] {
+  const fields: string[] = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+
+    if (char === '"') {
+      if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (char === delimiter && !inQuotes) {
+      fields.push(current.trim());
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  fields.push(current.trim());
+  return fields;
+}
+
+function parseDateValue(input: string): Date | undefined {
+  const value = input.trim();
+  if (!value) return undefined;
+
+  const numericValue = Number(value);
+  if (Number.isFinite(numericValue) && numericValue > 0) {
+    if (numericValue > 1_000_000_000_000) {
+      return new Date(numericValue);
+    }
+    if (numericValue > 1_000_000_000) {
+      return new Date(numericValue * 1000);
+    }
+    return new Date(numericValue);
+  }
+
+  const parsed = new Date(value);
+  if (!Number.isNaN(parsed.getTime())) {
+    return parsed;
+  }
+
+  return undefined;
+}
+
+function parseCsTimerEvent(scrType?: string): string {
+  if (!scrType) return "";
+
+  const normalized = scrType.trim().toLowerCase();
+  const stripped = normalized.endsWith("wca")
+    ? normalized.slice(0, -3)
+    : normalized;
+
+  if (CSTIMER_EVENT_MAP[stripped]) {
+    return CSTIMER_EVENT_MAP[stripped];
+  }
+
+  if (stripped.startsWith("333")) {
+    return "333";
+  }
+
+  return "";
+}
+
+function parseTimeToMs(value: string): {
+  time: number;
+  penalty: "none" | "+2" | "DNF";
+} {
+  const raw = value.trim();
+  if (!raw) {
+    throw new Error("Empty time value");
+  }
+
+  const upper = raw.toUpperCase();
+  if (upper.includes("DNF")) {
+    return { time: 0, penalty: "DNF" };
+  }
+
+  let penalty: "none" | "+2" | "DNF" = "none";
+  let working = raw;
+
+  if (/\+2\s*$/.test(working)) {
+    penalty = "+2";
+    working = working.replace(/\+2\s*$/, "").trim();
+  } else if (/\+\s*$/.test(working)) {
+    penalty = "+2";
+    working = working.replace(/\+\s*$/, "").trim();
+  }
+
+  if (!working) {
+    throw new Error("Missing base time value");
+  }
+
+  const colonParts = working.split(":");
+  let milliseconds = 0;
+
+  if (colonParts.length > 1) {
+    let totalSeconds = 0;
+    for (let i = 0; i < colonParts.length; i++) {
+      const part = Number(colonParts[i]);
+      if (!Number.isFinite(part)) {
+        throw new Error("Invalid colon time format");
+      }
+
+      const exponent = colonParts.length - i - 1;
+      totalSeconds += part * Math.pow(60, exponent);
+    }
+
+    milliseconds = Math.round(totalSeconds * 1000);
+  } else {
+    const numeric = Number(working);
+    if (!Number.isFinite(numeric)) {
+      throw new Error("Invalid numeric time format");
+    }
+
+    if (working.includes(".")) {
+      milliseconds = Math.round(numeric * 1000);
+    } else if (numeric > 1000) {
+      milliseconds = Math.round(numeric);
+    } else {
+      milliseconds = Math.round(numeric * 1000);
+    }
+  }
+
+  return { time: Math.max(0, milliseconds), penalty };
+}
+
+function parseCsTimerSessionData(parsed: any): Record<string, string> {
+  const rawSessionData = parsed?.properties?.sessionData;
+  if (!rawSessionData) {
+    return {};
+  }
+
+  let sessionData = rawSessionData;
+  if (typeof sessionData === "string") {
+    try {
+      sessionData = JSON.parse(sessionData);
+    } catch {
+      return {};
+    }
+  }
+
+  if (!sessionData || typeof sessionData !== "object") {
+    return {};
+  }
+
+  const eventBySessionKey: Record<string, string> = {};
+  for (const [sessionNumber, metadata] of Object.entries(
+    sessionData as Record<string, any>,
+  )) {
+    const scrType = metadata?.scrType;
+    const mappedEvent = parseCsTimerEvent(
+      typeof scrType === "string" ? scrType : undefined,
+    );
+    if (mappedEvent) {
+      eventBySessionKey[`session${sessionNumber}`] = mappedEvent;
+    }
+  }
+
+  return eventBySessionKey;
+}
+
+function getCsTimerSessions(parsed: any): Array<[string, any[]]> {
+  return Object.entries(parsed)
+    .filter(
+      ([key, value]) =>
+        CSTIMER_SESSION_KEY_REGEX.test(key) && Array.isArray(value),
+    )
+    .sort((a, b) => {
+      const aMatch = a[0].match(CSTIMER_SESSION_KEY_REGEX);
+      const bMatch = b[0].match(CSTIMER_SESSION_KEY_REGEX);
+      const aNumber = aMatch ? Number(aMatch[1]) : 0;
+      const bNumber = bMatch ? Number(bMatch[1]) : 0;
+      return aNumber - bNumber;
+    }) as Array<[string, any[]]>;
+}
+
+function looksLikeCubeTimeCsv(data: string): {
+  matches: boolean;
+  solveCount: number;
+} {
+  const lines = data
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (lines.length < 2) {
+    return { matches: false, solveCount: 0 };
+  }
+
+  const headers = parseDelimitedLine(lines[0], ",").map((field) =>
+    field.trim().toLowerCase(),
+  );
+  const hasRequiredColumns =
+    headers.includes("time") &&
+    headers.includes("scramble") &&
+    headers.includes("date");
+
+  if (!hasRequiredColumns) {
+    return { matches: false, solveCount: 0 };
+  }
+
+  let solveCount = 0;
+  for (let i = 1; i < lines.length; i++) {
+    const columns = parseDelimitedLine(lines[i], ",");
+    if (columns.length > 0 && columns[0].trim()) {
+      solveCount++;
+    }
+  }
+
+  return { matches: true, solveCount };
+}
+
+function looksLikeTwistyTimerText(data: string): {
+  matches: boolean;
+  solveCount: number;
+} {
+  const lines = data
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (lines.length === 0) {
+    return { matches: false, solveCount: 0 };
+  }
+
+  let solveCount = 0;
+  for (const line of lines) {
+    const columns = parseDelimitedLine(line, ";");
+    if (columns.length < 3 || columns.length > 4) {
+      continue;
+    }
+
+    try {
+      parseTimeToMs(columns[0]);
+      solveCount++;
+    } catch {
+      continue;
+    }
+  }
+
+  return {
+    matches: solveCount > 0,
+    solveCount,
+  };
+}
+
 export default function ImportModal({
   isOpen,
   onClose,
@@ -63,13 +343,17 @@ export default function ImportModal({
       // Try to parse JSON
       const parsed = JSON.parse(data);
 
-      // Check for cstimer format
-      if (parsed.session1 && Array.isArray(parsed.session1)) {
-        const solves = parsed.session1;
+      // Check for csTimer/CubeTime csTimer-export format
+      const csTimerSessions = getCsTimerSessions(parsed);
+      if (csTimerSessions.length > 0) {
+        const solveCount = csTimerSessions.reduce(
+          (count, [, solves]) => count + solves.length,
+          0,
+        );
         return {
           isValid: true,
-          message: `Found ${solves.length} solves from cstimer format`,
-          solveCount: solves.length,
+          message: `Found ${solveCount} solves from csTimer/CubeTime JSON format`,
+          solveCount,
         };
       }
 
@@ -101,52 +385,92 @@ export default function ImportModal({
       }
 
       return { isValid: false, message: "Unrecognized data format" };
-    } catch (error) {
-      return { isValid: false, message: "Invalid JSON format" };
+    } catch {
+      const cubeTimeCsv = looksLikeCubeTimeCsv(data);
+      if (cubeTimeCsv.matches) {
+        return {
+          isValid: true,
+          message: `Found ${cubeTimeCsv.solveCount} solves from CubeTime CSV format`,
+          solveCount: cubeTimeCsv.solveCount,
+        };
+      }
+
+      const twistyTimerText = looksLikeTwistyTimerText(data);
+      if (twistyTimerText.matches) {
+        return {
+          isValid: true,
+          message: `Found ${twistyTimerText.solveCount} solves from Twisty Timer text format`,
+          solveCount: twistyTimerText.solveCount,
+        };
+      }
+
+      return {
+        isValid: false,
+        message: "Invalid JSON, CSV, or Twisty text format",
+      };
     }
   };
 
   // Convert imported data to TimerRecord format
   const convertToTimerRecords = (data: string): TimerRecord[] => {
-    const parsed = JSON.parse(data);
     const now = new Date();
+    let parsed: any = null;
 
-    // cstimer format
-    if (parsed.session1 && Array.isArray(parsed.session1)) {
-      return parsed.session1.map((solve: any, index: number) => {
-        const [penalties, time] = solve[0];
-        const scramble = solve[1] || "";
-        const timestamp = solve[3]
-          ? new Date(solve[3] * 1000)
-          : new Date(now.getTime() - (parsed.session1.length - index) * 60000);
+    try {
+      parsed = JSON.parse(data);
+    } catch {
+      parsed = null;
+    }
 
-        let penalty: "none" | "+2" | "DNF" = "none";
-        let finalTime = time;
+    // csTimer/CubeTime JSON format
+    if (parsed) {
+      const csTimerSessions = getCsTimerSessions(parsed);
+      if (csTimerSessions.length > 0) {
+        const eventBySessionKey = parseCsTimerSessionData(parsed);
+        const allSolves = csTimerSessions.flatMap(([sessionKey, solves]) =>
+          solves.map((solve: any) => ({ solve, sessionKey })),
+        );
 
-        if (penalties === 2) {
-          penalty = "+2";
-          finalTime = time + 2000;
-        } else if (penalties === -1) {
-          penalty = "DNF";
-          finalTime = Infinity;
-        }
+        return allSolves.map(({ solve, sessionKey }, index) => {
+          const penaltyAndTime = Array.isArray(solve?.[0]) ? solve[0] : [0, 0];
+          const penalties = Number(penaltyAndTime[0] ?? 0);
+          const time = Number(penaltyAndTime[1] ?? 0);
+          const scramble = solve?.[1] || "";
 
-        return {
-          id: `imported-${Date.now()}-${index}`,
-          time,
-          timestamp,
-          scramble,
-          penalty,
-          finalTime,
-          event: "333", // Default to 3x3 for cstimer
-          sessionId: "default",
-          notes: solve[2] || undefined,
-        };
-      });
+          const sourceTimestamp = solve?.[3];
+          const timestampDate = parseDateValue(String(sourceTimestamp ?? ""));
+          const timestamp =
+            timestampDate ||
+            new Date(now.getTime() - (allSolves.length - index) * 60000);
+
+          let penalty: "none" | "+2" | "DNF" = "none";
+          let finalTime = time;
+
+          if (penalties === -1) {
+            penalty = "DNF";
+            finalTime = Infinity;
+          } else if (penalties === 2 || penalties === 2000) {
+            penalty = "+2";
+            finalTime = time + 2000;
+          }
+
+          return {
+            id: `imported-${Date.now()}-${index}`,
+            time,
+            timestamp,
+            scramble,
+            penalty,
+            finalTime,
+            event: eventBySessionKey[sessionKey] || "",
+            sessionId: "default",
+            notes: solve?.[2] || undefined,
+          };
+        });
+      }
     }
 
     // cubedesk format
-    if (parsed.sessions && parsed.solves && Array.isArray(parsed.solves)) {
+    if (parsed?.sessions && parsed?.solves && Array.isArray(parsed.solves)) {
       return parsed.solves.map((solve: any, index: number) => {
         const time = solve.time * 1000; // cubedesk stores in seconds
         let penalty: "none" | "+2" | "DNF" = "none";
@@ -166,30 +490,30 @@ export default function ImportModal({
           timestamp: new Date(
             solve.created_at ||
               solve.started_at ||
-              now.getTime() - (parsed.solves.length - index) * 60000
+              now.getTime() - (parsed.solves.length - index) * 60000,
           ),
           scramble: solve.scramble || "",
           penalty,
           finalTime,
-          event: solve.cube_type || "333",
+          event: solve.cube_type || "",
           sessionId: solve.session_id || "default",
         };
       });
     }
 
     // CubeDev export format
-    if (parsed.solves && Array.isArray(parsed.solves)) {
+    if (parsed?.solves && Array.isArray(parsed.solves)) {
       return parsed.solves.map((solve: any, index: number) => ({
         id: solve.id || `imported-${Date.now()}-${index}`,
         time: solve.time || 0,
         timestamp: new Date(
           solve.timestamp ||
-            now.getTime() - (parsed.solves.length - index) * 60000
+            now.getTime() - (parsed.solves.length - index) * 60000,
         ),
         scramble: solve.scramble || "",
         penalty: solve.penalty || "none",
         finalTime: solve.finalTime || solve.time || 0,
-        event: solve.event || "333",
+        event: solve.event || "",
         sessionId: solve.sessionId || "default",
         notes: solve.notes,
         tags: solve.tags,
@@ -202,16 +526,140 @@ export default function ImportModal({
         id: solve.id || `imported-${Date.now()}-${index}`,
         time: solve.time || 0,
         timestamp: new Date(
-          solve.timestamp || now.getTime() - (parsed.length - index) * 60000
+          solve.timestamp || now.getTime() - (parsed.length - index) * 60000,
         ),
         scramble: solve.scramble || "",
         penalty: solve.penalty || "none",
         finalTime: solve.finalTime || solve.time || 0,
-        event: solve.event || "333",
+        event: solve.event || "",
         sessionId: solve.sessionId || "default",
         notes: solve.notes,
         tags: solve.tags,
       }));
+    }
+
+    // CubeTime CSV format
+    const csvLines = data
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const csvDetection = looksLikeCubeTimeCsv(data);
+    if (csvDetection.matches && csvLines.length > 1) {
+      const headers = parseDelimitedLine(csvLines[0], ",").map((field) =>
+        field.trim().toLowerCase(),
+      );
+      const timeIdx = headers.indexOf("time");
+      const commentIdx = headers.indexOf("comment");
+      const scrambleIdx = headers.indexOf("scramble");
+      const dateIdx = headers.indexOf("date");
+
+      const solves = csvLines.slice(1);
+      const mappedSolves: Array<TimerRecord | null> = solves.map(
+        (line, index): TimerRecord | null => {
+          const fields = parseDelimitedLine(line, ",");
+          const timeValue = fields[timeIdx] || "";
+          if (!timeValue) return null;
+
+          let parsedTime: { time: number; penalty: "none" | "+2" | "DNF" };
+          try {
+            parsedTime = parseTimeToMs(timeValue);
+          } catch {
+            return null;
+          }
+
+          const dateValue = dateIdx >= 0 ? fields[dateIdx] || "" : "";
+          const timestampDate = parseDateValue(dateValue);
+          const timestamp =
+            timestampDate ||
+            new Date(now.getTime() - (solves.length - index) * 60000);
+
+          const penalty = parsedTime.penalty;
+          const finalTime =
+            penalty === "DNF"
+              ? Infinity
+              : penalty === "+2"
+                ? parsedTime.time + 2000
+                : parsedTime.time;
+
+          const notes = commentIdx >= 0 ? fields[commentIdx] || "" : "";
+
+          return {
+            id: `imported-${Date.now()}-${index}`,
+            time: parsedTime.time,
+            timestamp,
+            scramble: scrambleIdx >= 0 ? fields[scrambleIdx] || "" : "",
+            penalty,
+            finalTime,
+            event: "",
+            sessionId: "default",
+            ...(notes ? { notes } : {}),
+          };
+        },
+      );
+
+      return mappedSolves.filter(
+        (solve): solve is TimerRecord => solve !== null,
+      );
+    }
+
+    // Twisty Timer external text format
+    const twistyDetection = looksLikeTwistyTimerText(data);
+    if (twistyDetection.matches) {
+      const lines = data
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+      const mappedSolves: Array<TimerRecord | null> = lines.map(
+        (line, index): TimerRecord | null => {
+          const fields = parseDelimitedLine(line, ";");
+          if (fields.length < 3 || fields.length > 4) return null;
+
+          let parsedTime: { time: number; penalty: "none" | "+2" | "DNF" };
+          try {
+            parsedTime = parseTimeToMs(fields[0]);
+          } catch {
+            return null;
+          }
+
+          const explicitPenaltyField = (fields[3] || "").trim().toUpperCase();
+          let penalty = parsedTime.penalty;
+          if (explicitPenaltyField === "DNF") {
+            penalty = "DNF";
+          } else if (
+            explicitPenaltyField === "+2" ||
+            explicitPenaltyField === "2"
+          ) {
+            penalty = "+2";
+          }
+
+          const timestampDate = parseDateValue(fields[2] || "");
+          const timestamp =
+            timestampDate ||
+            new Date(now.getTime() - (lines.length - index) * 60000);
+
+          const finalTime =
+            penalty === "DNF"
+              ? Infinity
+              : penalty === "+2"
+                ? parsedTime.time + 2000
+                : parsedTime.time;
+
+          return {
+            id: `imported-${Date.now()}-${index}`,
+            time: parsedTime.time,
+            timestamp,
+            scramble: fields[1] || "",
+            penalty,
+            finalTime,
+            event: "",
+            sessionId: "default",
+          };
+        },
+      );
+
+      return mappedSolves.filter(
+        (solve): solve is TimerRecord => solve !== null,
+      );
     }
 
     return [];
@@ -306,16 +754,19 @@ export default function ImportModal({
     setIsDragOver(false);
 
     const files = Array.from(e.dataTransfer.files);
-    const txtFile = files.find(
+    const importFile = files.find(
       (file) =>
         file.name.endsWith(".txt") ||
         file.name.endsWith(".json") ||
+        file.name.endsWith(".csv") ||
         file.type === "text/plain" ||
-        file.type === "application/json"
+        file.type === "application/json" ||
+        file.type === "text/csv" ||
+        file.type === "application/vnd.ms-excel",
     );
 
-    if (txtFile) {
-      readFileContent(txtFile);
+    if (importFile) {
+      readFileContent(importFile);
     }
   };
 
@@ -374,7 +825,7 @@ export default function ImportModal({
             <>
               <div className="text-sm text-(--text-secondary)">
                 Paste your timer data below. Supported formats: csTimer,
-                CubeDesk, and CubeDev.
+                CubeDesk, Twisty Timer, CubeTime, and CubeDev.
               </div>
 
               {/* Text area */}
@@ -413,7 +864,7 @@ export default function ImportModal({
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".txt,.json"
+                  accept=".txt,.json,.csv,text/csv"
                   onChange={handleFileUpload}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
@@ -430,7 +881,7 @@ export default function ImportModal({
                         : "Choose a file or drag it here"}
                     </div>
                     <div className="text-sm text-(--text-secondary)">
-                      Supports .txt and .json files
+                      Supports .txt, .json, and .csv files
                     </div>
                   </div>
 
@@ -498,9 +949,7 @@ export default function ImportModal({
               )}
               <span
                 className={`text-sm ${
-                  importResult.success
-                    ? "text-(--success)"
-                    : "text-(--error)"
+                  importResult.success ? "text-(--success)" : "text-(--error)"
                 }`}
               >
                 {importResult.message}
@@ -545,6 +994,12 @@ export default function ImportModal({
               </div>
               <div>
                 • <strong>CubeDesk:</strong> CubeDesk txt format
+              </div>
+              <div>
+                • <strong>Twisty Timer:</strong> External text export format
+              </div>
+              <div>
+                • <strong>CubeTime:</strong> csTimer JSON and CSV exports
               </div>
               <div>
                 • <strong>CubeDev:</strong> Native CubeDev format

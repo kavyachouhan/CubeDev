@@ -38,6 +38,11 @@ export default defineSchema({
     disableGlow: v.optional(v.boolean()), // Disable glow effects
     highContrast: v.optional(v.boolean()), // High contrast mode
 
+    // Timer Onboarding State
+    timerImportOnboardingNextPromptAt: v.optional(v.number()), // Next time user should be reminded to import solves
+    timerImportOnboardingLastDismissedAt: v.optional(v.number()), // Last dismissal timestamp
+    timerImportOnboardingCompletedAt: v.optional(v.number()), // Completion timestamp
+
     // Account Status
     isDeleted: v.optional(v.boolean()), // Soft delete flag
     deletedAt: v.optional(v.number()), // Deletion timestamp
