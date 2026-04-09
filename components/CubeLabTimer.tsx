@@ -14,6 +14,7 @@ import ScrambleDisplay from "./timer/ScrambleDisplay";
 import StatsDisplay from "./timer/StatsDisplay";
 import TimerHistory from "./timer/TimerHistory";
 import ImportExportButtons from "./timer/ImportExportButtons";
+import TimerGettingStartedModal from "./timer/TimerGettingStartedModal";
 import {
   TimerPageSkeleton,
   ScramblePreviewSkeleton,
@@ -47,6 +48,12 @@ export default function CubeLabTimer({
   const [partialScramble, setPartialScramble] = useState<string>("");
   // State for active scramble (can be set independently)
   const [activeScramble, setActiveScramble] = useState<string>("");
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isGettingStartedOpen, setIsGettingStartedOpen] = useState(false);
+  const [hasAutoPromptedThisVisit, setHasAutoPromptedThisVisit] =
+    useState(false);
+  const [isCreatingFocusedSession, setIsCreatingFocusedSession] =
+    useState(false);
 
   // Timer state and operations
   const {
@@ -95,7 +102,7 @@ export default function CubeLabTimer({
 
   // State for pagination cursor
   const [sessionSolvesCursor, setSessionSolvesCursor] = useState<string | null>(
-    null
+    null,
   );
   const [allSessionSolves, setAllSessionSolves] = useState<any[]>([]);
 
@@ -108,7 +115,7 @@ export default function CubeLabTimer({
           limit: 1000, // Load 1000 at a time for smoother experience
           cursor: sessionSolvesCursor || undefined,
         }
-      : "skip"
+      : "skip",
   );
 
   // Accumulate solves as we paginate
@@ -122,7 +129,7 @@ export default function CubeLabTimer({
         // Otherwise, append new solves (avoiding duplicates by ID)
         const existingIds = new Set(prev.map((s: any) => s._id));
         const newSolves = dbSessionSolvesResult.solves.filter(
-          (s: any) => !existingIds.has(s._id)
+          (s: any) => !existingIds.has(s._id),
         );
         return [...prev, ...newSolves];
       });
@@ -140,6 +147,30 @@ export default function CubeLabTimer({
 
   // Batch import mutation
   const batchImportSolves = useMutation(api.users.batchImportSolves);
+  const dismissTimerImportOnboarding = useMutation(
+    api.users.dismissTimerImportOnboarding,
+  );
+  const completeTimerImportOnboarding = useMutation(
+    api.users.completeTimerImportOnboarding,
+  );
+
+  const userProfile = useQuery(
+    api.users.getUserById,
+    user?.convexId
+      ? {
+          id: user.convexId as any,
+        }
+      : "skip",
+  );
+
+  const userSolveCount = useQuery(
+    api.users.getUserSolveCount,
+    user?.convexId
+      ? {
+          userId: user.convexId as any,
+        }
+      : "skip",
+  );
 
   const {
     saveSolve,
@@ -174,7 +205,7 @@ export default function CubeLabTimer({
 
         // Return sorted array (newest first)
         return Array.from(solvesMap.values()).sort(
-          (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
+          (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
         );
       }
 
@@ -186,7 +217,7 @@ export default function CubeLabTimer({
       dbSessionSolves,
       currentSession?.convexId,
       convertDbSolvesToLocal,
-    ]
+    ],
   );
 
   // Handle timer focus mode changes
@@ -195,7 +226,7 @@ export default function CubeLabTimer({
       setTimerFocusMode(isActive);
       onTimerFocusChange?.(isActive);
     },
-    [setTimerFocusMode, onTimerFocusChange]
+    [setTimerFocusMode, onTimerFocusChange],
   );
 
   // Handle session change and sync event
@@ -207,7 +238,7 @@ export default function CubeLabTimer({
         handleEventChange(session.event);
       }
     },
-    [handleSessionChange, handleEventChange, selectedEvent]
+    [handleSessionChange, handleEventChange, selectedEvent],
   );
 
   // Keyboard shortcuts handlers
@@ -221,7 +252,8 @@ export default function CubeLabTimer({
   const handlePrevSession = useCallback(() => {
     if (!sessions || sessions.length === 0 || !currentSession) return;
     const currentIndex = sessions.findIndex((s) => s.id === currentSession.id);
-    const prevIndex = currentIndex <= 0 ? sessions.length - 1 : currentIndex - 1;
+    const prevIndex =
+      currentIndex <= 0 ? sessions.length - 1 : currentIndex - 1;
     handleSessionChange(sessions[prevIndex]);
   }, [sessions, currentSession, handleSessionChange]);
 
@@ -231,9 +263,15 @@ export default function CubeLabTimer({
       lastSolveId,
       currentSession,
       getSessionHistory(currentSession.id),
-      removeSolve
+      removeSolve,
     );
-  }, [currentSession, lastSolveId, deleteSolve, getSessionHistory, removeSolve]);
+  }, [
+    currentSession,
+    lastSolveId,
+    deleteSolve,
+    getSessionHistory,
+    removeSolve,
+  ]);
 
   const handleMarkDnf = useCallback(() => {
     if (!lastSolveId) return;
@@ -262,7 +300,7 @@ export default function CubeLabTimer({
         clearSessionSolves(
           getSessionHistory(currentSession.id),
           currentSession,
-          clearSessionHistory
+          clearSessionHistory,
         );
       }
     },
@@ -322,7 +360,7 @@ export default function CubeLabTimer({
       tags?: string[],
       splits?: Array<{ phase: string; time: number }>,
       splitMethod?: string,
-      timerMode?: "normal" | "manual" | "stackmat"
+      timerMode?: "normal" | "manual" | "stackmat",
     ) => {
       if (!currentSession) return null;
 
@@ -349,7 +387,7 @@ export default function CubeLabTimer({
         solve,
         currentSession,
         getSessionHistory(currentSession.id),
-        addSolve
+        addSolve,
       );
 
       if (solveId) {
@@ -369,7 +407,7 @@ export default function CubeLabTimer({
       getSessionHistory,
       addSolve,
       handleNewScramble,
-    ]
+    ],
   );
 
   // Handle solve completion with penalty (for manual and stackmat timers)
@@ -379,7 +417,7 @@ export default function CubeLabTimer({
       penalty: "none" | "+2" | "DNF",
       notes?: string,
       tags?: string[],
-      timerMode?: "normal" | "manual" | "stackmat"
+      timerMode?: "normal" | "manual" | "stackmat",
     ) => {
       if (!currentSession) return null;
 
@@ -404,7 +442,7 @@ export default function CubeLabTimer({
         solve,
         currentSession,
         getSessionHistory(currentSession.id),
-        addSolve
+        addSolve,
       );
 
       if (solveId) {
@@ -424,7 +462,7 @@ export default function CubeLabTimer({
       getSessionHistory,
       addSolve,
       handleNewScramble,
-    ]
+    ],
   );
 
   // Handle applying penalty to a solve
@@ -435,7 +473,7 @@ export default function CubeLabTimer({
 
       await applyPenalty(solveId, penalty, solve.time, updateSolve);
     },
-    [history, applyPenalty, updateSolve]
+    [history, applyPenalty, updateSolve],
   );
 
   // Handle deleting a solve
@@ -447,10 +485,10 @@ export default function CubeLabTimer({
         solveId,
         currentSession,
         getSessionHistory(currentSession.id),
-        removeSolve
+        removeSolve,
       );
     },
-    [currentSession, deleteSolve, getSessionHistory, removeSolve]
+    [currentSession, deleteSolve, getSessionHistory, removeSolve],
   );
 
   // Handle clearing session history
@@ -460,7 +498,7 @@ export default function CubeLabTimer({
     await clearSessionSolves(
       getSessionHistory(currentSession.id),
       currentSession,
-      clearSessionHistory
+      clearSessionHistory,
     );
   }, [
     currentSession,
@@ -478,7 +516,7 @@ export default function CubeLabTimer({
       }
 
       console.log(
-        `Starting batch import of ${importedSolves.length} solves...`
+        `Starting batch import of ${importedSolves.length} solves...`,
       );
 
       try {
@@ -502,7 +540,7 @@ export default function CubeLabTimer({
         });
 
         console.log(
-          `Batch import completed: ${result.importedCount}/${result.totalAttempted} solves imported`
+          `Batch import completed: ${result.importedCount}/${result.totalAttempted} solves imported`,
         );
 
         // Update local cache with imported solves
@@ -529,9 +567,22 @@ export default function CubeLabTimer({
 
         console.log(`Successfully imported ${result.importedCount} solves!`);
 
+        if (result.importedCount > 0) {
+          try {
+            await completeTimerImportOnboarding({
+              userId: user.convexId as any,
+            });
+          } catch (completionError) {
+            console.error(
+              "Failed to mark timer onboarding as completed:",
+              completionError,
+            );
+          }
+        }
+
         if (result.importedCount < result.totalAttempted) {
           console.warn(
-            `${result.totalAttempted - result.importedCount} solves failed to import`
+            `${result.totalAttempted - result.importedCount} solves failed to import`,
           );
         }
       } catch (error) {
@@ -544,18 +595,116 @@ export default function CubeLabTimer({
       selectedEvent,
       user?.convexId,
       batchImportSolves,
+      completeTimerImportOnboarding,
       addSolve,
       getAllSessionSolves,
       updateSessionSolveCount,
-    ]
+    ],
   );
+
+  const canEvaluateOnboarding =
+    Boolean(user?.convexId) &&
+    isSessionsInitialized &&
+    !isDbLoading &&
+    !isSessionLoading &&
+    userProfile !== undefined &&
+    userSolveCount !== undefined;
+
+  const hasAnySolves = typeof userSolveCount === "number" && userSolveCount > 0;
+  const isOnboardingCompleted = Boolean(
+    userProfile?.timerImportOnboardingCompletedAt,
+  );
+  const nextPromptAt = userProfile?.timerImportOnboardingNextPromptAt ?? 0;
+  const shouldShowGettingStarted =
+    canEvaluateOnboarding &&
+    !hasAnySolves &&
+    !isOnboardingCompleted &&
+    Date.now() >= nextPromptAt;
+
+  useEffect(() => {
+    if (!shouldShowGettingStarted) {
+      setHasAutoPromptedThisVisit(false);
+      return;
+    }
+
+    if (hasAutoPromptedThisVisit) {
+      return;
+    }
+
+    setIsGettingStartedOpen(true);
+    setHasAutoPromptedThisVisit(true);
+  }, [shouldShowGettingStarted, hasAutoPromptedThisVisit]);
+
+  const handleDismissGettingStarted = useCallback(async () => {
+    setIsGettingStartedOpen(false);
+
+    if (!user?.convexId) return;
+
+    try {
+      await dismissTimerImportOnboarding({
+        userId: user.convexId as any,
+      });
+    } catch (error) {
+      console.error("Failed to dismiss timer onboarding:", error);
+    }
+  }, [dismissTimerImportOnboarding, user?.convexId]);
+
+  const handleOpenImportFromOnboarding = useCallback(() => {
+    setIsGettingStartedOpen(false);
+    setIsImportModalOpen(true);
+  }, []);
+
+  const getFocusedSessionName = useCallback(() => {
+    const baseName = "Focused Session";
+    const existingNames = new Set(
+      (sessions || []).map((session) => session.name.toLowerCase()),
+    );
+
+    if (!existingNames.has(baseName.toLowerCase())) {
+      return baseName;
+    }
+
+    let suffix = 2;
+    let candidate = `${baseName} ${suffix}`;
+    while (existingNames.has(candidate.toLowerCase())) {
+      suffix += 1;
+      candidate = `${baseName} ${suffix}`;
+    }
+
+    return candidate;
+  }, [sessions]);
+
+  const handleCreateFocusedSession = useCallback(async () => {
+    if (!user?.convexId || isCreatingFocusedSession) return;
+
+    setIsCreatingFocusedSession(true);
+
+    try {
+      await handleCreateSession(getFocusedSessionName(), selectedEvent);
+      await dismissTimerImportOnboarding({
+        userId: user.convexId as any,
+      });
+      setIsGettingStartedOpen(false);
+    } catch (error) {
+      console.error("Failed to create focused session:", error);
+    } finally {
+      setIsCreatingFocusedSession(false);
+    }
+  }, [
+    user?.convexId,
+    isCreatingFocusedSession,
+    handleCreateSession,
+    getFocusedSessionName,
+    selectedEvent,
+    dismissTimerImportOnboarding,
+  ]);
 
   // Handle updating a solve's notes or tags
   const handleUpdateSolve = useCallback(
     async (solveId: string, notes?: string, tags?: string[]) => {
       await updateSolveOperation(solveId, { notes, tags }, updateSolve);
     },
-    [updateSolveOperation, updateSolve]
+    [updateSolveOperation, updateSolve],
   );
 
   // Handle editing a solve's time
@@ -576,10 +725,10 @@ export default function CubeLabTimer({
       await updateSolveOperation(
         solveId,
         { time, penalty, finalTime },
-        updateSolve
+        updateSolve,
       );
     },
-    [history, updateSolveOperation, updateSolve]
+    [history, updateSolveOperation, updateSolve],
   );
 
   // Handle applying penalty to the last solve
@@ -589,7 +738,7 @@ export default function CubeLabTimer({
         handleApplyPenalty(lastSolveId, penalty);
       }
     },
-    [lastSolveId, handleApplyPenalty]
+    [lastSolveId, handleApplyPenalty],
   );
 
   // Show loading state if session or database is loading
@@ -599,6 +748,14 @@ export default function CubeLabTimer({
 
   return (
     <div className="container-responsive py-4 md:py-8">
+      <TimerGettingStartedModal
+        isOpen={isGettingStartedOpen}
+        onClose={handleDismissGettingStarted}
+        onImportNow={handleOpenImportFromOnboarding}
+        onCreateFocusedSession={handleCreateFocusedSession}
+        isCreatingSession={isCreatingFocusedSession}
+      />
+
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 md:gap-6">
         {/* Left Column - Controls */}
         <div className="xl:col-span-2 space-y-4 md:space-y-6">
@@ -607,6 +764,8 @@ export default function CubeLabTimer({
             history={getAllSessionSolves(currentSession.id)}
             sessions={sessions}
             onImport={handleImportSolves}
+            isImportModalOpen={isImportModalOpen}
+            onImportModalOpenChange={setIsImportModalOpen}
           />
           {/* Session & Event Row */}
           <div
@@ -665,7 +824,7 @@ export default function CubeLabTimer({
 
         {/* Right Column - Stats & Visualization */}
         <div
-          className={`xl:col-span-2 space-y-4 md:space-y-6 order-last xl:order-none transition-all duration-500 ease-in-out ${
+          className={`xl:col-span-2 space-y-4 md:space-y-6 order-last xl:order-0 transition-all duration-500 ease-in-out ${
             isTimerFocusMode ? "blur-md opacity-50 pointer-events-none" : ""
           }`}
         >
