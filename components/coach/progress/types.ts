@@ -47,6 +47,7 @@ export interface ProgressStats {
   completedPlans: number;
   learningVelocity: number | null;
   consistencyImprovement: number | null;
+  currentStdDev?: number | null;
   moodDistribution: {
     great: number;
     good: number;
@@ -74,10 +75,30 @@ export interface ProgressStats {
     entries: number;
   };
   comparison: {
+    prevWeekAverage?: number | null;
+    weeklyImprovementMs?: number | null;
     prevMonthAverage: number | null;
     prevYearAverage: number | null;
     monthlyImprovement: number | null;
     yearlyImprovement: number | null;
+  };
+  intelligence?: {
+    weekly: {
+      average: number | null;
+      prevAverage: number | null;
+      improvementMs: number | null;
+    };
+    consistency: {
+      stdDevMs: number | null;
+      score: number | null;
+      isLow: boolean | null;
+    };
+    slowdownAfterTen: {
+      detected: boolean;
+      deltaMs: number | null;
+      sessionsAnalyzed: number;
+      sampleSolves: number;
+    };
   };
 }
 

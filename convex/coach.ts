@@ -747,18 +747,19 @@ export const getTasksForDate = query({
     if (plans.length === 0) return null;
 
     const activePlan = plans[0];
-    
+
     // Determine the target day of week (use provided value or calculate from date)
-    const targetDayOfWeek = args.dayOfWeek !== undefined 
-      ? args.dayOfWeek 
-      : new Date(args.date).getUTCDay();
-    
+    const targetDayOfWeek =
+      args.dayOfWeek !== undefined
+        ? args.dayOfWeek
+        : new Date(args.date).getUTCDay();
+
     // Check if the date is within the plan's week range (allowing for timezone differences)
     const dayMs = 24 * 60 * 60 * 1000;
-    const isWithinWeekRange = 
-      args.date >= (activePlan.weekStartDate - dayMs) && 
-      args.date <= (activePlan.weekEndDate + dayMs);
-    
+    const isWithinWeekRange =
+      args.date >= activePlan.weekStartDate - dayMs &&
+      args.date <= activePlan.weekEndDate + dayMs;
+
     if (!isWithinWeekRange) return null;
 
     // Find the daily plan for the target day of week
@@ -1063,8 +1064,8 @@ export const getProgressStats = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     const now = Date.now();
-    const todayStart = getStartOfDay(now);
     const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
+    const twoWeeksAgo = now - 14 * 24 * 60 * 60 * 1000;
     const monthAgo = now - 30 * 24 * 60 * 60 * 1000;
     const yearAgo = now - 365 * 24 * 60 * 60 * 1000;
 
@@ -1158,6 +1159,22 @@ export const getProgressStats = query({
         ? weeklyAvgTimes.reduce((a, b) => a + b, 0) / weeklyAvgTimes.length
         : null;
 
+    // Previous week stats for comparison
+    const prevWeekEntries = allJournalEntries.filter(
+      (e) => e.entryDate >= twoWeeksAgo && e.entryDate < weekAgo,
+    );
+    const prevWeekAvgTimes = prevWeekEntries
+      .filter((e) => e.customAverage || e.sessionAverage)
+      .map((e) => e.customAverage || e.sessionAverage || 0);
+    const prevWeekAverage =
+      prevWeekAvgTimes.length > 0
+        ? prevWeekAvgTimes.reduce((a, b) => a + b, 0) / prevWeekAvgTimes.length
+        : null;
+    const weeklyImprovementMs =
+      prevWeekAverage !== null && weeklyAverage !== null
+        ? prevWeekAverage - weeklyAverage
+        : null;
+
     // Monthly stats
     const monthlyEntries = allJournalEntries.filter(
       (e) => e.entryDate >= monthAgo,
@@ -1224,14 +1241,14 @@ export const getProgressStats = query({
     const currentStdDev =
       weeklyAvgTimes.length >= 2 ? calcStdDev(weeklyAvgTimes) : null;
 
+    const consistencyScore =
+      currentStdDev !== null && weeklyAverage !== null && weeklyAverage > 0
+        ? (currentStdDev / weeklyAverage) * 100
+        : null;
+    const consistencyIsLow =
+      consistencyScore !== null ? consistencyScore >= 15 : null;
+
     // Calculate std dev from previous week
-    const twoWeeksAgo = now - 14 * 24 * 60 * 60 * 1000;
-    const prevWeekEntries = allJournalEntries.filter(
-      (e) => e.entryDate >= twoWeeksAgo && e.entryDate < weekAgo,
-    );
-    const prevWeekAvgTimes = prevWeekEntries
-      .filter((e) => e.customAverage || e.sessionAverage)
-      .map((e) => e.customAverage || e.sessionAverage || 0);
     const prevStdDev =
       prevWeekAvgTimes.length >= 2 ? calcStdDev(prevWeekAvgTimes) : null;
 
@@ -1249,6 +1266,63 @@ export const getProgressStats = query({
 
     const weeklyActiveDays = getUniqueDays(weeklyEntries);
     const monthlyActiveDays = getUniqueDays(monthlyEntries);
+
+    // Detect performance drop after solve 10 using recent 3x3 solves.
+    const recentSolves = await ctx.db
+      .query("solves")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .take(1500);
+
+    const recent3x3Solves = recentSolves.filter(
+      (s) => s.event === "333" && isFinite(s.finalTime) && s.penalty !== "DNF",
+    );
+
+    const sessionSolveMap = new Map<string, typeof recent3x3Solves>();
+    for (const solve of recent3x3Solves) {
+      const key = solve.sessionId.toString();
+      const list = sessionSolveMap.get(key);
+      if (list) {
+        list.push(solve);
+      } else {
+        sessionSolveMap.set(key, [solve]);
+      }
+    }
+
+    const sessionSlowdownDeltas: number[] = [];
+    let slowdownSampleSolves = 0;
+
+    for (const sessionSolves of sessionSolveMap.values()) {
+      if (sessionSolves.length < 14) continue;
+
+      const ordered = [...sessionSolves].sort(
+        (a, b) => a.solveDate - b.solveDate,
+      );
+      const firstChunk = ordered.slice(0, 10);
+      const laterChunk = ordered.slice(10);
+
+      if (laterChunk.length < 4) continue;
+
+      const firstAvg =
+        firstChunk.reduce((sum, solve) => sum + solve.finalTime, 0) /
+        firstChunk.length;
+      const laterAvg =
+        laterChunk.reduce((sum, solve) => sum + solve.finalTime, 0) /
+        laterChunk.length;
+
+      sessionSlowdownDeltas.push(laterAvg - firstAvg);
+      slowdownSampleSolves += ordered.length;
+    }
+
+    const slowdownDeltaMs =
+      sessionSlowdownDeltas.length > 0
+        ? sessionSlowdownDeltas.reduce((sum, delta) => sum + delta, 0) /
+          sessionSlowdownDeltas.length
+        : null;
+    const slowdownAfterTenDetected =
+      slowdownDeltaMs !== null &&
+      sessionSlowdownDeltas.length >= 2 &&
+      slowdownDeltaMs >= 500;
 
     // Training plan completion rate
     const completedPlans = allPlans.filter((p) => p.status === "completed");
@@ -1307,6 +1381,8 @@ export const getProgressStats = query({
 
       // Comparison stats
       comparison: {
+        prevWeekAverage,
+        weeklyImprovementMs,
         monthlyImprovement:
           prevMonthAverage && monthlyAverage
             ? prevMonthAverage - monthlyAverage
@@ -1323,6 +1399,26 @@ export const getProgressStats = query({
       learningVelocity,
       consistencyImprovement,
       currentStdDev,
+
+      // Data intelligence for coaching UI + notifications
+      intelligence: {
+        weekly: {
+          average: weeklyAverage,
+          prevAverage: prevWeekAverage,
+          improvementMs: weeklyImprovementMs,
+        },
+        consistency: {
+          stdDevMs: currentStdDev,
+          score: consistencyScore,
+          isLow: consistencyIsLow,
+        },
+        slowdownAfterTen: {
+          detected: slowdownAfterTenDetected,
+          deltaMs: slowdownDeltaMs,
+          sessionsAnalyzed: sessionSlowdownDeltas.length,
+          sampleSolves: slowdownSampleSolves,
+        },
+      },
 
       // Training plan stats
       completionRate,

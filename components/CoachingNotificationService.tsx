@@ -8,20 +8,15 @@ import {
   useNotificationPermission,
   sendDailyPracticeReminderNotification,
   sendStreakAtRiskNotification,
-  sendWeeklySummaryNotification,
   sendGoalProgressNotification,
-  getCoachingNotificationPreferences,
 } from "@/lib/notification-utils";
 
 const CHECK_INTERVAL = 5 * 60 * 1000; // Check every 5 minutes
 const DAILY_REMINDER_CHECK_INTERVAL = 60 * 1000; // Check every minute for time-based reminders
 const STREAK_ALERT_HOUR = 20; // 8 PM - send streak alert if not practiced
-const WEEKLY_SUMMARY_DAY = 0; // Sunday
-const WEEKLY_SUMMARY_HOUR = 10; // 10 AM on Sunday
 
 // Storage keys for tracking last notification times
 const LAST_STREAK_ALERT_KEY = "cubedev-last-streak-alert";
-const LAST_WEEKLY_SUMMARY_KEY = "cubedev-last-weekly-summary";
 const LAST_GOAL_PROGRESS_KEY = "cubedev-last-goal-progress";
 const LAST_DAILY_REMINDER_KEY = "cubedev-last-daily-reminder";
 
@@ -67,19 +62,6 @@ export default function CoachingNotificationService() {
   // Mark notification as sent today
   const markNotifiedToday = (storageKey: string) => {
     localStorage.setItem(storageKey, getTodayKey());
-  };
-
-  // Get this week's key for weekly summary
-  const getWeekKey = () => {
-    const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
-    const weekNumber = Math.ceil(
-      ((now.getTime() - startOfYear.getTime()) / 86400000 +
-        startOfYear.getDay() +
-        1) /
-        7,
-    );
-    return `${now.getFullYear()}-W${weekNumber}`;
   };
 
   // Check daily practice reminder
@@ -147,46 +129,6 @@ export default function CoachingNotificationService() {
 
     return () => clearInterval(interval);
   }, [preferences, isSupported, progressStats, hasPracticedToday]);
-
-  // Check weekly summary
-  useEffect(() => {
-    if (!isSupported || !preferences.enabled) return;
-
-    const coachingPrefs = preferences.coaching;
-    if (!coachingPrefs?.weeklySummary) return;
-    if (!progressStats) return;
-
-    const checkWeeklySummary = () => {
-      const lastSummary = localStorage.getItem(LAST_WEEKLY_SUMMARY_KEY);
-      const currentWeek = getWeekKey();
-
-      if (lastSummary === currentWeek) return;
-
-      const now = new Date();
-      const dayOfWeek = now.getDay();
-      const hour = now.getHours();
-
-      // Send on Sunday at 10 AM
-      if (dayOfWeek === WEEKLY_SUMMARY_DAY && hour >= WEEKLY_SUMMARY_HOUR) {
-        const practiceHours = progressStats.weekly.practiceMinutes / 60;
-        const solves = progressStats.weekly.solves;
-
-        // Calculate improvement if we have comparison data
-        let improvement: number | undefined;
-        if (progressStats.comparison?.monthlyImprovement) {
-          improvement = progressStats.comparison.monthlyImprovement;
-        }
-
-        sendWeeklySummaryNotification({ practiceHours, solves, improvement });
-        localStorage.setItem(LAST_WEEKLY_SUMMARY_KEY, currentWeek);
-      }
-    };
-
-    checkWeeklySummary();
-    const interval = setInterval(checkWeeklySummary, CHECK_INTERVAL);
-
-    return () => clearInterval(interval);
-  }, [preferences, isSupported, progressStats]);
 
   // Check goal progress updates
   useEffect(() => {

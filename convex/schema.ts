@@ -38,6 +38,14 @@ export default defineSchema({
     disableGlow: v.optional(v.boolean()), // Disable glow effects
     highContrast: v.optional(v.boolean()), // High contrast mode
 
+    // Coaching notification preferences
+    coachingDailyPracticeReminder: v.optional(v.boolean()),
+    coachingDailyPracticeTime: v.optional(v.string()), // HH:MM
+    coachingStreakAlerts: v.optional(v.boolean()),
+    coachingWeeklySummary: v.optional(v.boolean()),
+    coachingGoalProgressUpdates: v.optional(v.boolean()),
+    notificationTimeZone: v.optional(v.string()), // IANA timezone (e.g. America/New_York)
+
     // Timer Onboarding State
     timerImportOnboardingNextPromptAt: v.optional(v.number()), // Next time user should be reminded to import solves
     timerImportOnboardingLastDismissedAt: v.optional(v.number()), // Last dismissal timestamp

@@ -5,6 +5,7 @@ export { default as GoalDetailModal } from "./GoalDetailModal";
 export { default as PracticeStreakCard } from "./PracticeStreakCard";
 export { default as WeeklySummaryCard } from "./WeeklySummaryCard";
 export { default as LearningMetricsCard } from "./LearningMetricsCard";
+export { default as PerformanceIntelligenceCard } from "./PerformanceIntelligenceCard";
 export { default as MonthlyOverviewCard } from "./MonthlyOverviewCard";
 export { default as ProgressHistoryCard } from "./ProgressHistoryCard";
 export { default as AllTimeStatsCard } from "./AllTimeStatsCard";

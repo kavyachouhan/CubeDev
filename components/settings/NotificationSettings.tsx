@@ -36,8 +36,57 @@ export default function NotificationSettings() {
   // Convex mutations/queries
   const vapidPublicKey = useQuery(api.pushNotifications.getVapidPublicKey);
   const saveSubscription = useMutation(api.pushNotifications.saveSubscription);
+  const updateServerNotificationSettings = useMutation(
+    api.users.updateNotificationSettings,
+  );
+  const persistedNotificationSettings = useQuery(
+    api.users.getNotificationSettings,
+    user?.convexId
+      ? {
+          userId: user.convexId as any,
+        }
+      : "skip",
+  );
 
   const pushSupported = isPushSupported();
+  const [hasHydratedServerSettings, setHasHydratedServerSettings] =
+    useState(false);
+
+  const defaultCoachingPrefs: CoachingNotificationPreferences = {
+    dailyPracticeReminder: true,
+    dailyPracticeTime: "19:00",
+    streakAlerts: true,
+    weeklySummary: true,
+    goalProgressUpdates: true,
+  };
+
+  const getBrowserTimeZone = () => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    } catch {
+      return "UTC";
+    }
+  };
+
+  const syncServerNotificationSettings = async (
+    coaching: CoachingNotificationPreferences,
+  ) => {
+    if (!user?.convexId) return;
+
+    try {
+      await updateServerNotificationSettings({
+        userId: user.convexId as any,
+        coachingDailyPracticeReminder: coaching.dailyPracticeReminder,
+        coachingDailyPracticeTime: coaching.dailyPracticeTime,
+        coachingStreakAlerts: coaching.streakAlerts,
+        coachingWeeklySummary: coaching.weeklySummary,
+        coachingGoalProgressUpdates: coaching.goalProgressUpdates,
+        notificationTimeZone: getBrowserTimeZone(),
+      });
+    } catch (error) {
+      console.error("Failed to sync notification settings:", error);
+    }
+  };
 
   useEffect(() => {
     const checkSubscription = async () => {
@@ -48,6 +97,22 @@ export default function NotificationSettings() {
     };
     checkSubscription();
   }, [pushSupported]);
+
+  useEffect(() => {
+    if (!persistedNotificationSettings || hasHydratedServerSettings) return;
+
+    updatePreferences({
+      coaching: {
+        ...defaultCoachingPrefs,
+        ...persistedNotificationSettings.coaching,
+      },
+    });
+    setHasHydratedServerSettings(true);
+  }, [
+    persistedNotificationSettings,
+    hasHydratedServerSettings,
+    updatePreferences,
+  ]);
 
   const handleEnableNotifications = async () => {
     setIsEnabling(true);
@@ -74,6 +139,9 @@ export default function NotificationSettings() {
                   userAgent: navigator.userAgent,
                   deviceName: getDeviceName(),
                 });
+                await syncServerNotificationSettings(
+                  preferences.coaching || defaultCoachingPrefs,
+                );
                 setPushEnabled(true);
               }
             }
@@ -94,51 +162,41 @@ export default function NotificationSettings() {
     });
   };
 
-  const handleToggleCoachingPreference = (
+  const handleToggleCoachingPreference = async (
     key: keyof CoachingNotificationPreferences,
   ) => {
-    const currentCoaching = preferences.coaching || {
-      dailyPracticeReminder: true,
-      dailyPracticeTime: "19:00",
-      streakAlerts: true,
-      weeklySummary: true,
-      goalProgressUpdates: true,
+    const currentCoaching = preferences.coaching || defaultCoachingPrefs;
+    const nextCoaching = {
+      ...currentCoaching,
+      [key]: !currentCoaching[key],
     };
+
     updatePreferences({
-      coaching: {
-        ...currentCoaching,
-        [key]: !currentCoaching[key],
-      },
+      coaching: nextCoaching,
     });
+
+    await syncServerNotificationSettings(nextCoaching);
   };
 
-  const handleUpdateReminderTime = (time: string) => {
-    const currentCoaching = preferences.coaching || {
-      dailyPracticeReminder: true,
-      dailyPracticeTime: "19:00",
-      streakAlerts: true,
-      weeklySummary: true,
-      goalProgressUpdates: true,
+  const handleUpdateReminderTime = async (time: string) => {
+    const currentCoaching = preferences.coaching || defaultCoachingPrefs;
+    const nextCoaching = {
+      ...currentCoaching,
+      dailyPracticeTime: time,
     };
+
     updatePreferences({
-      coaching: {
-        ...currentCoaching,
-        dailyPracticeTime: time,
-      },
+      coaching: nextCoaching,
     });
+
+    await syncServerNotificationSettings(nextCoaching);
   };
 
   const isGranted = preferences.permission === "granted";
   const isDenied = preferences.permission === "denied";
   const notificationsEnabled = isGranted || pushEnabled;
 
-  const coachingPrefs = preferences.coaching || {
-    dailyPracticeReminder: true,
-    dailyPracticeTime: "19:00",
-    streakAlerts: true,
-    weeklySummary: true,
-    goalProgressUpdates: true,
-  };
+  const coachingPrefs = preferences.coaching || defaultCoachingPrefs;
 
   // Toggle component for consistent styling
   const Toggle = ({

@@ -91,7 +91,7 @@ export const getUserSubscriptions = query({
     const subscriptions = await ctx.db
       .query("pushSubscriptions")
       .withIndex("by_user_active", (q) =>
-        q.eq("userId", args.userId).eq("isActive", true)
+        q.eq("userId", args.userId).eq("isActive", true),
       )
       .collect();
 
@@ -157,7 +157,7 @@ export const logNotification = internalMutation({
     status: v.union(
       v.literal("pending"),
       v.literal("sent"),
-      v.literal("failed")
+      v.literal("failed"),
     ),
     error: v.optional(v.string()),
   },
@@ -198,7 +198,7 @@ export const getActiveSubscriptionsInternal = internalMutation({
     return await ctx.db
       .query("pushSubscriptions")
       .withIndex("by_user_active", (q) =>
-        q.eq("userId", args.userId).eq("isActive", true)
+        q.eq("userId", args.userId).eq("isActive", true),
       )
       .collect();
   },
@@ -219,6 +219,193 @@ export const getUsersWithActiveSubscriptions = internalMutation({
   },
 });
 
+// Internal mutation to get users eligible for weekly coaching summaries.
+export const getUsersEligibleForWeeklySummary = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const subscriptions = await ctx.db
+      .query("pushSubscriptions")
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .collect();
+
+    const userIds = [...new Set(subscriptions.map((sub) => sub.userId))];
+    const eligibleUsers: Array<{ userId: any; timeZone: string }> = [];
+
+    for (const userId of userIds) {
+      const user = await ctx.db.get(userId);
+      if (!user || user.isDeleted) continue;
+      if (user.coachingWeeklySummary === false) continue;
+
+      eligibleUsers.push({
+        userId,
+        timeZone: user.notificationTimeZone || "UTC",
+      });
+    }
+
+    return eligibleUsers;
+  },
+});
+
+// Internal mutation to check if weekly summary was already sent for a given week key.
+export const hasWeeklySummaryForWeek = internalMutation({
+  args: {
+    userId: v.id("users"),
+    weekKey: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const recentLogs = await ctx.db
+      .query("pushNotificationLog")
+      .withIndex("by_user_type", (q) =>
+        q.eq("userId", args.userId).eq("type", "weekly_summary"),
+      )
+      .order("desc")
+      .take(20);
+
+    return recentLogs.some(
+      (log) =>
+        log.status === "sent" &&
+        log.data &&
+        typeof log.data === "object" &&
+        (log.data as Record<string, unknown>).weekKey === args.weekKey,
+    );
+  },
+});
+
+// Internal mutation to compute weekly coaching summary data.
+export const getWeeklyCoachSummaryData = internalMutation({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
+    const twoWeeksAgo = now - 14 * 24 * 60 * 60 * 1000;
+
+    const allJournalEntries = await ctx.db
+      .query("coachJournalEntries")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    const weeklyEntries = allJournalEntries.filter(
+      (e) => e.entryDate >= weekAgo,
+    );
+    const prevWeekEntries = allJournalEntries.filter(
+      (e) => e.entryDate >= twoWeeksAgo && e.entryDate < weekAgo,
+    );
+
+    const weeklySolves = weeklyEntries.reduce(
+      (sum, e) => sum + (e.customSolveCount || e.solveCount || 0),
+      0,
+    );
+    const weeklyPracticeMinutes = weeklyEntries.reduce(
+      (sum, e) => sum + (e.practiceMinutes || 0),
+      0,
+    );
+
+    const weeklyAvgTimes = weeklyEntries
+      .filter((e) => e.customAverage || e.sessionAverage)
+      .map((e) => e.customAverage || e.sessionAverage || 0);
+    const prevWeekAvgTimes = prevWeekEntries
+      .filter((e) => e.customAverage || e.sessionAverage)
+      .map((e) => e.customAverage || e.sessionAverage || 0);
+
+    const weeklyAverage =
+      weeklyAvgTimes.length > 0
+        ? weeklyAvgTimes.reduce((a, b) => a + b, 0) / weeklyAvgTimes.length
+        : null;
+    const prevWeekAverage =
+      prevWeekAvgTimes.length > 0
+        ? prevWeekAvgTimes.reduce((a, b) => a + b, 0) / prevWeekAvgTimes.length
+        : null;
+
+    const weeklyImprovementMs =
+      prevWeekAverage !== null && weeklyAverage !== null
+        ? prevWeekAverage - weeklyAverage
+        : null;
+
+    const calcStdDev = (times: number[]): number => {
+      if (times.length < 2) return 0;
+      const mean = times.reduce((a, b) => a + b, 0) / times.length;
+      const variance =
+        times.reduce((sum, t) => sum + Math.pow(t - mean, 2), 0) / times.length;
+      return Math.sqrt(variance);
+    };
+
+    const currentStdDev =
+      weeklyAvgTimes.length >= 2 ? calcStdDev(weeklyAvgTimes) : null;
+    const consistencyScore =
+      currentStdDev !== null && weeklyAverage !== null && weeklyAverage > 0
+        ? (currentStdDev / weeklyAverage) * 100
+        : null;
+
+    const recentSolves = await ctx.db
+      .query("solves")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .take(1500);
+
+    const recent3x3Solves = recentSolves.filter(
+      (s) => s.event === "333" && isFinite(s.finalTime) && s.penalty !== "DNF",
+    );
+
+    const sessionSolveMap = new Map<string, typeof recent3x3Solves>();
+    for (const solve of recent3x3Solves) {
+      const key = solve.sessionId.toString();
+      const list = sessionSolveMap.get(key);
+      if (list) {
+        list.push(solve);
+      } else {
+        sessionSolveMap.set(key, [solve]);
+      }
+    }
+
+    const sessionSlowdownDeltas: number[] = [];
+    for (const sessionSolves of sessionSolveMap.values()) {
+      if (sessionSolves.length < 14) continue;
+
+      const ordered = [...sessionSolves].sort(
+        (a, b) => a.solveDate - b.solveDate,
+      );
+      const firstChunk = ordered.slice(0, 10);
+      const laterChunk = ordered.slice(10);
+
+      if (laterChunk.length < 4) continue;
+
+      const firstAvg =
+        firstChunk.reduce((sum, solve) => sum + solve.finalTime, 0) /
+        firstChunk.length;
+      const laterAvg =
+        laterChunk.reduce((sum, solve) => sum + solve.finalTime, 0) /
+        laterChunk.length;
+
+      sessionSlowdownDeltas.push(laterAvg - firstAvg);
+    }
+
+    const slowdownDeltaMs =
+      sessionSlowdownDeltas.length > 0
+        ? sessionSlowdownDeltas.reduce((sum, delta) => sum + delta, 0) /
+          sessionSlowdownDeltas.length
+        : null;
+    const slowdownAfterTenDetected =
+      slowdownDeltaMs !== null &&
+      sessionSlowdownDeltas.length >= 2 &&
+      slowdownDeltaMs >= 500;
+
+    return {
+      practiceHours: weeklyPracticeMinutes / 60,
+      solves: weeklySolves,
+      weeklyAverage,
+      prevWeekAverage,
+      weeklyImprovementMs,
+      currentStdDev,
+      consistencyScore,
+      slowdownAfterTenDetected,
+      slowdownDeltaMs,
+      slowdownSessionsAnalyzed: sessionSlowdownDeltas.length,
+    };
+  },
+});
+
 // Internal mutation to count due algorithms for a user
 export const getDueAlgorithmCount = internalMutation({
   args: {
@@ -235,7 +422,7 @@ export const getDueAlgorithmCount = internalMutation({
       (p) =>
         p.learningStage !== "new" &&
         p.learningStage !== "mastered" &&
-        p.nextReviewDate <= now
+        p.nextReviewDate <= now,
     ).length;
   },
 });
@@ -253,7 +440,7 @@ export const getRecentNotification = internalMutation({
     const recent = await ctx.db
       .query("pushNotificationLog")
       .withIndex("by_user_type", (q) =>
-        q.eq("userId", args.userId).eq("type", args.type)
+        q.eq("userId", args.userId).eq("type", args.type),
       )
       .order("desc")
       .first();
@@ -269,7 +456,7 @@ export const testPushNotification = action({
   },
   handler: async (
     ctx,
-    args
+    args,
   ): Promise<{
     success: boolean;
     sent?: number;
@@ -281,7 +468,7 @@ export const testPushNotification = action({
       internal.pushNodeActions.testPushNotificationAction,
       {
         userId: args.userId,
-      }
+      },
     );
   },
 });
