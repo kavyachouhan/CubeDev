@@ -10,6 +10,7 @@ import {
   PracticeStreakCard,
   WeeklySummaryCard,
   LearningMetricsCard,
+  PerformanceIntelligenceCard,
   MonthlyOverviewCard,
   ProgressHistoryCard,
   AllTimeStatsCard,
@@ -24,6 +25,7 @@ import {
   CoachPracticeStreakSkeleton,
   CoachWeeklySummarySkeleton,
   CoachLearningMetricsSkeleton,
+  CoachPerformanceIntelligenceSkeleton,
   CoachMonthlyOverviewSkeleton,
 } from "@/components/SkeletonLoaders";
 
@@ -68,6 +70,7 @@ export default function CoachProgress({
         <CoachPracticeStreakSkeleton />
         <CoachWeeklySummarySkeleton />
         <CoachLearningMetricsSkeleton />
+        <CoachPerformanceIntelligenceSkeleton />
         <CoachMonthlyOverviewSkeleton />
       </div>
     );
@@ -93,6 +96,11 @@ export default function CoachProgress({
 
       {/* Learning Metrics - Only shows if data available */}
       {progressStats && <LearningMetricsCard progressStats={progressStats} />}
+
+      {/* Performance Intelligence */}
+      {progressStats && (
+        <PerformanceIntelligenceCard progressStats={progressStats} />
+      )}
 
       {/* Monthly Overview */}
       {progressStats && <MonthlyOverviewCard progressStats={progressStats} />}

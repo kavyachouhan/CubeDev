@@ -4,6 +4,14 @@ import { internal } from "./_generated/api";
 
 const TIMER_IMPORT_ONBOARDING_REMINDER_MS = 7 * 24 * 60 * 60 * 1000;
 
+const DEFAULT_COACHING_NOTIFICATION_SETTINGS = {
+  dailyPracticeReminder: true,
+  dailyPracticeTime: "19:00",
+  streakAlerts: true,
+  weeklySummary: true,
+  goalProgressUpdates: true,
+};
+
 // Upsert (create or update) user profile
 export const upsertUser = mutation({
   args: {
@@ -72,6 +80,12 @@ export const upsertUser = mutation({
           reduceMotion: undefined,
           disableGlow: undefined,
           highContrast: undefined,
+          coachingDailyPracticeReminder: undefined,
+          coachingDailyPracticeTime: undefined,
+          coachingStreakAlerts: undefined,
+          coachingWeeklySummary: undefined,
+          coachingGoalProgressUpdates: undefined,
+          notificationTimeZone: undefined,
         };
 
         await ctx.db.patch(existingUser._id, updateData);
@@ -237,6 +251,63 @@ export const updateThemeSettings = mutation({
   },
 });
 
+// Get persisted notification settings for server-driven reminders.
+export const getNotificationSettings = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    if (!user) {
+      return {
+        coaching: DEFAULT_COACHING_NOTIFICATION_SETTINGS,
+        notificationTimeZone: "UTC",
+      };
+    }
+
+    return {
+      coaching: {
+        dailyPracticeReminder:
+          user.coachingDailyPracticeReminder ??
+          DEFAULT_COACHING_NOTIFICATION_SETTINGS.dailyPracticeReminder,
+        dailyPracticeTime:
+          user.coachingDailyPracticeTime ??
+          DEFAULT_COACHING_NOTIFICATION_SETTINGS.dailyPracticeTime,
+        streakAlerts:
+          user.coachingStreakAlerts ??
+          DEFAULT_COACHING_NOTIFICATION_SETTINGS.streakAlerts,
+        weeklySummary:
+          user.coachingWeeklySummary ??
+          DEFAULT_COACHING_NOTIFICATION_SETTINGS.weeklySummary,
+        goalProgressUpdates:
+          user.coachingGoalProgressUpdates ??
+          DEFAULT_COACHING_NOTIFICATION_SETTINGS.goalProgressUpdates,
+      },
+      notificationTimeZone: user.notificationTimeZone || "UTC",
+    };
+  },
+});
+
+// Update persisted coaching notification settings used by server-side cron jobs.
+export const updateNotificationSettings = mutation({
+  args: {
+    userId: v.id("users"),
+    coachingDailyPracticeReminder: v.optional(v.boolean()),
+    coachingDailyPracticeTime: v.optional(v.string()),
+    coachingStreakAlerts: v.optional(v.boolean()),
+    coachingWeeklySummary: v.optional(v.boolean()),
+    coachingGoalProgressUpdates: v.optional(v.boolean()),
+    notificationTimeZone: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { userId, ...updates } = args;
+    await ctx.db.patch(userId, {
+      ...updates,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
 // Dismiss timer import onboarding and schedule the next reminder.
 export const dismissTimerImportOnboarding = mutation({
   args: {
@@ -313,6 +384,12 @@ export const deleteUserAccount = mutation({
       reduceMotion: undefined,
       disableGlow: undefined,
       highContrast: undefined,
+      coachingDailyPracticeReminder: undefined,
+      coachingDailyPracticeTime: undefined,
+      coachingStreakAlerts: undefined,
+      coachingWeeklySummary: undefined,
+      coachingGoalProgressUpdates: undefined,
+      notificationTimeZone: undefined,
     });
 
     // Find any orphaned sessions for this user (that weren't deleted)

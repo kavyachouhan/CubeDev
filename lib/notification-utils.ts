@@ -445,15 +445,75 @@ export function sendWeeklySummaryNotification(stats: {
   practiceHours: number;
   solves: number;
   improvement?: number;
+  prevAverageMs?: number | null;
+  weeklyAverageMs?: number | null;
+  consistencyScore?: number | null;
+  consistencyStdDevMs?: number | null;
+  slowdownAfterTen?: boolean;
 }) {
-  const { practiceHours, solves, improvement } = stats;
+  const {
+    practiceHours,
+    solves,
+    improvement,
+    prevAverageMs,
+    weeklyAverageMs,
+    consistencyScore,
+    consistencyStdDevMs,
+    slowdownAfterTen,
+  } = stats;
   const url = "/cube-lab/coach?tab=progress";
 
   const title = "Weekly Practice Summary";
-  let body = `Great week! ${practiceHours.toFixed(1)} hours of practice with ${solves} solves.`;
+  let body = "";
 
-  if (improvement && improvement > 0) {
-    body += ` You improved by ${(improvement / 1000).toFixed(2)}s!`;
+  if (solves === 0) {
+    body =
+      "No solves logged this week yet. Start with one short session today to build momentum.";
+  } else {
+    body = `${practiceHours.toFixed(1)}h practice and ${solves} solves this week.`;
+
+    const hints: string[] = [];
+    if (
+      prevAverageMs !== null &&
+      prevAverageMs !== undefined &&
+      weeklyAverageMs !== null &&
+      weeklyAverageMs !== undefined
+    ) {
+      const from = (prevAverageMs / 1000).toFixed(1);
+      const to = (weeklyAverageMs / 1000).toFixed(1);
+      const deltaMs = prevAverageMs - weeklyAverageMs;
+      if (deltaMs > 0) {
+        hints.push(`Your avg dropped from ${from}s to ${to}s this week.`);
+      } else if (deltaMs < 0) {
+        hints.push(`Your avg rose from ${from}s to ${to}s this week.`);
+      }
+    } else if (improvement && improvement > 0) {
+      hints.push(
+        `You improved by ${(improvement / 1000).toFixed(1)}s this week.`,
+      );
+    }
+
+    if (slowdownAfterTen) {
+      hints.push(
+        "You slow down after 10 solves. Take short breaks between sets.",
+      );
+    }
+
+    if (
+      consistencyScore !== null &&
+      consistencyScore !== undefined &&
+      consistencyScore >= 15 &&
+      consistencyStdDevMs !== null &&
+      consistencyStdDevMs !== undefined
+    ) {
+      hints.push(
+        `Consistency is low this week (std dev ${(consistencyStdDevMs / 1000).toFixed(1)}s).`,
+      );
+    }
+
+    if (hints.length > 0) {
+      body = `${body} ${hints.slice(0, 2).join(" ")}`;
+    }
   }
 
   // Add to in-app notifications
