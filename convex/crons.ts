@@ -24,6 +24,27 @@ crons.interval(
   internal.pushNodeActions.sendDueAlgorithmNotifications,
 );
 
+// Run every 5 minutes to send practice reminder notifications based on user preferences and local time.
+crons.interval(
+  "send-daily-practice-reminder-notifications",
+  { minutes: 5 },
+  internal.pushNodeActions.sendDailyPracticeReminderNotifications,
+);
+
+// Run every 15 minutes to send streak alert notifications for users at risk of breaking their streaks.
+crons.interval(
+  "send-streak-alert-notifications",
+  { minutes: 15 },
+  internal.pushNodeActions.sendStreakAlertNotifications,
+);
+
+// Run every hour to send goal progress notifications based on user-defined goals and recent activity.
+crons.interval(
+  "send-goal-progress-notifications",
+  { hours: 1 },
+  internal.pushNodeActions.sendGoalProgressNotifications,
+);
+
 // Run every hour and dispatch weekly coaching summaries in each user's local Sunday 10 AM window.
 crons.interval(
   "send-weekly-coach-summary-notifications",

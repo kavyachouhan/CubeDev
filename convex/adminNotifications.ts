@@ -221,6 +221,27 @@ export const getNotificationTypes = query({
   },
 });
 
+// Admin API to get reminder cron run observability logs.
+export const getReminderRunMetricsLogs = query({
+  args: {
+    limit: v.optional(v.number()),
+    type: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    let logs = await ctx.db
+      .query("reminderRunMetrics")
+      .withIndex("by_run_at")
+      .order("desc")
+      .collect();
+
+    if (args.type && args.type !== "all") {
+      logs = logs.filter((log) => log.type === args.type);
+    }
+
+    return logs.slice(0, args.limit ?? 50);
+  },
+});
+
 // Admin action to send a custom notification to a specific user
 export const sendCustomNotification = action({
   args: {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useCachedQuery } from "@/lib/hooks/useAdminCache";
 import { ADMIN_CACHE_KEYS, ADMIN_CACHE_TTLS } from "@/lib/admin-cache";
@@ -203,6 +204,10 @@ export default function AdminDashboard() {
 
   const isLoading = statsLoading;
   const isFetching = statsFetching || activityFetching;
+  const reminderRunLogs = useQuery(
+    api.adminNotifications.getReminderRunMetricsLogs,
+    { limit: 8 },
+  );
 
   const handleRefresh = () => {
     refetchStats();
@@ -535,6 +540,78 @@ export default function AdminDashboard() {
                   />
                 </div>
               </div>
+            </div>
+          )}
+        </CollapsibleCard>
+      </div>
+
+      <div className="mt-4 sm:mt-6">
+        <CollapsibleCard
+          title="Reminder Observability"
+          defaultOpen={true}
+          storageKey="admin-dashboard-reminder-observability"
+        >
+          {reminderRunLogs === undefined ? (
+            <div className="space-y-3">
+              {[...Array(4)].map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border) animate-pulse"
+                >
+                  <div className="h-4 w-32 bg-(--surface) rounded mb-2" />
+                  <div className="h-3 w-56 bg-(--surface) rounded" />
+                </div>
+              ))}
+            </div>
+          ) : reminderRunLogs.length === 0 ? (
+            <p className="text-(--text-muted) text-sm font-inter py-4 text-center">
+              No reminder run logs yet
+            </p>
+          ) : (
+            <div className="space-y-2 max-h-80 overflow-y-auto">
+              {reminderRunLogs.map((run: any) => (
+                <div
+                  key={run._id}
+                  className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs px-2 py-0.5 bg-(--surface) text-(--text-muted) rounded-full font-inter">
+                      {run.type.replace(/_/g, " ")}
+                    </span>
+                    <span className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
+                      {new Date(run.runAt).toLocaleString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2 text-xs font-inter text-(--text-secondary)">
+                    <span>
+                      Eligible:{" "}
+                      <span className="text-(--text-primary)">
+                        {run.eligible}
+                      </span>
+                    </span>
+                    <span>
+                      Sent: <span className="text-green-500">{run.sent}</span>
+                    </span>
+                    <span>
+                      Dedup:{" "}
+                      <span className="text-yellow-500">
+                        {run.skippedDedup}
+                      </span>
+                    </span>
+                    <span>
+                      Practiced:{" "}
+                      <span className="text-cyan-500">
+                        {run.skippedPracticedToday}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </CollapsibleCard>

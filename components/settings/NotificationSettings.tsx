@@ -70,12 +70,14 @@ export default function NotificationSettings() {
 
   const syncServerNotificationSettings = async (
     coaching: CoachingNotificationPreferences,
+    algorithmReminders: boolean,
   ) => {
     if (!user?.convexId) return;
 
     try {
       await updateServerNotificationSettings({
         userId: user.convexId as any,
+        algorithmReminders,
         coachingDailyPracticeReminder: coaching.dailyPracticeReminder,
         coachingDailyPracticeTime: coaching.dailyPracticeTime,
         coachingStreakAlerts: coaching.streakAlerts,
@@ -102,6 +104,8 @@ export default function NotificationSettings() {
     if (!persistedNotificationSettings || hasHydratedServerSettings) return;
 
     updatePreferences({
+      algorithmReminders:
+        persistedNotificationSettings.algorithmReminders ?? true,
       coaching: {
         ...defaultCoachingPrefs,
         ...persistedNotificationSettings.coaching,
@@ -141,6 +145,7 @@ export default function NotificationSettings() {
                 });
                 await syncServerNotificationSettings(
                   preferences.coaching || defaultCoachingPrefs,
+                  preferences.algorithmReminders,
                 );
                 setPushEnabled(true);
               }
@@ -156,10 +161,16 @@ export default function NotificationSettings() {
     }
   };
 
-  const handleToggleAlgorithmReminders = () => {
+  const handleToggleAlgorithmReminders = async () => {
+    const nextAlgorithmReminders = !preferences.algorithmReminders;
     updatePreferences({
-      algorithmReminders: !preferences.algorithmReminders,
+      algorithmReminders: nextAlgorithmReminders,
     });
+
+    await syncServerNotificationSettings(
+      preferences.coaching || defaultCoachingPrefs,
+      nextAlgorithmReminders,
+    );
   };
 
   const handleToggleCoachingPreference = async (
@@ -175,7 +186,10 @@ export default function NotificationSettings() {
       coaching: nextCoaching,
     });
 
-    await syncServerNotificationSettings(nextCoaching);
+    await syncServerNotificationSettings(
+      nextCoaching,
+      preferences.algorithmReminders,
+    );
   };
 
   const handleUpdateReminderTime = async (time: string) => {
@@ -189,7 +203,10 @@ export default function NotificationSettings() {
       coaching: nextCoaching,
     });
 
-    await syncServerNotificationSettings(nextCoaching);
+    await syncServerNotificationSettings(
+      nextCoaching,
+      preferences.algorithmReminders,
+    );
   };
 
   const isGranted = preferences.permission === "granted";
