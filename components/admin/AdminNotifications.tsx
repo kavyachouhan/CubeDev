@@ -629,6 +629,7 @@ function SendNotificationModal({
 export default function AdminNotifications() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [runTypeFilter, setRunTypeFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showSendModal, setShowSendModal] = useState(false);
 
@@ -652,6 +653,38 @@ export default function AdminNotifications() {
     api.adminNotifications.getNotificationTypes,
   );
   const users = useQuery(api.admin.getAllUsersAdmin, { limit: 1000 });
+  const reminderRunLogs = useQuery(
+    api.adminNotifications.getReminderRunMetricsLogs,
+    {
+      limit: 50,
+      type: runTypeFilter !== "all" ? runTypeFilter : undefined,
+    },
+  );
+
+  const reminderRunTypes = useMemo(() => {
+    if (!reminderRunLogs) return [];
+    return [...new Set(reminderRunLogs.map((log: any) => log.type))].sort();
+  }, [reminderRunLogs]);
+
+  const reminderRunSummary = useMemo(() => {
+    if (!reminderRunLogs) return null;
+
+    return reminderRunLogs.reduce(
+      (acc: any, log: any) => {
+        acc.runs += 1;
+        acc.sent += log.sent || 0;
+        acc.skippedDedup += log.skippedDedup || 0;
+        acc.skippedPracticedToday += log.skippedPracticedToday || 0;
+        return acc;
+      },
+      {
+        runs: 0,
+        sent: 0,
+        skippedDedup: 0,
+        skippedPracticedToday: 0,
+      },
+    );
+  }, [reminderRunLogs]);
 
   // 7-Day Trend Bar Chart Data
   const trendChartData = useMemo(() => {
@@ -1021,6 +1054,170 @@ export default function AdminNotifications() {
           </div>
         )}
       </CollapsibleCard>
+
+      {/* Reminder Job Observability */}
+      <div className="mt-4 sm:mt-6">
+        <CollapsibleCard
+          title="Reminder Job Observability"
+          storageKey="admin-notifications-reminder-observability-open"
+          defaultOpen={true}
+          headerExtra={
+            reminderRunLogs && (
+              <span className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
+                {reminderRunLogs.length} runs
+              </span>
+            )
+          }
+        >
+          <div className="space-y-3 sm:space-y-4">
+            <div className="w-full sm:w-56">
+              <AdminSelect
+                value={runTypeFilter}
+                onChange={(val) => setRunTypeFilter(val)}
+                options={[
+                  { value: "all", label: "All Reminder Types" },
+                  ...reminderRunTypes.map((type) => ({
+                    value: type,
+                    label: type.replace(/_/g, " "),
+                  })),
+                ]}
+                compact
+              />
+            </div>
+
+            {reminderRunSummary && (
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+                <StatCard
+                  title="Runs"
+                  value={reminderRunSummary.runs}
+                  icon={Activity}
+                  iconColor="text-(--primary)"
+                  iconBgColor="bg-(--primary)/10"
+                />
+                <StatCard
+                  title="Sent"
+                  value={reminderRunSummary.sent}
+                  icon={CheckCircle}
+                  iconColor="text-(--success)"
+                  iconBgColor="bg-(--success)/10"
+                />
+                <StatCard
+                  title="Skipped Dedup"
+                  value={reminderRunSummary.skippedDedup}
+                  icon={Clock}
+                  iconColor="text-(--warning)"
+                  iconBgColor="bg-(--warning)/10"
+                />
+                <StatCard
+                  title="Skipped Practiced"
+                  value={reminderRunSummary.skippedPracticedToday}
+                  icon={Activity}
+                  iconColor="text-(--info)"
+                  iconBgColor="bg-(--info)/10"
+                />
+              </div>
+            )}
+
+            {reminderRunLogs === undefined ? (
+              <div className="space-y-2 sm:space-y-3">
+                {[...Array(4)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border) animate-pulse"
+                  >
+                    <div className="h-4 w-40 bg-(--surface) rounded mb-2" />
+                    <div className="h-3 w-64 bg-(--surface) rounded" />
+                  </div>
+                ))}
+              </div>
+            ) : reminderRunLogs.length === 0 ? (
+              <div className="text-center py-6 text-(--text-muted) text-sm font-inter">
+                No reminder run logs found yet.
+              </div>
+            ) : (
+              <div className="space-y-2 sm:space-y-3 max-h-96 overflow-y-auto">
+                {reminderRunLogs.map((run: any) => {
+                  const runTime = new Date(run.runAt).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+
+                  const metadataEntries =
+                    run.metadata && typeof run.metadata === "object"
+                      ? Object.entries(run.metadata as Record<string, unknown>)
+                          .filter(([, value]) => Number(value) > 0)
+                          .slice(0, 4)
+                      : [];
+
+                  return (
+                    <div
+                      key={run._id}
+                      className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)"
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className="text-xs px-2 py-0.5 bg-(--surface) text-(--text-muted) rounded-full font-inter">
+                          {run.type.replace(/_/g, " ")}
+                        </span>
+                        <span className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
+                          {runTime}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 text-xs font-inter">
+                        <div className="text-(--text-secondary)">
+                          Eligible:{" "}
+                          <span className="text-(--text-primary)">
+                            {run.eligible}
+                          </span>
+                        </div>
+                        <div className="text-(--text-secondary)">
+                          Sent:{" "}
+                          <span className="text-(--success)">{run.sent}</span>
+                        </div>
+                        <div className="text-(--text-secondary)">
+                          Dedup:{" "}
+                          <span className="text-(--warning)">
+                            {run.skippedDedup}
+                          </span>
+                        </div>
+                        <div className="text-(--text-secondary)">
+                          Practiced:{" "}
+                          <span className="text-(--info)">
+                            {run.skippedPracticedToday}
+                          </span>
+                        </div>
+                        <div className="text-(--text-secondary)">
+                          Delivery:{" "}
+                          <span className="text-(--text-primary)">
+                            {run.eligible > 0
+                              ? `${Math.round((run.sent / run.eligible) * 100)}%`
+                              : "0%"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {metadataEntries.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {metadataEntries.map(([key, value]) => (
+                            <span
+                              key={key}
+                              className="text-[10px] px-2 py-0.5 rounded-full bg-(--surface) text-(--text-muted) font-inter"
+                            >
+                              {key}: {String(value)}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </CollapsibleCard>
+      </div>
 
       {/* Filters */}
       <div className="timer-card mt-4 sm:mt-6">

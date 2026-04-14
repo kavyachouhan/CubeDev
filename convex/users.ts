@@ -12,6 +12,8 @@ const DEFAULT_COACHING_NOTIFICATION_SETTINGS = {
   goalProgressUpdates: true,
 };
 
+const DEFAULT_ALGORITHM_REMINDERS = true;
+
 // Upsert (create or update) user profile
 export const upsertUser = mutation({
   args: {
@@ -80,6 +82,7 @@ export const upsertUser = mutation({
           reduceMotion: undefined,
           disableGlow: undefined,
           highContrast: undefined,
+          algorithmReminders: undefined,
           coachingDailyPracticeReminder: undefined,
           coachingDailyPracticeTime: undefined,
           coachingStreakAlerts: undefined,
@@ -260,12 +263,15 @@ export const getNotificationSettings = query({
     const user = await ctx.db.get(args.userId);
     if (!user) {
       return {
+        algorithmReminders: DEFAULT_ALGORITHM_REMINDERS,
         coaching: DEFAULT_COACHING_NOTIFICATION_SETTINGS,
         notificationTimeZone: "UTC",
       };
     }
 
     return {
+      algorithmReminders:
+        user.algorithmReminders ?? DEFAULT_ALGORITHM_REMINDERS,
       coaching: {
         dailyPracticeReminder:
           user.coachingDailyPracticeReminder ??
@@ -292,6 +298,7 @@ export const getNotificationSettings = query({
 export const updateNotificationSettings = mutation({
   args: {
     userId: v.id("users"),
+    algorithmReminders: v.optional(v.boolean()),
     coachingDailyPracticeReminder: v.optional(v.boolean()),
     coachingDailyPracticeTime: v.optional(v.string()),
     coachingStreakAlerts: v.optional(v.boolean()),
@@ -384,6 +391,7 @@ export const deleteUserAccount = mutation({
       reduceMotion: undefined,
       disableGlow: undefined,
       highContrast: undefined,
+      algorithmReminders: undefined,
       coachingDailyPracticeReminder: undefined,
       coachingDailyPracticeTime: undefined,
       coachingStreakAlerts: undefined,

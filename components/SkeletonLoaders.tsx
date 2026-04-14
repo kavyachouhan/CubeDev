@@ -804,7 +804,7 @@ export function CompetitionBrowserSkeleton() {
             <div key={i} className="timer-card p-4 border border-(--border)">
               <div className="flex flex-col sm:flex-row items-start gap-4">
                 {/* Date Badge */}
-                <div className="flex sm:flex-col items-center gap-2 sm:gap-0 sm:text-center sm:min-w-[60px]">
+                <div className="flex sm:flex-col items-center gap-2 sm:gap-0 sm:text-center sm:min-w-15">
                   <div className="h-4 skeleton-box rounded w-8" />
                   <div className="h-7 skeleton-box rounded w-8 sm:mt-1" />
                 </div>

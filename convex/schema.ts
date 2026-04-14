@@ -38,6 +38,9 @@ export default defineSchema({
     disableGlow: v.optional(v.boolean()), // Disable glow effects
     highContrast: v.optional(v.boolean()), // High contrast mode
 
+    // Algorithm trainer notification preferences
+    algorithmReminders: v.optional(v.boolean()),
+
     // Coaching notification preferences
     coachingDailyPracticeReminder: v.optional(v.boolean()),
     coachingDailyPracticeTime: v.optional(v.string()), // HH:MM
@@ -468,6 +471,20 @@ export default defineSchema({
     .index("by_type", ["type"])
     .index("by_status", ["status"])
     .index("by_user_type", ["userId", "type"]),
+
+  // Reminder Run Metrics - cron observability counters for reminder jobs
+  reminderRunMetrics: defineTable({
+    type: v.string(), // reminder type (algorithm_due, daily_practice_reminder, etc)
+    runAt: v.number(), // run timestamp
+    eligible: v.number(), // users considered for this run
+    sent: v.number(), // notifications sent (successful deliveries to at least one subscription)
+    skippedDedup: v.number(), // skipped because notification was already sent for key/window
+    skippedPracticedToday: v.number(), // skipped because user already practiced today
+    metadata: v.optional(v.any()), // extra run metadata (window misses, no due, parse errors, etc)
+  })
+    .index("by_type", ["type"])
+    .index("by_run_at", ["runAt"])
+    .index("by_type_run_at", ["type", "runAt"]),
 
   // Feedback Responses - user feedback survey submissions
   feedbackResponses: defineTable({

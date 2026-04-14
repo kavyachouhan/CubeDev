@@ -9,6 +9,8 @@ import webpush from "web-push";
 const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY;
 const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT || "";
+const DAILY_REMINDER_WINDOW_MINUTES = 5;
+const STREAK_ALERT_HOUR = 20; // 8 PM local time
 const WEEKLY_SUMMARY_TARGET_DAY = 0; // Sunday
 const WEEKLY_SUMMARY_TARGET_HOUR = 10; // 10 AM local time
 
@@ -29,6 +31,31 @@ function getWeekKey(localDate: Date): string {
       7,
   );
   return `${localDate.getFullYear()}-W${weekNumber}`;
+}
+
+function getDayKey(localDate: Date): string {
+  const month = String(localDate.getMonth() + 1).padStart(2, "0");
+  const day = String(localDate.getDate()).padStart(2, "0");
+  return `${localDate.getFullYear()}-${month}-${day}`;
+}
+
+function parseTimeToMinutes(timeValue: string): number | null {
+  const [hourStr, minuteStr] = timeValue.split(":");
+  const hour = Number(hourStr);
+  const minute = Number(minuteStr);
+
+  if (
+    Number.isNaN(hour) ||
+    Number.isNaN(minute) ||
+    hour < 0 ||
+    hour > 23 ||
+    minute < 0 ||
+    minute > 59
+  ) {
+    return null;
+  }
+
+  return hour * 60 + minute;
 }
 
 function formatSeconds(ms: number): string {
@@ -282,12 +309,15 @@ export const sendPushToUser = internalAction({
 export const sendDueAlgorithmNotifications = internalAction({
   args: {},
   handler: async (ctx) => {
-    // Get all users with active push subscriptions
+    const runAt = Date.now();
+    // Get users with active push subscriptions and enabled algorithm reminders
     const usersWithSubscriptions = await ctx.runMutation(
-      internal.pushNotifications.getUsersWithActiveSubscriptions,
+      internal.pushNotifications.getUsersEligibleForAlgorithmDue,
     );
 
     let totalSent = 0;
+    let skippedDedup = 0;
+    let skippedNoDue = 0;
 
     for (const userId of usersWithSubscriptions) {
       // Check if user has due algorithms
@@ -296,34 +326,58 @@ export const sendDueAlgorithmNotifications = internalAction({
         { userId },
       );
 
-      if (dueCount > 0) {
-        // Check if we already sent a notification recently (within 4 hours)
-        const recentNotification = await ctx.runMutation(
-          internal.pushNotifications.getRecentNotification,
-          { userId, type: "algorithm_due", hours: 4 },
-        );
+      if (dueCount <= 0) {
+        skippedNoDue++;
+        continue;
+      }
 
-        if (!recentNotification) {
-          // Send push notification
-          await ctx.runAction(internal.pushNodeActions.sendPushToUser, {
-            userId,
-            payload: {
-              title: `${dueCount} Algorithm${dueCount !== 1 ? "s" : ""} Due for Review`,
-              body:
-                dueCount === 1
-                  ? "You have 1 algorithm ready to practice!"
-                  : `You have ${dueCount} algorithms ready to practice!`,
-              icon: "/cubedev_logo.png",
-              badge: "/cubedev_logo.png",
-              tag: "algorithm-due",
-              url: "/cube-lab/algorithm-trainer/practice",
-            },
-            notificationType: "algorithm_due",
-          });
-          totalSent++;
-        }
+      // Check if we already sent a notification recently (within 4 hours)
+      const recentNotification = await ctx.runMutation(
+        internal.pushNotifications.getRecentNotification,
+        { userId, type: "algorithm_due", hours: 4 },
+      );
+
+      if (recentNotification) {
+        skippedDedup++;
+        continue;
+      }
+
+      // Send push notification
+      const result = await ctx.runAction(
+        internal.pushNodeActions.sendPushToUser,
+        {
+          userId,
+          payload: {
+            title: `${dueCount} Algorithm${dueCount !== 1 ? "s" : ""} Due for Review`,
+            body:
+              dueCount === 1
+                ? "You have 1 algorithm ready to practice!"
+                : `You have ${dueCount} algorithms ready to practice!`,
+            icon: "/cubedev_logo.png",
+            badge: "/cubedev_logo.png",
+            tag: "algorithm-due",
+            url: "/cube-lab/algorithm-trainer/practice",
+          },
+          notificationType: "algorithm_due",
+        },
+      );
+
+      if (result.sent && result.sent > 0) {
+        totalSent++;
       }
     }
+
+    await ctx.runMutation(internal.pushNotifications.logReminderRunMetrics, {
+      type: "algorithm_due",
+      runAt,
+      eligible: usersWithSubscriptions.length,
+      sent: totalSent,
+      skippedDedup,
+      skippedPracticedToday: 0,
+      metadata: {
+        skippedNoDue,
+      },
+    });
 
     console.log(
       `[Push] Sent due algorithm notifications to ${totalSent} users`,
@@ -332,16 +386,302 @@ export const sendDueAlgorithmNotifications = internalAction({
   },
 });
 
+// Internal action to send daily practice reminder notifications.
+export const sendDailyPracticeReminderNotifications = internalAction({
+  args: {},
+  handler: async (ctx) => {
+    const runAt = Date.now();
+    const eligibleUsers: Array<{
+      userId: any;
+      timeZone: string;
+      dailyPracticeTime: string;
+    }> = await ctx.runMutation(
+      internal.pushNotifications.getUsersEligibleForDailyPracticeReminder,
+    );
+
+    let totalSent = 0;
+    let skippedDedup = 0;
+    let skippedPracticedToday = 0;
+    let skippedOutsideWindow = 0;
+    let skippedInvalidTime = 0;
+
+    for (const { userId, timeZone, dailyPracticeTime } of eligibleUsers) {
+      const localNow = getDateInTimeZone(timeZone);
+      const dayKey = getDayKey(localNow);
+      const nowMinutes = localNow.getHours() * 60 + localNow.getMinutes();
+      const targetMinutes = parseTimeToMinutes(dailyPracticeTime);
+
+      if (targetMinutes === null) {
+        skippedInvalidTime++;
+        continue;
+      }
+
+      const inWindow =
+        nowMinutes >= targetMinutes &&
+        nowMinutes < targetMinutes + DAILY_REMINDER_WINDOW_MINUTES;
+
+      if (!inWindow) {
+        skippedOutsideWindow++;
+        continue;
+      }
+
+      const alreadySent = await ctx.runMutation(
+        internal.pushNotifications.hasNotificationForDay,
+        {
+          userId,
+          type: "daily_practice_reminder",
+          dayKey,
+        },
+      );
+
+      if (alreadySent) {
+        skippedDedup++;
+        continue;
+      }
+
+      const hasPracticedToday = await ctx.runMutation(
+        internal.pushNotifications.hasPracticedTodayInTimeZone,
+        {
+          userId,
+          timeZone,
+        },
+      );
+
+      if (hasPracticedToday) {
+        skippedPracticedToday++;
+        continue;
+      }
+
+      const result = await ctx.runAction(
+        internal.pushNodeActions.sendPushToUser,
+        {
+          userId,
+          payload: {
+            title: "Time to Practice",
+            body: "Your daily practice session awaits. Keep building those skills!",
+            icon: "/cubedev_logo.png",
+            badge: "/cubedev_logo.png",
+            tag: "daily-practice-reminder",
+            url: "/cube-lab/coach",
+            data: {
+              dayKey,
+              timeZone,
+            },
+          },
+          notificationType: "daily_practice_reminder",
+        },
+      );
+
+      if (result.sent && result.sent > 0) {
+        totalSent++;
+      }
+    }
+
+    await ctx.runMutation(internal.pushNotifications.logReminderRunMetrics, {
+      type: "daily_practice_reminder",
+      runAt,
+      eligible: eligibleUsers.length,
+      sent: totalSent,
+      skippedDedup,
+      skippedPracticedToday,
+      metadata: {
+        skippedOutsideWindow,
+        skippedInvalidTime,
+      },
+    });
+
+    console.log(`[Push] Sent daily practice reminders to ${totalSent} users`);
+    return { sent: totalSent };
+  },
+});
+
+// Internal action to send streak alert notifications.
+export const sendStreakAlertNotifications = internalAction({
+  args: {},
+  handler: async (ctx) => {
+    const runAt = Date.now();
+    const eligibleUsers: Array<{ userId: any; timeZone: string }> =
+      await ctx.runMutation(
+        internal.pushNotifications.getUsersEligibleForStreakAlerts,
+      );
+
+    let totalSent = 0;
+    let skippedDedup = 0;
+    let skippedPracticedToday = 0;
+    let skippedBeforeHour = 0;
+
+    for (const { userId, timeZone } of eligibleUsers) {
+      const localNow = getDateInTimeZone(timeZone);
+      if (localNow.getHours() < STREAK_ALERT_HOUR) {
+        skippedBeforeHour++;
+        continue;
+      }
+
+      const dayKey = getDayKey(localNow);
+      const alreadySent = await ctx.runMutation(
+        internal.pushNotifications.hasNotificationForDay,
+        {
+          userId,
+          type: "streak_alert",
+          dayKey,
+        },
+      );
+
+      if (alreadySent) {
+        skippedDedup++;
+        continue;
+      }
+
+      const hasPracticedToday = await ctx.runMutation(
+        internal.pushNotifications.hasPracticedTodayInTimeZone,
+        {
+          userId,
+          timeZone,
+        },
+      );
+
+      if (hasPracticedToday) {
+        skippedPracticedToday++;
+        continue;
+      }
+
+      const result = await ctx.runAction(
+        internal.pushNodeActions.sendPushToUser,
+        {
+          userId,
+          payload: {
+            title: "Streak at Risk",
+            body: "You haven't practiced today yet. Keep your streak alive with a short session.",
+            icon: "/cubedev_logo.png",
+            badge: "/cubedev_logo.png",
+            tag: "streak-alert",
+            url: "/cube-lab/coach",
+            data: {
+              dayKey,
+              timeZone,
+            },
+          },
+          notificationType: "streak_alert",
+        },
+      );
+
+      if (result.sent && result.sent > 0) {
+        totalSent++;
+      }
+    }
+
+    await ctx.runMutation(internal.pushNotifications.logReminderRunMetrics, {
+      type: "streak_alert",
+      runAt,
+      eligible: eligibleUsers.length,
+      sent: totalSent,
+      skippedDedup,
+      skippedPracticedToday,
+      metadata: {
+        skippedBeforeHour,
+      },
+    });
+
+    console.log(`[Push] Sent streak alerts to ${totalSent} users`);
+    return { sent: totalSent };
+  },
+});
+
+// Internal action to send goal progress milestone notifications.
+export const sendGoalProgressNotifications = internalAction({
+  args: {},
+  handler: async (ctx) => {
+    const runAt = Date.now();
+    const eligibleUsers: Array<{ userId: any; timeZone: string }> =
+      await ctx.runMutation(
+        internal.pushNotifications.getUsersEligibleForGoalProgressUpdates,
+      );
+
+    let totalSent = 0;
+    let skippedDedup = 0;
+    let skippedNoMilestone = 0;
+
+    for (const { userId, timeZone } of eligibleUsers) {
+      const snapshot = await ctx.runMutation(
+        internal.pushNotifications.getGoalProgressSnapshot,
+        { userId },
+      );
+
+      if (!snapshot || snapshot.goalAchieved || snapshot.milestone <= 0) {
+        skippedNoMilestone++;
+        continue;
+      }
+
+      const alreadySent = await ctx.runMutation(
+        internal.pushNotifications.hasGoalProgressMilestoneNotification,
+        {
+          userId,
+          milestone: snapshot.milestone,
+        },
+      );
+
+      if (alreadySent) {
+        skippedDedup++;
+        continue;
+      }
+
+      const result = await ctx.runAction(
+        internal.pushNodeActions.sendPushToUser,
+        {
+          userId,
+          payload: {
+            title: "Goal Progress Update",
+            body: `You're ${snapshot.progressPercent.toFixed(0)}% towards your ${snapshot.goalLabel} goal! Keep pushing!`,
+            icon: "/cubedev_logo.png",
+            badge: "/cubedev_logo.png",
+            tag: "goal-progress",
+            url: "/cube-lab/coach?tab=progress",
+            data: {
+              milestone: snapshot.milestone,
+              progressPercent: snapshot.progressPercent,
+              goalType: snapshot.goalType,
+              timeZone,
+            },
+          },
+          notificationType: "goal_progress",
+        },
+      );
+
+      if (result.sent && result.sent > 0) {
+        totalSent++;
+      }
+    }
+
+    await ctx.runMutation(internal.pushNotifications.logReminderRunMetrics, {
+      type: "goal_progress",
+      runAt,
+      eligible: eligibleUsers.length,
+      sent: totalSent,
+      skippedDedup,
+      skippedPracticedToday: 0,
+      metadata: {
+        skippedNoMilestone,
+      },
+    });
+
+    console.log(`[Push] Sent goal progress updates to ${totalSent} users`);
+    return { sent: totalSent };
+  },
+});
+
 // Internal action to send weekly coaching summary notifications.
 export const sendWeeklyCoachSummaryNotifications = internalAction({
   args: {},
   handler: async (ctx) => {
+    const runAt = Date.now();
     const eligibleUsers: Array<{ userId: any; timeZone: string }> =
       await ctx.runMutation(
         internal.pushNotifications.getUsersEligibleForWeeklySummary,
       );
 
     let totalSent = 0;
+    let skippedDedup = 0;
+    let skippedOutsideWindow = 0;
 
     for (const { userId, timeZone } of eligibleUsers) {
       const localNow = getDateInTimeZone(timeZone);
@@ -350,6 +690,7 @@ export const sendWeeklyCoachSummaryNotifications = internalAction({
         localNow.getHours() === WEEKLY_SUMMARY_TARGET_HOUR;
 
       if (!isScheduledWindow) {
+        skippedOutsideWindow++;
         continue;
       }
 
@@ -363,6 +704,7 @@ export const sendWeeklyCoachSummaryNotifications = internalAction({
       );
 
       if (alreadySent) {
+        skippedDedup++;
         continue;
       }
 
@@ -398,6 +740,18 @@ export const sendWeeklyCoachSummaryNotifications = internalAction({
         totalSent++;
       }
     }
+
+    await ctx.runMutation(internal.pushNotifications.logReminderRunMetrics, {
+      type: "weekly_summary",
+      runAt,
+      eligible: eligibleUsers.length,
+      sent: totalSent,
+      skippedDedup,
+      skippedPracticedToday: 0,
+      metadata: {
+        skippedOutsideWindow,
+      },
+    });
 
     console.log(`[Push] Sent weekly coaching summaries to ${totalSent} users`);
     return { sent: totalSent };

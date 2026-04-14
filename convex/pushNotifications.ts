@@ -2,6 +2,40 @@ import { v } from "convex/values";
 import { query, mutation, action, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 
+const GOAL_TIMES: Record<string, number> = {
+  "sub-60": 60000,
+  "sub-45": 45000,
+  "sub-30": 30000,
+  "sub-20": 20000,
+  "sub-15": 15000,
+  "sub-12": 12000,
+  "sub-10": 10000,
+  "sub-8": 8000,
+};
+
+function getDateInTimeZone(
+  timeZone: string,
+  timestamp: number = Date.now(),
+): Date {
+  try {
+    return new Date(new Date(timestamp).toLocaleString("en-US", { timeZone }));
+  } catch {
+    return new Date(
+      new Date(timestamp).toLocaleString("en-US", { timeZone: "UTC" }),
+    );
+  }
+}
+
+function getDayKeyInTimeZone(
+  timeZone: string,
+  timestamp: number = Date.now(),
+): string {
+  const localDate = getDateInTimeZone(timeZone, timestamp);
+  const month = String(localDate.getMonth() + 1).padStart(2, "0");
+  const day = String(localDate.getDate()).padStart(2, "0");
+  return `${localDate.getFullYear()}-${month}-${day}`;
+}
+
 // Get VAPID public key for client-side subscription
 const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || "";
 
@@ -176,6 +210,30 @@ export const logNotification = internalMutation({
   },
 });
 
+// Internal mutation to log reminder cron run metrics.
+export const logReminderRunMetrics = internalMutation({
+  args: {
+    type: v.string(),
+    runAt: v.number(),
+    eligible: v.number(),
+    sent: v.number(),
+    skippedDedup: v.number(),
+    skippedPracticedToday: v.number(),
+    metadata: v.optional(v.any()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("reminderRunMetrics", {
+      type: args.type,
+      runAt: args.runAt,
+      eligible: args.eligible,
+      sent: args.sent,
+      skippedDedup: args.skippedDedup,
+      skippedPracticedToday: args.skippedPracticedToday,
+      metadata: args.metadata,
+    });
+  },
+});
+
 // Internal mutation to update subscription last used time
 export const updateSubscriptionLastUsed = internalMutation({
   args: {
@@ -216,6 +274,259 @@ export const getUsersWithActiveSubscriptions = internalMutation({
     // Get unique user IDs
     const userIds = [...new Set(subscriptions.map((sub) => sub.userId))];
     return userIds;
+  },
+});
+
+// Internal mutation to get users eligible for server-driven algorithm due reminders.
+export const getUsersEligibleForAlgorithmDue = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const subscriptions = await ctx.db
+      .query("pushSubscriptions")
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .collect();
+
+    const userIds = [...new Set(subscriptions.map((sub) => sub.userId))];
+    const eligibleUserIds: any[] = [];
+
+    for (const userId of userIds) {
+      const user = await ctx.db.get(userId);
+      if (!user || user.isDeleted) continue;
+      if (user.algorithmReminders === false) continue;
+      eligibleUserIds.push(userId);
+    }
+
+    return eligibleUserIds;
+  },
+});
+
+// Internal mutation to get users eligible for daily practice reminders.
+export const getUsersEligibleForDailyPracticeReminder = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const subscriptions = await ctx.db
+      .query("pushSubscriptions")
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .collect();
+
+    const userIds = [...new Set(subscriptions.map((sub) => sub.userId))];
+    const eligibleUsers: Array<{
+      userId: any;
+      timeZone: string;
+      dailyPracticeTime: string;
+    }> = [];
+
+    for (const userId of userIds) {
+      const user = await ctx.db.get(userId);
+      if (!user || user.isDeleted) continue;
+      if (user.coachingDailyPracticeReminder === false) continue;
+
+      eligibleUsers.push({
+        userId,
+        timeZone: user.notificationTimeZone || "UTC",
+        dailyPracticeTime: user.coachingDailyPracticeTime || "19:00",
+      });
+    }
+
+    return eligibleUsers;
+  },
+});
+
+// Internal mutation to get users eligible for streak alerts.
+export const getUsersEligibleForStreakAlerts = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const subscriptions = await ctx.db
+      .query("pushSubscriptions")
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .collect();
+
+    const userIds = [...new Set(subscriptions.map((sub) => sub.userId))];
+    const eligibleUsers: Array<{ userId: any; timeZone: string }> = [];
+
+    for (const userId of userIds) {
+      const user = await ctx.db.get(userId);
+      if (!user || user.isDeleted) continue;
+      if (user.coachingStreakAlerts === false) continue;
+
+      eligibleUsers.push({
+        userId,
+        timeZone: user.notificationTimeZone || "UTC",
+      });
+    }
+
+    return eligibleUsers;
+  },
+});
+
+// Internal mutation to get users eligible for goal progress updates.
+export const getUsersEligibleForGoalProgressUpdates = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const subscriptions = await ctx.db
+      .query("pushSubscriptions")
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .collect();
+
+    const userIds = [...new Set(subscriptions.map((sub) => sub.userId))];
+    const eligibleUsers: Array<{ userId: any; timeZone: string }> = [];
+
+    for (const userId of userIds) {
+      const user = await ctx.db.get(userId);
+      if (!user || user.isDeleted) continue;
+      if (user.coachingGoalProgressUpdates === false) continue;
+
+      eligibleUsers.push({
+        userId,
+        timeZone: user.notificationTimeZone || "UTC",
+      });
+    }
+
+    return eligibleUsers;
+  },
+});
+
+// Internal mutation to check whether a reminder has already been sent for a day key.
+export const hasNotificationForDay = internalMutation({
+  args: {
+    userId: v.id("users"),
+    type: v.string(),
+    dayKey: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const recentLogs = await ctx.db
+      .query("pushNotificationLog")
+      .withIndex("by_user_type", (q) =>
+        q.eq("userId", args.userId).eq("type", args.type),
+      )
+      .order("desc")
+      .take(20);
+
+    return recentLogs.some(
+      (log) =>
+        log.status === "sent" &&
+        log.data &&
+        typeof log.data === "object" &&
+        (log.data as Record<string, unknown>).dayKey === args.dayKey,
+    );
+  },
+});
+
+// Internal mutation to check whether a specific goal milestone notification was already sent.
+export const hasGoalProgressMilestoneNotification = internalMutation({
+  args: {
+    userId: v.id("users"),
+    milestone: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const recentLogs = await ctx.db
+      .query("pushNotificationLog")
+      .withIndex("by_user_type", (q) =>
+        q.eq("userId", args.userId).eq("type", "goal_progress"),
+      )
+      .order("desc")
+      .take(60);
+
+    return recentLogs.some(
+      (log) =>
+        log.status === "sent" &&
+        log.data &&
+        typeof log.data === "object" &&
+        (log.data as Record<string, unknown>).milestone === args.milestone,
+    );
+  },
+});
+
+// Internal mutation to determine whether user practiced today in their timezone.
+export const hasPracticedTodayInTimeZone = internalMutation({
+  args: {
+    userId: v.id("users"),
+    timeZone: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const threeDaysAgo = now - 3 * 24 * 60 * 60 * 1000;
+    const todayKey = getDayKeyInTimeZone(args.timeZone, now);
+
+    const recentEntries = await ctx.db
+      .query("coachJournalEntries")
+      .withIndex("by_user_date", (q) =>
+        q.eq("userId", args.userId).gte("entryDate", threeDaysAgo),
+      )
+      .collect();
+
+    return recentEntries.some(
+      (entry) =>
+        getDayKeyInTimeZone(args.timeZone, entry.entryDate) === todayKey,
+    );
+  },
+});
+
+// Internal mutation to compute current goal progress milestone for reminder delivery.
+export const getGoalProgressSnapshot = internalMutation({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const profile = await ctx.db
+      .query("coachProfiles")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .first();
+
+    if (!profile) {
+      return null;
+    }
+
+    const targetTime =
+      profile.customGoalTime || GOAL_TIMES[profile.goalType] || 20000;
+    const startingAverage = profile.currentAverage || targetTime * 1.5;
+
+    const monthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    const monthlyEntries = await ctx.db
+      .query("coachJournalEntries")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    const monthlyAvgTimes = monthlyEntries
+      .filter((entry) => entry.entryDate >= monthAgo)
+      .filter((entry) => entry.customAverage || entry.sessionAverage)
+      .map((entry) => entry.customAverage || entry.sessionAverage || 0);
+
+    const monthlyAverage =
+      monthlyAvgTimes.length > 0
+        ? monthlyAvgTimes.reduce((sum, time) => sum + time, 0) /
+          monthlyAvgTimes.length
+        : null;
+
+    const currentAverage = monthlyAverage ?? startingAverage;
+    if (currentAverage <= targetTime) {
+      return {
+        milestone: 100,
+        progressPercent: 100,
+        goalType: profile.goalType,
+        goalLabel: profile.goalType.replace("-", " ").toUpperCase(),
+        goalAchieved: true,
+      };
+    }
+
+    const totalImprovement = startingAverage - targetTime;
+    if (totalImprovement <= 0) {
+      return null;
+    }
+
+    const currentImprovement = startingAverage - currentAverage;
+    const progressPercent = Math.min(
+      100,
+      Math.max(0, (currentImprovement / totalImprovement) * 100),
+    );
+
+    return {
+      milestone: Math.floor(progressPercent / 10) * 10,
+      progressPercent,
+      goalType: profile.goalType,
+      goalLabel: profile.goalType.replace("-", " ").toUpperCase(),
+      goalAchieved: false,
+    };
   },
 });
 
