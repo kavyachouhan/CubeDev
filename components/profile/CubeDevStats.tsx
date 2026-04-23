@@ -88,7 +88,9 @@ export default function CubeDevStats({
   // Query lightweight heatmap data (only dates and counts, not full solve objects)
   const heatmapData = useQuery(
     api.users.getSolveHeatmapData,
-    shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id, daysBack: 365 },
+    shouldSkipDataQueries
+      ? "skip"
+      : { userId: cubeDevUser!._id, daysBack: 365 },
   );
 
   // If user has heatmap data (solves exist) but no cached stats, trigger a recalculation
@@ -125,38 +127,13 @@ export default function CubeDevStats({
     shouldSkipDataQueries ? "skip" : { userId: cubeDevUser!._id },
   );
 
-  // Show loading state while privacy settings are loading
-  if (privacySettings === undefined || users === undefined) {
-    return <EventStatsSkeleton />;
-  }
-
-  // If user is deleted, show appropriate message
-  if (privacySettings?.isDeleted) {
-    return (
-      <div className="timer-card">
-        <div className="text-center py-12">
-          <div className="flex justify-center mb-4">
-            <div className="p-4 bg-gray-500/10 rounded-full">
-              <Users className="w-8 h-8 text-gray-500" />
-            </div>
-          </div>
-          <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
-            Account Not Found
-          </h3>
-          <p className="text-(--text-secondary)">
-            This user account is no longer available.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   // Prepare heatmap data for SolveHeatmap component (only date and count)
-  const heatmapDataForComponent = heatmapData?.map((point) => ({
-    date: point.date,
-    count: point.count,
-    events: point.events,
-  })) || [];
+  const heatmapDataForComponent =
+    heatmapData?.map((point) => ({
+      date: point.date,
+      count: point.count,
+      events: point.events,
+    })) || [];
 
   // Get unique events from pre-computed stats (more accurate than recent solves)
   const attemptedEvents = eventStats
@@ -205,7 +182,10 @@ export default function CubeDevStats({
       let checkDate = new Date(today);
       if (!activeDaysSet.has(todayKey) && activeDaysSet.has(yesterdayKey)) {
         checkDate = new Date(yesterday);
-      } else if (!activeDaysSet.has(todayKey) && !activeDaysSet.has(yesterdayKey)) {
+      } else if (
+        !activeDaysSet.has(todayKey) &&
+        !activeDaysSet.has(yesterdayKey)
+      ) {
         currentStreak = 0;
       }
 
@@ -225,7 +205,10 @@ export default function CubeDevStats({
     }
 
     // Fallback to using eventStats if heatmap data isn't available for some reason (less accurate)
-    const totalActiveDays = eventStats.reduce((sum, s) => sum + (s.activeDays || 0), 0);
+    const totalActiveDays = eventStats.reduce(
+      (sum, s) => sum + (s.activeDays || 0),
+      0,
+    );
     return { activeDays: totalActiveDays, longestStreak: 0, currentStreak: 0 };
   }, [eventStats, heatmapData]);
 
@@ -245,6 +228,32 @@ export default function CubeDevStats({
   const selectedEventStats = eventStats?.find(
     (stat) => stat.event === selectedEvent,
   );
+
+  // Show loading state while privacy settings are loading
+  if (privacySettings === undefined || users === undefined) {
+    return <EventStatsSkeleton />;
+  }
+
+  // If user is deleted, show appropriate message
+  if (privacySettings?.isDeleted) {
+    return (
+      <div className="timer-card">
+        <div className="text-center py-12">
+          <div className="flex justify-center mb-4">
+            <div className="p-4 bg-gray-500/10 rounded-full">
+              <Users className="w-8 h-8 text-gray-500" />
+            </div>
+          </div>
+          <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
+            Account Not Found
+          </h3>
+          <p className="text-(--text-secondary)">
+            This user account is no longer available.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Show skeleton loaders while data is loading
   const isLoadingData = !eventStats || !challengeStats || !roomParticipations;

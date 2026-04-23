@@ -14,10 +14,145 @@ const DEFAULT_COACHING_NOTIFICATION_SETTINGS = {
 
 const DEFAULT_ALGORITHM_REMINDERS = true;
 
+const WCA_ID_REGEX = /^\d{4}[A-Z]{4}\d{2}$/;
+const CUBEDEV_ID_REGEX = /^CD\d{4}[A-Z]{4}\d{2}$/;
+
+const normalizeIdentifier = (identifier: string) =>
+  identifier.trim().toUpperCase();
+
+const isCubeDevIdentifier = (identifier: string) =>
+  CUBEDEV_ID_REGEX.test(normalizeIdentifier(identifier));
+
+const getLastNameToken = (name: string) => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const lastName =
+    parts.length > 1 ? parts[parts.length - 1] : parts[0] || "USER";
+  const lettersOnly = lastName.toUpperCase().replace(/[^A-Z]/g, "");
+  const tokenBase = lettersOnly || "USER";
+  return tokenBase.slice(0, 4).padEnd(4, "X");
+};
+
+const createIdentifierAlias = async (
+  ctx: any,
+  aliasId: string,
+  userId: any,
+  reason = "cd_to_wca_migration",
+) => {
+  const normalizedAlias = normalizeIdentifier(aliasId);
+  const existingAlias = await ctx.db
+    .query("userIdentifierAliases")
+    .withIndex("by_alias_id", (q: any) => q.eq("aliasId", normalizedAlias))
+    .first();
+
+  if (existingAlias) {
+    return;
+  }
+
+  await ctx.db.insert("userIdentifierAliases", {
+    aliasId: normalizedAlias,
+    userId,
+    reason,
+    createdAt: Date.now(),
+  });
+};
+
+const generateCubeDevIdentifier = async (
+  ctx: any,
+  name: string,
+  now: number,
+) => {
+  const year = new Date(now).getUTCFullYear();
+  const token = getLastNameToken(name);
+  const prefix = `CD${year}${token}`;
+
+  const users = await ctx.db.query("users").collect();
+  const aliases = await ctx.db.query("userIdentifierAliases").collect();
+  let maxSequence = 0;
+
+  for (const user of users) {
+    const identifier = normalizeIdentifier(user.wcaId);
+    if (identifier.startsWith(prefix)) {
+      const seq = Number.parseInt(
+        identifier.slice(prefix.length, prefix.length + 2),
+        10,
+      );
+      if (!Number.isNaN(seq)) {
+        maxSequence = Math.max(maxSequence, seq);
+      }
+    }
+  }
+
+  for (const alias of aliases) {
+    const identifier = normalizeIdentifier(alias.aliasId);
+    if (identifier.startsWith(prefix)) {
+      const seq = Number.parseInt(
+        identifier.slice(prefix.length, prefix.length + 2),
+        10,
+      );
+      if (!Number.isNaN(seq)) {
+        maxSequence = Math.max(maxSequence, seq);
+      }
+    }
+  }
+
+  for (let sequence = maxSequence + 1; sequence <= 99; sequence++) {
+    const candidate = `${prefix}${sequence.toString().padStart(2, "0")}`;
+
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("by_wca_id", (q: any) => q.eq("wcaId", candidate))
+      .first();
+    if (existingUser) {
+      continue;
+    }
+
+    const existingAlias = await ctx.db
+      .query("userIdentifierAliases")
+      .withIndex("by_alias_id", (q: any) => q.eq("aliasId", candidate))
+      .first();
+    if (existingAlias) {
+      continue;
+    }
+
+    return candidate;
+  }
+
+  throw new Error("Unable to allocate a unique CubeDev ID. Please try again.");
+};
+
+const resolveUserByIdentifierOrAlias = async (ctx: any, identifier: string) => {
+  const normalizedIdentifier = normalizeIdentifier(identifier);
+
+  const directUser = await ctx.db
+    .query("users")
+    .withIndex("by_wca_id", (q: any) => q.eq("wcaId", normalizedIdentifier))
+    .first();
+
+  if (directUser) {
+    return { user: directUser, redirectTo: undefined as string | undefined };
+  }
+
+  const alias = await ctx.db
+    .query("userIdentifierAliases")
+    .withIndex("by_alias_id", (q: any) => q.eq("aliasId", normalizedIdentifier))
+    .first();
+
+  if (!alias) {
+    return { user: null, redirectTo: undefined as string | undefined };
+  }
+
+  const aliasedUser = await ctx.db.get(alias.userId);
+  if (!aliasedUser) {
+    return { user: null, redirectTo: undefined as string | undefined };
+  }
+
+  return { user: aliasedUser, redirectTo: aliasedUser.wcaId };
+};
+
 // Upsert (create or update) user profile
 export const upsertUser = mutation({
   args: {
-    wcaId: v.string(),
+    wcaId: v.optional(v.string()),
     wcaUserId: v.number(),
     name: v.string(),
     email: v.optional(v.string()),
@@ -29,14 +164,54 @@ export const upsertUser = mutation({
   },
   handler: async (ctx, args) => {
     const now = Date.now();
+    const normalizedWcaId = args.wcaId
+      ? normalizeIdentifier(args.wcaId)
+      : undefined;
 
-    // Check if user already exists
-    const existingUser = await ctx.db
+    // Prefer stable WCA OAuth user ID for account matching
+    let existingUser = await ctx.db
       .query("users")
-      .withIndex("by_wca_id", (q) => q.eq("wcaId", args.wcaId))
+      .withIndex("by_wca_user_id", (q) => q.eq("wcaUserId", args.wcaUserId))
       .first();
 
+    // Fallback to canonical identifier lookup if needed
+    if (!existingUser && normalizedWcaId) {
+      existingUser = await ctx.db
+        .query("users")
+        .withIndex("by_wca_id", (q) => q.eq("wcaId", normalizedWcaId))
+        .first();
+    }
+
     if (existingUser) {
+      let canonicalIdentifier = existingUser.wcaId;
+      let idSource =
+        existingUser.idSource ??
+        (isCubeDevIdentifier(existingUser.wcaId) ? "cd" : "wca");
+      let convertedToWcaAt = existingUser.convertedToWcaAt;
+
+      if (normalizedWcaId && canonicalIdentifier !== normalizedWcaId) {
+        const conflictingUser = await ctx.db
+          .query("users")
+          .withIndex("by_wca_id", (q) => q.eq("wcaId", normalizedWcaId))
+          .first();
+
+        if (conflictingUser && conflictingUser._id !== existingUser._id) {
+          throw new Error("This WCA ID is already linked to another account");
+        }
+
+        if (isCubeDevIdentifier(canonicalIdentifier)) {
+          await createIdentifierAlias(
+            ctx,
+            canonicalIdentifier,
+            existingUser._id,
+          );
+          convertedToWcaAt = now;
+        }
+
+        canonicalIdentifier = normalizedWcaId;
+        idSource = "wca";
+      }
+
       // If the user was previously deleted, restore their account
       if (existingUser.isDeleted) {
         // Find any orphaned sessions for this user (that weren't deleted)
@@ -58,45 +233,13 @@ export const upsertUser = mutation({
 
           await ctx.db.delete(session._id);
         }
-
-        // Restore user account
-        const updateData: any = {
-          name: args.name,
-          email: args.email,
-          countryIso2: args.countryIso2,
-          avatar: args.avatar,
-          accessToken: args.accessToken,
-          gender: args.gender,
-          updatedAt: now,
-          lastLoginAt: now,
-          isDeleted: false, // Clear deletion flag
-          deletedAt: undefined, // Clear deletion timestamp
-          // Reset privacy and theme settings to defaults
-          hideProfile: undefined,
-          hideChallengeStats: undefined,
-          themeMode: undefined,
-          colorScheme: undefined,
-          timerFontSize: undefined,
-          timerFontFamily: undefined,
-          timerUpdateMode: undefined,
-          reduceMotion: undefined,
-          disableGlow: undefined,
-          highContrast: undefined,
-          algorithmReminders: undefined,
-          coachingDailyPracticeReminder: undefined,
-          coachingDailyPracticeTime: undefined,
-          coachingStreakAlerts: undefined,
-          coachingWeeklySummary: undefined,
-          coachingGoalProgressUpdates: undefined,
-          notificationTimeZone: undefined,
-        };
-
-        await ctx.db.patch(existingUser._id, updateData);
-        return existingUser._id;
       }
 
-      // Update existing user
       const updateData: any = {
+        wcaId: canonicalIdentifier,
+        wcaUserId: args.wcaUserId,
+        idSource,
+        convertedToWcaAt,
         name: args.name,
         countryIso2: args.countryIso2,
         avatar: args.avatar,
@@ -106,36 +249,64 @@ export const upsertUser = mutation({
         lastLoginAt: now,
       };
 
-      // Only update email if provided
+      if (existingUser.isDeleted) {
+        updateData.isDeleted = false;
+        updateData.deletedAt = undefined;
+        // Reset privacy and theme settings to defaults on restore.
+        updateData.hideProfile = undefined;
+        updateData.hideChallengeStats = undefined;
+        updateData.themeMode = undefined;
+        updateData.colorScheme = undefined;
+        updateData.timerFontSize = undefined;
+        updateData.timerFontFamily = undefined;
+        updateData.timerUpdateMode = undefined;
+        updateData.reduceMotion = undefined;
+        updateData.disableGlow = undefined;
+        updateData.highContrast = undefined;
+        updateData.algorithmReminders = undefined;
+        updateData.coachingDailyPracticeReminder = undefined;
+        updateData.coachingDailyPracticeTime = undefined;
+        updateData.coachingStreakAlerts = undefined;
+        updateData.coachingWeeklySummary = undefined;
+        updateData.coachingGoalProgressUpdates = undefined;
+        updateData.notificationTimeZone = undefined;
+      }
+
+      // Only update email if provided.
       if (args.email) {
         updateData.email = args.email;
       }
 
       await ctx.db.patch(existingUser._id, updateData);
       return existingUser._id;
-    } else {
-      // Create new user
-      const newUserData: any = {
-        wcaId: args.wcaId,
-        wcaUserId: args.wcaUserId,
-        name: args.name,
-        countryIso2: args.countryIso2,
-        avatar: args.avatar,
-        accessToken: args.accessToken,
-        gender: args.gender,
-        createdAt: now,
-        updatedAt: now,
-        lastLoginAt: now,
-      };
-
-      // Only set email if provided
-      if (args.email) {
-        newUserData.email = args.email;
-      }
-
-      const userId = await ctx.db.insert("users", newUserData);
-      return userId;
     }
+
+    // Create new user
+    const canonicalIdentifier = normalizedWcaId
+      ? normalizedWcaId
+      : await generateCubeDevIdentifier(ctx, args.name, now);
+
+    const newUserData: any = {
+      wcaId: canonicalIdentifier,
+      wcaUserId: args.wcaUserId,
+      idSource: normalizedWcaId ? "wca" : "cd",
+      name: args.name,
+      countryIso2: args.countryIso2,
+      avatar: args.avatar,
+      accessToken: args.accessToken,
+      gender: args.gender,
+      createdAt: now,
+      updatedAt: now,
+      lastLoginAt: now,
+    };
+
+    // Only set email if provided
+    if (args.email) {
+      newUserData.email = args.email;
+    }
+
+    const userId = await ctx.db.insert("users", newUserData);
+    return userId;
   },
 });
 
@@ -150,10 +321,12 @@ export const getOrCreateUser = mutation({
     avatar: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const normalizedIdentifier = normalizeIdentifier(args.wcaId);
+
     // Check if user already exists
     const existingUser = await ctx.db
       .query("users")
-      .withIndex("by_wca_id", (q) => q.eq("wcaId", args.wcaId))
+      .withIndex("by_wca_id", (q) => q.eq("wcaId", normalizedIdentifier))
       .first();
 
     if (existingUser) {
@@ -170,8 +343,9 @@ export const getOrCreateUser = mutation({
 
     // Create new user
     const userId = await ctx.db.insert("users", {
-      wcaId: args.wcaId,
+      wcaId: normalizedIdentifier,
       wcaUserId: args.wcaUserId,
+      idSource: WCA_ID_REGEX.test(normalizedIdentifier) ? "wca" : "cd",
       name: args.name,
       email: args.email,
       countryIso2: args.countryIso2,
@@ -189,10 +363,24 @@ export const getOrCreateUser = mutation({
 export const getUserByWcaId = query({
   args: { wcaId: v.string() },
   handler: async (ctx, args) => {
-    return await ctx.db
-      .query("users")
-      .withIndex("by_wca_id", (q) => q.eq("wcaId", args.wcaId))
-      .first();
+    const { user } = await resolveUserByIdentifierOrAlias(ctx, args.wcaId);
+    return user;
+  },
+});
+
+// Resolve a user by canonical identifier or alias (for CD -> WCA redirects)
+export const getUserByIdentifier = query({
+  args: { identifier: v.string() },
+  handler: async (ctx, args) => {
+    const { user, redirectTo } = await resolveUserByIdentifierOrAlias(
+      ctx,
+      args.identifier,
+    );
+    return {
+      user,
+      redirectTo,
+      canonicalIdentifier: user?.wcaId,
+    };
   },
 });
 
@@ -442,13 +630,17 @@ export const deleteUserAccount = mutation({
 export const isUserProfilePrivate = query({
   args: { wcaId: v.string() },
   handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_wca_id", (q) => q.eq("wcaId", args.wcaId))
-      .first();
+    const { user, redirectTo } = await resolveUserByIdentifierOrAlias(
+      ctx,
+      args.wcaId,
+    );
 
     if (!user || user.isDeleted) {
-      return { isPrivate: true, isDeleted: !!user?.isDeleted };
+      return {
+        isPrivate: true,
+        isDeleted: !!user?.isDeleted,
+        redirectTo,
+      };
     }
 
     return {
@@ -456,6 +648,7 @@ export const isUserProfilePrivate = query({
       isDeleted: false,
       hideChallengeStats: !!user.hideChallengeStats,
       hideProfile: !!user.hideProfile,
+      redirectTo,
     };
   },
 });
@@ -956,13 +1149,13 @@ export const getUserStats = query({
 export const getUserAccountStatus = query({
   args: { wcaId: v.string() },
   handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_wca_id", (q) => q.eq("wcaId", args.wcaId))
-      .first();
+    const { user, redirectTo } = await resolveUserByIdentifierOrAlias(
+      ctx,
+      args.wcaId,
+    );
 
     if (!user) {
-      return { exists: false };
+      return { exists: false, redirectTo };
     }
 
     // Count sessions
@@ -989,6 +1182,7 @@ export const getUserAccountStatus = query({
 
     return {
       exists: true,
+      redirectTo,
       isDeleted: !!user.isDeleted,
       deletedAt: user.deletedAt,
       name: user.name,

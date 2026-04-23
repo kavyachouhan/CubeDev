@@ -20,10 +20,14 @@ import { WCA_EVENTS } from "./CompetitionBrowser";
 import { formatTime } from "@/lib/stats-utils";
 import { SimulationHistorySkeleton } from "@/components/SkeletonLoaders";
 
+const WCA_PERSON_ID_REGEX = /^\d{4}[A-Z]{4}\d{2}$/;
+const hasLinkedWcaId = (identifier?: string): identifier is string =>
+  !!identifier && WCA_PERSON_ID_REGEX.test(identifier.toUpperCase());
+
 // Helper to get max rounds for an event, with fallback for older simulations
 const getMaxRoundsWithFallback = (
   eventId: string,
-  eventRounds?: Record<string, number> | null
+  eventRounds?: Record<string, number> | null,
 ): number => {
   // Use stored eventRounds if available
   if (eventRounds && typeof eventRounds === "object") {
@@ -40,22 +44,22 @@ const getMaxRoundsWithFallback = (
 // Calculate total rounds for a simulation using stored eventRounds or fallback
 const getTotalRounds = (
   selectedEvents: string[],
-  eventRounds?: Record<string, number> | null
+  eventRounds?: Record<string, number> | null,
 ): number => {
   return selectedEvents.reduce(
     (total, eventId) => total + getMaxRoundsWithFallback(eventId, eventRounds),
-    0
+    0,
   );
 };
 
 // Calculate completed rounds from eventProgress
 const getCompletedRounds = (
-  eventProgress: Record<string, number> | undefined
+  eventProgress: Record<string, number> | undefined,
 ): number => {
   if (!eventProgress) return 0;
   return Object.values(eventProgress).reduce(
     (total, rounds) => total + (rounds || 0),
-    0
+    0,
   );
 };
 
@@ -71,24 +75,25 @@ export default function SimulationHistory({
   compact = false,
 }: SimulationHistoryProps) {
   const { user } = useUser();
+  const canFetchSimulations = hasLinkedWcaId(user?.wcaId);
 
   // Fetch recent simulations
   const recentSimulations = useQuery(
     api.competitionSimulations.getUserRecentSimulations,
-    user?.wcaId ? { wcaId: user.wcaId, limit } : "skip"
+    canFetchSimulations && user?.wcaId ? { wcaId: user.wcaId, limit } : "skip",
   );
 
   // Fetch in-progress simulations
   const inProgressSimulations = useQuery(
     api.competitionSimulations.getInProgressSimulations,
-    user?.wcaId ? { wcaId: user.wcaId } : "skip"
+    canFetchSimulations && user?.wcaId ? { wcaId: user.wcaId } : "skip",
   );
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
     const now = new Date();
     const diffDays = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
     );
 
     if (diffDays === 0) {
@@ -134,11 +139,41 @@ export default function SimulationHistory({
   };
 
   // Show skeleton while loading
-  if (recentSimulations === undefined) {
+  if (canFetchSimulations && recentSimulations === undefined) {
     return <SimulationHistorySkeleton />;
   }
 
-  if (recentSimulations.length === 0) {
+  if (!canFetchSimulations) {
+    return (
+      <div className={`timer-card ${compact ? "p-3" : ""}`}>
+        {showTitle && (
+          <h3 className="font-bold text-(--text-primary) flex items-center gap-2 mb-4">
+            <History className="w-4 h-4 text-(--primary)" />
+            Recent Simulations
+          </h3>
+        )}
+        <div className="text-center py-8">
+          <AlertTriangle className="w-10 h-10 text-(--text-muted) mx-auto mb-3" />
+          <h4 className="text-sm font-medium text-(--text-primary) mb-1">
+            WCA ID Required
+          </h4>
+          <p className="text-xs text-(--text-muted) mb-4">
+            Link your WCA ID in Settings to unlock competition simulations.
+          </p>
+          <Link
+            href="/me"
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
+          >
+            Open Settings
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const safeRecentSimulations = recentSimulations ?? [];
+
+  if (safeRecentSimulations.length === 0) {
     return (
       <div className={`timer-card ${compact ? "p-3" : ""}`}>
         {showTitle && (
@@ -175,7 +210,7 @@ export default function SimulationHistory({
             <Clock className="w-4 h-4 text-(--primary)" />
             Recent Simulations
           </h3>
-          {recentSimulations.length > 3 && (
+          {safeRecentSimulations.length > 3 && (
             <Link
               href="/cube-lab/competitions?tab=history"
               className="text-xs text-(--primary) hover:underline"
@@ -187,11 +222,11 @@ export default function SimulationHistory({
       )}
 
       <div className="space-y-2">
-        {recentSimulations.slice(0, limit).map((sim: any) => {
+        {safeRecentSimulations.slice(0, limit).map((sim: any) => {
           const isInProgress = sim.status === "in-progress";
           const totalRounds = getTotalRounds(
             sim.selectedEvents || [],
-            sim.eventRounds
+            sim.eventRounds,
           );
           const completedRounds = getCompletedRounds(sim.eventProgress);
           const progress =

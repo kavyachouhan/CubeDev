@@ -4,8 +4,10 @@ import { v } from "convex/values";
 export default defineSchema({
   users: defineTable({
     // Core User Info
-    wcaId: v.string(), // WCA ID (e.g., "2019DOEJ01")
+    wcaId: v.string(), // Canonical user ID (WCA ID or CubeDev ID, e.g. "2019DOEJ01" or "CD2026XXXX01")
     wcaUserId: v.number(), // Internal WCA user ID
+    idSource: v.optional(v.union(v.literal("wca"), v.literal("cd"))), // Source of canonical ID
+    convertedToWcaAt: v.optional(v.number()), // Timestamp when CD ID was replaced with WCA ID
     name: v.string(), // Full name
     email: v.optional(v.string()), // Email address (optional for deleted users)
     countryIso2: v.string(), // Country code (e.g., "US", "CA")
@@ -72,6 +74,16 @@ export default defineSchema({
     .index("by_wca_user_id", ["wcaUserId"]) // Index for fast lookup by WCA user ID
     .index("by_email", ["email"]) // Index for fast lookup by email
     .index("by_deleted", ["isDeleted"]), // Index for filtering deleted users
+
+  // Identifier aliases used for redirects after CD -> WCA ID conversion
+  userIdentifierAliases: defineTable({
+    aliasId: v.string(), // Previous canonical identifier (e.g. old CD ID)
+    userId: v.id("users"), // Current user document
+    reason: v.optional(v.string()), // Migration reason
+    createdAt: v.number(),
+  })
+    .index("by_alias_id", ["aliasId"])
+    .index("by_user", ["userId"]),
 
   // Timer Sessions - organizing solve sessions
   sessions: defineTable({
