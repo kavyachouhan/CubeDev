@@ -2,11 +2,20 @@
 
 import { User, ExternalLink } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
+import { getWCAOAuthUrl } from "@/lib/wca-config";
 
 export default function ProfileSection() {
   const { user } = useUser();
 
   if (!user) return null;
+
+  const userIdentifier = user.wcaId || "Unknown";
+  const isCdUser = userIdentifier.toUpperCase().startsWith("CD");
+
+  const handleReauth = () => {
+    const wcaAuthUrl = getWCAOAuthUrl();
+    window.location.href = wcaAuthUrl;
+  };
 
   return (
     <div className="timer-card">
@@ -16,7 +25,9 @@ export default function ProfileSection() {
             Profile Information
           </h3>
           <p className="text-sm text-(--text-muted)">
-            Your WCA profile information
+            {isCdUser
+              ? "Your CubeDev profile information"
+              : "Your WCA profile information"}
           </p>
         </div>
       </div>
@@ -41,22 +52,32 @@ export default function ProfileSection() {
                 {user.name}
               </h4>
               <div className="flex items-center gap-2 text-xs md:text-sm text-(--text-muted)">
-                <span>{user.wcaId}</span>
+                <span>{userIdentifier}</span>
                 <span>•</span>
                 <span>{user.countryIso2}</span>
               </div>
             </div>
           </div>
 
-          <a
-            href={`https://www.worldcubeassociation.org/persons/${user.wcaId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 px-3 py-2 bg-(--primary) text-white rounded-md hover:bg-(--primary-hover) transition-colors text-xs md:text-sm font-medium w-full"
-          >
-            <ExternalLink className="w-3 h-3 md:w-4 md:h-4" />
-            View WCA Profile
-          </a>
+          {!isCdUser && user.wcaId ? (
+            <a
+              href={`https://www.worldcubeassociation.org/persons/${user.wcaId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-(--primary) text-white rounded-md hover:bg-(--primary-hover) transition-colors text-xs md:text-sm font-medium w-full"
+            >
+              <ExternalLink className="w-3 h-3 md:w-4 md:h-4" />
+              View WCA Profile
+            </a>
+          ) : (
+            <button
+              type="button"
+              onClick={handleReauth}
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-(--primary) text-white rounded-md hover:bg-(--primary-hover) transition-colors text-xs md:text-sm font-medium w-full"
+            >
+              Re-auth with WCA
+            </button>
+          )}
         </div>
 
         {/* Profile Info Fields */}
@@ -72,10 +93,10 @@ export default function ProfileSection() {
 
           <div>
             <label className="block text-xs md:text-sm font-medium text-(--text-secondary) mb-1">
-              WCA ID
+              {isCdUser ? "CubeDev ID" : "WCA ID"}
             </label>
             <div className="px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-md text-(--text-primary) text-sm md:text-base">
-              {user.wcaId}
+              {userIdentifier}
             </div>
           </div>
 
@@ -104,9 +125,9 @@ export default function ProfileSection() {
       <div className="mt-4 md:mt-6 p-3 bg-(--surface-elevated) rounded-lg border-l-4 border-l-(--primary)">
         <p className="text-xs md:text-sm text-(--text-secondary)">
           <span className="font-medium text-(--text-primary)">Note:</span>{" "}
-          Profile information is synchronized with your WCA account and cannot
-          be edited here. To update your profile, make changes on the WCA
-          website.
+          {isCdUser
+            ? "You currently use a CubeDev ID because your WCA account does not have a WCA competition ID yet. Use Re-auth with WCA after your first official competition to upgrade to your WCA ID."
+            : "Profile information is synchronized with your WCA account and cannot be edited here. To update your profile, make changes on the WCA website."}
         </p>
       </div>
     </div>

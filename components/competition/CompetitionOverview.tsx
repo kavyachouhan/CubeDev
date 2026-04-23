@@ -52,20 +52,24 @@ const getMaxRounds = (eventId: string): number => {
 const getTotalRounds = (selectedEvents: string[]): number => {
   return selectedEvents.reduce(
     (total, eventId) => total + getMaxRounds(eventId),
-    0
+    0,
   );
 };
 
 // Calculate completed rounds from eventProgress
 const getCompletedRounds = (
-  eventProgress: Record<string, number> | undefined
+  eventProgress: Record<string, number> | undefined,
 ): number => {
   if (!eventProgress) return 0;
   return Object.values(eventProgress).reduce(
     (total, rounds) => total + (rounds || 0),
-    0
+    0,
   );
 };
+
+const WCA_PERSON_ID_REGEX = /^\d{4}[A-Z]{4}\d{2}$/;
+const hasLinkedWcaId = (identifier?: string): identifier is string =>
+  !!identifier && WCA_PERSON_ID_REGEX.test(identifier.toUpperCase());
 
 interface CompetitionDetails extends WCACompetition {
   information?: string;
@@ -138,7 +142,7 @@ export default function CompetitionOverview() {
   };
 
   const [competition, setCompetition] = useState<CompetitionDetails | null>(
-    null
+    null,
   );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -148,21 +152,24 @@ export default function CompetitionOverview() {
 
   // Sync URL with tab changes
   const handleTabChange = (
-    tab: "info" | "events" | "rules" | "history" | "training"
+    tab: "info" | "events" | "rules" | "history" | "training",
   ) => {
     setActiveTab(tab);
     const newParams = new URLSearchParams(searchParams.toString());
     newParams.set("tab", tab);
     router.replace(
       `/cube-lab/competitions/${competitionId}?${newParams.toString()}`,
-      { scroll: false }
+      { scroll: false },
     );
   };
 
   // Fetch simulations for this competition
+  const linkedWcaId = hasLinkedWcaId(user?.wcaId) ? user?.wcaId : undefined;
   const simulations = useQuery(
     api.competitionSimulations.getUserSimulationsForCompetition,
-    user?.wcaId && competitionId ? { wcaId: user.wcaId, competitionId } : "skip"
+    linkedWcaId && competitionId
+      ? { wcaId: linkedWcaId, competitionId }
+      : "skip",
   );
 
   // Parse competition information into paragraphs
@@ -189,7 +196,7 @@ export default function CompetitionOverview() {
         }
 
         const response = await fetch(
-          `${WCA_CONFIG.API_BASE_URL}/competitions/${competitionId}`
+          `${WCA_CONFIG.API_BASE_URL}/competitions/${competitionId}`,
         );
         if (!response.ok) throw new Error("Competition not found");
 
@@ -215,7 +222,7 @@ export default function CompetitionOverview() {
         setCompetition(comp);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to load competition"
+          err instanceof Error ? err.message : "Failed to load competition",
         );
       } finally {
         setIsLoading(false);
@@ -255,22 +262,19 @@ export default function CompetitionOverview() {
     if (competition.cancelled_at) {
       return {
         label: "Cancelled",
-        color:
-          "text-(--error) bg-(--error)/10 border-(--error)/30",
+        color: "text-(--error) bg-(--error)/10 border-(--error)/30",
       };
     }
     if (today >= startDay && today <= endDay) {
       return {
         label: "In Progress",
-        color:
-          "text-(--success) bg-(--success)/10 border-(--success)/30",
+        color: "text-(--success) bg-(--success)/10 border-(--success)/30",
       };
     }
     if (endDay < today) {
       return {
         label: "Completed",
-        color:
-          "text-(--text-muted) bg-(--surface-elevated) border-(--border)",
+        color: "text-(--text-muted) bg-(--surface-elevated) border-(--border)",
       };
     }
     return {
@@ -674,10 +678,10 @@ export default function CompetitionOverview() {
                 <div className="space-y-3">
                   {simulations.map((sim: any) => {
                     const totalRounds = getTotalRounds(
-                      sim.selectedEvents || []
+                      sim.selectedEvents || [],
                     );
                     const completedRounds = getCompletedRounds(
-                      sim.eventProgress
+                      sim.eventProgress,
                     );
                     const progress =
                       totalRounds > 0
@@ -715,7 +719,7 @@ export default function CompetitionOverview() {
                                   month: "short",
                                   day: "numeric",
                                   year: "numeric",
-                                }
+                                },
                               )}
                             </span>
                           </div>
@@ -762,7 +766,7 @@ export default function CompetitionOverview() {
                             .slice(0, 8)
                             .map((eventId: string) => {
                               const event = WCA_EVENTS.find(
-                                (e) => e.id === eventId
+                                (e) => e.id === eventId,
                               );
                               const isCompleted =
                                 sim.completedEvents?.includes(eventId);

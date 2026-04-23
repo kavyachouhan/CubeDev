@@ -3,6 +3,7 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../../convex/_generated/api";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+const WCA_PERSON_ID_REGEX = /^\d{4}[A-Z]{4}\d{2}$/;
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +12,17 @@ export async function GET(request: NextRequest) {
     if (!wcaId) {
       return NextResponse.json(
         { success: false, error: "WCA ID is required" },
-        { status: 400 }
+        { status: 400 },
+      );
+    }
+
+    if (!WCA_PERSON_ID_REGEX.test(wcaId.toUpperCase())) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Link a valid WCA ID in Settings to access this feature",
+        },
+        { status: 400 },
       );
     }
 
@@ -21,7 +32,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -34,7 +45,7 @@ export async function GET(request: NextRequest) {
           Accept: "application/json",
           "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
         },
-      }
+      },
     );
 
     if (publicResponse.ok) {
@@ -56,7 +67,7 @@ export async function GET(request: NextRequest) {
           headers: {
             Authorization: `Bearer ${user.accessToken}`,
           },
-        }
+        },
       );
 
       if (wcaResponse.ok) {
@@ -74,7 +85,7 @@ export async function GET(request: NextRequest) {
         // Token expired but public API also failed - this shouldn't normally happen
         console.warn(
           "Both public and authenticated WCA API requests failed for user:",
-          wcaId
+          wcaId,
         );
       }
     }
@@ -85,13 +96,13 @@ export async function GET(request: NextRequest) {
         success: false,
         error: "Failed to fetch upcoming competitions from WCA API",
       },
-      { status: 502 }
+      { status: 502 },
     );
   } catch (error) {
     console.error("Error fetching upcoming competitions:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

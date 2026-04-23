@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     if (!code) {
       return NextResponse.json(
         { success: false, error: "Authorization code is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       });
       return NextResponse.json(
         { success: false, error: "Server configuration error" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
           code: code,
           redirect_uri: WCA_REDIRECT_URI,
         }),
-      }
+      },
     );
 
     if (!tokenResponse.ok) {
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       console.error("Token exchange failed:", errorData);
       return NextResponse.json(
         { success: false, error: "Failed to exchange authorization code" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -74,14 +74,14 @@ export async function POST(request: NextRequest) {
         headers: {
           Authorization: `Bearer ${tokenData.access_token}`,
         },
-      }
+      },
     );
 
     if (!userResponse.ok) {
       console.error("Failed to fetch user data from WCA");
       return NextResponse.json(
         { success: false, error: "Failed to fetch user information" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -90,23 +90,10 @@ export async function POST(request: NextRequest) {
     // Debug log to see what data we're getting from WCA
     console.log("WCA User Data:", JSON.stringify(userData, null, 2));
 
-    // Check if user has a real WCA ID
-    if (!userData.me.wca_id) {
-      console.log("User does not have a WCA ID:", userData.me.name);
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            "You must compete in at least one WCA competition to use CubeDev. Please register for and attend a competition to get your WCA ID.",
-        },
-        { status: 403 }
-      );
-    }
-
     // Save user data to Convex database
     try {
       const userDataForConvex: any = {
-        wcaId: userData.me.wca_id,
+        wcaId: userData.me.wca_id || undefined,
         wcaUserId: userData.me.id,
         name: userData.me.name,
         countryIso2: userData.me.country_iso2,
@@ -124,8 +111,22 @@ export async function POST(request: NextRequest) {
 
       const userId = await convex.mutation(
         api.users.upsertUser,
-        userDataForConvex
+        userDataForConvex,
       );
+
+      const userRecord = await convex.query(api.users.getUserById, {
+        id: userId,
+      });
+
+      if (!userRecord) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Failed to load user after authentication",
+          },
+          { status: 500 },
+        );
+      }
 
       // Return success with user data including Convex user ID
       return NextResponse.json({
@@ -134,7 +135,8 @@ export async function POST(request: NextRequest) {
           id: userData.me.id,
           convexId: userId,
           name: userData.me.name,
-          wcaId: userData.me.wca_id,
+          wcaId: userRecord.wcaId,
+          idSource: userRecord.idSource,
           countryIso2: userData.me.country_iso2,
           avatar: userData.me.avatar,
           email: userData.me.email,
@@ -143,26 +145,34 @@ export async function POST(request: NextRequest) {
       });
     } catch (convexError) {
       console.error("Failed to save user to Convex:", convexError);
-      // Still return success but log the database error
-      return NextResponse.json({
-        success: true,
-        user: {
-          id: userData.me.id,
-          name: userData.me.name,
-          wcaId: userData.me.wca_id,
-          countryIso2: userData.me.country_iso2,
-          avatar: userData.me.avatar,
-          email: userData.me.email,
+      const errorMessage =
+        convexError instanceof Error
+          ? convexError.message
+          : "Failed to save user to database";
+
+      if (errorMessage.includes("already linked to another account")) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "This WCA ID is already linked to another account",
+          },
+          { status: 409 },
+        );
+      }
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: errorMessage,
         },
-        accessToken: tokenData.access_token,
-        warning: "User authenticated but not saved to database",
-      });
+        { status: 500 },
+      );
     }
   } catch (error) {
     console.error("WCA OAuth error:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

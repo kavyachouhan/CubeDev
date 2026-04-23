@@ -29,6 +29,10 @@ interface UpcomingCompetition {
   event_ids?: string[];
 }
 
+const WCA_PERSON_ID_REGEX = /^\d{4}[A-Z]{4}\d{2}$/;
+const hasLinkedWcaId = (identifier?: string): identifier is string =>
+  !!identifier && WCA_PERSON_ID_REGEX.test(identifier.toUpperCase());
+
 // Cache key for registered competitions
 const getRegisteredCacheKey = (wcaId: string) => `registered_comps_${wcaId}`;
 
@@ -41,19 +45,21 @@ export default function UpcomingCompetitionsSuggestions() {
 
   const fetchUpcoming = useCallback(
     async (forceRefresh = false) => {
-      if (!user?.wcaId) {
+      const linkedWcaId = user?.wcaId;
+
+      if (!hasLinkedWcaId(linkedWcaId)) {
         setIsLoading(false);
         return;
       }
 
-      const cacheKey = getRegisteredCacheKey(user.wcaId);
+      const cacheKey = getRegisteredCacheKey(linkedWcaId);
 
       // Check cache first
       const { data: cached, isStale } = getFromCacheWithStaleCheck<
         UpcomingCompetition[]
       >(
         cacheKey,
-        15 * 60 * 1000 // 15 minutes stale threshold
+        15 * 60 * 1000, // 15 minutes stale threshold
       );
 
       // Use cached data if fresh
@@ -76,7 +82,7 @@ export default function UpcomingCompetitionsSuggestions() {
         setError(null);
 
         const response = await fetch(
-          `/api/competition/upcoming?wcaId=${encodeURIComponent(user.wcaId)}`
+          `/api/competition/upcoming?wcaId=${encodeURIComponent(linkedWcaId)}`,
         );
 
         if (!response.ok) {
@@ -105,7 +111,7 @@ export default function UpcomingCompetitionsSuggestions() {
         setIsRefreshing(false);
       }
     },
-    [user?.wcaId]
+    [user?.wcaId],
   );
 
   useEffect(() => {
@@ -143,17 +149,24 @@ export default function UpcomingCompetitionsSuggestions() {
   }
 
   // Not logged in
-  if (!user?.wcaId) {
+  if (!hasLinkedWcaId(user?.wcaId)) {
     return (
       <div className="timer-card">
         <div className="text-center py-12">
           <AlertCircle className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
-            Sign in Required
+            WCA ID Required
           </h3>
           <p className="text-sm text-(--text-secondary) mb-4">
-            Sign in with your WCA account to see your registered competitions.
+            Link your WCA ID from Settings to see your registered competitions.
           </p>
+          <Link
+            href="/me"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            Open Settings
+            <ChevronRight className="w-4 h-4" />
+          </Link>
         </div>
       </div>
     );
@@ -278,7 +291,7 @@ export default function UpcomingCompetitionsSuggestions() {
                       <span>
                         {formatCompetitionDateRange(
                           comp.start_date,
-                          comp.end_date
+                          comp.end_date,
                         )}
                       </span>
                     </span>
