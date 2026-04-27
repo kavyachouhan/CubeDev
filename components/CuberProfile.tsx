@@ -12,6 +12,7 @@ import CubeDevStats from "./profile/CubeDevStats";
 import WCAStats from "./profile/WCAStats";
 import ProfileTrainingTab from "./profile/ProfileTrainingTab";
 import { ProfileSidebarSkeleton } from "./SkeletonLoaders";
+import { isWcaIdentifier } from "@/lib/identifier-utils";
 
 // Import cache utilities
 import { getFromCache, saveToCache, WCA_CACHE_KEYS } from "@/lib/wca-cache";
@@ -80,10 +81,6 @@ interface CompetitionInfo {
   mainEvent?: string;
 }
 
-const WCA_PERSON_ID_REGEX = /^\d{4}[A-Z]{4}\d{2}$/;
-const hasLinkedWcaId = (identifier?: string) =>
-  !!identifier && WCA_PERSON_ID_REGEX.test(identifier.toUpperCase());
-
 export default function CuberProfile({ wcaId }: CuberProfileProps) {
   const [profileData, setProfileData] = useState<WCAProfileData | null>(null);
   const [personalRecords, setPersonalRecords] = useState<
@@ -116,7 +113,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
   });
   const cubeDevUser = identifierLookup?.user || null;
   const resolvedIdentifier = cubeDevUser?.wcaId || wcaId;
-  const canLoadWcaData = hasLinkedWcaId(resolvedIdentifier);
+  const canLoadWcaData = isWcaIdentifier(resolvedIdentifier);
 
   // Check privacy settings
   const privacySettings = useQuery(api.users.isUserProfilePrivate, { wcaId });
@@ -503,6 +500,17 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
     }
   }, [currentTab, canLoadWcaData, shouldLoadCompetitions]);
 
+  // If user tries to access WCA tab but they can't load WCA data, redirect them back to CubeDev tab
+  useEffect(() => {
+    if (currentTab === "wca" && !canLoadWcaData) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("tab");
+      router.replace(
+        pathname + (params.toString() ? "?" + params.toString() : ""),
+      );
+    }
+  }, [currentTab, canLoadWcaData, pathname, router, searchParams]);
+
   if (
     isLoading ||
     identifierLookup === undefined ||
@@ -561,7 +569,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
         <div className="min-h-screen bg-(--background)">
           <div className="container-responsive py-6 max-w-7xl">
             <div className="flex flex-col lg:flex-row gap-6">
-              <div className="lg:w-80 lg:flex-shrink-0">
+              <div className="lg:w-80 lg:shrink-0">
                 <ProfileSidebarSkeleton />
               </div>
               <div className="flex-1 min-w-0">
@@ -596,7 +604,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
         {/* Profile Header */}
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Left Sidebar - Profile Information */}
-          <div className="lg:w-80 lg:flex-shrink-0">
+          <div className="lg:w-80 lg:shrink-0">
             <ProfileSidebar
               person={person}
               wcaId={resolvedIdentifier}
@@ -630,22 +638,18 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
                 >
                   Training
                 </button>
-                <button
-                  onClick={() => handleTabChange("wca")}
-                  disabled={!canLoadWcaData}
-                  title={
-                    canLoadWcaData
-                      ? ""
-                      : "This user has not linked a WCA ID yet"
-                  }
-                  className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
-                    currentTab === "wca"
-                      ? "border-(--primary) text-(--primary)"
-                      : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
-                  }`}
-                >
-                  WCA Stats
-                </button>
+                {canLoadWcaData && (
+                  <button
+                    onClick={() => handleTabChange("wca")}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                      currentTab === "wca"
+                        ? "border-(--primary) text-(--primary)"
+                        : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
+                    }`}
+                  >
+                    WCA Stats
+                  </button>
+                )}
               </nav>
             </div>
 

@@ -19,9 +19,6 @@ import {
   Timer,
   Settings,
 } from "lucide-react";
-const WCA_PERSON_ID_REGEX = /^\d{4}[A-Z]{4}\d{2}$/;
-const hasLinkedWcaId = (identifier?: string): identifier is string =>
-  !!identifier && WCA_PERSON_ID_REGEX.test(identifier.toUpperCase());
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { WCA_CONFIG } from "@/lib/wca-config";
@@ -227,16 +224,10 @@ export default function SimulationConfig() {
   };
 
   const handleStartSimulation = async () => {
-    const linkedWcaId = user?.wcaId;
+    const userIdentifier = user?.wcaId;
 
-    if (
-      !competition ||
-      selectedEvents.length === 0 ||
-      !hasLinkedWcaId(linkedWcaId)
-    ) {
-      setError(
-        "Link your WCA ID in Settings to start a competition simulation.",
-      );
+    if (!competition || selectedEvents.length === 0 || !userIdentifier) {
+      setError("Sign in to start a competition simulation.");
       return;
     }
 
@@ -244,7 +235,7 @@ export default function SimulationConfig() {
     try {
       // Create simulation in Convex
       const simulationId = await createSimulation({
-        wcaId: linkedWcaId,
+        wcaId: userIdentifier,
         competitionId: competition.id,
         competitionName: competition.name,
         competitionDate: competition.start_date,

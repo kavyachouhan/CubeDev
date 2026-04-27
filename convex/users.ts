@@ -1,6 +1,12 @@
 import { v } from "convex/values";
 import { mutation, query, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
+import {
+  isCubeDevIdentifier,
+  isWcaIdentifier,
+  normalizeIdentifier,
+  resolveUserByIdentifierOrAlias,
+} from "./identifierResolver";
 
 const TIMER_IMPORT_ONBOARDING_REMINDER_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -13,15 +19,6 @@ const DEFAULT_COACHING_NOTIFICATION_SETTINGS = {
 };
 
 const DEFAULT_ALGORITHM_REMINDERS = true;
-
-const WCA_ID_REGEX = /^\d{4}[A-Z]{4}\d{2}$/;
-const CUBEDEV_ID_REGEX = /^CD\d{4}[A-Z]{4}\d{2}$/;
-
-const normalizeIdentifier = (identifier: string) =>
-  identifier.trim().toUpperCase();
-
-const isCubeDevIdentifier = (identifier: string) =>
-  CUBEDEV_ID_REGEX.test(normalizeIdentifier(identifier));
 
 const getLastNameToken = (name: string) => {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -118,35 +115,6 @@ const generateCubeDevIdentifier = async (
   }
 
   throw new Error("Unable to allocate a unique CubeDev ID. Please try again.");
-};
-
-const resolveUserByIdentifierOrAlias = async (ctx: any, identifier: string) => {
-  const normalizedIdentifier = normalizeIdentifier(identifier);
-
-  const directUser = await ctx.db
-    .query("users")
-    .withIndex("by_wca_id", (q: any) => q.eq("wcaId", normalizedIdentifier))
-    .first();
-
-  if (directUser) {
-    return { user: directUser, redirectTo: undefined as string | undefined };
-  }
-
-  const alias = await ctx.db
-    .query("userIdentifierAliases")
-    .withIndex("by_alias_id", (q: any) => q.eq("aliasId", normalizedIdentifier))
-    .first();
-
-  if (!alias) {
-    return { user: null, redirectTo: undefined as string | undefined };
-  }
-
-  const aliasedUser = await ctx.db.get(alias.userId);
-  if (!aliasedUser) {
-    return { user: null, redirectTo: undefined as string | undefined };
-  }
-
-  return { user: aliasedUser, redirectTo: aliasedUser.wcaId };
 };
 
 // Upsert (create or update) user profile
@@ -345,7 +313,7 @@ export const getOrCreateUser = mutation({
     const userId = await ctx.db.insert("users", {
       wcaId: normalizedIdentifier,
       wcaUserId: args.wcaUserId,
-      idSource: WCA_ID_REGEX.test(normalizedIdentifier) ? "wca" : "cd",
+      idSource: isWcaIdentifier(normalizedIdentifier) ? "wca" : "cd",
       name: args.name,
       email: args.email,
       countryIso2: args.countryIso2,

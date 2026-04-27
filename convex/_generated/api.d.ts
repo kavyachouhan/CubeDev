@@ -23,6 +23,7 @@ import type * as contactMessages from "../contactMessages.js";
 import type * as crons from "../crons.js";
 import type * as faq from "../faq.js";
 import type * as feedbackResponses from "../feedbackResponses.js";
+import type * as identifierResolver from "../identifierResolver.js";
 import type * as pushNodeActions from "../pushNodeActions.js";
 import type * as pushNotifications from "../pushNotifications.js";
 import type * as seedAlgorithms from "../seedAlgorithms.js";
@@ -59,6 +60,7 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   faq: typeof faq;
   feedbackResponses: typeof feedbackResponses;
+  identifierResolver: typeof identifierResolver;
   pushNodeActions: typeof pushNodeActions;
   pushNotifications: typeof pushNotifications;
   seedAlgorithms: typeof seedAlgorithms;

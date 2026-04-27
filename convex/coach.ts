@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
+import { resolveUserByIdentifierOrAlias } from "./identifierResolver";
 
 // Get coach profile for a user
 export const getCoachProfile = query({
@@ -17,11 +18,8 @@ export const getCoachProfile = query({
 export const getCoachProfileByWcaId = query({
   args: { wcaId: v.string() },
   handler: async (ctx, args) => {
-    // First find the user by WCA ID
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_wca_id", (q) => q.eq("wcaId", args.wcaId))
-      .first();
+    // Resolve by canonical identifier first, then alias fallback.
+    const { user } = await resolveUserByIdentifierOrAlias(ctx, args.wcaId);
 
     if (!user) {
       return null;
@@ -50,11 +48,8 @@ export const getCoachProfileByWcaId = query({
 export const getProgressStatsByWcaId = query({
   args: { wcaId: v.string() },
   handler: async (ctx, args) => {
-    // First find the user by WCA ID
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_wca_id", (q) => q.eq("wcaId", args.wcaId))
-      .first();
+    // Resolve by canonical identifier first, then alias fallback.
+    const { user } = await resolveUserByIdentifierOrAlias(ctx, args.wcaId);
 
     if (!user) {
       return null;
@@ -423,11 +418,8 @@ export const getGoalHistoryByWcaId = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    // First find the user by WCA ID
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_wca_id", (q) => q.eq("wcaId", args.wcaId))
-      .first();
+    // Resolve by canonical identifier first, then alias fallback.
+    const { user } = await resolveUserByIdentifierOrAlias(ctx, args.wcaId);
 
     if (!user) {
       return [];
