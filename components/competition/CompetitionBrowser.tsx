@@ -35,6 +35,7 @@ import UpcomingCompetitionsSuggestions from "./UpcomingCompetitionsSuggestions";
 import RegionDropdown from "./RegionDropdown";
 import { CompetitionCardsSkeleton } from "@/components/SkeletonLoaders";
 import CompetitionWalkthrough from "./CompetitionWalkthrough";
+import { useTheme } from "@/lib/theme-context";
 
 // WCA Events with icons
 export const WCA_EVENTS = [
@@ -106,6 +107,7 @@ const REGIONS = [
 export default function CompetitionBrowser() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { effectiveTheme } = useTheme();
   const getInitialTab = (): "browse" | "registered" | "history" => {
     const tab = searchParams.get("tab");
     if (tab === "registered") return "registered";
@@ -162,7 +164,7 @@ export default function CompetitionBrowser() {
         WCACompetition[]
       >(
         cacheKey,
-        15 * 60 * 1000 // 15 minutes
+        15 * 60 * 1000, // 15 minutes
       );
 
       // Use cached data if fresh
@@ -252,7 +254,7 @@ export default function CompetitionBrowser() {
         // Only set error if no cached data
         if (!cached) {
           setError(
-            err instanceof Error ? err.message : "Failed to load competitions"
+            err instanceof Error ? err.message : "Failed to load competitions",
           );
         }
         // Log error if refreshing in background
@@ -262,7 +264,7 @@ export default function CompetitionBrowser() {
         setIsRefreshing(false);
       }
     },
-    [timeFilter, selectedRegion]
+    [timeFilter, selectedRegion],
   );
 
   useEffect(() => {
@@ -282,13 +284,13 @@ export default function CompetitionBrowser() {
         (comp) =>
           comp.name.toLowerCase().includes(query) ||
           comp.city.toLowerCase().includes(query) ||
-          comp.country_iso2.toLowerCase().includes(query)
+          comp.country_iso2.toLowerCase().includes(query),
       );
     }
 
     if (selectedEvents.length > 0) {
       filtered = filtered.filter((comp) =>
-        selectedEvents.some((event) => comp.event_ids.includes(event))
+        selectedEvents.some((event) => comp.event_ids.includes(event)),
       );
     }
 
@@ -332,16 +334,17 @@ export default function CompetitionBrowser() {
 
   const paginatedCompetitions = filteredCompetitions.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   const totalPages = Math.ceil(filteredCompetitions.length / itemsPerPage);
+  const isDarkTheme = effectiveTheme === "dark";
 
   const toggleEvent = (eventId: string) => {
     setSelectedEvents((prev) =>
       prev.includes(eventId)
         ? prev.filter((e) => e !== eventId)
-        : [...prev, eventId]
+        : [...prev, eventId],
     );
   };
 
@@ -354,7 +357,7 @@ export default function CompetitionBrowser() {
     return getCompetitionStatusDisplay(
       comp.start_date,
       comp.end_date,
-      !!comp.cancelled_at
+      !!comp.cancelled_at,
     );
   };
 
@@ -525,7 +528,7 @@ export default function CompetitionBrowser() {
                           >
                             {f.charAt(0).toUpperCase() + f.slice(1)}
                           </button>
-                        )
+                        ),
                       )}
                     </div>
                   </div>
@@ -583,9 +586,7 @@ export default function CompetitionBrowser() {
             ) : paginatedCompetitions.length === 0 ? (
               <div className="timer-card text-center py-12">
                 <Trophy className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
-                <p className="text-(--text-secondary)">
-                  No competitions found
-                </p>
+                <p className="text-(--text-secondary)">No competitions found</p>
               </div>
             ) : (
               <div className="grid gap-3">
@@ -595,76 +596,77 @@ export default function CompetitionBrowser() {
                     <Link
                       key={comp.id}
                       href={`/cube-lab/competitions/${comp.id}`}
-                      className="timer-card hover:border-(--primary)/50 transition-all group"
+                      className="group timer-card block hover:border-(--primary)/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--primary) focus-visible:ring-offset-2 focus-visible:ring-offset-(--surface)"
                     >
-                      <div className="flex flex-col gap-3">
-                        {/* Header Row - Date, Status, CTA */}
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <div className="flex items-center gap-1.5 text-xs sm:text-sm text-(--text-primary)">
-                              <Calendar className="w-3.5 h-3.5 text-(--text-muted)" />
-                              <span className="font-medium">
-                                {formatDateRange(
-                                  comp.start_date,
-                                  comp.end_date
-                                )}
+                      <div className="flex flex-col gap-3 sm:gap-4">
+                        <div className="flex items-start justify-between gap-3 sm:gap-4">
+                          <div className="min-w-0 flex-1 space-y-2">
+                            <h3 className="line-clamp-2 text-sm font-semibold text-(--text-primary) transition-colors group-hover:text-(--primary) sm:text-base md:text-lg">
+                              {comp.name}
+                            </h3>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span
+                                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap ${status.color}`}
+                              >
+                                {status.label}
                               </span>
+                              {comp.competitor_limit && (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-(--border) bg-(--surface-elevated) px-2 py-0.5 text-xs font-medium text-(--text-secondary)">
+                                  <Users className="h-3 w-3" />
+                                  {comp.competitor_limit} limit
+                                </span>
+                              )}
                             </div>
-                            <span
-                              className={`px-2 py-0.5 text-xs rounded-full whitespace-nowrap ${status.color}`}
-                            >
-                              {status.label}
-                            </span>
                           </div>
-                          <span className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-(--primary) text-white text-xs sm:text-sm font-medium rounded-lg group-hover:bg-(--primary-hover) transition-colors whitespace-nowrap">
-                            <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+
+                          <span className="inline-flex min-h-9 min-w-10 items-center justify-center gap-1.5 rounded-lg bg-(--primary) px-3 py-2 text-xs font-semibold text-white transition-colors group-hover:bg-(--primary-hover) sm:min-w-28 sm:px-4 sm:text-sm">
+                            <Play className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
                             <span className="hidden sm:inline">Simulate</span>
                           </span>
                         </div>
 
-                        {/* Competition Info */}
-                        <div className="space-y-2">
-                          <h3 className="font-semibold text-(--text-primary) group-hover:text-(--primary) transition-colors text-sm sm:text-base">
-                            {comp.name}
-                          </h3>
-                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-(--text-muted)">
-                            <span className="flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
+                          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                            <Calendar className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
+                            <span className="truncate">
+                              {formatDateRange(comp.start_date, comp.end_date)}
+                            </span>
+                          </span>
+                          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                            <MapPin className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
+                            <span className="truncate">
                               {comp.city}, {comp.country_iso2}
                             </span>
-                            {comp.competitor_limit && (
-                              <span className="flex items-center gap-1">
-                                <Users className="w-3 h-3" />
-                                {comp.competitor_limit} limit
-                              </span>
-                            )}
-                          </div>
+                          </span>
                         </div>
 
-                        {/* Events */}
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-1.5 border-t border-(--border) pt-3 sm:gap-2 sm:pt-4">
                           {comp.event_ids.slice(0, 12).map((eventId) => {
                             const event = WCA_EVENTS.find(
-                              (e) => e.id === eventId
+                              (e) => e.id === eventId,
                             );
                             return event ? (
                               <div
                                 key={eventId}
-                                className="p-1 rounded bg-(--surface-elevated)"
+                                className="rounded-md border border-(--border) bg-(--surface-elevated) p-1.5"
                                 title={event.name}
                               >
                                 <Image
                                   src={event.icon}
                                   alt={event.name}
-                                  width={14}
-                                  height={14}
-                                  className="invert opacity-70"
+                                  width={16}
+                                  height={16}
+                                  className={`h-4 w-4 ${
+                                    isDarkTheme
+                                      ? "invert opacity-80"
+                                      : "opacity-80"
+                                  }`}
                                 />
                               </div>
                             ) : null;
                           })}
                           {comp.event_ids.length > 12 && (
-                            <span className="px-1.5 py-0.5 text-xs text-(--text-muted) bg-(--surface-elevated) rounded">
+                            <span className="inline-flex items-center rounded-md border border-(--border) bg-(--surface-elevated) px-2 py-1 text-xs font-medium text-(--text-muted)">
                               +{comp.event_ids.length - 12}
                             </span>
                           )}

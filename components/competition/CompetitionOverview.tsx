@@ -67,10 +67,6 @@ const getCompletedRounds = (
   );
 };
 
-const WCA_PERSON_ID_REGEX = /^\d{4}[A-Z]{4}\d{2}$/;
-const hasLinkedWcaId = (identifier?: string): identifier is string =>
-  !!identifier && WCA_PERSON_ID_REGEX.test(identifier.toUpperCase());
-
 interface CompetitionDetails extends WCACompetition {
   information?: string;
   organizers?: { name: string; email?: string }[];
@@ -164,11 +160,11 @@ export default function CompetitionOverview() {
   };
 
   // Fetch simulations for this competition
-  const linkedWcaId = hasLinkedWcaId(user?.wcaId) ? user?.wcaId : undefined;
+  const userIdentifier = user?.wcaId;
   const simulations = useQuery(
     api.competitionSimulations.getUserSimulationsForCompetition,
-    linkedWcaId && competitionId
-      ? { wcaId: linkedWcaId, competitionId }
+    userIdentifier && competitionId
+      ? { wcaId: userIdentifier, competitionId }
       : "skip",
   );
 

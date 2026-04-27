@@ -19,10 +19,7 @@ import { useUser } from "@/components/UserProvider";
 import { WCA_EVENTS } from "./CompetitionBrowser";
 import { formatTime } from "@/lib/stats-utils";
 import { SimulationHistorySkeleton } from "@/components/SkeletonLoaders";
-
-const WCA_PERSON_ID_REGEX = /^\d{4}[A-Z]{4}\d{2}$/;
-const hasLinkedWcaId = (identifier?: string): identifier is string =>
-  !!identifier && WCA_PERSON_ID_REGEX.test(identifier.toUpperCase());
+import { useTheme } from "@/lib/theme-context";
 
 // Helper to get max rounds for an event, with fallback for older simulations
 const getMaxRoundsWithFallback = (
@@ -75,18 +72,23 @@ export default function SimulationHistory({
   compact = false,
 }: SimulationHistoryProps) {
   const { user } = useUser();
-  const canFetchSimulations = hasLinkedWcaId(user?.wcaId);
+  const { effectiveTheme } = useTheme();
+  const userIdentifier = user?.wcaId;
+  const canFetchSimulations = !!userIdentifier;
+  const isDarkTheme = effectiveTheme === "dark";
 
   // Fetch recent simulations
   const recentSimulations = useQuery(
     api.competitionSimulations.getUserRecentSimulations,
-    canFetchSimulations && user?.wcaId ? { wcaId: user.wcaId, limit } : "skip",
+    canFetchSimulations && userIdentifier
+      ? { wcaId: userIdentifier, limit }
+      : "skip",
   );
 
   // Fetch in-progress simulations
   const inProgressSimulations = useQuery(
     api.competitionSimulations.getInProgressSimulations,
-    canFetchSimulations && user?.wcaId ? { wcaId: user.wcaId } : "skip",
+    canFetchSimulations && userIdentifier ? { wcaId: userIdentifier } : "skip",
   );
 
   const formatDate = (timestamp: number) => {
@@ -155,10 +157,10 @@ export default function SimulationHistory({
         <div className="text-center py-8">
           <AlertTriangle className="w-10 h-10 text-(--text-muted) mx-auto mb-3" />
           <h4 className="text-sm font-medium text-(--text-primary) mb-1">
-            WCA ID Required
+            Sign In Required
           </h4>
           <p className="text-xs text-(--text-muted) mb-4">
-            Link your WCA ID in Settings to unlock competition simulations.
+            Sign in to unlock competition simulations.
           </p>
           <Link
             href="/me"
@@ -203,7 +205,7 @@ export default function SimulationHistory({
   }
 
   return (
-    <div className={`timer-card ${compact ? "p-3" : ""}`}>
+    <div className={`${compact ? "p-3" : ""}`}>
       {showTitle && (
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold text-(--text-primary) flex items-center gap-2">
@@ -238,80 +240,105 @@ export default function SimulationHistory({
             <Link
               key={sim._id}
               href={`/cube-lab/competitions/${sim.competitionId}/simulate/${sim._id}`}
-              className="block p-3 rounded-lg border border-(--border) hover:border-(--primary)/50 bg-(--surface) hover:bg-(--surface-elevated) transition-all group"
+              className="group timer-card block hover:border-(--primary)/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--primary) focus-visible:ring-offset-2 focus-visible:ring-offset-(--surface)"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium text-(--text-primary) text-sm truncate">
+              <div className="flex flex-col gap-3 sm:gap-4">
+                <div className="flex items-start justify-between gap-3 sm:gap-4">
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <h4 className="line-clamp-2 text-sm font-semibold text-(--text-primary) transition-colors group-hover:text-(--primary) sm:text-base md:text-lg">
                       {sim.competitionName}
-                    </span>
-                    {getStatusBadge(sim.status)}
-                  </div>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-(--text-muted)">
-                    <span>{formatDate(sim.startedAt)}</span>
-                    <span>
-                      {completedRounds}/{totalRounds} rounds
-                    </span>
-                  </div>
-
-                  {/* Event icons */}
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {(sim.selectedEvents as string[])
-                      .slice(0, 6)
-                      .map((eventId: string) => {
-                        const event = WCA_EVENTS.find((e) => e.id === eventId);
-                        const isCompleted =
-                          sim.completedEvents?.includes(eventId);
-                        return event ? (
-                          <div
-                            key={eventId}
-                            className={`p-1 rounded ${
-                              isCompleted
-                                ? "bg-(--success)/20"
-                                : "bg-(--surface-elevated)"
-                            }`}
-                            title={`${event.name}${isCompleted ? " (completed)" : ""}`}
-                          >
-                            <Image
-                              src={event.icon}
-                              alt={event.name}
-                              width={14}
-                              height={14}
-                              className={`invert ${isCompleted ? "opacity-100" : "opacity-60"}`}
-                            />
-                          </div>
-                        ) : null;
-                      })}
-                    {sim.selectedEvents.length > 6 && (
-                      <span className="px-1.5 text-[10px] text-(--text-muted) bg-(--surface-elevated) rounded flex items-center">
-                        +{sim.selectedEvents.length - 6}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {isInProgress && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-(--surface-elevated) rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-(--primary) transition-all"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                      <span className="text-xs text-(--text-muted)">
-                        {progress}%
+                    </h4>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {getStatusBadge(sim.status)}
+                      <span className="inline-flex items-center rounded-full border border-(--border) bg-(--surface-elevated) px-2 py-0.5 text-xs font-medium text-(--text-secondary)">
+                        {completedRounds}/{totalRounds} rounds
                       </span>
                     </div>
-                  )}
-                  {sim.status === "completed" && (
-                    <span className="text-xs text-(--success)">
-                      View Results
+                  </div>
+
+                  <span className="inline-flex min-h-9 min-w-10 items-center justify-center gap-1.5 rounded-lg bg-(--primary) px-3 py-2 text-xs font-semibold text-white transition-colors group-hover:bg-(--primary-hover) sm:min-w-28 sm:px-4 sm:text-sm">
+                    <Play className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">
+                      {isInProgress ? "Continue" : "Open"}
+                    </span>
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
+                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                    <Clock className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
+                    <span className="truncate">
+                      {formatDate(sim.startedAt)}
+                    </span>
+                  </span>
+                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                    <Trophy className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
+                    <span className="truncate">
+                      {sim.status === "completed"
+                        ? `Best ${formatTime(sim.bestTime || 0)}`
+                        : `${progress}% complete`}
+                    </span>
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5 border-t border-(--border) pt-3 sm:gap-2 sm:pt-4">
+                  {(sim.selectedEvents as string[])
+                    .slice(0, 6)
+                    .map((eventId: string) => {
+                      const event = WCA_EVENTS.find((e) => e.id === eventId);
+                      const isCompleted =
+                        sim.completedEvents?.includes(eventId);
+                      return event ? (
+                        <div
+                          key={eventId}
+                          className={`rounded-md border p-1.5 ${
+                            isCompleted
+                              ? "border-(--success)/40 bg-(--success)/10"
+                              : "border-(--border) bg-(--surface-elevated)"
+                          }`}
+                          title={`${event.name}${isCompleted ? " (completed)" : ""}`}
+                        >
+                          <Image
+                            src={event.icon}
+                            alt={event.name}
+                            width={16}
+                            height={16}
+                            className={`h-4 w-4 ${
+                              isDarkTheme ? "invert" : ""
+                            } ${isCompleted ? "opacity-100" : "opacity-70"}`}
+                          />
+                        </div>
+                      ) : null;
+                    })}
+                  {sim.selectedEvents.length > 6 && (
+                    <span className="inline-flex items-center rounded-md border border-(--border) bg-(--surface-elevated) px-2 py-1 text-xs font-medium text-(--text-muted)">
+                      +{sim.selectedEvents.length - 6}
                     </span>
                   )}
-                  <ChevronRight className="w-4 h-4 text-(--text-muted) group-hover:text-(--primary) transition-colors" />
                 </div>
+
+                {isInProgress && (
+                  <div className="flex items-center gap-2">
+                    <div className="h-1.5 flex-1 rounded-full bg-(--surface-elevated) overflow-hidden">
+                      <div
+                        className="h-full bg-(--primary) transition-all"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-(--text-muted)">
+                      {progress}%
+                    </span>
+                  </div>
+                )}
+
+                {sim.status === "completed" && (
+                  <div className="flex items-center justify-end">
+                    <span className="text-xs font-medium text-(--success)">
+                      View Results
+                    </span>
+                    <ChevronRight className="ml-1 h-4 w-4 text-(--text-muted) transition-colors group-hover:text-(--primary)" />
+                  </div>
+                )}
               </div>
             </Link>
           );
