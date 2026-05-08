@@ -24,10 +24,16 @@ import {
   isPersonalRecord,
 } from "@/lib/wca-stats-utils";
 import { getFromCache, saveToCache } from "@/lib/wca-cache";
+import { isWcaIdentifier } from "@/lib/identifier-utils";
 
 type WCAStatsTab = "birthdays" | "kinch" | "sum-of-ranks" | "record-streak";
 
-const VALID_TABS: WCAStatsTab[] = ["birthdays", "kinch", "sum-of-ranks", "record-streak"];
+const VALID_TABS: WCAStatsTab[] = [
+  "birthdays",
+  "kinch",
+  "sum-of-ranks",
+  "record-streak",
+];
 
 interface CompetitionResult {
   competition_id: string;
@@ -45,7 +51,8 @@ export default function WCAStatsPage() {
   const pathname = usePathname();
 
   const tabParam = searchParams.get("tab") as WCAStatsTab | null;
-  const activeTab: WCAStatsTab = tabParam && VALID_TABS.includes(tabParam) ? tabParam : "birthdays";
+  const activeTab: WCAStatsTab =
+    tabParam && VALID_TABS.includes(tabParam) ? tabParam : "birthdays";
 
   const handleTabChange = (tab: WCAStatsTab) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -57,11 +64,36 @@ export default function WCAStatsPage() {
     router.push(pathname + (params.toString() ? "?" + params.toString() : ""));
   };
 
-  const tabs: { id: WCAStatsTab; label: string; shortLabel: string; icon: React.ReactNode }[] = [
-    { id: "birthdays", label: "WCA Birthdays", shortLabel: "Birthdays", icon: <Cake className="w-4 h-4" /> },
-    { id: "kinch", label: "Kinch Ranks", shortLabel: "Kinch", icon: <BarChart3 className="w-4 h-4" /> },
-    { id: "sum-of-ranks", label: "Sum of Ranks", shortLabel: "SoR", icon: <ArrowUpDown className="w-4 h-4" /> },
-    { id: "record-streak", label: "Record Streak", shortLabel: "Streak", icon: <Flame className="w-4 h-4" /> },
+  const tabs: {
+    id: WCAStatsTab;
+    label: string;
+    shortLabel: string;
+    icon: React.ReactNode;
+  }[] = [
+    {
+      id: "birthdays",
+      label: "WCA Birthdays",
+      shortLabel: "Birthdays",
+      icon: <Cake className="w-4 h-4" />,
+    },
+    {
+      id: "kinch",
+      label: "Kinch Ranks",
+      shortLabel: "Kinch",
+      icon: <BarChart3 className="w-4 h-4" />,
+    },
+    {
+      id: "sum-of-ranks",
+      label: "Sum of Ranks",
+      shortLabel: "SoR",
+      icon: <ArrowUpDown className="w-4 h-4" />,
+    },
+    {
+      id: "record-streak",
+      label: "Record Streak",
+      shortLabel: "Streak",
+      icon: <Flame className="w-4 h-4" />,
+    },
   ];
 
   return (
@@ -83,7 +115,7 @@ export default function WCAStatsPage() {
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 font-button border-b-2 -mb-[1px] ${
+              className={`flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 font-button border-b-2 -mb-px ${
                 activeTab === tab.id
                   ? "border-(--primary) text-(--primary)"
                   : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
@@ -106,7 +138,7 @@ export default function WCAStatsPage() {
   );
 }
 
-// ─── Shared WCA ID Search Component ────────────────────────────
+// WCA ID Search Component
 
 function WCAIdSearch({
   onSearch,
@@ -118,11 +150,25 @@ function WCAIdSearch({
   placeholder?: string;
 }) {
   const [inputValue, setInputValue] = useState("");
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = inputValue.trim().toUpperCase();
-    if (trimmed) onSearch(trimmed);
+
+    if (!trimmed) {
+      return;
+    }
+
+    if (!isWcaIdentifier(trimmed)) {
+      setValidationError(
+        "Use format 2015XXXX01 (4 digits + 4 letters + 2 digits).",
+      );
+      return;
+    }
+
+    setValidationError(null);
+    onSearch(trimmed);
   };
 
   return (
@@ -137,7 +183,12 @@ function WCAIdSearch({
             type="text"
             placeholder={placeholder}
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              setInputValue(e.target.value.toUpperCase());
+              if (validationError) {
+                setValidationError(null);
+              }
+            }}
             className="w-full pl-10 pr-4 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) transition-colors font-mono"
           />
         </div>
@@ -153,6 +204,15 @@ function WCAIdSearch({
           )}
         </button>
       </div>
+      {validationError ? (
+        <p className="mt-2 text-xs text-(--warning) font-inter">
+          {validationError}
+        </p>
+      ) : (
+        <p className="mt-2 text-xs text-(--text-muted) font-inter">
+          Format: 2015XXXX01
+        </p>
+      )}
     </form>
   );
 }
@@ -248,14 +308,14 @@ function WCABirthdays() {
             Accept: "application/json",
             "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
           },
-        }
+        },
       );
 
       if (!personRes.ok) {
         throw new Error(
           personRes.status === 404
             ? "WCA ID not found. Please check and try again."
-            : "Failed to fetch WCA data."
+            : "Failed to fetch WCA data.",
         );
       }
 
@@ -270,7 +330,7 @@ function WCABirthdays() {
             Accept: "application/json",
             "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
           },
-        }
+        },
       );
 
       if (resultsRes.ok) {
@@ -299,7 +359,7 @@ function WCABirthdays() {
                     Accept: "application/json",
                     "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
                   },
-                }
+                },
               );
               if (compRes.ok) {
                 return await compRes.json();
@@ -332,7 +392,11 @@ function WCABirthdays() {
           };
 
           setBirthdayInfo(info);
-          saveToCache(cacheKey, { personData: data, birthdayInfo: info }, 6 * 60 * 60 * 1000);
+          saveToCache(
+            cacheKey,
+            { personData: data, birthdayInfo: info },
+            6 * 60 * 60 * 1000,
+          );
         }
       }
     } catch (err: any) {
@@ -346,11 +410,13 @@ function WCABirthdays() {
     <div>
       <InfoCard title="What is a WCA Birthday?">
         <p>
-          A WCA Birthday is the anniversary of a competitor{"'s"} first World Cube Association competition.
-          It marks the day they officially entered the world of competitive speedcubing.
+          A WCA Birthday is the anniversary of a competitor{"'s"} first World
+          Cube Association competition. It marks the day they officially entered
+          the world of competitive speedcubing.
         </p>
         <p>
-          Search for any WCA ID to find out when they first competed, which competition it was, and how many years they{"'ve"} been competing.
+          Search for any WCA ID to find out when they first competed, which
+          competition it was, and how many years they{"'ve"} been competing.
         </p>
       </InfoCard>
 
@@ -377,7 +443,9 @@ function WCABirthdays() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
               <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border) text-center">
                 <Calendar className="w-5 h-5 text-(--primary) mx-auto mb-1.5" />
-                <div className="text-xs text-(--text-muted) font-inter mb-0.5">First Competition</div>
+                <div className="text-xs text-(--text-muted) font-inter mb-0.5">
+                  First Competition
+                </div>
                 <div className="text-sm font-semibold text-(--text-primary) font-mono">
                   {birthdayInfo.firstCompDate}
                 </div>
@@ -385,7 +453,9 @@ function WCABirthdays() {
 
               <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border) text-center">
                 <Trophy className="w-5 h-5 text-(--primary) mx-auto mb-1.5" />
-                <div className="text-xs text-(--text-muted) font-inter mb-0.5">Competition</div>
+                <div className="text-xs text-(--text-muted) font-inter mb-0.5">
+                  Competition
+                </div>
                 <div className="text-sm font-semibold text-(--text-primary) font-inter wrap-break-word">
                   {birthdayInfo.firstCompName}
                 </div>
@@ -393,11 +463,15 @@ function WCABirthdays() {
 
               <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border) text-center">
                 <Cake className="w-5 h-5 text-(--primary) mx-auto mb-1.5" />
-                <div className="text-xs text-(--text-muted) font-inter mb-0.5">WCA Age</div>
+                <div className="text-xs text-(--text-muted) font-inter mb-0.5">
+                  WCA Age
+                </div>
                 <div className="text-xl sm:text-2xl font-bold text-(--primary) font-mono">
                   {birthdayInfo.wcaAge}
                 </div>
-                <div className="text-xs text-(--text-muted) font-inter">years</div>
+                <div className="text-xs text-(--text-muted) font-inter">
+                  years
+                </div>
               </div>
             </div>
 
@@ -470,14 +544,14 @@ function KinchRanks() {
             Accept: "application/json",
             "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
           },
-        }
+        },
       );
 
       if (!personRes.ok) {
         throw new Error(
           personRes.status === 404
             ? "WCA ID not found."
-            : "Failed to fetch WCA data."
+            : "Failed to fetch WCA data.",
         );
       }
 
@@ -490,7 +564,10 @@ function KinchRanks() {
       let wrAverageData: Record<string, number> = {};
       try {
         const wrCacheKey = "wca_world_records_v2";
-        const cachedWR = getFromCache<{ singles: Record<string, number>; averages: Record<string, number> }>(wrCacheKey);
+        const cachedWR = getFromCache<{
+          singles: Record<string, number>;
+          averages: Record<string, number>;
+        }>(wrCacheKey);
         if (cachedWR) {
           wrSingleData = cachedWR.singles;
           wrAverageData = cachedWR.averages;
@@ -502,7 +579,7 @@ function KinchRanks() {
                 Accept: "application/json",
                 "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
               },
-            }
+            },
           );
           if (wrRes.ok) {
             const records = await wrRes.json();
@@ -516,10 +593,14 @@ function KinchRanks() {
                   if (record.average) {
                     wrAverageData[eventId] = record.average;
                   }
-                }
+                },
               );
             }
-            saveToCache(wrCacheKey, { singles: wrSingleData, averages: wrAverageData }, 24 * 60 * 60 * 1000);
+            saveToCache(
+              wrCacheKey,
+              { singles: wrSingleData, averages: wrAverageData },
+              24 * 60 * 60 * 1000,
+            );
           }
         }
       } catch {
@@ -555,15 +636,28 @@ function KinchRanks() {
           let avgScore = 0;
 
           if (singleBest > 0 && wrSingle > 0) {
-            singleScore = calculateKinchEventScore(singleBest, wrSingle, eventId);
+            singleScore = calculateKinchEventScore(
+              singleBest,
+              wrSingle,
+              eventId,
+            );
           }
           if (averageBest > 0 && wrAverage > 0) {
-            avgScore = calculateKinchEventScore(averageBest, wrAverage, eventId);
+            avgScore = calculateKinchEventScore(
+              averageBest,
+              wrAverage,
+              eventId,
+            );
           }
 
           score = Math.max(singleScore, avgScore);
           if (score > 0) {
-            result = formatTime(avgScore >= singleScore && averageBest > 0 ? averageBest : singleBest, eventId);
+            result = formatTime(
+              avgScore >= singleScore && averageBest > 0
+                ? averageBest
+                : singleBest,
+              eventId,
+            );
           }
         } else if (eventId === "333mbf") {
           // MBLD: use single only (no average in MBLD)
@@ -584,7 +678,7 @@ function KinchRanks() {
 
       // Calculate overall average
       const totalEvents = Object.keys(WCA_EVENTS).filter(
-        (e) => !DEPRECATED_EVENTS.has(e)
+        (e) => !DEPRECATED_EVENTS.has(e),
       ).length;
       const totalScore = scores.reduce((sum, s) => sum + s.score, 0);
       const overall = totalScore / totalEvents;
@@ -595,7 +689,7 @@ function KinchRanks() {
       saveToCache(
         cacheKey,
         { personData: data, kinchScores: scores, overallScore: overall },
-        60 * 60 * 1000
+        60 * 60 * 1000,
       );
     } catch (err: any) {
       setError(err.message || "An error occurred");
@@ -617,12 +711,16 @@ function KinchRanks() {
     <div>
       <InfoCard title="What is Kinch Ranks?">
         <p>
-          The Kinch system measures a cuber{"'s"} overall performance across all events.
-          For each event, the score is calculated as: <span className="font-mono text-(--primary)">(World Record / Your PB) x 100</span>
+          The Kinch system measures a cuber{"'s"} overall performance across all
+          events. For each event, the score is calculated as:{" "}
+          <span className="font-mono text-(--primary)">
+            (World Record / Your PB) x 100
+          </span>
         </p>
         <p>
-          The overall Kinch Score is the average of all event scores. Higher scores are better, with a maximum of 100.
-          For BLD and FMC events, the better of single and average scores is used.
+          The overall Kinch Score is the average of all event scores. Higher
+          scores are better, with a maximum of 100. For BLD and FMC events, the
+          better of single and average scores is used.
         </p>
       </InfoCard>
 
@@ -641,16 +739,24 @@ function KinchRanks() {
             <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement mb-0.5">
               {personData.person?.name}
             </h2>
-            <p className="text-(--text-muted) font-mono text-xs sm:text-sm mb-4">{wcaId}</p>
+            <p className="text-(--text-muted) font-mono text-xs sm:text-sm mb-4">
+              {wcaId}
+            </p>
 
-            <div className="inline-flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 mb-3"
+            <div
+              className="inline-flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 mb-3"
               style={{ borderColor: getScoreColor(overallScore) }}
             >
               <div>
-                <div className="text-2xl sm:text-3xl font-bold font-mono" style={{ color: getScoreColor(overallScore) }}>
+                <div
+                  className="text-2xl sm:text-3xl font-bold font-mono"
+                  style={{ color: getScoreColor(overallScore) }}
+                >
                   {overallScore.toFixed(2)}
                 </div>
-                <div className="text-[10px] sm:text-xs text-(--text-muted) font-inter">Kinch Score</div>
+                <div className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
+                  Kinch Score
+                </div>
               </div>
             </div>
 
@@ -673,9 +779,15 @@ function KinchRanks() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-(--border)">
-                    <th className="text-left px-3 sm:px-4 py-2.5 text-xs font-semibold text-(--text-secondary) font-statement">Event</th>
-                    <th className="text-right px-3 sm:px-4 py-2.5 text-xs font-semibold text-(--text-secondary) font-statement">Score</th>
-                    <th className="text-right px-3 sm:px-4 py-2.5 text-xs font-semibold text-(--text-secondary) font-statement hidden sm:table-cell">Result</th>
+                    <th className="text-left px-3 sm:px-4 py-2.5 text-xs font-semibold text-(--text-secondary) font-statement">
+                      Event
+                    </th>
+                    <th className="text-right px-3 sm:px-4 py-2.5 text-xs font-semibold text-(--text-secondary) font-statement">
+                      Score
+                    </th>
+                    <th className="text-right px-3 sm:px-4 py-2.5 text-xs font-semibold text-(--text-secondary) font-statement hidden sm:table-cell">
+                      Result
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -715,7 +827,8 @@ function KinchRanks() {
             Calculate Kinch Score
           </h3>
           <p className="text-sm text-(--text-secondary) font-inter max-w-md mx-auto">
-            Enter a WCA ID to calculate their all-round cubing performance score.
+            Enter a WCA ID to calculate their all-round cubing performance
+            score.
           </p>
         </div>
       )}
@@ -768,14 +881,14 @@ function SumOfRanks() {
               Accept: "application/json",
               "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
             },
-          }
+          },
         );
 
         if (!personRes.ok) {
           throw new Error(
             personRes.status === 404
               ? "WCA ID not found."
-              : "Failed to fetch WCA data."
+              : "Failed to fetch WCA data.",
           );
         }
 
@@ -817,12 +930,24 @@ function SumOfRanks() {
         });
 
         setEventRanks(ranks);
-        setTotals({ world: worldSum, continent: continentSum, country: countrySum });
+        setTotals({
+          world: worldSum,
+          continent: continentSum,
+          country: countrySum,
+        });
 
         saveToCache(
           cacheKey,
-          { personData: data, eventRanks: ranks, totals: { world: worldSum, continent: continentSum, country: countrySum } },
-          60 * 60 * 1000
+          {
+            personData: data,
+            eventRanks: ranks,
+            totals: {
+              world: worldSum,
+              continent: continentSum,
+              country: countrySum,
+            },
+          },
+          60 * 60 * 1000,
         );
       } catch (err: any) {
         setError(err.message || "An error occurred");
@@ -830,7 +955,7 @@ function SumOfRanks() {
         setIsLoading(false);
       }
     },
-    [rankType]
+    [rankType],
   );
 
   const getRankColor = (rank: number): string => {
@@ -852,11 +977,13 @@ function SumOfRanks() {
     <div>
       <InfoCard title="What is Sum of Ranks?">
         <p>
-          Sum of Ranks (SoR) measures a cuber{"'s"} overall performance by adding up their ranking in every event. Lower is better.
+          Sum of Ranks (SoR) measures a cuber{"'s"} overall performance by
+          adding up their ranking in every event. Lower is better.
         </p>
         <p>
-          You can view rankings by single or average, and at world, continental, or country level.
-          Unlike Kinch Ranks, SoR can have event biases since popular events have more competitors.
+          You can view rankings by single or average, and at world, continental,
+          or country level. Unlike Kinch Ranks, SoR can have event biases since
+          popular events have more competitors.
         </p>
       </InfoCard>
 
@@ -901,23 +1028,31 @@ function SumOfRanks() {
             <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement mb-0.5 text-center">
               {personData.person?.name}
             </h2>
-            <p className="text-(--text-muted) font-mono text-xs sm:text-sm mb-4 sm:mb-6 text-center">{wcaId}</p>
+            <p className="text-(--text-muted) font-mono text-xs sm:text-sm mb-4 sm:mb-6 text-center">
+              {wcaId}
+            </p>
 
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
               <div className="p-2.5 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border) text-center">
-                <div className="text-[10px] sm:text-sm text-(--text-muted) font-inter mb-0.5">World</div>
+                <div className="text-[10px] sm:text-sm text-(--text-muted) font-inter mb-0.5">
+                  World
+                </div>
                 <div className="text-lg sm:text-2xl font-bold text-(--primary) font-mono">
                   {totals.world.toLocaleString()}
                 </div>
               </div>
               <div className="p-2.5 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border) text-center">
-                <div className="text-[10px] sm:text-sm text-(--text-muted) font-inter mb-0.5">Continent</div>
+                <div className="text-[10px] sm:text-sm text-(--text-muted) font-inter mb-0.5">
+                  Continent
+                </div>
                 <div className="text-lg sm:text-2xl font-bold text-(--primary) font-mono">
                   {totals.continent.toLocaleString()}
                 </div>
               </div>
               <div className="p-2.5 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border) text-center">
-                <div className="text-[10px] sm:text-sm text-(--text-muted) font-inter mb-0.5">Country</div>
+                <div className="text-[10px] sm:text-sm text-(--text-muted) font-inter mb-0.5">
+                  Country
+                </div>
                 <div className="text-lg sm:text-2xl font-bold text-(--primary) font-mono">
                   {totals.country.toLocaleString()}
                 </div>
@@ -981,18 +1116,33 @@ function SumOfRanks() {
                         {WCA_EVENTS[row.eventId] || row.eventId}
                       </td>
                       <td className="px-2 sm:px-4 py-2.5 text-right">
-                        <span className="font-mono text-sm" style={{ color: getRankColor(row.worldRank) }}>
-                          {row.worldRank > 0 ? row.worldRank.toLocaleString() : "-"}
+                        <span
+                          className="font-mono text-sm"
+                          style={{ color: getRankColor(row.worldRank) }}
+                        >
+                          {row.worldRank > 0
+                            ? row.worldRank.toLocaleString()
+                            : "-"}
                         </span>
                       </td>
                       <td className="px-2 sm:px-4 py-2.5 text-right">
-                        <span className="font-mono text-sm" style={{ color: getRankColor(row.continentRank) }}>
-                          {row.continentRank > 0 ? row.continentRank.toLocaleString() : "-"}
+                        <span
+                          className="font-mono text-sm"
+                          style={{ color: getRankColor(row.continentRank) }}
+                        >
+                          {row.continentRank > 0
+                            ? row.continentRank.toLocaleString()
+                            : "-"}
                         </span>
                       </td>
                       <td className="px-2 sm:px-4 py-2.5 text-right">
-                        <span className="font-mono text-sm" style={{ color: getRankColor(row.countryRank) }}>
-                          {row.countryRank > 0 ? row.countryRank.toLocaleString() : "-"}
+                        <span
+                          className="font-mono text-sm"
+                          style={{ color: getRankColor(row.countryRank) }}
+                        >
+                          {row.countryRank > 0
+                            ? row.countryRank.toLocaleString()
+                            : "-"}
                         </span>
                       </td>
                     </tr>
@@ -1029,7 +1179,9 @@ function RecordStreak() {
   const [personData, setPersonData] = useState<any>(null);
   const [currentStreak, setCurrentStreak] = useState<string[]>([]);
   const [longestStreak, setLongestStreak] = useState<string[]>([]);
-  const [competitionNames, setCompetitionNames] = useState<Record<string, string>>({});
+  const [competitionNames, setCompetitionNames] = useState<
+    Record<string, string>
+  >({});
 
   const searchPerson = useCallback(async (id: string) => {
     setIsLoading(true);
@@ -1060,14 +1212,14 @@ function RecordStreak() {
             Accept: "application/json",
             "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
           },
-        }
+        },
       );
 
       if (!personRes.ok) {
         throw new Error(
           personRes.status === 404
             ? "WCA ID not found."
-            : "Failed to fetch WCA data."
+            : "Failed to fetch WCA data.",
         );
       }
 
@@ -1082,7 +1234,7 @@ function RecordStreak() {
             Accept: "application/json",
             "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
           },
-        }
+        },
       );
 
       if (!resultsRes.ok) {
@@ -1116,9 +1268,9 @@ function RecordStreak() {
       });
 
       // Process competitions in order to compute streaks
-      // Note: WCA API returns results roughly in chronological order, 
+      // Note: WCA API returns results roughly in chronological order,
       // but we should sort them. We'll fetch comp data to get dates.
-      
+
       // Fetch competition dates for proper ordering
       const compNames: Record<string, string> = {};
       const compDates: Record<string, string> = {};
@@ -1137,7 +1289,7 @@ function RecordStreak() {
                   Accept: "application/json",
                   "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
                 },
-              }
+              },
             );
             if (compRes.ok) {
               const comp = await compRes.json();
@@ -1208,7 +1360,7 @@ function RecordStreak() {
           longestStreak: longest,
           competitionNames: compNames,
         },
-        60 * 60 * 1000
+        60 * 60 * 1000,
       );
     } catch (err: any) {
       setError(err.message || "An error occurred");
@@ -1221,8 +1373,9 @@ function RecordStreak() {
     <div>
       <InfoCard title="How does Record Streak work?">
         <p>
-          A record streak counts consecutive WCA competitions where a competitor set or tied at least one
-          personal record (single or average) in any event.
+          A record streak counts consecutive WCA competitions where a competitor
+          set or tied at least one personal record (single or average) in any
+          event.
         </p>
         <p>
           We show both the current streak and the longest streak ever achieved.
@@ -1244,7 +1397,9 @@ function RecordStreak() {
             <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement mb-0.5">
               {personData.person?.name}
             </h2>
-            <p className="text-(--text-muted) font-mono text-xs sm:text-sm mb-4">{wcaId}</p>
+            <p className="text-(--text-muted) font-mono text-xs sm:text-sm mb-4">
+              {wcaId}
+            </p>
 
             <a
               href={`https://www.worldcubeassociation.org/persons/${wcaId}`}
@@ -1282,7 +1437,9 @@ function RecordStreak() {
                       key={compId}
                       className="flex items-center gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 bg-(--surface-elevated) rounded-lg border border-(--border)"
                     >
-                      <span className="text-xs font-mono text-(--text-muted) w-5">{i + 1}.</span>
+                      <span className="text-xs font-mono text-(--text-muted) w-5">
+                        {i + 1}.
+                      </span>
                       <span className="text-xs sm:text-sm text-(--text-primary) font-inter truncate">
                         {competitionNames[compId] || compId}
                       </span>
@@ -1319,7 +1476,9 @@ function RecordStreak() {
                       key={compId}
                       className="flex items-center gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 bg-(--surface-elevated) rounded-lg border border-(--border)"
                     >
-                      <span className="text-xs font-mono text-(--text-muted) w-5">{i + 1}.</span>
+                      <span className="text-xs font-mono text-(--text-muted) w-5">
+                        {i + 1}.
+                      </span>
                       <span className="text-xs sm:text-sm text-(--text-primary) font-inter truncate">
                         {competitionNames[compId] || compId}
                       </span>
@@ -1337,17 +1496,25 @@ function RecordStreak() {
       )}
 
       {/* Zero streak result */}
-      {personData && currentStreak.length === 0 && longestStreak.length === 0 && !isLoading && !error && wcaId && (
-        <div className="timer-card text-center py-6 sm:py-8">
-          <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement mb-0.5">
-            {personData.person?.name}
-          </h2>
-          <p className="text-(--text-muted) font-mono text-xs sm:text-sm mb-3">{wcaId}</p>
-          <p className="text-sm text-(--text-secondary) font-inter max-w-md mx-auto">
-            No personal record streaks found. This may happen if the competitor has only one competition.
-          </p>
-        </div>
-      )}
+      {personData &&
+        currentStreak.length === 0 &&
+        longestStreak.length === 0 &&
+        !isLoading &&
+        !error &&
+        wcaId && (
+          <div className="timer-card text-center py-6 sm:py-8">
+            <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement mb-0.5">
+              {personData.person?.name}
+            </h2>
+            <p className="text-(--text-muted) font-mono text-xs sm:text-sm mb-3">
+              {wcaId}
+            </p>
+            <p className="text-sm text-(--text-secondary) font-inter max-w-md mx-auto">
+              No personal record streaks found. This may happen if the
+              competitor has only one competition.
+            </p>
+          </div>
+        )}
 
       {/* Empty state */}
       {!isLoading && !error && !personData && (
@@ -1357,7 +1524,8 @@ function RecordStreak() {
             Record Streak Calculator
           </h3>
           <p className="text-sm text-(--text-secondary) font-inter max-w-md mx-auto">
-            Enter a WCA ID to see consecutive competitions with a personal record.
+            Enter a WCA ID to see consecutive competitions with a personal
+            record.
           </p>
         </div>
       )}
