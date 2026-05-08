@@ -3,6 +3,7 @@
 import { User, ExternalLink } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import { getWCAOAuthUrl } from "@/lib/wca-config";
+import { isCubeDevIdentifier } from "@/lib/identifier-utils";
 
 export default function ProfileSection() {
   const { user } = useUser();
@@ -10,7 +11,7 @@ export default function ProfileSection() {
   if (!user) return null;
 
   const userIdentifier = user.wcaId || "Unknown";
-  const isCdUser = userIdentifier.toUpperCase().startsWith("CD");
+  const isCdUser = isCubeDevIdentifier(user.wcaId);
 
   const handleReauth = () => {
     const wcaAuthUrl = getWCAOAuthUrl();

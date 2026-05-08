@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../../convex/_generated/api";
+import { isWcaIdentifier, normalizeIdentifier } from "@/lib/identifier-utils";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-const WCA_PERSON_ID_REGEX = /^\d{4}[A-Z]{4}\d{2}$/;
 
 type RegistrationStatus = "accepted" | "pending" | "waitlisted";
 
@@ -188,13 +188,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const normalizedWcaId = wcaId.toUpperCase();
+    const normalizedWcaId = normalizeIdentifier(wcaId);
 
-    if (!WCA_PERSON_ID_REGEX.test(normalizedWcaId)) {
+    if (!isWcaIdentifier(normalizedWcaId)) {
       return NextResponse.json(
         {
           success: false,
-          error: "Link a valid WCA ID in Settings to access this feature",
+          error:
+            "Invalid WCA ID format. Please provide a valid WCA ID (e.g. 2015XXXX01).",
         },
         { status: 400 },
       );

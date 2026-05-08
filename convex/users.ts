@@ -20,13 +20,12 @@ const DEFAULT_COACHING_NOTIFICATION_SETTINGS = {
 
 const DEFAULT_ALGORITHM_REMINDERS = true;
 
-const getLastNameToken = (name: string) => {
+const getFirstNameToken = (name: string) => {
   const parts = name.trim().split(/\s+/).filter(Boolean);
-  const lastName =
-    parts.length > 1 ? parts[parts.length - 1] : parts[0] || "USER";
-  const lettersOnly = lastName.toUpperCase().replace(/[^A-Z]/g, "");
-  const tokenBase = lettersOnly || "USER";
-  return tokenBase.slice(0, 4).padEnd(4, "X");
+  const firstName = parts[0] || "USER";
+  const lettersOnly = firstName.toUpperCase().replace(/[^A-Z]/g, "");
+  const tokenBase = lettersOnly || "USR";
+  return tokenBase.slice(0, 3).padEnd(3, "X");
 };
 
 const createIdentifierAlias = async (
@@ -58,9 +57,12 @@ const generateCubeDevIdentifier = async (
   name: string,
   now: number,
 ) => {
-  const year = new Date(now).getUTCFullYear();
-  const token = getLastNameToken(name);
+  const year = (new Date(now).getUTCFullYear() % 100)
+    .toString()
+    .padStart(2, "0");
+  const token = getFirstNameToken(name);
   const prefix = `CD${year}${token}`;
+  const sequenceRegex = new RegExp(`^${prefix}(\\d{2})$`);
 
   const users = await ctx.db.query("users").collect();
   const aliases = await ctx.db.query("userIdentifierAliases").collect();
@@ -68,11 +70,10 @@ const generateCubeDevIdentifier = async (
 
   for (const user of users) {
     const identifier = normalizeIdentifier(user.wcaId);
-    if (identifier.startsWith(prefix)) {
-      const seq = Number.parseInt(
-        identifier.slice(prefix.length, prefix.length + 2),
-        10,
-      );
+    const match = identifier.match(sequenceRegex);
+
+    if (match) {
+      const seq = Number.parseInt(match[1], 10);
       if (!Number.isNaN(seq)) {
         maxSequence = Math.max(maxSequence, seq);
       }
@@ -81,11 +82,11 @@ const generateCubeDevIdentifier = async (
 
   for (const alias of aliases) {
     const identifier = normalizeIdentifier(alias.aliasId);
-    if (identifier.startsWith(prefix)) {
-      const seq = Number.parseInt(
-        identifier.slice(prefix.length, prefix.length + 2),
-        10,
-      );
+
+    const match = identifier.match(sequenceRegex);
+
+    if (match) {
+      const seq = Number.parseInt(match[1], 10);
       if (!Number.isNaN(seq)) {
         maxSequence = Math.max(maxSequence, seq);
       }

@@ -4,7 +4,7 @@ import { v } from "convex/values";
 export default defineSchema({
   users: defineTable({
     // Core User Info
-    wcaId: v.string(), // Canonical user ID (WCA ID or CubeDev ID, e.g. "2019DOEJ01" or "CD2026XXXX01")
+    wcaId: v.string(), // Canonical identifier (WCA ID or CubeDev ID)
     wcaUserId: v.number(), // Internal WCA user ID
     idSource: v.optional(v.union(v.literal("wca"), v.literal("cd"))), // Source of canonical ID
     convertedToWcaAt: v.optional(v.number()), // Timestamp when CD ID was replaced with WCA ID
@@ -70,7 +70,7 @@ export default defineSchema({
       ),
     ), // Array of dismissed algorithm review notifications
   })
-    .index("by_wca_id", ["wcaId"]) // Index for fast lookup by WCA ID
+    .index("by_wca_id", ["wcaId"]) // Index for fast lookup by canonical identifier (WCA ID or CubeDev ID)
     .index("by_wca_user_id", ["wcaUserId"]) // Index for fast lookup by WCA user ID
     .index("by_email", ["email"]) // Index for fast lookup by email
     .index("by_deleted", ["isDeleted"]), // Index for filtering deleted users
@@ -281,7 +281,7 @@ export default defineSchema({
     message: v.string(), // Message content
 
     // Optional fields
-    wcaId: v.optional(v.string()), // WCA ID if provided
+    wcaId: v.optional(v.string()), // Sender's WCA ID if provided
     userId: v.optional(v.id("users")), // Reference to user if logged in
 
     // Metadata

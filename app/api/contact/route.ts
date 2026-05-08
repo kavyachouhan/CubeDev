@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-// Create a transporter using Gmail (you can change this to your preferred email service)
+// Configure the email transporter using environment variables for security
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.SMTP_USER, // Your email
-    pass: process.env.SMTP_PASSWORD, // Your email password or app-specific password
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASSWORD,
   },
 });
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (!name || !email || !subject || !message) {
       return NextResponse.json(
         { error: "All fields are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -105,13 +105,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       { message: "Message sent successfully!" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error sending email:", error);
     return NextResponse.json(
       { error: "Failed to send message. Please try again later." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
