@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import ProfileShareMenu from "./ProfileShareMenu";
+import { canOpenWcaProfile } from "@/lib/identifier-utils";
 
 interface WCAPersonalRecord {
   event_id: string;
@@ -179,9 +180,7 @@ export default function ProfileSidebar({
           <h1 className="text-2xl font-bold text-(--text-primary) font-statement mb-1">
             {person.name}
           </h1>
-          <p className="text-(--text-secondary) font-inter text-md">
-            {wcaId}
-          </p>
+          <p className="text-(--text-secondary) font-inter text-md">{wcaId}</p>
         </div>
 
         {/* Country */}
@@ -212,15 +211,17 @@ export default function ProfileSidebar({
 
         {/* View WCA Profile Link */}
         <div className="mt-6 flex flex-col gap-3 items-center">
-          <a
-            href={`https://www.worldcubeassociation.org/persons/${wcaId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary)/90 transition-colors font-inter font-medium text-sm"
-          >
-            <ExternalLink className="w-4 h-4" />
-            View WCA Profile
-          </a>
+          {canOpenWcaProfile(wcaId) && (
+            <a
+              href={`https://www.worldcubeassociation.org/persons/${wcaId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary)/90 transition-colors font-inter font-medium text-sm"
+            >
+              <ExternalLink className="w-4 h-4" />
+              View WCA Profile
+            </a>
+          )}
           <ProfileShareMenu person={person} wcaId={wcaId} />
         </div>
       </div>

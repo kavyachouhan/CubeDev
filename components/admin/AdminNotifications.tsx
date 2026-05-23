@@ -475,7 +475,7 @@ function SendNotificationModal({
                   type="text"
                   value={userSearch}
                   onChange={(e) => setUserSearch(e.target.value)}
-                  placeholder="Search by name or WCA ID..."
+                  placeholder="Search by name or identifier..."
                   className="w-full pl-10 pr-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
                 />
               </div>

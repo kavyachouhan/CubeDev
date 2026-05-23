@@ -128,7 +128,7 @@ export default function CuberDirectory() {
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-(--text-muted)" />
             <input
               type="text"
-              placeholder="Search by name, WCA ID, or country..."
+              placeholder="Search by name, WCA ID, CubeDev ID, or country..."
               value={searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) transition-colors font-inter"
@@ -154,9 +154,7 @@ export default function CuberDirectory() {
               {new Set(cubeDevUsers?.map((u: CubeDevUser) => u.countryIso2))
                 .size || 0}
             </div>
-            <div className="text-(--text-secondary) font-inter">
-              Countries
-            </div>
+            <div className="text-(--text-secondary) font-inter">Countries</div>
           </div>
         </div>
 

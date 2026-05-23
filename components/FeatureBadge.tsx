@@ -1,18 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
-export type BadgeVariant = "new" | "beta" | "updated" | "coming-soon";
+export type BadgeVariant = "new" | "updated" | "beta" | "coming-soon";
 
 interface FeatureBadgeProps {
-  /** Unique key for localStorage to track dismissal/expiry */
-  featureKey: string;
   /** Badge variant determines styling and default text */
   variant?: BadgeVariant;
-  /** Custom label text (overrides variant default) */
-  label?: string;
-  /** Days until the badge auto-hides (default: 14 days) */
-  expiryDays?: number;
   /** Whether to show in collapsed sidebar mode */
   showWhenCollapsed?: boolean;
   /** Additional CSS classes */
@@ -43,61 +35,18 @@ const variantConfig: Record<
   },
   "coming-soon": {
     label: "Soon",
-    bgClass: "bg-(--text-muted)/10",
-    textClass: "text-(--text-muted)",
-    borderClass: "border-(--text-muted)/20",
+    bgClass: "bg-(--muted)/10",
+    textClass: "text-(--muted)",
+    borderClass: "border-(--muted)/20",
   },
 };
 
 export default function FeatureBadge({
-  featureKey,
   variant = "new",
-  label,
-  expiryDays = 14,
   showWhenCollapsed = true,
   className = "",
 }: FeatureBadgeProps) {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  useEffect(() => {
-    setIsHydrated(true);
-
-    if (typeof window === "undefined") return;
-
-    const storageKey = `feature-badge-${featureKey}`;
-    const storedData = localStorage.getItem(storageKey);
-
-    if (storedData) {
-      try {
-        const { expiresAt, dismissed } = JSON.parse(storedData);
-
-        // Hide if dismissed or expired
-        if (dismissed || Date.now() > expiresAt) {
-          setIsVisible(false);
-          return;
-        }
-      } catch {
-        // If parsing fails, clear the invalid data
-        localStorage.removeItem(storageKey);
-      }
-    } else {
-      // If no data, set initial expiry
-      const expiresAt = Date.now() + expiryDays * 24 * 60 * 60 * 1000;
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify({ expiresAt, dismissed: false })
-      );
-    }
-
-    setIsVisible(true);
-  }, [featureKey, expiryDays]);
-
-  // Do not render until hydrated to avoid SSR mismatch
-  if (!isHydrated || !isVisible) return null;
-
-  const config = variantConfig[variant];
-  const displayLabel = label || config.label;
+  const config = variantConfig[variant] ?? variantConfig.new;
 
   return (
     <span
@@ -112,49 +61,7 @@ export default function FeatureBadge({
         ${className}
       `.trim()}
     >
-      {displayLabel}
+      {config.label}
     </span>
-  );
-}
-
-// Hook to dismiss a feature badge
-export function useDismissFeatureBadge() {
-  const dismiss = (featureKey: string) => {
-    if (typeof window === "undefined") return;
-
-    const storageKey = `feature-badge-${featureKey}`;
-    const storedData = localStorage.getItem(storageKey);
-
-    if (storedData) {
-      try {
-        const data = JSON.parse(storedData);
-        data.dismissed = true;
-        localStorage.setItem(storageKey, JSON.stringify(data));
-      } catch {
-        localStorage.setItem(
-          storageKey,
-          JSON.stringify({ expiresAt: 0, dismissed: true })
-        );
-      }
-    } else {
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify({ expiresAt: 0, dismissed: true })
-      );
-    }
-  };
-
-  return { dismiss };
-}
-
-// Function to reset a feature badge (for testing or re-showing)
-export function resetFeatureBadge(featureKey: string, expiryDays: number = 14) {
-  if (typeof window === "undefined") return;
-
-  const storageKey = `feature-badge-${featureKey}`;
-  const expiresAt = Date.now() + expiryDays * 24 * 60 * 60 * 1000;
-  localStorage.setItem(
-    storageKey,
-    JSON.stringify({ expiresAt, dismissed: false })
   );
 }

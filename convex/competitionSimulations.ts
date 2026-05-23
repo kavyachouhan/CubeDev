@@ -1,13 +1,11 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
+import { resolveUserByIdentifierOrAlias } from "./identifierResolver";
 
-// Helper to get user by WCA ID
-async function getUserByWcaId(ctx: any, wcaId: string) {
-  const user = await ctx.db
-    .query("users")
-    .withIndex("by_wca_id", (q: any) => q.eq("wcaId", wcaId))
-    .first();
+// Helper to resolve user by canonical identifier or alias.
+async function getUserByIdentifier(ctx: any, identifier: string) {
+  const { user } = await resolveUserByIdentifierOrAlias(ctx, identifier);
   return user;
 }
 
@@ -37,7 +35,7 @@ export const createSimulation = mutation({
     }
 
     // Get user from database
-    const user = await getUserByWcaId(ctx, args.wcaId);
+    const user = await getUserByIdentifier(ctx, args.wcaId);
 
     if (!user) {
       throw new Error("User not found");
@@ -89,7 +87,7 @@ export const getUserSimulationsForCompetition = query({
       return [];
     }
 
-    const user = await getUserByWcaId(ctx, args.wcaId);
+    const user = await getUserByIdentifier(ctx, args.wcaId);
 
     if (!user) {
       return [];
@@ -98,7 +96,7 @@ export const getUserSimulationsForCompetition = query({
     const simulations = await ctx.db
       .query("competitionSimulations")
       .withIndex("by_user_competition", (q) =>
-        q.eq("userId", user._id).eq("competitionId", args.competitionId)
+        q.eq("userId", user._id).eq("competitionId", args.competitionId),
       )
       .order("desc")
       .collect();
@@ -118,7 +116,7 @@ export const getUserRecentSimulations = query({
       return [];
     }
 
-    const user = await getUserByWcaId(ctx, args.wcaId);
+    const user = await getUserByIdentifier(ctx, args.wcaId);
 
     if (!user) {
       return [];
@@ -201,10 +199,10 @@ export const saveRoundResult = mutation({
         scramble: v.string(),
         penalty: v.union(v.literal("none"), v.literal("+2"), v.literal("DNF")),
         inspectionViolation: v.optional(
-          v.union(v.literal("+2"), v.literal("DNF"), v.null())
+          v.union(v.literal("+2"), v.literal("DNF"), v.null()),
         ),
         solvedAt: v.number(),
-      })
+      }),
     ),
     average: v.number(),
     best: v.number(),
@@ -246,7 +244,7 @@ export const getSimulationResults = query({
     const results = await ctx.db
       .query("competitionSimulationResults")
       .withIndex("by_simulation", (q) =>
-        q.eq("simulationId", args.simulationId)
+        q.eq("simulationId", args.simulationId),
       )
       .collect();
 
@@ -265,7 +263,7 @@ export const getUserEventResults = query({
       return [];
     }
 
-    const user = await getUserByWcaId(ctx, args.wcaId);
+    const user = await getUserByIdentifier(ctx, args.wcaId);
 
     if (!user) {
       return [];
@@ -274,7 +272,7 @@ export const getUserEventResults = query({
     const results = await ctx.db
       .query("competitionSimulationResults")
       .withIndex("by_user_event", (q) =>
-        q.eq("userId", user._id).eq("eventId", args.eventId)
+        q.eq("userId", user._id).eq("eventId", args.eventId),
       )
       .collect();
 
@@ -292,7 +290,7 @@ export const getInProgressSimulations = query({
       return [];
     }
 
-    const user = await getUserByWcaId(ctx, args.wcaId);
+    const user = await getUserByIdentifier(ctx, args.wcaId);
 
     if (!user) {
       return [];
@@ -301,7 +299,7 @@ export const getInProgressSimulations = query({
     const simulations = await ctx.db
       .query("competitionSimulations")
       .withIndex("by_user_status", (q) =>
-        q.eq("userId", user._id).eq("status", "in-progress")
+        q.eq("userId", user._id).eq("status", "in-progress"),
       )
       .collect();
 

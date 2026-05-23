@@ -24,13 +24,13 @@ export default function ContactPage() {
   });
 
   const submitContactMessage = useMutation(
-    api.contactMessages.submitContactMessage
+    api.contactMessages.submitContactMessage,
   );
 
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -89,7 +89,7 @@ export default function ContactPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Failed to send message. Please try again."
+          : "Failed to send message. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -108,9 +108,9 @@ export default function ContactPage() {
               Message Sent Successfully!
             </h1>
             <p className="text-(--text-secondary) font-inter mb-6 leading-relaxed">
-              Thank you for reaching out! We&apos;ve received your message and will
-              get back to you as soon as possible. You should also receive a
-              confirmation email shortly.
+              Thank you for reaching out! We&apos;ve received your message and
+              will get back to you as soon as possible. You should also receive
+              a confirmation email shortly.
             </p>
             <button
               onClick={() => setSubmitted(false)}
@@ -126,7 +126,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-(--background)">
-        <Header />
+      <Header />
       <div className="container-responsive py-8 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">
@@ -140,7 +140,6 @@ export default function ContactPage() {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-
           {/* Contact Form */}
           <div className="lg:col-span-2">
             <div className="timer-card">
@@ -201,7 +200,7 @@ export default function ContactPage() {
                     htmlFor="wcaId"
                     className="block text-sm font-medium text-(--text-primary) mb-2 font-inter"
                   >
-                    WCA ID{" "}
+                    WCA ID or CubeDev ID{" "}
                     <span className="text-(--text-muted)">(Optional)</span>
                   </label>
                   <input
@@ -211,7 +210,7 @@ export default function ContactPage() {
                     value={formData.wcaId}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-(--text-primary) font-inter"
-                    placeholder="WCA ID"
+                    placeholder="e.g. 2015XXXX01 or CD15XXX01"
                   />
                 </div>
 
@@ -291,7 +290,7 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
-        <Footer />
+      <Footer />
     </div>
   );
 }

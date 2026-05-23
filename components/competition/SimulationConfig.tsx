@@ -62,7 +62,7 @@ export default function SimulationConfig() {
 
   // Convex mutation
   const createSimulation = useMutation(
-    api.competitionSimulations.createSimulation
+    api.competitionSimulations.createSimulation,
   );
 
   // Fetch competition details
@@ -93,7 +93,7 @@ export default function SimulationConfig() {
         }
 
         const response = await fetch(
-          `${WCA_CONFIG.API_BASE_URL}/competitions/${competitionId}`
+          `${WCA_CONFIG.API_BASE_URL}/competitions/${competitionId}`,
         );
         if (!response.ok) throw new Error("Competition not found");
 
@@ -121,7 +121,7 @@ export default function SimulationConfig() {
         fetchWcifData(comp.event_ids);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to load competition"
+          err instanceof Error ? err.message : "Failed to load competition",
         );
       } finally {
         setIsLoading(false);
@@ -133,7 +133,7 @@ export default function SimulationConfig() {
       try {
         const wcifCacheKey = `comp_wcif_${competitionId}`;
         const wcifResponse = await fetch(
-          `${WCA_CONFIG.API_BASE_URL}/competitions/${competitionId}/wcif/public`
+          `${WCA_CONFIG.API_BASE_URL}/competitions/${competitionId}/wcif/public`,
         );
 
         if (wcifResponse.ok) {
@@ -147,7 +147,7 @@ export default function SimulationConfig() {
                 if (event.rounds && Array.isArray(event.rounds)) {
                   rounds[event.id] = event.rounds.length;
                 }
-              }
+              },
             );
           }
 
@@ -188,7 +188,7 @@ export default function SimulationConfig() {
       } catch (wcifErr) {
         console.warn(
           "Failed to fetch WCIF data, using fallback rounds:",
-          wcifErr
+          wcifErr,
         );
         // Fallback if WCIF fetch fails
         const fallbackRounds: Record<string, number> = {};
@@ -209,7 +209,7 @@ export default function SimulationConfig() {
     setSelectedEvents((prev) =>
       prev.includes(eventId)
         ? prev.filter((e) => e !== eventId)
-        : [...prev, eventId]
+        : [...prev, eventId],
     );
   };
 
@@ -224,8 +224,10 @@ export default function SimulationConfig() {
   };
 
   const handleStartSimulation = async () => {
-    if (!competition || selectedEvents.length === 0 || !user?.wcaId) {
-      setError("You must be logged in to start a simulation.");
+    const userIdentifier = user?.wcaId;
+
+    if (!competition || selectedEvents.length === 0 || !userIdentifier) {
+      setError("Sign in to start a competition simulation.");
       return;
     }
 
@@ -233,7 +235,7 @@ export default function SimulationConfig() {
     try {
       // Create simulation in Convex
       const simulationId = await createSimulation({
-        wcaId: user.wcaId,
+        wcaId: userIdentifier,
         competitionId: competition.id,
         competitionName: competition.name,
         competitionDate: competition.start_date,
@@ -247,7 +249,7 @@ export default function SimulationConfig() {
 
       // Navigate to the simulation runner with the simulation ID
       router.push(
-        `/cube-lab/competitions/${competitionId}/simulate/${simulationId}`
+        `/cube-lab/competitions/${competitionId}/simulate/${simulationId}`,
       );
     } catch (err) {
       console.error("Failed to start simulation:", err);

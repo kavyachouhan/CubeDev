@@ -45,6 +45,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { canOpenWcaProfile } from "@/lib/identifier-utils";
 
 // Register Chart.js components
 ChartJS.register(
@@ -1017,16 +1018,21 @@ function UserActivityItem({
             <span className="text-sm font-medium text-(--text-primary) font-inter truncate">
               {user.userName}
             </span>
-            {user.userWcaId && (
-              <a
-                href={`https://www.worldcubeassociation.org/persons/${user.userWcaId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-(--primary) hover:underline font-inter"
-              >
-                {user.userWcaId}
-              </a>
-            )}
+            {user.userWcaId &&
+              (canOpenWcaProfile(user.userWcaId) ? (
+                <a
+                  href={`https://www.worldcubeassociation.org/persons/${user.userWcaId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-(--primary) hover:underline font-inter"
+                >
+                  {user.userWcaId}
+                </a>
+              ) : (
+                <span className="text-xs text-(--text-muted) font-inter">
+                  {user.userWcaId}
+                </span>
+              ))}
           </div>
           <div className="grid grid-cols-4 gap-2 mt-2">
             <div className="text-center">

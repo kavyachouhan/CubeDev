@@ -17,7 +17,6 @@ import {
   X,
   Flame,
   AlertCircle,
-  User,
   Search,
   ChevronDown,
   ChevronUp,
@@ -29,6 +28,7 @@ import WCAScorecard from "./WCAScorecard";
 import { WCA_EVENTS, WCACompetition } from "./CompetitionBrowser";
 import { RoundResult } from "./CompetitionDetail";
 import { isCompetitionPast } from "@/lib/date-utils";
+import { isWcaIdentifier } from "@/lib/identifier-utils";
 
 interface CompetitionAnalyticsProps {
   competition: WCACompetition;
@@ -94,13 +94,13 @@ export default function CompetitionAnalytics({
   // Determine if competition is past based on dates
   const competitionIsPast = isCompetitionPast(
     competition.start_date,
-    competition.end_date
+    competition.end_date,
   );
 
   const openScorecardModal = (
     eventId: string,
     roundNumber: number,
-    result: RoundResult
+    result: RoundResult,
   ) => {
     setScorecardModal({ eventId, roundNumber, result });
   };
@@ -118,14 +118,14 @@ export default function CompetitionAnalytics({
       acc[result.eventId].push(result);
       return acc;
     },
-    {} as Record<string, RoundResult[]>
+    {} as Record<string, RoundResult[]>,
   );
 
   // Calculate overall statistics
   const totalSolves = results.reduce((acc, r) => acc + r.solves.length, 0);
   const totalDNFs = results.reduce(
     (acc, r) => acc + r.solves.filter((s) => s.penalty === "DNF").length,
-    0
+    0,
   );
   const dnfRate =
     totalSolves > 0 ? ((totalDNFs / totalSolves) * 100).toFixed(1) : "0";
@@ -141,7 +141,7 @@ export default function CompetitionAnalytics({
         !best || r.average < best.average
           ? { average: r.average, eventId: r.eventId }
           : best,
-      null
+      null,
     );
   const bestAverage = bestAverageResult?.average ?? null;
   const bestAverageEvent = bestAverageResult?.eventId
@@ -159,7 +159,7 @@ export default function CompetitionAnalytics({
         !best || r.best < best.best
           ? { best: r.best, eventId: r.eventId }
           : best,
-      null
+      null,
     );
   const overallBest = bestSingleResult?.best ?? null;
   const bestSingleEvent = bestSingleResult?.eventId
@@ -167,10 +167,19 @@ export default function CompetitionAnalytics({
       bestSingleResult.eventId
     : null;
 
-  // Fetch actual results from WCA API
+  // Fetch actual results for a given WCA ID
   const fetchActualResults = async (wcaId: string) => {
-    if (!wcaId.trim()) {
+    const normalizedWcaId = wcaId.trim().toUpperCase();
+
+    if (!normalizedWcaId) {
       setError("Please enter a valid WCA ID");
+      return;
+    }
+
+    if (!isWcaIdentifier(normalizedWcaId)) {
+      setError(
+        "Invalid WCA ID format. Please enter a valid WCA ID (e.g. 2015XXXX01).",
+      );
       return;
     }
 
@@ -180,7 +189,7 @@ export default function CompetitionAnalytics({
     try {
       // Fetch all results for the competition
       const response = await fetch(
-        `${WCA_CONFIG.API_BASE_URL}/competitions/${competition.id}/results`
+        `${WCA_CONFIG.API_BASE_URL}/competitions/${competition.id}/results`,
       );
 
       if (!response.ok) {
@@ -194,18 +203,18 @@ export default function CompetitionAnalytics({
 
       // Filter results for the specified WCA ID
       const competitorResults = allResults.filter(
-        (r: any) => r.wca_id?.toUpperCase() === wcaId.toUpperCase()
+        (r: any) => r.wca_id?.toUpperCase() === normalizedWcaId,
       );
 
       if (competitorResults.length === 0) {
-        throw new Error(`No results found for WCA ID: ${wcaId}`);
+        throw new Error(`No results found for WCA ID: ${normalizedWcaId}`);
       }
 
       // Transform results to our format
       const transformedResults: WCACompetitorResult = {
         person: {
-          name: competitorResults[0]?.name || wcaId,
-          wcaId: wcaId.toUpperCase(),
+          name: competitorResults[0]?.name || normalizedWcaId,
+          wcaId: normalizedWcaId,
           countryIso2: competitorResults[0]?.country_iso2 || "",
         },
         results: competitorResults.map((r: any) => ({
@@ -224,7 +233,7 @@ export default function CompetitionAnalytics({
       Object.entries(resultsByEvent).forEach(([eventId, eventResults]) => {
         // Find actual result for this event
         const actualResult = transformedResults.results.find(
-          (r) => r.eventId === eventId
+          (r) => r.eventId === eventId,
         );
 
         if (actualResult) {
@@ -233,7 +242,7 @@ export default function CompetitionAnalytics({
           const bestSimAvg = Math.min(
             ...eventResults
               .filter((r) => r.average !== Infinity)
-              .map((r) => r.average)
+              .map((r) => r.average),
           );
 
           comparisons.push({
@@ -302,7 +311,7 @@ export default function CompetitionAnalytics({
 
   // Calculate comparison stats
   const getComparisonDisplay = (
-    diff: number
+    diff: number,
   ): { text: string; color: string; icon: typeof TrendingUp } => {
     if (diff === 0)
       return { text: "Same", color: "text-(--text-muted)", icon: Minus };
@@ -374,9 +383,7 @@ export default function CompetitionAnalytics({
             <div className="text-2xl font-bold text-(--text-primary)">
               {Object.keys(resultsByEvent).length}
             </div>
-            <div className="text-xs text-(--text-muted)">
-              Events Completed
-            </div>
+            <div className="text-xs text-(--text-muted)">Events Completed</div>
           </div>
 
           <div className="timer-card text-center">
@@ -502,7 +509,7 @@ export default function CompetitionAnalytics({
                         <div className="sm:hidden space-y-3">
                           {comparisonResults.map((comp) => {
                             const bestDiff = getComparisonDisplay(
-                              comp.bestDiff
+                              comp.bestDiff,
                             );
                             const avgDiff = getComparisonDisplay(comp.avgDiff);
 
@@ -628,10 +635,10 @@ export default function CompetitionAnalytics({
                             <tbody>
                               {comparisonResults.map((comp) => {
                                 const bestDiff = getComparisonDisplay(
-                                  comp.bestDiff
+                                  comp.bestDiff,
                                 );
                                 const avgDiff = getComparisonDisplay(
-                                  comp.avgDiff
+                                  comp.avgDiff,
                                 );
 
                                 return (
@@ -778,12 +785,12 @@ export default function CompetitionAnalytics({
           <div className="space-y-4">
             {Object.entries(resultsByEvent).map(([eventId, eventResults]) => {
               const bestResult = eventResults.reduce((best, curr) =>
-                curr.average < best.average ? curr : best
+                curr.average < best.average ? curr : best,
               );
               const finalRound = eventResults.find(
                 (r) =>
                   r.roundNumber ===
-                  Math.max(...eventResults.map((e) => e.roundNumber))
+                  Math.max(...eventResults.map((e) => e.roundNumber)),
               );
 
               return (
@@ -848,7 +855,7 @@ export default function CompetitionAnalytics({
                             openScorecardModal(
                               eventId,
                               result.roundNumber,
-                              result
+                              result,
                             )
                           }
                           className="mt-2 w-full flex items-center justify-center gap-1 px-2 py-1 text-xs text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded transition-colors"
@@ -908,14 +915,12 @@ export default function CompetitionAnalytics({
                     (acc, r) =>
                       acc +
                       r.solves.filter(
-                        (s) => s.penalty === "none" && !s.inspectionViolation
+                        (s) => s.penalty === "none" && !s.inspectionViolation,
                       ).length,
-                    0
+                    0,
                   )}
                 </div>
-                <div className="text-xs text-(--text-muted)">
-                  Clean Solves
-                </div>
+                <div className="text-xs text-(--text-muted)">Clean Solves</div>
               </div>
               <div className="p-3 bg-(--surface-elevated) rounded-lg">
                 <div className="text-xl font-bold text-(--warning)">
@@ -924,14 +929,12 @@ export default function CompetitionAnalytics({
                       acc +
                       r.solves.filter(
                         (s) =>
-                          s.penalty === "+2" || s.inspectionViolation === "+2"
+                          s.penalty === "+2" || s.inspectionViolation === "+2",
                       ).length,
-                    0
+                    0,
                   )}
                 </div>
-                <div className="text-xs text-(--text-muted)">
-                  +2 Penalties
-                </div>
+                <div className="text-xs text-(--text-muted)">+2 Penalties</div>
               </div>
               <div className="p-3 bg-(--surface-elevated) rounded-lg">
                 <div className="text-xl font-bold text-(--error)">
@@ -978,10 +981,10 @@ export default function CompetitionAnalytics({
               lines.push(`Name,${escapeCSV(competition.name)}`);
               lines.push(`ID,${competition.id}`);
               lines.push(
-                `Location,${escapeCSV(competition.city + ", " + competition.country_iso2)}`
+                `Location,${escapeCSV(competition.city + ", " + competition.country_iso2)}`,
               );
               lines.push(
-                `Dates,${competition.start_date} to ${competition.end_date}`
+                `Dates,${competition.start_date} to ${competition.end_date}`,
               );
               lines.push(`Simulation Date,${new Date().toISOString()}`);
               lines.push("");
@@ -995,17 +998,17 @@ export default function CompetitionAnalytics({
               lines.push(`DNF Count,${totalDNFs}`);
               lines.push(`DNF Rate,${dnfRate}%`);
               lines.push(
-                `Best Single,${overallBest ? (overallBest / 1000).toFixed(2) : "N/A"}`
+                `Best Single,${overallBest ? (overallBest / 1000).toFixed(2) : "N/A"}`,
               );
               lines.push(
-                `Best Average,${bestAverage ? (bestAverage / 1000).toFixed(2) : "N/A"}`
+                `Best Average,${bestAverage ? (bestAverage / 1000).toFixed(2) : "N/A"}`,
               );
               lines.push("");
 
               // Detailed Results
               lines.push("Detailed Results");
               lines.push(
-                "Event,Round,Solve #,Time (raw),Display Time,Scramble,Penalty,Inspection Violation"
+                "Event,Round,Solve #,Time (raw),Display Time,Scramble,Penalty,Inspection Violation",
               );
 
               results.forEach((r) => {
@@ -1020,7 +1023,7 @@ export default function CompetitionAnalytics({
                       escapeCSV(s.scramble),
                       s.penalty,
                       s.inspectionViolation || "none",
-                    ].join(",")
+                    ].join(","),
                   );
                 });
               });
@@ -1041,7 +1044,7 @@ export default function CompetitionAnalytics({
                       ? "DNF"
                       : (r.average / 1000).toFixed(2),
                     r.completedAt,
-                  ].join(",")
+                  ].join(","),
                 );
               });
 

@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { Loader2, AlertCircle } from "lucide-react";
-import { useUser } from "@/components/UserProvider";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 // Import modular components
@@ -13,6 +12,7 @@ import CubeDevStats from "./profile/CubeDevStats";
 import WCAStats from "./profile/WCAStats";
 import ProfileTrainingTab from "./profile/ProfileTrainingTab";
 import { ProfileSidebarSkeleton } from "./SkeletonLoaders";
+import { isWcaIdentifier } from "@/lib/identifier-utils";
 
 // Import cache utilities
 import { getFromCache, saveToCache, WCA_CACHE_KEYS } from "@/lib/wca-cache";
@@ -107,16 +107,32 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
   const pathname = usePathname();
   const currentTab = searchParams.get("tab") || "cubedev";
 
-  // Get current user
-  const { user } = useUser();
-
-  // Query CubeDev user data
-  const cubeDevUsers = useQuery(api.users.getAllUsers);
-  const cubeDevUser =
-    cubeDevUsers?.find((user) => user.wcaId === wcaId) || null;
+  // Resolve user by canonical identifier or alias
+  const identifierLookup = useQuery(api.users.getUserByIdentifier, {
+    identifier: wcaId,
+  });
+  const cubeDevUser = identifierLookup?.user || null;
+  const resolvedIdentifier = cubeDevUser?.wcaId || wcaId;
+  const canLoadWcaData = isWcaIdentifier(resolvedIdentifier);
 
   // Check privacy settings
   const privacySettings = useQuery(api.users.isUserProfilePrivate, { wcaId });
+
+  // Redirect old identifiers (aliases) to canonical profile URL.
+  useEffect(() => {
+    if (!identifierLookup?.redirectTo) {
+      return;
+    }
+
+    if (identifierLookup.redirectTo.toUpperCase() === wcaId.toUpperCase()) {
+      return;
+    }
+
+    const params = searchParams.toString();
+    router.replace(
+      `/cuber/${identifierLookup.redirectTo}${params ? `?${params}` : ""}`,
+    );
+  }, [identifierLookup?.redirectTo, router, searchParams, wcaId]);
 
   // Tab change handler
   const handleTabChange = (tabName: string) => {
@@ -129,13 +145,20 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
     router.push(pathname + (params.toString() ? "?" + params.toString() : ""));
 
     // Trigger competition details loading when WCA tab is opened
-    if (tabName === "wca" && !shouldLoadCompetitions) {
+    if (tabName === "wca" && canLoadWcaData && !shouldLoadCompetitions) {
       setShouldLoadCompetitions(true);
     }
   };
 
   useEffect(() => {
-    if (cubeDevUsers === undefined || privacySettings === undefined) {
+    if (identifierLookup === undefined || privacySettings === undefined) {
+      return;
+    }
+
+    if (
+      identifierLookup?.redirectTo &&
+      identifierLookup.redirectTo.toUpperCase() !== wcaId.toUpperCase()
+    ) {
       return;
     }
 
@@ -153,6 +176,32 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
       return;
     }
 
+    if (!canLoadWcaData) {
+      setProfileData({
+        person: {
+          name: cubeDevUser.name,
+          wcaId: resolvedIdentifier,
+          avatar: cubeDevUser.avatar
+            ? {
+                url: cubeDevUser.avatar,
+              }
+            : undefined,
+          country: {
+            name: cubeDevUser.countryIso2,
+            iso2: cubeDevUser.countryIso2,
+          },
+          gender: cubeDevUser.gender || "",
+          class: "user",
+          personal_records: {},
+        },
+      });
+      setPersonalRecords([]);
+      setCompetitionResults([]);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
+
     const fetchWCAData = async () => {
       try {
         setIsLoading(true);
@@ -160,10 +209,10 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
 
         // Try to get profile from cache first
         const cachedProfile = getFromCache<WCAProfileData>(
-          WCA_CACHE_KEYS.profile(wcaId),
+          WCA_CACHE_KEYS.profile(resolvedIdentifier),
         );
         const cachedResults = getFromCache<WCACompetitionResult[]>(
-          WCA_CACHE_KEYS.results(wcaId),
+          WCA_CACHE_KEYS.results(resolvedIdentifier),
         );
 
         if (cachedProfile) {
@@ -202,7 +251,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
 
         // Fetch basic profile data
         const profileResponse = await fetch(
-          `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}`,
+          `https://www.worldcubeassociation.org/api/v0/persons/${resolvedIdentifier}`,
           {
             headers: {
               Accept: "application/json",
@@ -222,7 +271,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
         setProfileData(profileData);
 
         // Cache the profile data
-        saveToCache(WCA_CACHE_KEYS.profile(wcaId), profileData);
+        saveToCache(WCA_CACHE_KEYS.profile(resolvedIdentifier), profileData);
 
         // Extract personal records
         if (profileData.person.personal_records) {
@@ -250,7 +299,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
         // Fetch competition results
         try {
           const resultsResponse = await fetch(
-            `https://www.worldcubeassociation.org/api/v0/persons/${wcaId}/results`,
+            `https://www.worldcubeassociation.org/api/v0/persons/${resolvedIdentifier}/results`,
             {
               headers: {
                 Accept: "application/json",
@@ -264,7 +313,10 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
             setCompetitionResults(resultsData || []);
 
             // Cache the results data
-            saveToCache(WCA_CACHE_KEYS.results(wcaId), resultsData || []);
+            saveToCache(
+              WCA_CACHE_KEYS.results(resolvedIdentifier),
+              resultsData || [],
+            );
           } else {
             console.warn(`Failed to fetch results: ${resultsResponse.status}`);
           }
@@ -279,12 +331,23 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
       }
     };
 
-    if (wcaId && cubeDevUsers !== undefined && privacySettings !== undefined) {
+    if (
+      resolvedIdentifier &&
+      identifierLookup !== undefined &&
+      privacySettings !== undefined
+    ) {
       if (cubeDevUser && !privacySettings?.isDeleted) {
         fetchWCAData();
       }
     }
-  }, [wcaId, cubeDevUsers, cubeDevUser, privacySettings]);
+  }, [
+    wcaId,
+    resolvedIdentifier,
+    identifierLookup,
+    cubeDevUser,
+    canLoadWcaData,
+    privacySettings,
+  ]);
 
   // Lazy load competition details when WCA tab is viewed
   useEffect(() => {
@@ -432,14 +495,25 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
 
   // When tab changes to WCA, trigger loading competitions if not already set
   useEffect(() => {
-    if (currentTab === "wca" && !shouldLoadCompetitions) {
+    if (currentTab === "wca" && canLoadWcaData && !shouldLoadCompetitions) {
       setShouldLoadCompetitions(true);
     }
-  }, [currentTab]);
+  }, [currentTab, canLoadWcaData, shouldLoadCompetitions]);
+
+  // If user tries to access WCA tab but they can't load WCA data, redirect them back to CubeDev tab
+  useEffect(() => {
+    if (currentTab === "wca" && !canLoadWcaData) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("tab");
+      router.replace(
+        pathname + (params.toString() ? "?" + params.toString() : ""),
+      );
+    }
+  }, [currentTab, canLoadWcaData, pathname, router, searchParams]);
 
   if (
     isLoading ||
-    cubeDevUsers === undefined ||
+    identifierLookup === undefined ||
     privacySettings === undefined
   ) {
     return (
@@ -495,7 +569,7 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
         <div className="min-h-screen bg-(--background)">
           <div className="container-responsive py-6 max-w-7xl">
             <div className="flex flex-col lg:flex-row gap-6">
-              <div className="lg:w-80 lg:flex-shrink-0">
+              <div className="lg:w-80 lg:shrink-0">
                 <ProfileSidebarSkeleton />
               </div>
               <div className="flex-1 min-w-0">
@@ -530,10 +604,10 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
         {/* Profile Header */}
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Left Sidebar - Profile Information */}
-          <div className="lg:w-80 lg:flex-shrink-0">
+          <div className="lg:w-80 lg:shrink-0">
             <ProfileSidebar
               person={person}
-              wcaId={wcaId}
+              wcaId={resolvedIdentifier}
               cubeDevUser={cubeDevUser}
               personalRecords={personalRecords}
             />
@@ -564,37 +638,53 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
                 >
                   Training
                 </button>
-                <button
-                  onClick={() => handleTabChange("wca")}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
-                    currentTab === "wca"
-                      ? "border-(--primary) text-(--primary)"
-                      : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
-                  }`}
-                >
-                  WCA Stats
-                </button>
+                {canLoadWcaData && (
+                  <button
+                    onClick={() => handleTabChange("wca")}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                      currentTab === "wca"
+                        ? "border-(--primary) text-(--primary)"
+                        : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
+                    }`}
+                  >
+                    WCA Stats
+                  </button>
+                )}
               </nav>
             </div>
 
             {/* Tab Content */}
             <div className="tab-content">
               {currentTab === "cubedev" && (
-                <CubeDevStats wcaId={wcaId} cubeDevUserId={cubeDevUser?._id} />
-              )}
-              {currentTab === "training" && (
-                <ProfileTrainingTab wcaId={wcaId} />
-              )}
-              {currentTab === "wca" && (
-                <WCAStats
-                  wcaId={wcaId}
-                  person={person}
-                  personalRecords={personalRecords}
-                  competitionResults={competitionResults}
-                  competitionDetails={competitionDetails}
-                  isLoadingCompetitions={isLoadingCompetitions}
+                <CubeDevStats
+                  wcaId={resolvedIdentifier}
+                  cubeDevUserId={cubeDevUser?._id}
                 />
               )}
+              {currentTab === "training" && (
+                <ProfileTrainingTab wcaId={resolvedIdentifier} />
+              )}
+              {currentTab === "wca" &&
+                (canLoadWcaData ? (
+                  <WCAStats
+                    wcaId={resolvedIdentifier}
+                    person={person}
+                    personalRecords={personalRecords}
+                    competitionResults={competitionResults}
+                    competitionDetails={competitionDetails}
+                    isLoadingCompetitions={isLoadingCompetitions}
+                  />
+                ) : (
+                  <div className="timer-card text-center py-10">
+                    <p className="text-(--text-primary) font-medium mb-2">
+                      WCA ID Required
+                    </p>
+                    <p className="text-(--text-secondary) text-sm">
+                      This profile is using a CubeDev ID and has not linked a
+                      WCA ID yet.
+                    </p>
+                  </div>
+                ))}
             </div>
           </div>
         </div>

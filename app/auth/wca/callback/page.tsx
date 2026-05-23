@@ -7,7 +7,7 @@ function WCACallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<"loading" | "success" | "error">(
-    "loading"
+    "loading",
   );
   const [message, setMessage] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -68,7 +68,7 @@ function WCACallbackContent() {
 
         console.log(
           "Starting token exchange for code:",
-          code.slice(0, 8) + "..."
+          code.slice(0, 8) + "...",
         );
 
         // Exchange code for access token
@@ -103,7 +103,7 @@ function WCACallbackContent() {
           // Store successful auth result
           sessionStorage.setItem(
             authSessionKey,
-            JSON.stringify({ success: true })
+            JSON.stringify({ success: true }),
           );
 
           setStatus("success");
@@ -150,7 +150,11 @@ function WCACallbackContent() {
       } catch (error) {
         console.error("WCA OAuth callback error:", error);
         setStatus("error");
-        setMessage("An unexpected error occurred during authentication");
+        if (error instanceof Error && error.message) {
+          setMessage(error.message);
+        } else {
+          setMessage("An unexpected error occurred during authentication");
+        }
       } finally {
         setIsProcessing(false);
       }
@@ -204,9 +208,7 @@ function WCACallbackContent() {
                 <h1 className="text-2xl font-bold text-(--success) mb-4 font-statement">
                   Success!
                 </h1>
-                <p className="text-(--text-secondary) font-inter">
-                  {message}
-                </p>
+                <p className="text-(--text-secondary) font-inter">{message}</p>
                 <p className="text-sm text-(--text-muted) mt-2 font-inter">
                   Redirecting you...
                 </p>

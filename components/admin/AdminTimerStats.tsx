@@ -40,6 +40,7 @@ import {
   FileJson,
 } from "lucide-react";
 import Image from "next/image";
+import { canOpenWcaProfile } from "@/lib/identifier-utils";
 
 // Register ChartJS components
 ChartJS.register(
@@ -391,7 +392,7 @@ function UserCard({
           <span className="text-sm font-medium text-(--text-primary) font-inter truncate">
             {name}
           </span>
-          {wcaId && (
+          {wcaId && canOpenWcaProfile(wcaId) && (
             <a
               href={`https://www.worldcubeassociation.org/persons/${wcaId}`}
               target="_blank"

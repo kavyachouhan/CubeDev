@@ -4,8 +4,10 @@ import { v } from "convex/values";
 export default defineSchema({
   users: defineTable({
     // Core User Info
-    wcaId: v.string(), // WCA ID (e.g., "2019DOEJ01")
+    wcaId: v.string(), // Canonical identifier (WCA ID or CubeDev ID)
     wcaUserId: v.number(), // Internal WCA user ID
+    idSource: v.optional(v.union(v.literal("wca"), v.literal("cd"))), // Source of canonical ID
+    convertedToWcaAt: v.optional(v.number()), // Timestamp when CD ID was replaced with WCA ID
     name: v.string(), // Full name
     email: v.optional(v.string()), // Email address (optional for deleted users)
     countryIso2: v.string(), // Country code (e.g., "US", "CA")
@@ -68,10 +70,20 @@ export default defineSchema({
       ),
     ), // Array of dismissed algorithm review notifications
   })
-    .index("by_wca_id", ["wcaId"]) // Index for fast lookup by WCA ID
+    .index("by_wca_id", ["wcaId"]) // Index for fast lookup by canonical identifier (WCA ID or CubeDev ID)
     .index("by_wca_user_id", ["wcaUserId"]) // Index for fast lookup by WCA user ID
     .index("by_email", ["email"]) // Index for fast lookup by email
     .index("by_deleted", ["isDeleted"]), // Index for filtering deleted users
+
+  // Identifier aliases used for redirects after CD -> WCA ID conversion
+  userIdentifierAliases: defineTable({
+    aliasId: v.string(), // Previous canonical identifier (e.g. old CD ID)
+    userId: v.id("users"), // Current user document
+    reason: v.optional(v.string()), // Migration reason
+    createdAt: v.number(),
+  })
+    .index("by_alias_id", ["aliasId"])
+    .index("by_user", ["userId"]),
 
   // Timer Sessions - organizing solve sessions
   sessions: defineTable({
@@ -269,7 +281,7 @@ export default defineSchema({
     message: v.string(), // Message content
 
     // Optional fields
-    wcaId: v.optional(v.string()), // WCA ID if provided
+    wcaId: v.optional(v.string()), // Sender's WCA ID if provided
     userId: v.optional(v.id("users")), // Reference to user if logged in
 
     // Metadata
@@ -485,6 +497,25 @@ export default defineSchema({
     .index("by_type", ["type"])
     .index("by_run_at", ["runAt"])
     .index("by_type_run_at", ["type", "runAt"]),
+
+  // Feature Labels - labels for new/updated features in the UI
+  featureLabels: defineTable({
+    featureKey: v.string(), // Key used by UI sections (e.g., "algorithm-trainer")
+    labelType: v.union(
+      v.literal("new"),
+      v.literal("updated"),
+      v.literal("beta"),
+      v.literal("coming-soon"),
+    ),
+    startAt: v.number(), // When label becomes active
+    endAt: v.number(), // When label expires
+    enabled: v.boolean(), // Whether this label is currently enabled
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_feature_key", ["featureKey"])
+    .index("by_enabled", ["enabled"])
+    .index("by_end_at", ["endAt"]),
 
   // Feedback Responses - user feedback survey submissions
   feedbackResponses: defineTable({
