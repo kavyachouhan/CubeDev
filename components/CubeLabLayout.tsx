@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   Timer,
   BarChart3,
@@ -22,6 +21,8 @@ import NotificationBell from "@/components/NotificationBell";
 import NotificationsModal from "@/components/NotificationsModal";
 import NotificationService from "@/components/NotificationService";
 import CoachingNotificationService from "@/components/CoachingNotificationService";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import FeatureRibbon, { RibbonVariant } from "@/components/FeatureRibbon";
 import { useLogo } from "@/lib/use-logo";
 
@@ -44,9 +45,19 @@ export default function CubeLabLayout({
   const [isHydrated, setIsHydrated] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { user, signOut } = useUser();
-  const pathname = usePathname();
   const currentYear = new Date().getFullYear();
   const logoSrc = useLogo();
+  const activeLabels = useQuery(api.featureLabels.getActiveLabels);
+
+  const labelsByKey = useMemo(() => {
+    const map = new Map<string, { labelType: RibbonVariant }>();
+    (activeLabels ?? []).forEach((label) => {
+      map.set(label.featureKey, {
+        labelType: label.labelType as RibbonVariant,
+      });
+    });
+    return map;
+  }, [activeLabels]);
 
   // Initialize sidebar state from localStorage after hydration
   useEffect(() => {
@@ -75,6 +86,7 @@ export default function CubeLabLayout({
       icon: Timer,
       description: "Advanced timing with analytics",
       href: "/cube-lab/timer",
+      featureKey: "timer",
     },
     {
       id: "statistics",
@@ -82,6 +94,7 @@ export default function CubeLabLayout({
       icon: BarChart3,
       description: "Performance analysis & trends",
       href: "/cube-lab/statistics",
+      featureKey: "statistics",
     },
     {
       id: "algorithm-trainer",
@@ -89,11 +102,7 @@ export default function CubeLabLayout({
       icon: GraduationCap,
       description: "Learn & master algorithms",
       href: "/cube-lab/algorithm-trainer",
-      ribbon: {
-        featureKey: "algorithm-trainer-launch",
-        variant: "new" as RibbonVariant,
-        expiryDays: 30,
-      },
+      featureKey: "algorithm-trainer",
     },
     {
       id: "coach",
@@ -101,11 +110,7 @@ export default function CubeLabLayout({
       icon: Compass,
       description: "Personalized training & goals",
       href: "/cube-lab/coach",
-      ribbon: {
-        featureKey: "coach-launch",
-        variant: "new" as RibbonVariant,
-        expiryDays: 30,
-      },
+      featureKey: "coach",
     },
     {
       id: "competitions",
@@ -113,11 +118,7 @@ export default function CubeLabLayout({
       icon: Medal,
       description: "Competition simulation & practice",
       href: "/cube-lab/competitions",
-      ribbon: {
-        featureKey: "competitions-launch",
-        variant: "new" as RibbonVariant,
-        expiryDays: 30,
-      },
+      featureKey: "competitions",
     },
     {
       id: "challenges",
@@ -125,6 +126,7 @@ export default function CubeLabLayout({
       icon: Trophy,
       description: "Compete in scramble rooms",
       href: "/cube-lab/challenges",
+      featureKey: "challenges",
     },
   ];
 
@@ -232,6 +234,9 @@ export default function CubeLabLayout({
           {sections.map((section) => {
             const Icon = section.icon;
             const isActive = activeSection === section.id;
+            const label = section.featureKey
+              ? labelsByKey.get(section.featureKey)
+              : undefined;
 
             return (
               <Link
@@ -255,7 +260,7 @@ export default function CubeLabLayout({
                     className={`w-5 h-5 ${isActive ? "text-white" : "text-(--primary)"}`}
                   />
                   {/* Ribbon dot indicator for collapsed sidebar */}
-                  {isCollapsed && section.ribbon && (
+                  {isCollapsed && label && (
                     <span className="hidden lg:block absolute -top-1 -right-1 w-2 h-2 bg-(--primary) rounded-full" />
                   )}
                 </div>
@@ -274,11 +279,9 @@ export default function CubeLabLayout({
                   </div>
                 )}
                 {/* Ribbon positioned absolutely - tilted corner ribbon */}
-                {!isCollapsed && section.ribbon && (
+                {!isCollapsed && label && (
                   <FeatureRibbon
-                    featureKey={section.ribbon.featureKey}
-                    variant={section.ribbon.variant}
-                    expiryDays={section.ribbon.expiryDays}
+                    variant={label.labelType}
                     position="top-right"
                     isActive={isActive}
                   />

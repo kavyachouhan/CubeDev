@@ -22,6 +22,7 @@ import type * as competitionSimulations from "../competitionSimulations.js";
 import type * as contactMessages from "../contactMessages.js";
 import type * as crons from "../crons.js";
 import type * as faq from "../faq.js";
+import type * as featureLabels from "../featureLabels.js";
 import type * as feedbackResponses from "../feedbackResponses.js";
 import type * as identifierResolver from "../identifierResolver.js";
 import type * as pushNodeActions from "../pushNodeActions.js";
@@ -59,6 +60,7 @@ declare const fullApi: ApiFromModules<{
   contactMessages: typeof contactMessages;
   crons: typeof crons;
   faq: typeof faq;
+  featureLabels: typeof featureLabels;
   feedbackResponses: typeof feedbackResponses;
   identifierResolver: typeof identifierResolver;
   pushNodeActions: typeof pushNodeActions;

@@ -21,6 +21,7 @@ import {
   Medal,
   Timer,
   HelpCircle,
+  Tag,
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import SidebarUserDropdown from "@/components/SidebarUserDropdown";
@@ -141,6 +142,13 @@ export default function AdminLayout({
       icon: HelpCircle,
       description: "Help center articles",
       href: "/admin/faq",
+    },
+    {
+      id: "labels",
+      name: "Labels",
+      icon: Tag,
+      description: "Feature label management",
+      href: "/admin/labels",
     },
   ];
 
