@@ -498,6 +498,25 @@ export default defineSchema({
     .index("by_run_at", ["runAt"])
     .index("by_type_run_at", ["type", "runAt"]),
 
+  // Feature Labels - labels for new/updated features in the UI
+  featureLabels: defineTable({
+    featureKey: v.string(), // Key used by UI sections (e.g., "algorithm-trainer")
+    labelType: v.union(
+      v.literal("new"),
+      v.literal("updated"),
+      v.literal("beta"),
+      v.literal("coming-soon"),
+    ),
+    startAt: v.number(), // When label becomes active
+    endAt: v.number(), // When label expires
+    enabled: v.boolean(), // Whether this label is currently enabled
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_feature_key", ["featureKey"])
+    .index("by_enabled", ["enabled"])
+    .index("by_end_at", ["endAt"]),
+
   // Feedback Responses - user feedback survey submissions
   feedbackResponses: defineTable({
     userId: v.optional(v.id("users")), // Reference to user (optional for anonymous)

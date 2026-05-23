@@ -1,0 +1,24 @@
+## Features
+- **Timers**: Track your solve times and improve your speed.
+- **Analytics**: Gain insights into your performance and progress.
+- **Community**: Connect with other cubers and share tips.
+- **Resources**: Access tutorials, algorithms, and guides to enhance your skills.
+- **Competitions**: Participate in online competitions and challenges.
+- **WCA Integration**: Sync your results with the World Cube Association database.
+- **Algorithm Trainer**: Learn and practice new algorithms.
+- **Scramble Generator**: Generate scrambles for various cube types.
+- **Session Management**: Save and review your practice sessions.
+- **Leaderboards**: Compete for the top spots in various categories.
+- **Multi-Cube Support**: Work with different cube types (2x2, 3x3, 4x4, etc.).
+- **Tutorials**: Step-by-step guides for beginners and advanced cubers.
+- **Virtual Cubes**: Practice solving with a 3D virtual cube.
+- **Algorithm Database**: Access a comprehensive list of algorithms for different methods.
+- **Practice Modes**: Various modes to help you practice specific skills.
+- **Progress Tracking**: Monitor your improvement over time.
+- **Notifications**: Stay updated with the latest news and events in the cubing community.
+- **Social Sharing**: Share your achievements on social media platforms.
+- **Daily Challenges**: Engage in daily puzzles and challenges to keep your skills sharp.
+- **User Profiles**: Manage your cubing profile.
+- **Customization**: Personalize your experience with themes and settings.
+- **Mobile Friendly**: Use CubeDev on any device, anywhere.
+- **Data Export**: Export your solve data for further analysis.
