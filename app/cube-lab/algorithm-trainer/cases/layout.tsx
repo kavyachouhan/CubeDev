@@ -6,10 +6,11 @@ export const metadata: Metadata = {
     default: "Algorithm Case | Algorithm Trainer | CubeDev",
   },
   description:
-    "Learn and practice individual speedcubing algorithm cases with 3D visualization, multiple algorithm options, and progress tracking.",
+    "Learn and practice individual speedcubing algorithm cases with 3D and 2D visualization, multiple algorithm options, and progress tracking.",
   keywords: [
     "algorithm case",
     "3D cube visualization",
+    "2D cube visualization",
     "algorithm learning",
     "speedcubing case",
     "algorithm practice",
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Algorithm Case | CubeDev",
     description:
-      "Learn individual speedcubing cases with 3D visualization and progress tracking.",
+      "Learn individual speedcubing cases with 3D and 2D visualization and progress tracking.",
     url: "https://cubedev.xyz/cube-lab/algorithm-trainer/cases",
     siteName: "CubeDev",
     type: "website",

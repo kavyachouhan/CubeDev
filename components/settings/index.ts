@@ -7,5 +7,6 @@ export { default as NotificationSettings } from "./NotificationSettings";
 export { default as ThemeModeSelector } from "./ThemeModeSelector";
 export { default as ColorSchemeSelector } from "./ColorSchemeSelector";
 export { default as TimerCustomization } from "./TimerCustomization";
+export { default as CubeViewSelector } from "./CubeViewSelector";
 export { default as AccessibilitySettings } from "./AccessibilitySettings";
 export { default as KeyboardShortcutsSettings } from "./KeyboardShortcutsSettings";

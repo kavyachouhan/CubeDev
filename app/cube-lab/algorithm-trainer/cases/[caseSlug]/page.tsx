@@ -61,9 +61,15 @@ export default function AlgorithmCasePage() {
 
   useEffect(() => {
     if (caseData) {
-      // Set selected algorithm based on user progress or default
-      if (userProgress?.preferredAlgId) {
-        setSelectedAlgId(userProgress.preferredAlgId);
+      // If the user has a preferred algorithm, select it. Otherwise, select the default algorithm or the first available algorithm.
+      const preferred = userProgress?.preferredAlgId
+        ? caseData.algorithms.find(
+            (a: any) => a._id === userProgress.preferredAlgId,
+          )
+        : undefined;
+
+      if (preferred) {
+        setSelectedAlgId(preferred._id);
       } else {
         const defaultAlg = caseData.algorithms.find((a: any) => a.isDefault);
         setSelectedAlgId(defaultAlg?._id || caseData.algorithms[0]?._id);
@@ -147,6 +153,13 @@ export default function AlgorithmCasePage() {
   const selectedAlgorithm = algorithms.find(
     (a: any) => a._id === selectedAlgId,
   );
+
+  // Determine which algorithm to visualize: preferred, default, or setup moves
+  const visualizedAlgorithm =
+    selectedAlgorithm?.notation ||
+    algorithms[0]?.notation ||
+    algorithmCase?.setupMoves ||
+    "";
 
   if (!algorithmCase || !set) {
     return (
@@ -263,19 +276,25 @@ export default function AlgorithmCasePage() {
 
               {/* Main Content Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                {/* Left: 3D Visualization */}
+                {/* Left: Cube Visualization */}
                 <div className="timer-card">
                   <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-4">
-                    3D Visualization
+                    Visualization
                   </h3>
-                  {selectedAlgorithm && (
+                  {visualizedAlgorithm ? (
                     <CubeVisualizer3D
-                      algorithm={selectedAlgorithm.notation}
+                      algorithm={visualizedAlgorithm}
                       puzzle={(set.puzzleType as any) || "3x3x3"}
                       autoPlay={false}
                       showControls={true}
                       height="350px"
                     />
+                  ) : (
+                    <div className="h-87.5 bg-(--surface-elevated) rounded-lg flex items-center justify-center border border-(--border)">
+                      <p className="text-sm text-(--text-muted)">
+                        No algorithm available for this case yet
+                      </p>
+                    </div>
                   )}
                 </div>
 

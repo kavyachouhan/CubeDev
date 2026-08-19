@@ -18,7 +18,6 @@ import { Line } from "react-chartjs-2";
 import {
   Eye,
   EyeOff,
-  TrendingUp,
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
@@ -187,8 +186,10 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
   });
 
   const chartData = useMemo(() => {
-    if (solves.length === 0) return null;
-
+    // No early return for an empty solve list: every step below is a no-op on
+    // empty arrays, so we still produce a valid (empty) chart. That lets the
+    // "no solves yet" page render the real axes and controls instead of a
+    // separate placeholder layout.
     const sortedSolves = [...solves].sort(
       (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
     );
@@ -338,8 +339,6 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
   }, [solves, dataRange, showDataLines, effectiveTheme]);
 
   const progressStats = useMemo(() => {
-    if (!chartData) return null;
-
     // Calculate trend from Ao12 data
     let trendData = null;
     if (chartData.validAo12Points.length >= 2) {
@@ -510,54 +509,6 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
     setShowDataLines((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  if (!chartData) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => setShowChart(!showChart)}
-            className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-            title={showChart ? "Hide chart" : "Show chart"}
-          >
-            <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-              Time Progress
-            </h3>
-            {showChart ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-          <button
-            onClick={() => setShowChart(!showChart)}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={showChart ? "Hide chart" : "Show chart"}
-          >
-            {showChart ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-
-        {showChart && (
-          <div className="text-center py-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-8 h-8 text-(--text-muted)" />
-            </div>
-            <div className="text-(--text-secondary)">
-              No data to display
-            </div>
-            <div className="text-sm text-(--text-muted) mt-2">
-              Start solving to see your progress!
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -619,34 +570,40 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
       {showChart && (
         <>
           {/* Progress Stats - Show useful metrics */}
-          {progressStats && (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-              {/* Trend Card - only show if we have trend data */}
-              {progressStats.trend && (
-                <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
-                  <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-                    <div
-                      className={`p-1 sm:p-1.5 rounded-md ${
-                        progressStats.trend.isImproving
-                          ? "bg-emerald-500/10"
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+            {/* Trend Card - reads "—" until there is enough Ao12 data */}
+            <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                <div
+                  className={`p-1 sm:p-1.5 rounded-md ${
+                    !progressStats.trend
+                      ? "bg-(--text-muted)/10"
+                      : progressStats.trend.isImproving
+                        ? "bg-emerald-500/10"
+                        : progressStats.trend.improvement === 0
+                          ? "bg-(--text-muted)/10"
+                          : "bg-red-500/10"
+                  }`}
+                ></div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
+                    Progress Trend
+                  </div>
+                  <div
+                    className={`text-xs sm:text-sm font-bold font-mono ${
+                      !progressStats.trend
+                        ? "text-(--text-muted)"
+                        : progressStats.trend.isImproving
+                          ? "text-emerald-400"
                           : progressStats.trend.improvement === 0
-                            ? "bg-(--text-muted)/10"
-                            : "bg-red-500/10"
-                      }`}
-                    ></div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                        Progress Trend
-                      </div>
-                      <div
-                        className={`text-xs sm:text-sm font-bold font-mono ${
-                          progressStats.trend.isImproving
-                            ? "text-emerald-400"
-                            : progressStats.trend.improvement === 0
-                              ? "text-(--text-muted)"
-                              : "text-red-400"
-                        }`}
-                      >
+                            ? "text-(--text-muted)"
+                            : "text-red-400"
+                    }`}
+                  >
+                    {!progressStats.trend ? (
+                      "—"
+                    ) : (
+                      <>
                         {progressStats.trend.isImproving
                           ? "↗"
                           : progressStats.trend.improvement === 0
@@ -656,56 +613,71 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
                           progressStats.trend.improvementPercent
                         ).toFixed(1)}
                         %
-                      </div>
-                    </div>
+                      </>
+                    )}
                   </div>
-                </div>
-              )}
-
-              {/* Best Single Card */}
-              {progressStats.bestSingle && (
-                <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1 truncate">
-                    Best Single
-                  </div>
-                  <div className="text-xs sm:text-sm font-bold text-yellow-400 font-mono">
-                    {formatTime(progressStats.bestSingle)}
-                  </div>
-                </div>
-              )}
-
-              {/* Sessions Count Card */}
-              <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
-                  Sessions
-                </div>
-                <div className="text-xs sm:text-sm font-bold text-blue-400">
-                  {progressStats.uniqueSessions}
                 </div>
               </div>
-
-              {/* Consistency Score Card - only show if we have enough data */}
-              {progressStats.consistencyScore !== null &&
-                progressStats.trend === null && (
-                  <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
-                    <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
-                      Consistency
-                    </div>
-                    <div
-                      className={`text-xs sm:text-sm font-bold font-mono ${
-                        progressStats.consistencyScore < 15
-                          ? "text-emerald-400"
-                          : progressStats.consistencyScore < 25
-                            ? "text-yellow-400"
-                            : "text-red-400"
-                      }`}
-                    >
-                      {progressStats.consistencyScore.toFixed(1)}%
-                    </div>
-                  </div>
-                )}
             </div>
-          )}
+
+            {/* Best Single Card */}
+            <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+              <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1 truncate">
+                Best Single
+              </div>
+              <div
+                className={`text-xs sm:text-sm font-bold font-mono ${
+                  progressStats.bestSingle
+                    ? "text-yellow-400"
+                    : "text-(--text-muted)"
+                }`}
+              >
+                {progressStats.bestSingle
+                  ? formatTime(progressStats.bestSingle)
+                  : "—"}
+              </div>
+            </div>
+
+            {/* Sessions Count Card */}
+            <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+              <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
+                Sessions
+              </div>
+              <div
+                className={`text-xs sm:text-sm font-bold ${
+                  progressStats.uniqueSessions > 0
+                    ? "text-blue-400"
+                    : "text-(--text-muted)"
+                }`}
+              >
+                {progressStats.uniqueSessions}
+              </div>
+            </div>
+
+            {/* Consistency Score Card - the trend card supersedes it once available */}
+            {progressStats.trend === null && (
+              <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+                <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
+                  Consistency
+                </div>
+                <div
+                  className={`text-xs sm:text-sm font-bold font-mono ${
+                    progressStats.consistencyScore === null
+                      ? "text-(--text-muted)"
+                      : progressStats.consistencyScore < 15
+                        ? "text-emerald-400"
+                        : progressStats.consistencyScore < 25
+                          ? "text-yellow-400"
+                          : "text-red-400"
+                  }`}
+                >
+                  {progressStats.consistencyScore === null
+                    ? "—"
+                    : `${progressStats.consistencyScore.toFixed(1)}%`}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Data Line Toggle Buttons */}
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">

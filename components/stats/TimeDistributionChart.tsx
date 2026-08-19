@@ -268,8 +268,8 @@ export default function TimeDistributionChart({
                           <div
                             className={`h-3 rounded-full transition-all duration-500 ${
                               isHighest
-                                ? "bg-gradient-to-r from-blue-600 to-blue-500"
-                                : "bg-gradient-to-r from-blue-500 to-blue-400"
+                                ? "bg-linear-to-r from-blue-600 to-blue-500"
+                                : "bg-linear-to-r from-blue-500 to-blue-400"
                             }`}
                             style={{ width: `${widthPercentage}%` }}
                           />
@@ -332,17 +332,90 @@ export default function TimeDistributionChart({
               </div>
             </>
           ) : (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 mx-auto mb-4 bg-(--surface-elevated) rounded-lg flex items-center justify-center border border-(--border)">
-                <BarChart3 className="w-8 h-8 text-(--text-muted)" />
+            /* Same structure as above, with every value reading "—", so the
+               card keeps its shape before the first solve is recorded. */
+            <>
+              {/* Quick Stats Cards */}
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+                <div className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Target className="w-4 h-4 text-(--text-muted)" />
+                    <div className="text-xs text-(--text-muted) uppercase tracking-wide font-medium">
+                      Typical
+                    </div>
+                  </div>
+                  <div className="text-sm sm:text-base font-bold text-(--text-muted) font-mono">
+                    —
+                  </div>
+                </div>
+                <div className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)">
+                  <div className="flex items-center gap-2 mb-2">
+                    <BarChart3 className="w-4 h-4 text-(--text-muted)" />
+                    <div className="text-xs text-(--text-muted) uppercase tracking-wide font-medium">
+                      Stability
+                    </div>
+                  </div>
+                  <div className="text-sm sm:text-base font-bold text-(--text-muted) font-mono">
+                    —
+                  </div>
+                </div>
               </div>
-              <div className="text-(--text-secondary)">
-                No data to display
+
+              {/* Time Ranges */}
+              <div className="bg-(--surface-elevated) rounded-lg p-4 sm:p-5 border border-(--border) space-y-5">
+                <div className="text-base sm:text-lg font-semibold text-(--text-primary) border-b border-(--border) pb-3">
+                  Your Time Ranges
+                </div>
+
+                <div className="space-y-4">
+                  {[0, 1, 2, 3].map((index) => (
+                    <div key={index} className="space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-4 h-4 rounded-full bg-(--surface) border border-(--border)" />
+                          <span className="font-mono text-sm sm:text-base text-(--text-muted) font-medium">
+                            — - —
+                          </span>
+                        </div>
+                        <div className="text-(--text-muted) text-sm font-medium">
+                          0 solves (0.0%)
+                        </div>
+                      </div>
+                      <div className="w-full bg-(--surface) rounded-full h-3" />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Performance Insights */}
+                <div className="mt-6 p-4 sm:p-5 bg-(--surface) rounded-lg border border-(--border)">
+                  <div className="text-base sm:text-lg font-semibold text-(--text-primary) mb-3">
+                    Performance Summary
+                  </div>
+                  <div className="space-y-2 text-sm text-(--text-muted)">
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span>• Your fastest solve:</span>
+                      <span className="font-mono font-medium">—</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span>• Your slowest solve:</span>
+                      <span className="font-mono font-medium">—</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span>• Most of your solves are between</span>
+                      <span className="font-mono font-medium">—</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span>• 50% of your solves are faster than</span>
+                      <span className="font-mono font-medium">—</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span>• 25% of your solves are faster than</span>
+                      <span className="font-mono font-medium">—</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="text-sm text-(--text-muted) mt-2">
-                Start solving to see your time distribution!
-              </div>
-            </div>
+            </>
           )}
         </>
       )}

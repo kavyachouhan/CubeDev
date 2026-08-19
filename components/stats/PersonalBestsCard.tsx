@@ -275,56 +275,8 @@ export default function PersonalBestsCard({
     }
   };
 
-  // Show empty state only if no data from either source
-  if (!personalBests && !aggregatedPrecomputedStats) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => setShowPersonalBests(!showPersonalBests)}
-            className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-            title={
-              showPersonalBests ? "Hide personal bests" : "Show personal bests"
-            }
-          >
-            <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-              Personal Bests
-            </h3>
-            {showPersonalBests ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-          <button
-            onClick={() => setShowPersonalBests(!showPersonalBests)}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={
-              showPersonalBests ? "Hide personal bests" : "Show personal bests"
-            }
-          >
-            {showPersonalBests ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-
-        {showPersonalBests && (
-          <div className="text-center py-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
-              <Trophy className="w-8 h-8 text-(--text-muted)" />
-            </div>
-            <div className="text-(--text-secondary)">No records yet</div>
-            <div className="text-sm text-(--text-muted) mt-2">
-              Start solving to see your personal bests!
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
+  // No dedicated empty state: every value below already falls back to "—", so
+  // with no solves the card keeps its real structure and simply reads empty.
 
   // Use precomputed stats for PBs when available (more accurate for users with many solves)
   // Fall back to calculated values from recent solves if no precomputed data
@@ -431,14 +383,18 @@ export default function PersonalBestsCard({
               </div>
               <div
                 className={`text-sm sm:text-lg font-bold font-mono truncate ${
-                  displaySuccessRate >= 95
-                    ? "text-(--success)"
-                    : displaySuccessRate >= 85
-                      ? "text-(--warning)"
-                      : "text-(--error)"
+                  displayTotalSolves === 0
+                    ? "text-(--text-muted)"
+                    : displaySuccessRate >= 95
+                      ? "text-(--success)"
+                      : displaySuccessRate >= 85
+                        ? "text-(--warning)"
+                        : "text-(--error)"
                 }`}
               >
-                {displaySuccessRate.toFixed(1)}%
+                {displayTotalSolves === 0
+                  ? "—"
+                  : `${displaySuccessRate.toFixed(1)}%`}
               </div>
             </div>
 

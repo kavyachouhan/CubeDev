@@ -159,7 +159,7 @@ export default function AlternativeAlgorithms({
                   )}
                 </div>
 
-                {/* 3D Preview (Expandable) */}
+                {/* Cube Preview (Expandable) */}
                 {isExpanded && (
                   <div className="mt-4 pt-4 border-t border-(--border)">
                     <CubeVisualizer3D

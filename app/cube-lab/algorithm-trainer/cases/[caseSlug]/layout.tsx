@@ -15,10 +15,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: caseName,
-    description: `Learn the ${caseName} algorithm with 3D visualization, multiple algorithm options, and spaced repetition practice.`,
+    description: `Learn the ${caseName} algorithm with 3D and 2D visualization, multiple algorithm options, and spaced repetition practice.`,
     openGraph: {
       title: `${caseName} | Algorithm Trainer | CubeDev`,
-      description: `Master the ${caseName} algorithm with interactive 3D visualization.`,
+      description: `Master the ${caseName} algorithm with interactive 3D and 2D visualization.`,
       url: `https://cubedev.xyz/cube-lab/algorithm-trainer/cases/${caseSlug}`,
       siteName: "CubeDev",
       type: "website",
