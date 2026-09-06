@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageSquarePlus, Pencil, Trash2, Check, X } from "lucide-react";
 import { Session } from "./ChatInterface";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 interface ChatHeaderProps {
   currentSession: Session | null;
@@ -65,12 +67,10 @@ export default function ChatHeader({
     }
   };
 
-  const handleDelete = () => {
+  const chatDelete = useConfirmDelete(async () => {
     if (!currentSession) return;
-    if (confirm("Are you sure you want to delete this chat session?")) {
-      onDeleteSession(currentSession.session_id);
-    }
-  };
+    await onDeleteSession(currentSession.session_id);
+  });
 
   return (
     <div className="border-b border-(--border) bg-(--surface) px-3 md:px-4 lg:px-6 py-3 md:py-4 shrink-0">
@@ -130,7 +130,7 @@ export default function ChatHeader({
                     <Pencil className="w-4 h-4 text-(--primary)" />
                   </button>
                   <button
-                    onClick={handleDelete}
+                    onClick={() => chatDelete.request()}
                     className="p-1.5 hover:bg-(--error)/20 rounded-lg transition-colors"
                     title="Delete session"
                   >
@@ -153,6 +153,17 @@ export default function ChatHeader({
           </div>
         )}
       </div>
+      <ConfirmDeleteModal
+        isOpen={chatDelete.isOpen}
+        onClose={chatDelete.cancel}
+        onConfirm={chatDelete.confirm}
+        isDeleting={chatDelete.isDeleting}
+        title="Delete Chat?"
+        description="Are you sure you want to delete this chat session?"
+        itemName={currentSession?.title}
+        warning="This chat and all of its messages will be permanently deleted."
+        confirmLabel="Delete Chat"
+      />
     </div>
   );
 }

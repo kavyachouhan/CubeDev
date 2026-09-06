@@ -14,8 +14,9 @@ import {
   Layers,
 } from "lucide-react";
 import { EditCaseModal } from "./modals/EditCaseModal";
-import { DeleteConfirmModal } from "./modals/DeleteConfirmModal";
 import { AlgorithmsListView } from "./AlgorithmsListView";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 interface CasesListViewProps {
   setId: Id<"algorithmSets">;
@@ -29,34 +30,24 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
     null,
   );
   const [showNewCaseModal, setShowNewCaseModal] = useState(false);
-  const [deleteCase, setDeleteCase] = useState<Id<"algorithmCases"> | null>(
-    null,
-  );
   const [viewingAlgorithms, setViewingAlgorithms] = useState<{
     caseId: Id<"algorithmCases">;
     caseName: string;
   } | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const cases = useQuery(api.admin.getCasesForSetAdmin, { setId });
   const deleteCaseMutation = useMutation(api.admin.deleteAlgorithmCase);
 
+  const caseDelete = useConfirmDelete<{
+    _id: Id<"algorithmCases">;
+    name: string;
+  }>(async (caseItem) => {
+    await deleteCaseMutation({ caseId: caseItem._id });
+  });
+
   const filteredCases = cases?.filter((c) =>
     c.caseName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
-
-  const handleDeleteCase = async () => {
-    if (!deleteCase) return;
-    setIsDeleting(true);
-    try {
-      await deleteCaseMutation({ caseId: deleteCase });
-      setDeleteCase(null);
-    } catch (error) {
-      console.error("Failed to delete case:", error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   const currentCase = editingCase
     ? cases?.find((c) => c._id === editingCase)
@@ -169,7 +160,12 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => setDeleteCase(caseItem._id)}
+                    onClick={() =>
+                      caseDelete.request({
+                        _id: caseItem._id,
+                        name: caseItem.caseName,
+                      })
+                    }
                     className="p-2 hover:bg-red-500/10 text-(--text-muted) hover:text-red-500 rounded-lg transition-colors"
                     title="Delete case"
                   >
@@ -204,15 +200,17 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
         />
       )}
 
-      {deleteCase && (
-        <DeleteConfirmModal
-          title="Delete Case"
-          message="This will permanently delete this case and all its algorithms. User progress will also be removed. This action cannot be undone."
-          onConfirm={handleDeleteCase}
-          onCancel={() => setDeleteCase(null)}
-          isDeleting={isDeleting}
-        />
-      )}
+      <ConfirmDeleteModal
+        isOpen={caseDelete.isOpen}
+        onClose={caseDelete.cancel}
+        onConfirm={caseDelete.confirm}
+        isDeleting={caseDelete.isDeleting}
+        title="Delete Case?"
+        description="Are you sure you want to delete this case?"
+        itemName={caseDelete.target?.name}
+        warning="This will permanently delete this case and all its algorithms. User progress will also be removed."
+        confirmLabel="Delete Case"
+      />
     </div>
   );
 }

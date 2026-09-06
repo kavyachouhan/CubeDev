@@ -16,6 +16,8 @@ import {
   CircleCheck,
 } from "lucide-react";
 import dynamic from "next/dynamic";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 // Dynamically import ScramblePreview to avoid loading heavy 3D library on initial load
 const ScramblePreview = dynamic(() => import("./ScramblePreview"), {
@@ -833,10 +835,7 @@ function SolveDetailsModal({
             </div>
 
             <button
-              onClick={() => {
-                onDeleteSolve(solve.id);
-                onClose();
-              }}
+              onClick={() => onDeleteSolve(solve.id)}
               className="w-full px-3 py-2 bg-(--error) hover:bg-red-600 text-white text-sm rounded font-medium transition-colors"
             >
               Delete Solve
@@ -875,6 +874,23 @@ export default function TimerHistory({
   const [selectedSolve, setSelectedSolve] = useState<TimerRecord | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSolveId, setEditingSolveId] = useState<string | null>(null);
+
+  type HistoryDeleteTarget =
+    | { kind: "clear" }
+    | { kind: "solve"; solve: TimerRecord };
+
+  const historyDelete = useConfirmDelete<HistoryDeleteTarget>(async (target) => {
+    if (target.kind === "clear") {
+      await onClearHistory();
+      return;
+    }
+
+    await onDeleteSolve(target.solve.id);
+    if (selectedSolve?.id === target.solve.id) {
+      setIsModalOpen(false);
+      setSelectedSolve(null);
+    }
+  });
 
   // Infinite scroll state
   const [displayCount, setDisplayCount] = useState(20);
@@ -1026,7 +1042,7 @@ export default function TimerHistory({
           <div className="flex items-center gap-2">
             {eventHistory.length > 0 && (
               <button
-                onClick={onClearHistory}
+                onClick={() => historyDelete.request({ kind: "clear" })}
                 className="p-1 text-(--text-muted) hover:text-(--error) transition-colors"
                 title="Clear all times"
               >
@@ -1148,7 +1164,7 @@ export default function TimerHistory({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          onDeleteSolve(record.id);
+                          historyDelete.request({ kind: "solve", solve: record });
                         }}
                         className="p-1 text-(--text-muted) hover:text-(--error) transition-colors"
                         title="Delete solve"
@@ -1213,9 +1229,46 @@ export default function TimerHistory({
           setSelectedSolve(null);
         }}
         onApplyPenalty={handlePenaltyChange}
-        onDeleteSolve={onDeleteSolve}
+        onDeleteSolve={(solveId) => {
+          const solve =
+            history.find((record) => record.id === solveId) || selectedSolve;
+          if (solve) historyDelete.request({ kind: "solve", solve });
+        }}
         onUpdateSolve={handleUpdateSolve}
         onEditTime={handleEditTime}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={historyDelete.isOpen}
+        onClose={historyDelete.cancel}
+        onConfirm={historyDelete.confirm}
+        isDeleting={historyDelete.isDeleting}
+        title={
+          historyDelete.target?.kind === "clear"
+            ? "Clear All Times?"
+            : "Delete Solve?"
+        }
+        description={
+          historyDelete.target?.kind === "clear"
+            ? `This will remove every solve in the current session for ${getEventName(selectedEvent)}.`
+            : "Are you sure you want to delete this solve?"
+        }
+        itemName={
+          historyDelete.target?.kind === "solve"
+            ? formatTime(
+                historyDelete.target.solve.finalTime,
+                historyDelete.target.solve.penalty,
+              )
+            : undefined
+        }
+        warning={
+          historyDelete.target?.kind === "clear"
+            ? "All times in this session will be permanently deleted."
+            : "This solve will be permanently deleted."
+        }
+        confirmLabel={
+          historyDelete.target?.kind === "clear" ? "Clear All" : "Delete Solve"
+        }
       />
     </>
   );

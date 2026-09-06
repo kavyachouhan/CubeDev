@@ -6,6 +6,8 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Plus, Pencil, Trash2, Save, X } from "lucide-react";
 import FeatureBadge, { BadgeVariant } from "@/components/FeatureBadge";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 type LabelType = BadgeVariant;
 
@@ -131,21 +133,14 @@ export default function AdminFeatureLabels() {
     }
   };
 
-  const handleDelete = async (label: (typeof sortedLabels)[number]) => {
-    const confirmed = window.confirm(
-      `Delete label for ${label.featureKey}? This cannot be undone.`,
-    );
-    if (!confirmed) return;
-
-    try {
+  const labelDelete = useConfirmDelete<(typeof sortedLabels)[number]>(
+    async (label) => {
       await deleteLabel({ id: label._id });
       if (editingId === label._id) {
         resetForm();
       }
-    } catch (error) {
-      console.error("Failed to delete label:", error);
-    }
-  };
+    },
+  );
 
   return (
     <div className="min-h-full p-3 sm:p-4 md:p-6 lg:p-8 space-y-6">
@@ -357,7 +352,7 @@ export default function AdminFeatureLabels() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleDelete(label)}
+                      onClick={() => labelDelete.request(label)}
                       className="p-2 text-(--text-muted) hover:text-(--error) hover:bg-(--surface) rounded-lg transition-colors"
                       title="Delete"
                     >
@@ -370,6 +365,17 @@ export default function AdminFeatureLabels() {
           </div>
         )}
       </div>
+      <ConfirmDeleteModal
+        isOpen={labelDelete.isOpen}
+        onClose={labelDelete.cancel}
+        onConfirm={labelDelete.confirm}
+        isDeleting={labelDelete.isDeleting}
+        title="Delete Label?"
+        description="Are you sure you want to delete this feature label?"
+        itemName={labelDelete.target?.featureKey}
+        warning="This label will be permanently removed."
+        confirmLabel="Delete Label"
+      />
     </div>
   );
 }

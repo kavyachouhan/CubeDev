@@ -16,7 +16,6 @@ import {
   Meh,
   Frown,
   BatteryWarning,
-  AlertTriangle,
   BookOpen,
   Timer,
   Zap,
@@ -31,6 +30,8 @@ import {
   Play,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 import {
   isVideoFile,
   isVideoUrl,
@@ -191,14 +192,35 @@ export default function JournalEntryViewModal({
   onEdit,
   onDeleted,
 }: JournalEntryViewModalProps) {
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedMediaIndex, setSelectedMediaIndex] = useState<number | null>(
     null,
   );
   const [showTasks, setShowTasks] = useState(true);
 
   const deleteEntry = useMutation(api.coach.deleteJournalEntry);
+
+  const entryDelete = useConfirmDelete(async () => {
+    if (!entry) return;
+
+    const result = await deleteEntry({
+      entryId: entry._id,
+      userId: entry.userId,
+    });
+
+    if (result.mediaFileIds && result.mediaFileIds.length > 0) {
+      const { deleteJournalMedia } = await import("@/lib/appwrite-storage");
+      for (const fileId of result.mediaFileIds) {
+        try {
+          await deleteJournalMedia(fileId);
+        } catch (error) {
+          console.error("Failed to delete media file:", error);
+        }
+      }
+    }
+
+    onDeleted();
+    onClose();
+  });
 
   // Lock body scroll when lightbox is open
   useEffect(() => {
@@ -259,36 +281,6 @@ export default function JournalEntryViewModal({
   const displayAverage = entry.customAverage || entry.sessionAverage;
   const displaySolveCount = entry.customSolveCount || entry.solveCount;
 
-  const handleDelete = async () => {
-    setIsDeleting(true);
-    try {
-      const result = await deleteEntry({
-        entryId: entry._id,
-        userId: entry.userId,
-      });
-
-      // Delete media files from Appwrite
-      if (result.mediaFileIds && result.mediaFileIds.length > 0) {
-        const { deleteJournalMedia } = await import("@/lib/appwrite-storage");
-        for (const fileId of result.mediaFileIds) {
-          try {
-            await deleteJournalMedia(fileId);
-          } catch (error) {
-            console.error("Failed to delete media file:", error);
-          }
-        }
-      }
-
-      onDeleted();
-      onClose();
-    } catch (error) {
-      console.error("Failed to delete entry:", error);
-    } finally {
-      setIsDeleting(false);
-      setShowDeleteConfirm(false);
-    }
-  };
-
   // Check if there's any session data - use display values
   const hasSessionData =
     displaySolveCount ||
@@ -332,7 +324,7 @@ export default function JournalEntryViewModal({
               <Pencil className="w-4 h-4" />
             </button>
             <button
-              onClick={() => setShowDeleteConfirm(true)}
+              onClick={() => entryDelete.request()}
               className="p-2 rounded-lg hover:bg-(--error)/10 text-(--text-muted) hover:text-(--error) transition-colors"
               aria-label="Delete entry"
               title="Delete Entry"
@@ -705,39 +697,17 @@ export default function JournalEntryViewModal({
           </div>
         </div>
 
-        {/* Delete Confirmation */}
-        {showDeleteConfirm && (
-          <div className="absolute inset-0 bg-(--surface)/95 backdrop-blur-sm flex items-center justify-center p-4 rounded-xl">
-            <div className="text-center max-w-sm">
-              <div className="w-12 h-12 rounded-full bg-(--error)/10 flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-6 h-6 text-(--error)" />
-              </div>
-              <h3 className="font-semibold text-(--text-primary) mb-2 font-statement">
-                Delete Entry?
-              </h3>
-              <p className="text-sm text-(--text-muted) mb-6">
-                This action cannot be undone. The journal entry will be
-                permanently deleted.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2.5 border border-(--border) rounded-lg text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors font-medium"
-                  disabled={isDeleting}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="px-4 py-2.5 bg-(--error) text-white rounded-lg hover:bg-(--error)/90 transition-colors disabled:opacity-50 font-medium"
-                >
-                  {isDeleting ? "Deleting..." : "Delete Entry"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmDeleteModal
+          isOpen={entryDelete.isOpen}
+          onClose={entryDelete.cancel}
+          onConfirm={entryDelete.confirm}
+          isDeleting={entryDelete.isDeleting}
+          title="Delete Entry?"
+          description="Are you sure you want to delete this journal entry?"
+          itemName={entry ? formatDate(entry.entryDate) : undefined}
+          warning="The journal entry and any attached media will be permanently deleted."
+          confirmLabel="Delete Entry"
+        />
       </div>
     </div>
   );

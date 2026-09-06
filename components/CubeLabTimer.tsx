@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import { useUser } from "@/components/UserProvider";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 // Import components
 import TimerDisplay from "./timer/TimerDisplay";
@@ -257,9 +259,9 @@ export default function CubeLabTimer({
     handleSessionChange(sessions[prevIndex]);
   }, [sessions, currentSession, handleSessionChange]);
 
-  const handleDeleteLastSolve = useCallback(() => {
+  const handleDeleteLastSolve = useCallback(async () => {
     if (!currentSession || !lastSolveId) return;
-    deleteSolve(
+    await deleteSolve(
       lastSolveId,
       currentSession,
       getSessionHistory(currentSession.id),
@@ -272,6 +274,39 @@ export default function CubeLabTimer({
     getSessionHistory,
     removeSolve,
   ]);
+
+  type ShortcutDeleteTarget = { kind: "clear" } | { kind: "lastSolve" };
+
+  const shortcutDelete = useConfirmDelete<ShortcutDeleteTarget>(
+    async (target) => {
+      if (target.kind === "clear") {
+        if (!currentSession) return;
+        await clearSessionSolves(
+          getSessionHistory(currentSession.id),
+          currentSession,
+          clearSessionHistory,
+        );
+        return;
+      }
+
+      await handleDeleteLastSolve();
+    },
+  );
+
+  const lastSolve = lastSolveId
+    ? history.find((solve) => solve.id === lastSolveId)
+    : undefined;
+
+  const formatSolveTime = (
+    timeMs: number,
+    penalty: "none" | "+2" | "DNF" = "none",
+  ) => {
+    if (penalty === "DNF" || timeMs === Infinity || timeMs === 0) return "DNF";
+    const seconds = timeMs / 1000;
+    const mins = Math.floor(seconds / 60);
+    const secs = (seconds % 60).toFixed(2);
+    return mins > 0 ? `${mins}:${secs.padStart(5, "0")}` : secs;
+  };
 
   const handleMarkDnf = useCallback(() => {
     if (!lastSolveId) return;
@@ -296,15 +331,13 @@ export default function CubeLabTimer({
     onEventChange: handleEventChange,
     onNextScramble: handleNewScramble,
     onClearSession: () => {
-      if (currentSession) {
-        clearSessionSolves(
-          getSessionHistory(currentSession.id),
-          currentSession,
-          clearSessionHistory,
-        );
+      if (currentSession) shortcutDelete.request({ kind: "clear" });
+    },
+    onDeleteLastSolve: () => {
+      if (currentSession && lastSolveId) {
+        shortcutDelete.request({ kind: "lastSolve" });
       }
     },
-    onDeleteLastSolve: handleDeleteLastSolve,
     onNextSession: handleNextSession,
     onPrevSession: handlePrevSession,
     onMarkDnf: handleMarkDnf,
@@ -754,6 +787,38 @@ export default function CubeLabTimer({
         onImportNow={handleOpenImportFromOnboarding}
         onCreateFocusedSession={handleCreateFocusedSession}
         isCreatingSession={isCreatingFocusedSession}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={shortcutDelete.isOpen}
+        onClose={shortcutDelete.cancel}
+        onConfirm={shortcutDelete.confirm}
+        isDeleting={shortcutDelete.isDeleting}
+        title={
+          shortcutDelete.target?.kind === "clear"
+            ? "Clear Session?"
+            : "Delete Last Solve?"
+        }
+        description={
+          shortcutDelete.target?.kind === "clear"
+            ? "This will remove every solve in the current session."
+            : "Are you sure you want to delete the latest solve?"
+        }
+        itemName={
+          shortcutDelete.target?.kind === "lastSolve" && lastSolve
+            ? formatSolveTime(lastSolve.finalTime, lastSolve.penalty)
+            : currentSession?.name
+        }
+        warning={
+          shortcutDelete.target?.kind === "clear"
+            ? "All times in this session will be permanently deleted."
+            : "This solve will be permanently deleted."
+        }
+        confirmLabel={
+          shortcutDelete.target?.kind === "clear"
+            ? "Clear Session"
+            : "Delete Solve"
+        }
       />
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 md:gap-6">

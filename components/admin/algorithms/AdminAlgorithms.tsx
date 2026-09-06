@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useCachedQuery } from "@/lib/hooks/useAdminCache";
@@ -13,8 +13,9 @@ import { AlgorithmAnalytics } from "./AlgorithmAnalytics";
 import { AlgorithmSetCard } from "./AlgorithmSetCard";
 import { CasesListView } from "./CasesListView";
 import { EditSetModal } from "./modals/EditSetModal";
-import { DeleteConfirmModal } from "./modals/DeleteConfirmModal";
 import { ImportModal } from "./modals/ImportModal";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 export default function AdminAlgorithms() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,12 +24,10 @@ export default function AdminAlgorithms() {
   );
   const [showNewSetModal, setShowNewSetModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
-  const [deleteSet, setDeleteSet] = useState<Id<"algorithmSets"> | null>(null);
   const [viewingCases, setViewingCases] = useState<{
     setId: Id<"algorithmSets">;
     setName: string;
   } | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const { data: sets } = useCachedQuery(
     api.admin.getAllSetsForAdmin,
@@ -40,24 +39,18 @@ export default function AdminAlgorithms() {
   );
   const deleteSetMutation = useMutation(api.admin.deleteAlgorithmSet);
 
+  const setDelete = useConfirmDelete<{
+    _id: Id<"algorithmSets">;
+    name: string;
+  }>(async (set) => {
+    await deleteSetMutation({ setId: set._id });
+  });
+
   const filteredSets = sets?.filter(
     (s) =>
       s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       s.category.toLowerCase().includes(searchQuery.toLowerCase()),
   );
-
-  const handleDeleteSet = async () => {
-    if (!deleteSet) return;
-    setIsDeleting(true);
-    try {
-      await deleteSetMutation({ setId: deleteSet });
-      setDeleteSet(null);
-    } catch (error) {
-      console.error("Failed to delete set:", error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   const currentSet = editingSet
     ? sets?.find((s) => s._id === editingSet)
@@ -137,7 +130,7 @@ export default function AdminAlgorithms() {
                 key={set._id}
                 set={set}
                 onEdit={() => setEditingSet(set._id)}
-                onDelete={() => setDeleteSet(set._id)}
+                onDelete={() => setDelete.request({ _id: set._id, name: set.name })}
                 onViewCases={() =>
                   setViewingCases({ setId: set._id, setName: set.name })
                 }
@@ -163,15 +156,17 @@ export default function AdminAlgorithms() {
         <EditSetModal set={currentSet} onClose={() => setEditingSet(null)} />
       )}
 
-      {deleteSet && (
-        <DeleteConfirmModal
-          title="Delete Algorithm Set"
-          message="This will permanently delete this set, all its cases, algorithms, and user progress. This action cannot be undone."
-          onConfirm={handleDeleteSet}
-          onCancel={() => setDeleteSet(null)}
-          isDeleting={isDeleting}
-        />
-      )}
+      <ConfirmDeleteModal
+        isOpen={setDelete.isOpen}
+        onClose={setDelete.cancel}
+        onConfirm={setDelete.confirm}
+        isDeleting={setDelete.isDeleting}
+        title="Delete Algorithm Set?"
+        description="Are you sure you want to delete this algorithm set?"
+        itemName={setDelete.target?.name}
+        warning="This will permanently delete this set, all its cases, algorithms, and user progress."
+        confirmLabel="Delete Set"
+      />
 
       <ImportModal
         isOpen={showImportModal}

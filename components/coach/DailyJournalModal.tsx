@@ -28,6 +28,8 @@ import type { LucideIcon } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 import {
   uploadJournalMedia,
   deleteJournalMedia,
@@ -753,6 +755,10 @@ export default function DailyJournalModal({
     setExistingMediaTypes((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const existingMediaDelete = useConfirmDelete<number>((index) => {
+    removeExistingMedia(index);
+  });
+
   const handleSave = async () => {
     setIsSubmitting(true);
 
@@ -1327,7 +1333,7 @@ export default function DailyJournalModal({
                       url={url}
                       fileId={fileId}
                       isVideo={isVideo}
-                      onRemove={() => removeExistingMedia(index)}
+                      onRemove={() => existingMediaDelete.request(index)}
                       onPreview={() =>
                         setPreviewMedia({
                           url:
@@ -1450,6 +1456,17 @@ export default function DailyJournalModal({
           </div>,
           document.body,
         )}
+
+      <ConfirmDeleteModal
+        isOpen={existingMediaDelete.isOpen}
+        onClose={existingMediaDelete.cancel}
+        onConfirm={existingMediaDelete.confirm}
+        isDeleting={existingMediaDelete.isDeleting}
+        title="Remove Media?"
+        description="Are you sure you want to remove this attachment from the journal entry?"
+        warning="The file will be deleted when you save this entry."
+        confirmLabel="Remove Media"
+      />
     </div>
   );
 }

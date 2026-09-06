@@ -13,6 +13,8 @@ import {
 import Image from "next/image";
 import { WCA_EVENTS } from "./CompetitionSimulator";
 import { formatTime } from "@/lib/stats-utils";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 interface QualifyingGoal {
   id: string;
@@ -140,9 +142,9 @@ export default function QualifyingTracker() {
   };
 
   // Delete goal
-  const deleteGoal = (id: string) => {
-    setGoals((prev) => prev.filter((g) => g.id !== id));
-  };
+  const goalDelete = useConfirmDelete<QualifyingGoal>((goal) => {
+    setGoals((prev) => prev.filter((item) => item.id !== goal.id));
+  });
 
   // Edit goal
   const startEditGoal = (goal: QualifyingGoal) => {
@@ -445,7 +447,7 @@ export default function QualifyingTracker() {
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => deleteGoal(goal.id)}
+                      onClick={() => goalDelete.request(goal)}
                       className="p-2 text-(--text-muted) hover:text-(--error) transition-colors"
                       title="Delete goal"
                     >
@@ -767,6 +769,24 @@ export default function QualifyingTracker() {
           </div>
         </div>
       )}
+      <ConfirmDeleteModal
+        isOpen={goalDelete.isOpen}
+        onClose={goalDelete.cancel}
+        onConfirm={goalDelete.confirm}
+        isDeleting={goalDelete.isDeleting}
+        title="Delete Goal?"
+        description="Are you sure you want to delete this qualifying goal?"
+        itemName={
+          goalDelete.target
+            ? `${
+                WCA_EVENTS.find((event) => event.id === goalDelete.target?.eventId)
+                  ?.name || goalDelete.target.eventId
+              } · ${goalDelete.target.competitionName}`
+            : undefined
+        }
+        warning="This goal is stored on this device and will be permanently removed."
+        confirmLabel="Delete Goal"
+      />
     </div>
   );
 }

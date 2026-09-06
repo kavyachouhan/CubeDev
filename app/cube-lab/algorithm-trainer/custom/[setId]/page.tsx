@@ -28,6 +28,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 type TabType = "all" | "predefined" | "custom";
 
@@ -109,14 +111,13 @@ export default function EditCustomSetPage() {
     }
   };
 
-  const handleRemoveCase = async (caseId: Id<"algorithmCases">) => {
+  const caseDelete = useConfirmDelete<{
+    caseId: Id<"algorithmCases">;
+    name: string;
+  }>(async (item) => {
     if (!customSet) return;
-    try {
-      await removeCaseFromSet({ setId: customSet._id, caseId });
-    } catch (error) {
-      console.error("Failed to remove case:", error);
-    }
-  };
+    await removeCaseFromSet({ setId: customSet._id, caseId: item.caseId });
+  });
 
   const handleToggleVisibility = async () => {
     if (!customSet) return;
@@ -619,7 +620,12 @@ export default function EditCustomSetPage() {
                           >
                             {/* Remove button */}
                             <button
-                              onClick={() => handleRemoveCase(c.caseId)}
+                              onClick={() =>
+                                caseDelete.request({
+                                  caseId: c.caseId,
+                                  name: c.caseName,
+                                })
+                              }
                               className="absolute top-3 right-3 sm:hidden p-1.5 hover:bg-red-500/10 text-red-500 rounded-lg transition-colors"
                               title="Remove from set"
                             >
@@ -655,7 +661,12 @@ export default function EditCustomSetPage() {
                                 )}
                               </div>
                               <button
-                                onClick={() => handleRemoveCase(c.caseId)}
+                                onClick={() =>
+                                  caseDelete.request({
+                                    caseId: c.caseId,
+                                    name: c.caseName,
+                                  })
+                                }
                                 className="hidden sm:block p-2 hover:bg-red-500/10 text-red-500 rounded-lg transition-colors shrink-0"
                                 title="Remove from set"
                               >
@@ -716,6 +727,17 @@ export default function EditCustomSetPage() {
             )}
           </div>
         </div>
+        <ConfirmDeleteModal
+          isOpen={caseDelete.isOpen}
+          onClose={caseDelete.cancel}
+          onConfirm={caseDelete.confirm}
+          isDeleting={caseDelete.isDeleting}
+          title="Remove Case?"
+          description="Are you sure you want to remove this case from the set?"
+          itemName={caseDelete.target?.name}
+          warning="The case will be removed from this set. Predefined algorithms are not deleted."
+          confirmLabel="Remove Case"
+        />
       </CubeLabLayout>
     </ProtectedRoute>
   );

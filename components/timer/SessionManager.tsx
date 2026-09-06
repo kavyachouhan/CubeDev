@@ -21,6 +21,8 @@ import React, {
 } from "react";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import SessionBottomSheet from "./SessionBottomSheet";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 interface Session {
   id: string;
@@ -211,8 +213,14 @@ export default function SessionManager({
     }
   };
 
-  const handleDeleteSession = (sessionId: string) => {
-    if (sessions.length > 1) onDeleteSession(sessionId);
+  const sessionDelete = useConfirmDelete<Session>(async (session) => {
+    await onDeleteSession(session.id);
+  });
+
+  const requestDeleteSession = (sessionId: string) => {
+    if (sessions.length <= 1) return;
+    const session = sessions.find((item) => item.id === sessionId);
+    if (session) sessionDelete.request(session);
   };
 
   return (
@@ -464,7 +472,7 @@ export default function SessionManager({
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDeleteSession(session.id);
+                              requestDeleteSession(session.id);
                             }}
                             className="p-2 text-(--text-muted) hover:text-(--error) hover:bg-(--surface) rounded-md transition-colors"
                             title="Delete session"
@@ -496,8 +504,24 @@ export default function SessionManager({
         onSessionChange={onSessionChange}
         onCreateSession={onCreateSession}
         onRenameSession={onRenameSession}
-        onDeleteSession={onDeleteSession}
+        onDeleteSession={requestDeleteSession}
         getSolveCount={getLiveSolveCount}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={sessionDelete.isOpen}
+        onClose={sessionDelete.cancel}
+        onConfirm={sessionDelete.confirm}
+        isDeleting={sessionDelete.isDeleting}
+        title="Delete Session?"
+        description="Are you sure you want to delete this session?"
+        itemName={sessionDelete.target?.name}
+        warning={`This will permanently delete the session and all ${
+          sessionDelete.target
+            ? getLiveSolveCount(sessionDelete.target.id)
+            : 0
+        } of its solves.`}
+        confirmLabel="Delete Session"
       />
     </div>
   );

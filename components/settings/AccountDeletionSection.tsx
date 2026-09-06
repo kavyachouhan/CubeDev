@@ -1,41 +1,52 @@
 "use client";
 
-import { useState } from "react";
-import { Trash2, X } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 export default function AccountDeletionSection() {
   const { user, signOut } = useUser();
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [deleteConfirmation, setDeleteConfirmation] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
-
   const deleteAccount = useMutation(api.users.deleteUserAccount);
 
-  const handleDeleteAccount = async () => {
-    if (!user?.convexId || deleteConfirmation !== "DELETE") return;
+  const performCleanupAndLogout = async () => {
+    try {
+      signOut();
+      sessionStorage.clear();
 
-    setIsDeleting(true);
+      if (typeof window !== "undefined") {
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (
+            key &&
+            (key.startsWith("cubedev_") || key.startsWith("convex_"))
+          ) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach((key) => localStorage.removeItem(key));
+      }
+
+      setTimeout(() => {
+        router.push("/");
+      }, 100);
+    } catch (cleanupError) {
+      console.error("Error during cleanup:", cleanupError);
+      router.push("/");
+    }
+  };
+
+  const accountDelete = useConfirmDelete(async () => {
+    if (!user?.convexId) return;
 
     try {
-      // Delete the user account from the database
       await deleteAccount({ userId: user.convexId as any });
-
-      // Notify user of successful deletion
-      alert(
-        "Your account has been successfully deleted. You will be redirected to the homepage."
-      );
-
-      // Perform cleanup and logout
-      await performCleanupAndLogout();
     } catch (error) {
-      console.error("Failed to delete account:", error);
-
-      // Show user-friendly error message
       let errorMessage = "Failed to delete account. Please try again.";
 
       if (error instanceof Error) {
@@ -56,48 +67,13 @@ export default function AccountDeletionSection() {
         }
       }
 
-      alert(errorMessage + " If the issue persists, please contact support.");
-    } finally {
-      setIsDeleting(false);
-      setIsDeleteModalOpen(false);
-      setDeleteConfirmation("");
+      throw new Error(
+        `${errorMessage} If the issue persists, please contact support.`,
+      );
     }
-  };
 
-  const performCleanupAndLogout = async () => {
-    try {
-      // Log out the user
-      signOut();
-
-      // Clear user session using UserProvider's signOut
-      sessionStorage.clear();
-
-      // Clear any cached queries or local storage that might contain user data
-      if (typeof window !== "undefined") {
-        // Clear any other app-specific storage
-        const keysToRemove = [];
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (
-            key &&
-            (key.startsWith("cubedev_") || key.startsWith("convex_"))
-          ) {
-            keysToRemove.push(key);
-          }
-        }
-        keysToRemove.forEach((key) => localStorage.removeItem(key));
-      }
-
-      // Redirect to homepage after cleanup
-      setTimeout(() => {
-        router.push("/");
-      }, 100);
-    } catch (cleanupError) {
-      console.error("Error during cleanup:", cleanupError);
-      // Even if cleanup fails, ensure the user is redirected
-      router.push("/");
-    }
-  };
+    await performCleanupAndLogout();
+  });
 
   if (!user) return null;
 
@@ -133,7 +109,7 @@ export default function AccountDeletionSection() {
         </div>
 
         <button
-          onClick={() => setIsDeleteModalOpen(true)}
+          onClick={() => accountDelete.request()}
           className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-(--error) hover:opacity-90 text-white rounded-lg font-medium transition-all text-sm md:text-base w-full sm:w-auto"
         >
           <Trash2 className="w-4 h-4" />
@@ -141,78 +117,17 @@ export default function AccountDeletionSection() {
         </button>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {isDeleteModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-(--surface) rounded-lg shadow-xl max-w-md w-full border border-(--border)">
-            <div className="p-4 md:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base md:text-lg font-semibold text-(--text-primary) flex items-center gap-2">
-                  Confirm Account Deletion
-                </h3>
-                <button
-                  onClick={() => {
-                    setIsDeleteModalOpen(false);
-                    setDeleteConfirmation("");
-                  }}
-                  className="p-1 hover:bg-(--surface-elevated) rounded-md transition-colors"
-                >
-                  <X className="w-4 h-4 text-(--text-muted)" />
-                </button>
-              </div>
-
-              <div className="mb-6">
-                <p className="text-(--text-secondary) mb-4 text-sm md:text-base">
-                  This action cannot be undone. This will permanently delete
-                  your account and remove all your data from CubeDev.
-                </p>
-
-                <label className="block text-xs md:text-sm font-medium text-(--text-secondary) mb-2">
-                  Type{" "}
-                  <span className="font-bold text-(--error)">DELETE</span>{" "}
-                  to confirm:
-                </label>
-                <input
-                  type="text"
-                  value={deleteConfirmation}
-                  onChange={(e) => setDeleteConfirmation(e.target.value)}
-                  placeholder="DELETE"
-                  className="w-full px-3 py-2 border border-(--border) rounded-md bg-(--surface-elevated) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--error) text-sm md:text-base"
-                />
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => {
-                    setIsDeleteModalOpen(false);
-                    setDeleteConfirmation("");
-                  }}
-                  className="flex-1 px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-primary) font-medium transition-colors text-sm md:text-base"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeleteAccount}
-                  disabled={deleteConfirmation !== "DELETE" || isDeleting}
-                  className="flex-1 px-4 py-2 bg-(--error) hover:opacity-90 text-white rounded-md font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm md:text-base"
-                >
-                  {isDeleting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="w-4 h-4" />
-                      Delete Account
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDeleteModal
+        isOpen={accountDelete.isOpen}
+        onClose={accountDelete.cancel}
+        onConfirm={accountDelete.confirm}
+        isDeleting={accountDelete.isDeleting}
+        title="Delete Account?"
+        description="This will permanently delete your CubeDev account and remove all associated data."
+        requireTypedConfirmation="DELETE"
+        warning="All timer data, solve history, and profile information will be permanently deleted. Your WCA profile remains unaffected."
+        confirmLabel="Delete Account"
+      />
     </>
   );
 }
