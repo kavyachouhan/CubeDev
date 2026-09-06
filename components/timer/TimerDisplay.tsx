@@ -10,7 +10,8 @@ import {
   type PhaseSplit,
 } from "@/lib/phase-splits";
 import PhaseResults from "./PhaseResults";
-import TimerSettings, { TimerMode } from "./TimerSettings";
+import TimerSettingsModal from "./TimerSettingsModal";
+import { TimerMode } from "./TimerSettings";
 import PhaseIndicator from "./PhaseIndicator";
 import PenaltyButtons from "./PenaltyButtons";
 import TimerCore from "./TimerCore";
@@ -657,6 +658,8 @@ export default function TimerDisplay({
     if (timerMode !== "normal") return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (showSettings) return;
+
       initializeAudioContext(); // Initialize audio context on first user interaction
 
       if (e.code === "Space") {
@@ -765,6 +768,8 @@ export default function TimerDisplay({
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
+      if (showSettings) return;
+
       if (e.code === "Space") {
         e.preventDefault();
         setIsSpacePressed(false);
@@ -832,6 +837,7 @@ export default function TimerDisplay({
     startMetronome,
     currentPhaseIndex,
     initializeAudioContext,
+    showSettings,
   ]);
 
   // Touch and mouse handling
@@ -1060,31 +1066,6 @@ export default function TimerDisplay({
           opacity: showTimer ? 1 : 0,
         }}
       >
-        {/* Settings Panel */}
-        <TimerSettings
-          showSettings={showSettings}
-          timerMode={timerMode}
-          setTimerMode={setTimerMode}
-          inspectionEnabled={inspectionEnabled}
-          setInspectionEnabled={setInspectionEnabled}
-          focusModeEnabled={focusModeEnabled}
-          setFocusModeEnabled={setFocusModeEnabled}
-          phaseSplitsEnabled={phaseSplitsEnabled}
-          setPhaseSplitsEnabled={setPhaseSplitsEnabled}
-          selectedSplitMethod={selectedSplitMethod}
-          setSelectedSplitMethod={setSelectedSplitMethod}
-          consistencyCoach={consistencyCoach}
-          setConsistencyCoach={setConsistencyCoach}
-          mutePbSound={mutePbSound}
-          setMutePbSound={setMutePbSound}
-          extendedStatsVisibility={
-            extendedStatsVisibility || DEFAULT_EXTENDED_STATS
-          }
-          onToggleExtendedStat={
-            onToggleExtendedStat || (() => {})
-          }
-        />
-
         {/* Render timer based on selected mode */}
         {timerMode === "normal" && (
           <>
@@ -1177,6 +1158,29 @@ export default function TimerDisplay({
           />
         )}
       </div>
+
+      <TimerSettingsModal
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        timerMode={timerMode}
+        setTimerMode={setTimerMode}
+        inspectionEnabled={inspectionEnabled}
+        setInspectionEnabled={setInspectionEnabled}
+        focusModeEnabled={focusModeEnabled}
+        setFocusModeEnabled={setFocusModeEnabled}
+        phaseSplitsEnabled={phaseSplitsEnabled}
+        setPhaseSplitsEnabled={setPhaseSplitsEnabled}
+        selectedSplitMethod={selectedSplitMethod}
+        setSelectedSplitMethod={setSelectedSplitMethod}
+        consistencyCoach={consistencyCoach}
+        setConsistencyCoach={setConsistencyCoach}
+        mutePbSound={mutePbSound}
+        setMutePbSound={setMutePbSound}
+        extendedStatsVisibility={
+          extendedStatsVisibility || DEFAULT_EXTENDED_STATS
+        }
+        onToggleExtendedStat={onToggleExtendedStat || (() => {})}
+      />
     </div>
   );
 }

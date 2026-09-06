@@ -19,6 +19,8 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useIsMobile } from "@/lib/hooks/useMediaQuery";
+import SessionBottomSheet from "./SessionBottomSheet";
 
 interface Session {
   id: string;
@@ -67,6 +69,7 @@ export default function SessionManager({
   onDeleteSession,
   allSolveHistory = [],
 }: SessionManagerProps) {
+  const isMobile = useIsMobile();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [isRenaming, setIsRenaming] = useState<string | null>(null);
@@ -184,11 +187,11 @@ export default function SessionManager({
         setRenameValue("");
       }
     };
-    if (isDropdownOpen) {
+    if (isDropdownOpen && !isMobile) {
       document.addEventListener("mousedown", onDoc);
       return () => document.removeEventListener("mousedown", onDoc);
     }
-  }, [isDropdownOpen]);
+  }, [isDropdownOpen, isMobile]);
 
   // Create session handler
   const handleCreateSession = async () => {
@@ -295,8 +298,8 @@ export default function SessionManager({
             />
           </button>
 
-          {/* Dropdown */}
-          {isDropdownOpen && (
+          {/* Dropdown (desktop) */}
+          {isDropdownOpen && !isMobile && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-80 overflow-hidden">
               {/* Create New Session */}
               <div className="p-3 border-b border-(--border) bg-(--surface-elevated)">
@@ -328,7 +331,7 @@ export default function SessionManager({
                     <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
                       <button
                         onClick={handleCreateSession}
-                        className="p-1.5 bg-(--surface) text-white rounded hover:bg-(--success)/80 transition-colors"
+                        className="p-1.5 bg-(--success) text-white rounded hover:opacity-90 transition-opacity"
                         title="Create session"
                       >
                         <Check className="w-3 h-3" />
@@ -338,7 +341,7 @@ export default function SessionManager({
                           setIsCreating(false);
                           setNewSessionName("");
                         }}
-                        className="p-1.5 bg-(--surface) border border-(--border) text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border-hover) rounded transition-colors"
+                        className="p-1.5 bg-(--error)/15 text-(--error) border border-(--error)/30 rounded hover:bg-(--error)/25 transition-colors"
                         title="Cancel"
                       >
                         <X className="w-3 h-3" />
@@ -347,7 +350,11 @@ export default function SessionManager({
                   </div>
                 ) : (
                   <button
-                    onClick={() => setIsCreating(true)}
+                    onClick={() => {
+                      setIsRenaming(null);
+                      setRenameValue("");
+                      setIsCreating(true);
+                    }}
                     className="w-full flex items-center gap-2 p-2 text-(--primary) hover:bg-(--surface) rounded-md transition-colors"
                   >
                     <Plus className="w-4 h-4" />
@@ -408,7 +415,7 @@ export default function SessionManager({
                                 e.stopPropagation();
                                 handleRenameSession(session.id);
                               }}
-                              className="p-1 bg-(--surface) text-white rounded hover:bg-(--success)/80 transition-colors"
+                              className="p-1 bg-(--success) text-white rounded hover:opacity-90 transition-opacity"
                               title="Save changes"
                             >
                               <Check className="w-3 h-3" />
@@ -419,7 +426,7 @@ export default function SessionManager({
                                 setIsRenaming(null);
                                 setRenameValue("");
                               }}
-                              className="p-1 bg-(--surface) border border-(--border) text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border-hover) rounded transition-colors"
+                              className="p-1 bg-(--error)/15 text-(--error) border border-(--error)/30 rounded hover:bg-(--error)/25 transition-colors"
                               title="Cancel editing"
                             >
                               <X className="w-3 h-3" />
@@ -443,6 +450,8 @@ export default function SessionManager({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
+                            setIsCreating(false);
+                            setNewSessionName("");
                             setIsRenaming(session.id);
                             setRenameValue(session.name);
                           }}
@@ -472,6 +481,24 @@ export default function SessionManager({
           )}
         </div>
       </div>
+
+      <SessionBottomSheet
+        isOpen={isDropdownOpen && isMobile}
+        onClose={() => {
+          setIsDropdownOpen(false);
+          setIsCreating(false);
+          setIsRenaming(null);
+          setNewSessionName("");
+          setRenameValue("");
+        }}
+        currentSession={currentSession}
+        sessions={sessions}
+        onSessionChange={onSessionChange}
+        onCreateSession={onCreateSession}
+        onRenameSession={onRenameSession}
+        onDeleteSession={onDeleteSession}
+        getSolveCount={getLiveSolveCount}
+      />
     </div>
   );
 }

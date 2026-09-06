@@ -1,5 +1,7 @@
 export { default as TimerDisplay } from "./TimerDisplay";
 export { default as TimerSettings } from "./TimerSettings";
+export { TimerSettingsPanel } from "./TimerSettings";
+export { default as TimerSettingsModal } from "./TimerSettingsModal";
 export { default as PhaseIndicator } from "./PhaseIndicator";
 export { default as PenaltyButtons } from "./PenaltyButtons";
 export { default as TimerCore } from "./TimerCore";
