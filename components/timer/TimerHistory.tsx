@@ -835,7 +835,10 @@ function SolveDetailsModal({
             </div>
 
             <button
-              onClick={() => onDeleteSolve(solve.id)}
+              onClick={() => {
+                onDeleteSolve(solve.id);
+                onClose();
+              }}
               className="w-full px-3 py-2 bg-(--error) hover:bg-red-600 text-white text-sm rounded font-medium transition-colors"
             >
               Delete Solve
@@ -875,21 +878,8 @@ export default function TimerHistory({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSolveId, setEditingSolveId] = useState<string | null>(null);
 
-  type HistoryDeleteTarget =
-    | { kind: "clear" }
-    | { kind: "solve"; solve: TimerRecord };
-
-  const historyDelete = useConfirmDelete<HistoryDeleteTarget>(async (target) => {
-    if (target.kind === "clear") {
-      await onClearHistory();
-      return;
-    }
-
-    await onDeleteSolve(target.solve.id);
-    if (selectedSolve?.id === target.solve.id) {
-      setIsModalOpen(false);
-      setSelectedSolve(null);
-    }
+  const historyDelete = useConfirmDelete(async () => {
+    await onClearHistory();
   });
 
   // Infinite scroll state
@@ -1042,7 +1032,7 @@ export default function TimerHistory({
           <div className="flex items-center gap-2">
             {eventHistory.length > 0 && (
               <button
-                onClick={() => historyDelete.request({ kind: "clear" })}
+                onClick={() => historyDelete.request()}
                 className="p-1 text-(--text-muted) hover:text-(--error) transition-colors"
                 title="Clear all times"
               >
@@ -1164,12 +1154,12 @@ export default function TimerHistory({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          historyDelete.request({ kind: "solve", solve: record });
+                          onDeleteSolve(record.id);
                         }}
                         className="p-1 text-(--text-muted) hover:text-(--error) transition-colors"
                         title="Delete solve"
                       >
-                        <X className="w-3 h-3" />
+                        <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
                   </div>
@@ -1229,11 +1219,7 @@ export default function TimerHistory({
           setSelectedSolve(null);
         }}
         onApplyPenalty={handlePenaltyChange}
-        onDeleteSolve={(solveId) => {
-          const solve =
-            history.find((record) => record.id === solveId) || selectedSolve;
-          if (solve) historyDelete.request({ kind: "solve", solve });
-        }}
+        onDeleteSolve={onDeleteSolve}
         onUpdateSolve={handleUpdateSolve}
         onEditTime={handleEditTime}
       />
@@ -1243,32 +1229,10 @@ export default function TimerHistory({
         onClose={historyDelete.cancel}
         onConfirm={historyDelete.confirm}
         isDeleting={historyDelete.isDeleting}
-        title={
-          historyDelete.target?.kind === "clear"
-            ? "Clear All Times?"
-            : "Delete Solve?"
-        }
-        description={
-          historyDelete.target?.kind === "clear"
-            ? `This will remove every solve in the current session for ${getEventName(selectedEvent)}.`
-            : "Are you sure you want to delete this solve?"
-        }
-        itemName={
-          historyDelete.target?.kind === "solve"
-            ? formatTime(
-                historyDelete.target.solve.finalTime,
-                historyDelete.target.solve.penalty,
-              )
-            : undefined
-        }
-        warning={
-          historyDelete.target?.kind === "clear"
-            ? "All times in this session will be permanently deleted."
-            : "This solve will be permanently deleted."
-        }
-        confirmLabel={
-          historyDelete.target?.kind === "clear" ? "Clear All" : "Delete Solve"
-        }
+        title="Clear All Times?"
+        description={`This will remove every solve in the current session for ${getEventName(selectedEvent)}.`}
+        warning="All times in this session will be permanently deleted."
+        confirmLabel="Clear All"
       />
     </>
   );
