@@ -32,7 +32,7 @@ Visit CubeDev at **[cubedev.xyz](https://cubedev.xyz)**
 - **Customizable Drills**: Create and share algorithm sets
 - **Multiple Practice Modes**: Recognition, Execution, Infinite drills
 - **Progress Tracking**: Monitor improvement over time
-- **3D Visualization**: Interactive cube models with playback controls
+- **3D and 2D Visualization**: Interactive cube models with playback controls
 
 ### Competition Simulations
 - **WCA Round Simulation**: Practice with official competition formats
@@ -59,9 +59,18 @@ Visit CubeDev at **[cubedev.xyz](https://cubedev.xyz)**
 - **Cross-platform**: Access your data from any device
 - **Migration Tools**: Easy transition from other timer applications
 
+## Documentation
+
+Project documentation lives in [`docs/`](./docs):
+
+- [PRD.md](./docs/PRD.md) — what CubeDev is, who it serves, feature scope, and the roadmap
+- [Architecture.md](./docs/Architecture.md) — stack, folder structure, routing, auth flow, and the Convex backend
+- [Rules.md](./docs/Rules.md) — engineering standards and constraints for contributors and AI agents
+- [Design.md](./docs/Design.md) — theming, tokens, typography, and the canonical component patterns
+
 ## Technology Stack
 
-- **Frontend**: Next.js 14 with App Router, TypeScript, Tailwind CSS
+- **Frontend**: Next.js 16 with App Router, TypeScript, Tailwind CSS v4
 - **Backend**: Convex real-time database with mutations and queries
 - **Authentication**: WCA OAuth integration for secure sign-in
 - **Deployment**: Vercel with edge functions and global CDN

@@ -6,7 +6,8 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { ChevronLeft, Plus, Edit2, Trash2, FileText } from "lucide-react";
 import { EditAlgorithmModal } from "./modals/EditAlgorithmModal";
-import { DeleteConfirmModal } from "./modals/DeleteConfirmModal";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 interface AlgorithmsListViewProps {
   caseId: Id<"algorithmCases">;
@@ -22,24 +23,16 @@ export function AlgorithmsListView({
   const [editingAlgorithm, setEditingAlgorithm] =
     useState<Id<"algorithms"> | null>(null);
   const [showNewAlgModal, setShowNewAlgModal] = useState(false);
-  const [deleteAlg, setDeleteAlg] = useState<Id<"algorithms"> | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const algorithms = useQuery(api.admin.getAlgorithmsForCaseAdmin, { caseId });
   const deleteAlgMutation = useMutation(api.admin.deleteAlgorithm);
 
-  const handleDeleteAlg = async () => {
-    if (!deleteAlg) return;
-    setIsDeleting(true);
-    try {
-      await deleteAlgMutation({ algId: deleteAlg });
-      setDeleteAlg(null);
-    } catch (error) {
-      console.error("Failed to delete algorithm:", error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
+  const algDelete = useConfirmDelete<{
+    _id: Id<"algorithms">;
+    notation: string;
+  }>(async (alg) => {
+    await deleteAlgMutation({ algId: alg._id });
+  });
 
   const currentAlg = editingAlgorithm
     ? algorithms?.find((a) => a._id === editingAlgorithm)
@@ -124,7 +117,12 @@ export function AlgorithmsListView({
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => setDeleteAlg(alg._id)}
+                    onClick={() =>
+                      algDelete.request({
+                        _id: alg._id,
+                        notation: alg.notation,
+                      })
+                    }
                     className="p-2 hover:bg-red-500/10 text-(--text-muted) hover:text-red-500 rounded-lg transition-colors"
                     title="Delete algorithm"
                   >
@@ -161,15 +159,17 @@ export function AlgorithmsListView({
         />
       )}
 
-      {deleteAlg && (
-        <DeleteConfirmModal
-          title="Delete Algorithm"
-          message="This will permanently delete this algorithm. Users who have this as their preferred algorithm will be switched to an alternative."
-          onConfirm={handleDeleteAlg}
-          onCancel={() => setDeleteAlg(null)}
-          isDeleting={isDeleting}
-        />
-      )}
+      <ConfirmDeleteModal
+        isOpen={algDelete.isOpen}
+        onClose={algDelete.cancel}
+        onConfirm={algDelete.confirm}
+        isDeleting={algDelete.isDeleting}
+        title="Delete Algorithm?"
+        description="Are you sure you want to delete this algorithm?"
+        itemName={algDelete.target?.notation}
+        warning="This will permanently delete this algorithm. Users who have this as their preferred algorithm will be switched to an alternative."
+        confirmLabel="Delete Algorithm"
+      />
     </div>
   );
 }

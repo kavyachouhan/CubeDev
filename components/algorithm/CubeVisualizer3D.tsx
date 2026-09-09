@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, RotateCcw, FastForward } from "lucide-react";
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  FastForward,
+  AlertTriangle,
+} from "lucide-react";
+import { useTheme } from "@/lib/theme-context";
+import CubeViewSelector from "@/components/settings/CubeViewSelector";
 
 type PuzzleType =
   | "3x3x3"
@@ -16,11 +24,23 @@ type PuzzleType =
   | "square1"
   | "clock";
 
+// Apply interaction styles to the Twisty Player based on whether it's in 2D or 3D mode. In 2D mode, allow touch interactions and use the default cursor. In 3D mode, disable touch interactions and use a grab cursor for better user experience.
+const applyInteractionStyles = (player: any, is2D: boolean) => {
+  player.style.touchAction = is2D ? "auto" : "none";
+  player.style.cursor = is2D ? "default" : "grab";
+};
+
 interface CubeVisualizer3DProps {
   algorithm: string;
   puzzle?: PuzzleType;
   autoPlay?: boolean;
   showControls?: boolean;
+  /**
+   * Show the 3D/2D view toggle overlaid on the cube. Defaults to true so every
+   * cube is switchable; pass false where the toggle would distract (e.g. the
+   * memorize flash in recognition drills).
+   */
+  showViewToggle?: boolean;
   height?: string;
   onComplete?: () => void;
 }
@@ -30,14 +50,22 @@ export default function CubeVisualizer3D({
   puzzle = "3x3x3",
   autoPlay = false,
   showControls = true,
+  showViewToggle = true,
   height = "300px",
   onComplete,
 }: CubeVisualizer3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [player, setPlayer] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const { cubeViewMode } = useTheme();
+  const is2D = cubeViewMode === "2d";
+
+  // Keep a ref to the current is2D value so that we can access it in the async initPlayer function without needing to add it to the dependency array (which would cause unnecessary re-initializations).
+  const is2DRef = useRef(is2D);
+  is2DRef.current = is2D;
 
   // Initialize Twisty Player
   useEffect(() => {
@@ -48,17 +76,23 @@ export default function CubeVisualizer3D({
       if (!containerRef.current) return;
 
       setIsLoading(true);
+      setLoadError(null);
       containerRef.current.innerHTML = "";
 
       try {
         const { TwistyPlayer } = await import("cubing/twisty");
 
+        const startIn2D = is2DRef.current;
+
         currentPlayer = new TwistyPlayer({
           puzzle,
           alg: algorithm,
+          visualization: startIn2D ? "2D" : "3D",
           experimentalSetupAnchor: "end",
           hintFacelets: "none",
-          backView: "top-right",
+          // The 2D net already shows every face, so the back-view inset
+          // (a 3D-only affordance) is redundant there.
+          backView: startIn2D ? "none" : "top-right",
           controlPanel: "none",
           background: "none",
           tempoScale: 3,
@@ -67,9 +101,8 @@ export default function CubeVisualizer3D({
 
         currentPlayer.style.width = "100%";
         currentPlayer.style.height = height;
-        currentPlayer.style.touchAction = "none";
         currentPlayer.style.userSelect = "none";
-        currentPlayer.style.cursor = "grab";
+        applyInteractionStyles(currentPlayer, startIn2D);
 
         if (!mounted || !containerRef.current) return;
 
@@ -98,8 +131,14 @@ export default function CubeVisualizer3D({
           }
         }
       } catch (error) {
+        // Handle errors during player initialization
         console.error("Failed to load twisty player:", error);
-        if (mounted) setIsLoading(false);
+        if (mounted) {
+          setLoadError(
+            error instanceof Error ? error.message : "Unknown error"
+          );
+          setIsLoading(false);
+        }
       }
     };
 
@@ -128,6 +167,19 @@ export default function CubeVisualizer3D({
       }
     }
   }, [algorithm, player]);
+
+  // Update view mode when is2D changes
+  useEffect(() => {
+    if (!player) return;
+
+    try {
+      player.visualization = is2D ? "2D" : "3D";
+      player.backView = is2D ? "none" : "top-right";
+      applyInteractionStyles(player, is2D);
+    } catch (error) {
+      console.error("Failed to update cube view mode:", error);
+    }
+  }, [is2D, player]);
 
   // Play/Pause toggle
   const handlePlayPause = () => {
@@ -158,7 +210,7 @@ export default function CubeVisualizer3D({
 
   return (
     <div className="w-full">
-      {/* 3D Cube Container */}
+      {/* Cube Container */}
       <div className="relative bg-(--surface-elevated) rounded-lg overflow-hidden border border-(--border)">
         {isLoading && (
           <div
@@ -168,9 +220,33 @@ export default function CubeVisualizer3D({
             <div className="text-center">
               <div className="animate-spin w-8 h-8 border-3 border-(--primary) border-t-transparent rounded-full mx-auto mb-2"></div>
               <div className="text-sm text-(--text-muted)">
-                Loading 3D cube...
+                Loading cube...
               </div>
             </div>
+          </div>
+        )}
+
+        {loadError && (
+          <div
+            className="absolute inset-0 flex items-center justify-center z-10 px-4"
+            style={{ height }}
+          >
+            <div className="text-center">
+              <AlertTriangle className="w-6 h-6 text-yellow-500 mx-auto mb-2" />
+              <div className="text-sm text-(--text-secondary) mb-1">
+                Couldn&apos;t render this case
+              </div>
+              <p className="font-mono text-xs text-(--text-muted) break-all">
+                {algorithm}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {showViewToggle && !isLoading && !loadError && (
+          // Overlay the CubeViewSelector in the top-left corner of the cube container. This allows users to switch between 2D and 3D views without interfering with the cube's interaction.
+          <div className="absolute top-2 left-2 z-20">
+            <CubeViewSelector compact />
           </div>
         )}
         <div
@@ -178,7 +254,7 @@ export default function CubeVisualizer3D({
           className="w-full"
           style={{
             height,
-            touchAction: "none",
+            touchAction: is2D ? "auto" : "none",
             WebkitUserSelect: "none",
             userSelect: "none",
           }}

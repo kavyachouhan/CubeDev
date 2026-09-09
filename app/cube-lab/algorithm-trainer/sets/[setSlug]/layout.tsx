@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${setName} Algorithms`,
-    description: `Learn and master ${setName} speedcubing algorithms with spaced repetition, 3D visualization, and progress tracking.`,
+    description: `Learn and master ${setName} speedcubing algorithms with spaced repetition, 3D and 2D visualization, and progress tracking.`,
     openGraph: {
       title: `${setName} Algorithms | CubeDev`,
       description: `Master ${setName} speedcubing algorithms with interactive training tools.`,

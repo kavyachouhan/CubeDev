@@ -24,8 +24,7 @@ import StatsVisibilitySettings, {
 
 export type TimerMode = "normal" | "manual" | "stackmat";
 
-interface TimerSettingsProps {
-  showSettings: boolean;
+export interface TimerSettingsPanelProps {
   timerMode: TimerMode;
   setTimerMode: (mode: TimerMode) => void;
   inspectionEnabled: boolean;
@@ -48,8 +47,7 @@ interface TimerSettingsProps {
   onToggleExtendedStat: (stat: keyof ExtendedStatsVisibility) => void;
 }
 
-export default function TimerSettings({
-  showSettings,
+export function TimerSettingsPanel({
   timerMode,
   setTimerMode,
   inspectionEnabled,
@@ -66,7 +64,7 @@ export default function TimerSettings({
   setMutePbSound,
   extendedStatsVisibility,
   onToggleExtendedStat,
-}: TimerSettingsProps) {
+}: TimerSettingsPanelProps) {
   const [showSplitMethodDropdown, setShowSplitMethodDropdown] = useState(false);
   const [showSoundDropdown, setShowSoundDropdown] = useState(false);
   const [showTimerModeDropdown, setShowTimerModeDropdown] = useState(false);
@@ -132,11 +130,8 @@ export default function TimerSettings({
     },
   ];
 
-  if (!showSettings) return null;
-
   return (
-    <div className="mb-4 p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
-      <div className="space-y-3">
+    <div className="space-y-3">
         {/* Timer Mode Selection */}
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -625,7 +620,8 @@ export default function TimerSettings({
           visibility={extendedStatsVisibility}
           onToggle={onToggleExtendedStat}
         />
-      </div>
     </div>
   );
 }
+
+export default TimerSettingsPanel;

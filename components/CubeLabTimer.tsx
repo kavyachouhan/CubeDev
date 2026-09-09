@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import { useUser } from "@/components/UserProvider";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 // Import components
 import TimerDisplay from "./timer/TimerDisplay";
@@ -257,9 +259,9 @@ export default function CubeLabTimer({
     handleSessionChange(sessions[prevIndex]);
   }, [sessions, currentSession, handleSessionChange]);
 
-  const handleDeleteLastSolve = useCallback(() => {
+  const handleDeleteLastSolve = useCallback(async () => {
     if (!currentSession || !lastSolveId) return;
-    deleteSolve(
+    await deleteSolve(
       lastSolveId,
       currentSession,
       getSessionHistory(currentSession.id),
@@ -272,6 +274,15 @@ export default function CubeLabTimer({
     getSessionHistory,
     removeSolve,
   ]);
+
+  const shortcutDelete = useConfirmDelete(async () => {
+    if (!currentSession) return;
+    await clearSessionSolves(
+      getSessionHistory(currentSession.id),
+      currentSession,
+      clearSessionHistory,
+    );
+  });
 
   const handleMarkDnf = useCallback(() => {
     if (!lastSolveId) return;
@@ -296,13 +307,7 @@ export default function CubeLabTimer({
     onEventChange: handleEventChange,
     onNextScramble: handleNewScramble,
     onClearSession: () => {
-      if (currentSession) {
-        clearSessionSolves(
-          getSessionHistory(currentSession.id),
-          currentSession,
-          clearSessionHistory,
-        );
-      }
+      if (currentSession) shortcutDelete.request();
     },
     onDeleteLastSolve: handleDeleteLastSolve,
     onNextSession: handleNextSession,
@@ -754,6 +759,18 @@ export default function CubeLabTimer({
         onImportNow={handleOpenImportFromOnboarding}
         onCreateFocusedSession={handleCreateFocusedSession}
         isCreatingSession={isCreatingFocusedSession}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={shortcutDelete.isOpen}
+        onClose={shortcutDelete.cancel}
+        onConfirm={shortcutDelete.confirm}
+        isDeleting={shortcutDelete.isDeleting}
+        title="Clear Session?"
+        description="This will remove every solve in the current session."
+        itemName={currentSession?.name}
+        warning="All times in this session will be permanently deleted."
+        confirmLabel="Clear Session"
       />
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 md:gap-6">

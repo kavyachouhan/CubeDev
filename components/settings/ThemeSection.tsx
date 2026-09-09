@@ -3,6 +3,7 @@
 import ThemeModeSelector from "./ThemeModeSelector";
 import ColorSchemeSelector from "./ColorSchemeSelector";
 import TimerCustomization from "./TimerCustomization";
+import CubeViewSelector from "./CubeViewSelector";
 import AccessibilitySettings from "./AccessibilitySettings";
 
 export default function ThemeSection() {
@@ -25,6 +26,8 @@ export default function ThemeSection() {
         <ColorSchemeSelector />
         <div className="border-t border-(--border)" />
         <TimerCustomization />
+        <div className="border-t border-(--border)" />
+        <CubeViewSelector />
         <div className="border-t border-(--border)" />
         <AccessibilitySettings />
       </div>

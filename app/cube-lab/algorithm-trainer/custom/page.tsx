@@ -28,6 +28,8 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 export default function CustomSetsPage() {
   const { user } = useUser();
@@ -73,16 +75,13 @@ export default function CustomSetsPage() {
     }
   };
 
-  const handleDeleteSet = async (setId: Id<"customAlgorithmSets">) => {
-    if (!confirm("Are you sure you want to delete this custom set?")) return;
-
-    try {
-      await deleteCustomSet({ setId });
-      setOpenMenuId(null);
-    } catch (error) {
-      console.error("Failed to delete custom set:", error);
-    }
-  };
+  const setDelete = useConfirmDelete<{
+    _id: Id<"customAlgorithmSets">;
+    name: string;
+  }>(async (set) => {
+    await deleteCustomSet({ setId: set._id });
+    setOpenMenuId(null);
+  });
 
   const processImportData = (data: string) => {
     try {
@@ -401,7 +400,10 @@ export default function CustomSetsPage() {
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    handleDeleteSet(set._id);
+                                    setDelete.request({
+                                      _id: set._id,
+                                      name: set.name,
+                                    });
                                   }}
                                   className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
                                 >
@@ -652,6 +654,17 @@ export default function CustomSetsPage() {
             )}
           </div>
         </div>
+        <ConfirmDeleteModal
+          isOpen={setDelete.isOpen}
+          onClose={setDelete.cancel}
+          onConfirm={setDelete.confirm}
+          isDeleting={setDelete.isDeleting}
+          title="Delete Set?"
+          description="Are you sure you want to delete this custom set?"
+          itemName={setDelete.target?.name}
+          warning="This set and all of its custom algorithms will be permanently deleted."
+          confirmLabel="Delete Set"
+        />
       </CubeLabLayout>
     </ProtectedRoute>
   );

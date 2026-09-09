@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { X, MessageSquare, Pencil, Trash2, Check, Plus } from "lucide-react";
 import { Session } from "./ChatInterface";
-import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 interface SessionManagementModalProps {
   isOpen: boolean;
@@ -29,10 +30,11 @@ export default function SessionManagementModal({
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
-  const [deleteSessionId, setDeleteSessionId] = useState<string | null>(null);
-  const [deleteSessionTitle, setDeleteSessionTitle] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
   const editInputRef = useRef<HTMLInputElement>(null);
+
+  const sessionDelete = useConfirmDelete<Session>(async (session) => {
+    await onDeleteSession(session.session_id);
+  });
 
   // Focus the input when entering edit mode
   useEffect(() => {
@@ -98,30 +100,7 @@ export default function SessionManagementModal({
 
   const handleDeleteClick = (e: React.MouseEvent, session: Session) => {
     e.stopPropagation();
-    setDeleteSessionId(session.session_id);
-    setDeleteSessionTitle(session.title);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!deleteSessionId) return;
-
-    setIsDeleting(true);
-    try {
-      await onDeleteSession(deleteSessionId);
-      setDeleteSessionId(null);
-      setDeleteSessionTitle("");
-    } catch (error) {
-      console.error("Failed to delete session:", error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  const handleCancelDelete = () => {
-    if (!isDeleting) {
-      setDeleteSessionId(null);
-      setDeleteSessionTitle("");
-    }
+    sessionDelete.request(session);
   };
 
   if (!isOpen) return null;
@@ -295,12 +274,16 @@ export default function SessionManagementModal({
       </div>
 
       {/* Delete Confirmation Modal */}
-      <DeleteConfirmationModal
-        isOpen={deleteSessionId !== null}
-        onClose={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        isDeleting={isDeleting}
-        sessionTitle={deleteSessionTitle}
+      <ConfirmDeleteModal
+        isOpen={sessionDelete.isOpen}
+        onClose={sessionDelete.cancel}
+        onConfirm={sessionDelete.confirm}
+        isDeleting={sessionDelete.isDeleting}
+        title="Delete Chat?"
+        description="Are you sure you want to delete this chat session?"
+        itemName={sessionDelete.target?.title}
+        warning="This chat and all of its messages will be permanently deleted."
+        confirmLabel="Delete Chat"
       />
     </div>
   );

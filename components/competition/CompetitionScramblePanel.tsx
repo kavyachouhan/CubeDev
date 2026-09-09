@@ -48,7 +48,7 @@ export default function CompetitionScramblePanel({
       </div>
 
       {/* Scramble Text */}
-      <div className="min-h-[3rem]">
+      <div className="min-h-12">
         {isLoading ? (
           <div className="flex items-center justify-center py-4">
             <Loader2 className="w-5 h-5 text-(--text-muted) animate-spin" />
@@ -73,17 +73,17 @@ export default function CompetitionScramblePanel({
           {showPreview ? (
             <>
               <ChevronUp className="w-4 h-4" />
-              Hide 3D Preview
+              Hide Preview
             </>
           ) : (
             <>
               <ChevronDown className="w-4 h-4" />
-              Show 3D Preview
+              Show Preview
             </>
           )}
         </button>
 
-        {/* 3D Preview */}
+        {/* Cube Preview */}
         {showPreview && !isLoading && scramble && (
           <div className="mt-3">
             <ScramblePreview scramble={scramble} event={eventId} />

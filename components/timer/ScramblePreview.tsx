@@ -2,6 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Play } from "lucide-react";
+import { useTheme } from "@/lib/theme-context";
+import CubeViewSelector from "@/components/settings/CubeViewSelector";
+
+// Apply interaction styles based on whether the view is 2D or 3D
+const applyInteractionStyles = (player: any, is2D: boolean) => {
+  player.style.touchAction = is2D ? "auto" : "none";
+  player.style.cursor = is2D ? "default" : "grab";
+};
 
 interface ScramblePreviewProps {
   scramble: string;
@@ -19,9 +27,12 @@ export default function ScramblePreview({
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const { cubeViewMode } = useTheme();
 
   // Determine which scramble to display (partial or full)
   const displayScramble = partialScramble || scramble;
+
+  const is2D = cubeViewMode === "2d";
 
   // Map event codes to puzzle IDs
   const getPuzzleId = (eventCode: string) => {
@@ -65,6 +76,7 @@ export default function ScramblePreview({
       // Use experimentalSetupAlg to show the scrambled state
       const player = new TwistyPlayer({
         puzzle: puzzleId,
+        visualization: is2D ? "2D" : "3D",
         experimentalSetupAlg: displayScramble,
         experimentalSetupAnchor: "end",
         hintFacelets: "none",
@@ -78,10 +90,9 @@ export default function ScramblePreview({
       player.style.width = "100%";
       player.style.height = window.innerWidth < 640 ? "180px" : "200px";
 
-      // Enable touch interactions
-      player.style.touchAction = "none";
       player.style.userSelect = "none";
-      player.style.cursor = "grab";
+      // The 2D net is a flat diagram - only the 3D view is draggable
+      applyInteractionStyles(player, is2D);
 
       containerRef.current.appendChild(player);
       playerRef.current = player;
@@ -111,7 +122,7 @@ export default function ScramblePreview({
       // Show error message
       if (containerRef.current) {
         containerRef.current.innerHTML = `
-          <div class="w-full h-[180px] sm:h-48 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
+          <div class="w-full h-45 sm:h-48 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
             <div class="text-center">
               <div class="text-4xl mb-2">🧩</div>
               <div class="text-sm text-(--text-muted)">Preview not available</div>
@@ -134,6 +145,18 @@ export default function ScramblePreview({
       }
     }
   }, [displayScramble, showPreview, isLoaded]);
+
+  // Update cube view mode when it changes
+  useEffect(() => {
+    if (!showPreview || !isLoaded || !playerRef.current) return;
+
+    try {
+      playerRef.current.visualization = is2D ? "2D" : "3D";
+      applyInteractionStyles(playerRef.current, is2D);
+    } catch (error) {
+      console.error("Failed to update cube view mode:", error);
+    }
+  }, [is2D, showPreview, isLoaded]);
 
   // Load twisty player when preview is shown
   useEffect(() => {
@@ -180,26 +203,29 @@ export default function ScramblePreview({
           Scramble Preview
         </h3>
         {showPreview && (
-          <button
-            onClick={() => {
-              setShowPreview(false);
-              setIsLoaded(false);
-            }}
-            className="text-sm text-(--text-muted) hover:text-(--text-primary) transition-colors"
-          >
-            Hide
-          </button>
+          <div className="flex items-center gap-3">
+            <CubeViewSelector compact />
+            <button
+              onClick={() => {
+                setShowPreview(false);
+                setIsLoaded(false);
+              }}
+              className="text-sm text-(--text-muted) hover:text-(--text-primary) transition-colors"
+            >
+              Hide
+            </button>
+          </div>
         )}
       </div>
 
       {!showPreview ? (
-        <div className="w-full min-h-[180px] sm:min-h-[200px] bg-(--surface-elevated) rounded-lg flex items-center justify-center border border-(--border)">
+        <div className="w-full min-h-45 sm:min-h-50 bg-(--surface-elevated) rounded-lg flex items-center justify-center border border-(--border)">
           <button
             onClick={() => setShowPreview(true)}
             className="flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-md hover:bg-(--primary-hover) transition-colors"
           >
             <Play size={16} />
-            Load 3D Preview
+            Load Preview
           </button>
         </div>
       ) : (
@@ -216,9 +242,9 @@ export default function ScramblePreview({
           )}
           <div
             ref={containerRef}
-            className="w-full min-h-[180px] sm:min-h-[200px] bg-(--surface-elevated) rounded-lg overflow-hidden"
+            className="w-full min-h-45 sm:min-h-50 bg-(--surface-elevated) rounded-lg overflow-hidden"
             style={{
-              touchAction: "none",
+              touchAction: is2D ? "auto" : "none",
               WebkitTouchCallout: "none",
               WebkitUserSelect: "none",
               userSelect: "none",

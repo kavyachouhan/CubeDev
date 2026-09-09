@@ -340,7 +340,7 @@ export default function ExecutionPracticeCard({
                   height="300px"
                 />
               ) : (
-                <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-6 min-h-[250px] flex flex-col items-center justify-center">
+                <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-6 min-h-62.5 flex flex-col items-center justify-center">
                   <div className="flex items-center gap-2 mb-4">
                     <AlertTriangle className="w-4 h-4 text-yellow-500" />
                     <span className="text-xs text-yellow-500/80">
@@ -351,7 +351,7 @@ export default function ExecutionPracticeCard({
                     {setupMoves}
                   </p>
                   <p className="text-xs text-(--text-muted) mt-4 text-center">
-                    3D preview unavailable - practice by executing the algorithm
+                    Preview unavailable - practice by executing the algorithm
                     above
                   </p>
                 </div>
@@ -372,7 +372,7 @@ export default function ExecutionPracticeCard({
                 touchAction: "none",
               }}
             >
-              <div className="text-center min-h-[200px] flex flex-col justify-center cursor-pointer">
+              <div className="text-center min-h-50 flex flex-col justify-center cursor-pointer">
                 <div
                   className={`text-6xl font-bold font-mono ${getTimerColor()} mb-4 transition-colors`}
                 >

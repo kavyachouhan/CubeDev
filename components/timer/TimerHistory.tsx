@@ -16,6 +16,8 @@ import {
   CircleCheck,
 } from "lucide-react";
 import dynamic from "next/dynamic";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 // Dynamically import ScramblePreview to avoid loading heavy 3D library on initial load
 const ScramblePreview = dynamic(() => import("./ScramblePreview"), {
@@ -876,6 +878,10 @@ export default function TimerHistory({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSolveId, setEditingSolveId] = useState<string | null>(null);
 
+  const historyDelete = useConfirmDelete(async () => {
+    await onClearHistory();
+  });
+
   // Infinite scroll state
   const [displayCount, setDisplayCount] = useState(20);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -1026,7 +1032,7 @@ export default function TimerHistory({
           <div className="flex items-center gap-2">
             {eventHistory.length > 0 && (
               <button
-                onClick={onClearHistory}
+                onClick={() => historyDelete.request()}
                 className="p-1 text-(--text-muted) hover:text-(--error) transition-colors"
                 title="Clear all times"
               >
@@ -1153,7 +1159,7 @@ export default function TimerHistory({
                         className="p-1 text-(--text-muted) hover:text-(--error) transition-colors"
                         title="Delete solve"
                       >
-                        <X className="w-3 h-3" />
+                        <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
                   </div>
@@ -1216,6 +1222,17 @@ export default function TimerHistory({
         onDeleteSolve={onDeleteSolve}
         onUpdateSolve={handleUpdateSolve}
         onEditTime={handleEditTime}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={historyDelete.isOpen}
+        onClose={historyDelete.cancel}
+        onConfirm={historyDelete.confirm}
+        isDeleting={historyDelete.isDeleting}
+        title="Clear All Times?"
+        description={`This will remove every solve in the current session for ${getEventName(selectedEvent)}.`}
+        warning="All times in this session will be permanently deleted."
+        confirmLabel="Clear All"
       />
     </>
   );

@@ -146,7 +146,7 @@ export default function BlindRecognitionCard({
             )}
 
             {/* Case Display */}
-            <div className="flex flex-col items-center justify-center min-h-[300px] mb-6">
+            <div className="flex flex-col items-center justify-center min-h-77 mb-6">
               {setupMoves && hasValidNotation ? (
                 <div className="w-full max-w-md">
                   <CubeVisualizer3D
@@ -159,7 +159,7 @@ export default function BlindRecognitionCard({
                 </div>
               ) : setupMoves && !hasValidNotation ? (
                 <div className="w-full max-w-md">
-                  <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-6 min-h-[250px] flex flex-col items-center justify-center">
+                  <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-6 min-h-62.5 flex flex-col items-center justify-center">
                     <div className="flex items-center gap-2 mb-4">
                       <AlertTriangle className="w-4 h-4 text-yellow-500" />
                       <span className="text-xs text-yellow-500/80">
@@ -170,7 +170,7 @@ export default function BlindRecognitionCard({
                       {setupMoves}
                     </p>
                     <p className="text-xs text-(--text-muted) mt-4 text-center">
-                      3D preview unavailable for this notation
+                      Preview unavailable for this notation
                     </p>
                   </div>
                 </div>

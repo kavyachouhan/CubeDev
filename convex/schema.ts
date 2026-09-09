@@ -36,6 +36,7 @@ export default defineSchema({
     timerFontSize: v.optional(v.string()), // "sm" | "md" | "lg" | "xl"
     timerFontFamily: v.optional(v.string()), // "mono" | "sans" | "statement"
     timerUpdateMode: v.optional(v.string()), // "live" | "solving" | "seconds"
+    cubeViewMode: v.optional(v.string()), // "3d" | "2d"
     reduceMotion: v.optional(v.boolean()), // Reduce animations
     disableGlow: v.optional(v.boolean()), // Disable glow effects
     highContrast: v.optional(v.boolean()), // High contrast mode

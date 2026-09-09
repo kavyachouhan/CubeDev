@@ -176,22 +176,24 @@ export default function RecognitionFlashCard({
             )}
 
             {/* Case Display */}
-            <div className="flex flex-col items-center justify-center min-h-[300px] mb-6">
+            <div className="flex flex-col items-center justify-center min-h-75 mb-6">
               {isFlashing && usePatternMemory ? (
                 // Flashing state
                 setupMoves && hasValidNotation ? (
                   <div className="w-full max-w-md relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-purple-500/20 rounded-lg animate-pulse z-10 pointer-events-none" />
+                    <div className="absolute inset-0 bg-linear-to-br from-orange-500/20 to-purple-500/20 rounded-lg animate-pulse z-10 pointer-events-none" />
                     <CubeVisualizer3D
                       algorithm={setupMoves}
                       puzzle={puzzleType as any}
                       autoPlay={false}
                       showControls={false}
+                      // Keep the memorize flash free of distractions
+                      showViewToggle={false}
                       height="300px"
                     />
                   </div>
                 ) : setupMoves && !hasValidNotation ? (
-                  <div className="w-full max-w-md h-[300px] bg-(--surface-elevated) rounded-lg flex items-center justify-center border border-(--border) relative">
+                  <div className="w-full max-w-md h-75 bg-(--surface-elevated) rounded-lg flex items-center justify-center border border-(--border) relative">
                     <div className="absolute inset-0 bg-orange-500/5 rounded-lg animate-pulse z-10 pointer-events-none" />
                     <div className="text-center px-6 z-20">
                       <p className="font-mono text-lg text-(--text-primary) break-all leading-relaxed">
@@ -201,7 +203,7 @@ export default function RecognitionFlashCard({
                   </div>
                 ) : caseImage ? (
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-purple-500/20 rounded-lg animate-pulse z-10 pointer-events-none" />
+                    <div className="absolute inset-0 bg-linear-to-br from-orange-500/20 to-purple-500/20 rounded-lg animate-pulse z-10 pointer-events-none" />
                     <img
                       src={caseImage}
                       alt={`${caseName} case`}
@@ -211,7 +213,7 @@ export default function RecognitionFlashCard({
                 ) : null
               ) : !isFlashing && usePatternMemory && !revealed ? (
                 // Hidden state in pattern memory mode
-                <div className="w-full max-w-md h-[300px] bg-(--surface-elevated) rounded-lg flex items-center justify-center border-2 border-dashed border-(--border)">
+                <div className="w-full max-w-md h-75 bg-(--surface-elevated) rounded-lg flex items-center justify-center border-2 border-dashed border-(--border)">
                   <div className="text-center text-(--text-muted)">
                     <Eye className="w-16 h-16 mx-auto mb-3 opacity-30" />
                     <p className="text-lg font-semibold mb-1">
@@ -234,7 +236,7 @@ export default function RecognitionFlashCard({
               ) : setupMoves && !hasValidNotation ? (
                 // If notation is not compatible with 3D player, show moves in text form with warning
                 <div className="w-full max-w-md">
-                  <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-6 min-h-[250px] flex flex-col items-center justify-center">
+                  <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-6 min-h-62.5 flex flex-col items-center justify-center">
                     <div className="flex items-center gap-2 mb-4">
                       <AlertTriangle className="w-4 h-4 text-yellow-500" />
                       <span className="text-xs text-yellow-500/80">
@@ -246,7 +248,7 @@ export default function RecognitionFlashCard({
                     </p>
                     {isCustomAlgorithm && (
                       <p className="text-xs text-(--text-muted) mt-4 text-center">
-                        3D preview unavailable for this notation
+                        Preview unavailable for this notation
                       </p>
                     )}
                   </div>

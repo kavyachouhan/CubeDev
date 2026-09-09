@@ -9,7 +9,7 @@ import {
   StickyNote,
   AlertTriangle,
 } from "lucide-react";
-import DeleteAlgorithmModal from "./DeleteAlgorithmModal";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 
 // Common cube notation moves for validation hint
 const VALID_MOVES = [
@@ -275,11 +275,15 @@ export default function CustomAlgorithmCard({
       </div>
 
       {/* Delete Confirmation Modal */}
-      <DeleteAlgorithmModal
+      <ConfirmDeleteModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={onRemove}
-        algorithmName={algorithm.name}
+        title="Delete Algorithm?"
+        description="Are you sure you want to delete this algorithm from the set?"
+        itemName={algorithm.name}
+        warning="This custom algorithm will be permanently removed from the set."
+        confirmLabel="Delete"
       />
     </div>
   );

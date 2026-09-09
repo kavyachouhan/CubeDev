@@ -17,9 +17,10 @@ import {
   ArrowLeft,
   X,
   Loader2,
-  AlertTriangle,
   ThumbsUp,
 } from "lucide-react";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
 // ===== Types =====
 interface StepData {
@@ -93,11 +94,6 @@ export default function AdminFAQ() {
     useState<Id<"faqCategories"> | null>(null);
   const [editingArticle, setEditingArticle] =
     useState<Id<"faqArticles"> | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<{
-    type: "category" | "article";
-    id: string;
-    name: string;
-  } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   const categories = useQuery(api.faq.getAllCategories);
@@ -112,30 +108,24 @@ export default function AdminFAQ() {
   const updateCategory = useMutation(api.faq.updateCategory);
   const updateArticle = useMutation(api.faq.updateArticle);
 
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  // Handle delete
-  const handleDelete = async () => {
-    if (!deleteConfirm) return;
-    setIsDeleting(true);
-    try {
-      if (deleteConfirm.type === "category") {
-        await deleteCategory({
-          id: deleteConfirm.id as Id<"faqCategories">,
-        });
-        if (selectedCategoryId === deleteConfirm.id) {
-          setSelectedCategoryId(null);
-        }
-      } else {
-        await deleteArticle({ id: deleteConfirm.id as Id<"faqArticles"> });
-      }
-      setDeleteConfirm(null);
-    } catch (error) {
-      console.error("Delete failed:", error);
-    } finally {
-      setIsDeleting(false);
-    }
+  type FaqDeleteTarget = {
+    type: "category" | "article";
+    id: string;
+    name: string;
   };
+
+  const faqDelete = useConfirmDelete<FaqDeleteTarget>(async (target) => {
+    if (target.type === "category") {
+      await deleteCategory({
+        id: target.id as Id<"faqCategories">,
+      });
+      if (selectedCategoryId === target.id) {
+        setSelectedCategoryId(null);
+      }
+    } else {
+      await deleteArticle({ id: target.id as Id<"faqArticles"> });
+    }
+  });
 
   // Toggle publish status
   const toggleCategoryPublish = async (
@@ -365,7 +355,7 @@ export default function AdminFAQ() {
                       </button>
                       <button
                         onClick={() =>
-                          setDeleteConfirm({
+                          faqDelete.request({
                             type: "category",
                             id: category._id,
                             name: category.name,
@@ -534,7 +524,7 @@ export default function AdminFAQ() {
                       </button>
                       <button
                         onClick={() =>
-                          setDeleteConfirm({
+                          faqDelete.request({
                             type: "article",
                             id: article._id,
                             name: article.title,
@@ -584,79 +574,31 @@ export default function AdminFAQ() {
         />
       )}
 
-      {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-(--error)/10 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-(--error)" />
-                </div>
-                <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-                  Delete{" "}
-                  {deleteConfirm.type === "category" ? "Category" : "Article"}
-                </h2>
-              </div>
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <p className="text-sm text-(--text-secondary) font-inter">
-                Are you sure you want to delete{" "}
-                <span className="font-semibold text-(--text-primary)">
-                  {deleteConfirm.name}
-                </span>
-                ?
-              </p>
-              {deleteConfirm.type === "category" && (
-                <div className="timer-card bg-(--error)/5 p-4 border border-(--error)/20">
-                  <p className="text-xs text-(--error) font-inter">
-                    This will permanently delete this category and all articles
-                    within it. This action cannot be undone.
-                  </p>
-                </div>
-              )}
-              {deleteConfirm.type === "article" && (
-                <div className="timer-card bg-(--error)/5 p-4 border border-(--error)/20">
-                  <p className="text-xs text-(--error) font-inter">
-                    This will permanently delete this article and all its
-                    associated data. This action cannot be undone.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col sm:flex-row-reverse gap-3 pt-6">
-              <button
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="w-full sm:w-auto sm:flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm bg-(--error) hover:bg-(--error)/90 text-white rounded-lg transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isDeleting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Deleting...
-                  </>
-                ) : (
-                  "Delete"
-                )}
-              </button>
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="w-full sm:w-auto sm:flex-1 btn-secondary"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDeleteModal
+        isOpen={faqDelete.isOpen}
+        onClose={faqDelete.cancel}
+        onConfirm={faqDelete.confirm}
+        isDeleting={faqDelete.isDeleting}
+        title={
+          faqDelete.target?.type === "category"
+            ? "Delete Category?"
+            : "Delete Article?"
+        }
+        description={`Are you sure you want to delete this ${
+          faqDelete.target?.type === "category" ? "category" : "article"
+        }?`}
+        itemName={faqDelete.target?.name}
+        warning={
+          faqDelete.target?.type === "category"
+            ? "This will permanently delete this category and all articles within it."
+            : "This will permanently delete this article and all its associated data."
+        }
+        confirmLabel={
+          faqDelete.target?.type === "category"
+            ? "Delete Category"
+            : "Delete Article"
+        }
+      />
     </div>
   );
 }

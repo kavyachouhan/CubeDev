@@ -10,6 +10,7 @@ export type ColorScheme = "blue" | "purple" | "green" | "orange" | "cyan";
 export type TimerFontSize = "sm" | "md" | "lg" | "xl";
 export type TimerFontFamily = "mono" | "sans" | "statement";
 export type TimerUpdateMode = "live" | "solving" | "seconds";
+export type CubeViewMode = "3d" | "2d";
 
 interface ThemePreferences {
   themeMode: ThemeMode;
@@ -17,6 +18,7 @@ interface ThemePreferences {
   timerFontSize: TimerFontSize;
   timerFontFamily: TimerFontFamily;
   timerUpdateMode: TimerUpdateMode;
+  cubeViewMode: CubeViewMode;
   reduceMotion: boolean;
   disableGlow: boolean;
   highContrast: boolean;
@@ -29,6 +31,7 @@ interface ThemeContextType extends ThemePreferences {
   setTimerFontSize: (size: TimerFontSize) => void;
   setTimerFontFamily: (family: TimerFontFamily) => void;
   setTimerUpdateMode: (mode: TimerUpdateMode) => void;
+  setCubeViewMode: (mode: CubeViewMode) => void;
   setReduceMotion: (enabled: boolean) => void;
   setDisableGlow: (disabled: boolean) => void;
   setHighContrast: (enabled: boolean) => void;
@@ -43,6 +46,7 @@ const DEFAULT_PREFERENCES: ThemePreferences = {
   timerFontSize: "lg",
   timerFontFamily: "mono",
   timerUpdateMode: "live",
+  cubeViewMode: "3d",
   reduceMotion: false,
   disableGlow: false,
   highContrast: false,
@@ -139,6 +143,9 @@ export function ThemeProvider({
         timerUpdateMode:
           (user.timerUpdateMode as TimerUpdateMode) ||
           DEFAULT_PREFERENCES.timerUpdateMode,
+        cubeViewMode:
+          (user.cubeViewMode as CubeViewMode) ||
+          DEFAULT_PREFERENCES.cubeViewMode,
         reduceMotion: user.reduceMotion ?? DEFAULT_PREFERENCES.reduceMotion,
         disableGlow: user.disableGlow ?? DEFAULT_PREFERENCES.disableGlow,
         highContrast: user.highContrast ?? DEFAULT_PREFERENCES.highContrast,
@@ -230,6 +237,7 @@ export function ThemeProvider({
     setTimerFontFamily: (family) =>
       updatePreference({ timerFontFamily: family }),
     setTimerUpdateMode: (mode) => updatePreference({ timerUpdateMode: mode }),
+    setCubeViewMode: (mode) => updatePreference({ cubeViewMode: mode }),
     setReduceMotion: (enabled) => updatePreference({ reduceMotion: enabled }),
     setDisableGlow: (disabled) => updatePreference({ disableGlow: disabled }),
     setHighContrast: (enabled) => updatePreference({ highContrast: enabled }),
