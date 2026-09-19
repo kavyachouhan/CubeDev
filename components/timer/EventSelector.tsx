@@ -1,20 +1,16 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import { ChevronDown, ChevronRight, Eye, EyeOff } from "lucide-react";
-import Image from "next/image";
-import { useIsMobile } from "@/lib/hooks/useMediaQuery";
-import { TIMER_EVENTS, getEventIconPath, getTimerEvent } from "@/lib/timer-events";
-import EventBottomSheet from "./EventBottomSheet";
+import { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { CollapsibleCard } from "@/components/ui/Card";
+import { EventIcon } from "@/components/ui/EventIcon";
+import { SelectMenu } from "@/components/ui/Menu";
+import { TIMER_EVENTS, getTimerEvent } from "@/lib/timer-events";
 
 interface EventSelectorProps {
   selectedEvent: string;
   onEventChange: (event: string) => void;
-  solveHistory?: Array<{
-    event: string;
-    sessionId: string;
-    [key: string]: any;
-  }>;
+  solveHistory?: ReadonlyArray<{ event: string; sessionId: string }>;
   currentSessionId?: string;
 }
 
@@ -31,7 +27,9 @@ function usePersistentBool(key: string, defaultValue: boolean) {
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(state));
-    } catch {}
+    } catch {
+      // Storage can be unavailable (private mode); the preference just won't persist.
+    }
   }, [key, state]);
   return [state, setState] as const;
 }
@@ -42,263 +40,60 @@ export default function EventSelector({
   solveHistory = [],
   currentSessionId,
 }: EventSelectorProps) {
-  const isMobile = useIsMobile();
-  const [isOpen, setIsOpen] = useState(false);
-
   const [isExpanded, setIsExpanded] = usePersistentBool(
     "cubelab-event-selector-expanded",
-    true
+    true,
   );
 
-  // Body visibility state for smooth transitions
-  const [isBodyVisible, setIsBodyVisible] = useState<boolean>(isExpanded);
-
-  // Refs to measure heights
-  const cardRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const bodyRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Max height state for smooth transitions
-  const [maxH, setMaxH] = useState<number>(0);
-
-  // Function to measure heights
-  const measureHeights = useMemo(
-    () => () => {
-      const card = cardRef.current;
-      const header = headerRef.current;
-      const body = bodyRef.current;
-      if (!card || !header || !body) return { collapsed: 0, expanded: 0 };
-
-      const styles = getComputedStyle(card);
-      const padY =
-        parseFloat(styles.paddingTop || "0") +
-        parseFloat(styles.paddingBottom || "0");
-      const headerH = header.offsetHeight;
-      const bodyH = body.scrollHeight; // use scrollHeight to get full height
-
-      return {
-        collapsed: Math.ceil(headerH + padY),
-        expanded: Math.ceil(headerH + bodyH + padY),
-      };
-    },
-    []
-  );
-
-  // Initial layout
-  useLayoutEffect(() => {
-    const { collapsed, expanded } = measureHeights();
-    setMaxH(isExpanded ? expanded : collapsed);
-    setIsBodyVisible(isExpanded);
-  }, []);
-
-  // Adjust max height on expand/collapse or content change
-  useEffect(() => {
-    const apply = () => {
-      const { collapsed, expanded } = measureHeights();
-      setMaxH(isExpanded ? expanded : collapsed);
-    };
-    apply();
-
-    const ro = new ResizeObserver(apply);
-    if (cardRef.current) ro.observe(cardRef.current);
-    if (bodyRef.current) ro.observe(bodyRef.current);
-    if (headerRef.current) ro.observe(headerRef.current);
-    window.addEventListener("resize", apply);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", apply);
-    };
-  }, [isExpanded, selectedEvent, measureHeights]);
-
-  // After expand transition ends, show body
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    const onEnd = (e: TransitionEvent) => {
-      if (e.propertyName !== "max-height") return;
-      if (isExpanded) setIsBodyVisible(true);
-    };
-    el.addEventListener("transitionend", onEnd);
-    return () => el.removeEventListener("transitionend", onEnd);
-  }, [isExpanded]);
-
-  // Toggle expand/collapse
-  const toggleExpanded = () => {
-    if (isExpanded) {
-      // collapsing: hide content first, then shrink
-      setIsBodyVisible(false);
-      setIsExpanded(false);
-    } else {
-      // expanding: expand first, then show content
-      setIsExpanded(true);
-    }
-  };
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const onDoc = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-    if (isOpen && !isMobile) {
-      document.addEventListener("mousedown", onDoc);
-      return () => document.removeEventListener("mousedown", onDoc);
-    }
-  }, [isOpen, isMobile]);
-
-  // Get solve count for event in current session
   const getSolveCount = (eventId: string) => {
     if (!currentSessionId) return 0;
     return solveHistory.filter(
-      (solve) => solve.event === eventId && solve.sessionId === currentSessionId
+      (solve) => solve.event === eventId && solve.sessionId === currentSessionId,
     ).length;
   };
 
-  const selectedEventData = getTimerEvent(selectedEvent);
+  const selected = getTimerEvent(selectedEvent);
 
   return (
-    <div
-      ref={cardRef}
-      className={[
-        "timer-card",
-        "transition-[max-height] duration-300 ease-in-out",
-        isOpen ? "relative z-[60]" : "",
-      ].join(" ")}
-      style={{
-        maxHeight: maxH ? `${maxH}px` : undefined,
-        overflow: isExpanded && isBodyVisible ? "visible" : "hidden",
-      }}
-    >
-      {/* Header */}
-      <div
-        ref={headerRef}
-        className={`flex items-center justify-between ${
-          isExpanded ? "mb-4" : "mb-0"
-        }`}
-      >
-        <button
-          onClick={toggleExpanded}
-          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-          title={isExpanded ? "Hide event" : "Show event"}
-        >
-        <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-          Event
-        </h3>
-          {isExpanded ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
+    <CollapsibleCard title="Event" open={isExpanded} onOpenChange={setIsExpanded}>
+      <SelectMenu
+        label="Event"
+        value={selected.id}
+        onChange={onEventChange}
+        size="lg"
+        searchable
+        searchPlaceholder="Search events"
+        options={TIMER_EVENTS.map((event) => ({
+          value: event.id,
+          textLabel: event.name,
+          label: <span className="font-statement">{event.name}</span>,
+          description: `${getSolveCount(event.id)} solves`,
+          icon: <EventIcon eventId={event.id} size="sm" />,
+        }))}
+        trigger={(props) => (
           <button
-            onClick={toggleExpanded}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={isExpanded ? "Hide event" : "Show event"}
+            {...props}
+            type="button"
+            className="input input-lg flex items-center gap-3 text-left"
           >
-            {isExpanded ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Body */}
-      <div
-        ref={bodyRef}
-        className={
-          isBodyVisible
-            ? "pb-4"
-            : "invisible pointer-events-none select-none pb-4"
-        }
-        aria-hidden={!isBodyVisible}
-      >
-        <div className="relative" ref={dropdownRef}>
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="w-full flex items-center justify-between p-2 md:p-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
-          >
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="w-8 h-8 bg-(--primary) text-white rounded-lg flex items-center justify-center p-1">
-                <Image
-                  src={getEventIconPath(selectedEventData.id)}
-                  alt={selectedEventData.name}
-                  width={24}
-                  height={24}
-                  className="w-full h-full object-contain brightness-0 invert"
-                />
-              </div>
-              <div className="text-left">
-                <div className="font-medium text-(--text-primary) font-statement">
-                  {selectedEventData.name}
-                </div>
-                <div className="text-xs text-(--text-muted) font-inter">
-                  {getSolveCount(selectedEventData.id)} solves
-                </div>
-              </div>
-            </div>
+            <EventIcon eventId={selected.id} />
+            <span className="flex-1 min-w-0">
+              <span className="block font-statement text-(--text-primary) truncate">
+                {selected.name}
+              </span>
+              <span className="block type-caption">
+                {getSolveCount(selected.id)} solves
+              </span>
+            </span>
             <ChevronDown
-              className={`w-4 h-4 text-(--text-secondary) transition-transform ${
-                isOpen ? "rotate-180" : ""
+              aria-hidden
+              className={`w-4 h-4 shrink-0 text-(--text-muted) transition-transform ${
+                props["aria-expanded"] ? "rotate-180" : ""
               }`}
             />
           </button>
-
-          {isOpen && !isMobile && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-64 overflow-y-auto">
-              {TIMER_EVENTS.map((event) => (
-                <button
-                  key={event.id}
-                  onClick={() => {
-                    console.log("Event clicked:", event.id);
-                    onEventChange(event.id);
-                    setIsOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 text-left hover:bg-(--surface-elevated) transition-colors ${
-                    event.id === selectedEvent
-                      ? "bg-(--primary)/20 border-(--primary)/30"
-                      : "bg-(--background)"
-                  }`}
-                >
-                  <div className="w-8 h-8 bg-(--primary) text-white rounded-lg flex items-center justify-center p-1">
-                    <Image
-                      src={getEventIconPath(event.id)}
-                      alt={event.name}
-                      width={24}
-                      height={24}
-                      className="w-full h-full object-contain brightness-0 invert"
-                    />
-                  </div>
-                  <div>
-                    <div className="font-medium text-(--text-primary) font-statement">
-                      {event.name}
-                    </div>
-                    <div className="text-xs text-(--text-muted) font-inter">
-                      {getSolveCount(event.id)} solves
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <EventBottomSheet
-        isOpen={isOpen && isMobile}
-        onClose={() => setIsOpen(false)}
-        selectedEvent={selectedEvent}
-        onEventChange={onEventChange}
-        getSolveCount={getSolveCount}
+        )}
       />
-    </div>
+    </CollapsibleCard>
   );
 }

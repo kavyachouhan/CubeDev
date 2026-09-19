@@ -1,14 +1,9 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import {
-  RotateCcw,
-  Eye,
-  EyeOff,
-  ChevronDown,
-  ChevronRight,
-  ChevronLeft,
-} from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { RotateCcw, ChevronRight, ChevronLeft } from "lucide-react";
+import { CollapsibleCard } from "@/components/ui/Card";
+import { IconButton } from "@/components/ui/IconButton";
 
 interface ScrambleDisplayProps {
   scramble: string;
@@ -31,7 +26,9 @@ function usePersistentBool(key: string, defaultValue: boolean) {
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(state));
-    } catch {}
+    } catch {
+      // Storage can be unavailable (private mode); the preference just won't persist.
+    }
   }, [key, state]);
   return [state, setState] as const;
 }
@@ -139,91 +136,6 @@ export default function ScrambleDisplay({
     [displayScramble]
   );
 
-  // State to track if body is visible (for accessibility and to avoid layout shift)
-  const [isBodyVisible, setIsBodyVisible] = useState<boolean>(isExpanded);
-
-  // Refs to measure heights
-  const cardRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const bodyRef = useRef<HTMLDivElement>(null);
-
-  // Max height for smooth transition
-  const [maxH, setMaxH] = useState<number>(0);
-
-  // Function to measure heights
-  const measureHeights = useMemo(
-    () => () => {
-      const card = cardRef.current;
-      const header = headerRef.current;
-      const body = bodyRef.current;
-      if (!card || !header || !body) return { collapsed: 0, expanded: 0 };
-
-      const styles = getComputedStyle(card);
-      const padY =
-        parseFloat(styles.paddingTop || "0") +
-        parseFloat(styles.paddingBottom || "0");
-      const headerH = header.offsetHeight;
-      const bodyH = body.scrollHeight; // use scrollHeight to get full height even if not visible
-
-      return {
-        collapsed: Math.ceil(headerH + padY),
-        expanded: Math.ceil(headerH + bodyH + padY),
-      };
-    },
-    []
-  );
-
-  // Initial layout
-  useLayoutEffect(() => {
-    const { collapsed, expanded } = measureHeights();
-    setMaxH(isExpanded ? expanded : collapsed);
-    setIsBodyVisible(isExpanded);
-  }, []);
-
-  // Adjust max height on expand/collapse or content change
-  useEffect(() => {
-    const apply = () => {
-      const { collapsed, expanded } = measureHeights();
-      setMaxH(isExpanded ? expanded : collapsed);
-    };
-    apply();
-
-    const ro = new ResizeObserver(apply);
-    if (cardRef.current) ro.observe(cardRef.current);
-    if (bodyRef.current) ro.observe(bodyRef.current);
-    if (headerRef.current) ro.observe(headerRef.current);
-    window.addEventListener("resize", apply);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", apply);
-    };
-  }, [isExpanded, scramble, measureHeights]);
-
-  // After expand transition ends, show body
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    const onEnd = (e: TransitionEvent) => {
-      if (e.propertyName !== "max-height") return;
-      if (isExpanded) setIsBodyVisible(true);
-    };
-    el.addEventListener("transitionend", onEnd);
-    return () => el.removeEventListener("transitionend", onEnd);
-  }, [isExpanded]);
-
-  // Toggle expand/collapse
-  const toggleExpanded = () => {
-    if (isExpanded) {
-      // collapsing: hide content first, then shrink
-      setIsBodyVisible(false);
-      setIsExpanded(false);
-    } else {
-      // expanding: grow first, then show content
-      setIsExpanded(true);
-    }
-  };
-
   // Handlers for hovering/tapping moves
   const handleMoveHover = (index: number) => {
     // Don't override tap state with hover on mobile
@@ -290,100 +202,31 @@ export default function ScrambleDisplay({
     setHoveredMoveIndex(null);
   }, [displayScramble]);
   return (
-    <div
-      ref={cardRef}
-      className={[
-        "timer-card",
-        "transition-[max-height] duration-300 ease-in-out",
-      ].join(" ")}
-      style={{
-        maxHeight: maxH ? `${maxH}px` : undefined,
-        // Keep hidden during collapse AND during expand animation until reveal
-        overflow: isExpanded && isBodyVisible ? "visible" : "hidden",
-      }}
-    >
-      {/* Header */}
-      <div
-        ref={headerRef}
-        className={`flex items-center justify-between ${
-          isExpanded ? "mb-4" : "mb-0"
-        }`}
-      >
-        <button
-          onClick={toggleExpanded}
-          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-          title={isExpanded ? "Hide scramble" : "Show scramble"}
-        >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            Scramble
-          </h3>
-          {isExpanded ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          {/* Previous scramble button */}
-          <button
+    <CollapsibleCard
+      title="Scramble"
+      open={isExpanded}
+      onOpenChange={setIsExpanded}
+      actions={
+        <>
+          <IconButton
+            size="sm"
+            aria-label="Previous scramble"
+            icon={<ChevronLeft />}
             onClick={handlePrevious}
             disabled={!previousScramble}
-            className={`p-1.5 rounded-md transition-colors ${
-              previousScramble
-                ? "text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated)"
-                : "text-(--text-muted) opacity-50 cursor-not-allowed"
-            }`}
-            title={
-              previousScramble
-                ? "Go to previous scramble"
-                : "No previous scramble"
-            }
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-
-          {/* Next/New scramble button */}
-          <button
+          />
+          <IconButton
+            size="sm"
+            aria-label={isAtCurrent ? "New scramble" : "Back to current scramble"}
+            icon={isAtCurrent ? <RotateCcw /> : <ChevronRight />}
             onClick={handleNext}
-            className="p-1.5 text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={
-              isAtCurrent ? "Generate new scramble" : "Go to current scramble"
-            }
-          >
-            {isAtCurrent ? (
-              <RotateCcw className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-
-          {/* Expand/collapse button */}
-          <button
-            onClick={toggleExpanded}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={isExpanded ? "Hide scramble" : "Show scramble"}
-          >
-            {isExpanded ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Body */}
-      <div
-        ref={bodyRef}
-        className={
-          isBodyVisible
-            ? "pb-4"
-            : "invisible pointer-events-none select-none pb-4"
-        }
-        aria-hidden={!isBodyVisible}
-      >
+          />
+        </>
+      }
+    >
         <div
-          className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)"
+          aria-label={`Scramble: ${displayScramble}`}
+          className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)"
           onClick={handleBackgroundInteraction}
           onTouchEnd={handleBackgroundInteraction}
         >
@@ -401,11 +244,11 @@ export default function ScrambleDisplay({
                 <span
                   key={index}
                   className={`
-                    text-base sm:text-lg font-mono transition-all duration-200 cursor-pointer
-                    px-1.5 sm:px-2 py-0.5 sm:py-1 rounded select-none
+                    text-base sm:text-lg type-time transition-[color,background-color,transform] duration-(--duration-base) cursor-pointer
+                    px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-(--radius-badge) select-none
                     ${
                       isActive
-                        ? "bg-(--primary) text-white scale-105 sm:scale-110 shadow-md"
+                        ? "bg-(--primary) text-(--on-primary) scale-105 sm:scale-110"
                         : isBeforeActive || isBeforeTapped
                           ? "text-(--primary) bg-(--surface) font-semibold"
                           : "text-(--text-primary) hover:text-(--primary) hover:bg-(--surface) active:scale-95"
@@ -428,7 +271,6 @@ export default function ScrambleDisplay({
             })}
           </div>
         </div>
-      </div>
-    </div>
+    </CollapsibleCard>
   );
 }

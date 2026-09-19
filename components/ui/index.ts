@@ -17,6 +17,9 @@ export {
   Slider,
 } from "./Field";
 export { SettingRow } from "./SettingRow";
+export { OptionTiles } from "./OptionTiles";
+export { EventIcon } from "./EventIcon";
+export { ShareMenu, ShareRow } from "./ShareMenu";
 export { SegmentedControl } from "./SegmentedControl";
 export type { SegmentOption } from "./SegmentedControl";
 export { Tabs, tabPanelProps } from "./Tabs";

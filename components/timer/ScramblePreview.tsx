@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Play } from "lucide-react";
+import { Box, Play } from "lucide-react";
 import { useTheme } from "@/lib/theme-context";
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { LoadingState } from "@/components/ui/Spinner";
 import CubeViewSelector from "@/components/settings/CubeViewSelector";
 
 // Apply interaction styles based on whether the view is 2D or 3D
@@ -27,6 +31,7 @@ export default function ScramblePreview({
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const { cubeViewMode } = useTheme();
 
   // Determine which scramble to display (partial or full)
@@ -118,18 +123,7 @@ export default function ScramblePreview({
       setIsLoaded(true);
     } catch (error) {
       console.error("Failed to load twisty player:", error);
-
-      // Show error message
-      if (containerRef.current) {
-        containerRef.current.innerHTML = `
-          <div class="w-full h-45 sm:h-48 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
-            <div class="text-center">
-              <div class="text-4xl mb-2">🧩</div>
-              <div class="text-sm text-(--text-muted)">Preview not available</div>
-            </div>
-          </div>
-        `;
-      }
+      setLoadFailed(true);
     } finally {
       setIsLoading(false);
     }
@@ -197,52 +191,56 @@ export default function ScramblePreview({
   }, [showPreview, isLoaded]);
 
   return (
-    <div className="timer-card">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
-          Scramble Preview
-        </h3>
-        {showPreview && (
-          <div className="flex items-center gap-3">
-            <CubeViewSelector compact />
-            <button
-              onClick={() => {
-                setShowPreview(false);
-                setIsLoaded(false);
-              }}
-              className="text-sm text-(--text-muted) hover:text-(--text-primary) transition-colors"
-            >
-              Hide
-            </button>
-          </div>
-        )}
-      </div>
+    <Card>
+      <CardHeader
+        title="Scramble Preview"
+        actions={
+          showPreview ? (
+            <>
+              <CubeViewSelector compact />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowPreview(false);
+                  setIsLoaded(false);
+                  setLoadFailed(false);
+                }}
+              >
+                Hide
+              </Button>
+            </>
+          ) : undefined
+        }
+      />
 
       {!showPreview ? (
-        <div className="w-full min-h-45 sm:min-h-50 bg-(--surface-elevated) rounded-lg flex items-center justify-center border border-(--border)">
-          <button
+        <div className="w-full min-h-45 sm:min-h-50 bg-(--surface-elevated) rounded-(--radius-panel) flex items-center justify-center border border-(--border)">
+          <Button
             onClick={() => setShowPreview(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-md hover:bg-(--primary-hover) transition-colors"
+            iconLeft={<Play className="w-4 h-4" />}
           >
-            <Play size={16} />
             Load Preview
-          </button>
+          </Button>
+        </div>
+      ) : loadFailed ? (
+        <div className="w-full min-h-45 sm:min-h-50 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
+          <EmptyState
+            icon={<Box />}
+            title="Preview not available"
+            description="The 3D preview couldn't load. Your scramble above is unaffected."
+          />
         </div>
       ) : (
         <div className="relative">
           {isLoading && (
-            <div className="absolute inset-0 bg-(--surface-elevated) rounded-lg flex items-center justify-center z-10">
-              <div className="text-center">
-                <div className="animate-spin w-6 h-6 border-2 border-(--primary) border-t-transparent rounded-full mx-auto mb-2"></div>
-                <div className="text-sm text-(--text-muted)">
-                  Loading preview...
-                </div>
-              </div>
+            <div className="absolute inset-0 z-10 bg-(--surface-elevated) rounded-(--radius-panel)">
+              <LoadingState label="Loading preview…" size="md" className="h-full py-0!" />
             </div>
           )}
           <div
             ref={containerRef}
-            className="w-full min-h-45 sm:min-h-50 bg-(--surface-elevated) rounded-lg overflow-hidden"
+            className="w-full min-h-45 sm:min-h-50 bg-(--surface-elevated) rounded-(--radius-panel) overflow-hidden"
             style={{
               touchAction: is2D ? "auto" : "none",
               WebkitTouchCallout: "none",
@@ -252,6 +250,6 @@ export default function ScramblePreview({
           ></div>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

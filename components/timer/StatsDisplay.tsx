@@ -1,13 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Eye,
-  EyeOff,
-  ChevronDown,
-  ChevronRight,
-  BarChart3,
-} from "lucide-react";
+import { BarChart3 } from "lucide-react";
+import { cx } from "@/lib/cx";
+import { CollapsibleCard } from "@/components/ui/Card";
+import { IconButton } from "@/components/ui/IconButton";
 import { TimerRecord } from "../../lib/stats-utils";
 import SessionStatsModal from "./SessionStatsModal";
 import {
@@ -54,6 +51,49 @@ const formatMs = (ms: number) => {
   const s = (total % 60).toFixed(2);
   return m > 0 ? `${m}:${s.padStart(5, "0")}` : s;
 };
+
+const METRIC_TONE = {
+  primary: "text-(--primary)",
+  accent: "text-(--accent)",
+  error: "text-(--error)",
+  muted: "text-(--text-secondary)",
+  default: "text-(--text-primary)",
+} as const;
+
+/** One statistic: overline label over a monospace value. DNF averages turn red. */
+function Metric({
+  label,
+  value,
+  text,
+  tone = "default",
+  size = "md",
+}: {
+  label: string;
+  /** Milliseconds; null renders a dash, Infinity renders DNF. */
+  value?: number | null;
+  /** Preformatted value (counts, ± deviation). */
+  text?: string;
+  tone?: keyof typeof METRIC_TONE;
+  size?: "sm" | "md";
+}) {
+  const isDnf = value === Infinity;
+  const display =
+    text ?? (value == null ? "–" : isFinite(value) ? formatMs(value) : "DNF");
+  return (
+    <div className="text-center min-w-0">
+      <p className="type-overline truncate">{label}</p>
+      <p
+        className={cx(
+          "type-time font-bold mt-0.5 truncate",
+          size === "sm" ? "text-base" : "text-lg sm:text-xl",
+          isDnf ? "text-(--error)" : value == null && !text ? "text-(--text-muted)" : METRIC_TONE[tone],
+        )}
+      >
+        {display}
+      </p>
+    </div>
+  );
+}
 
 export default function StatsDisplay({
   history,
@@ -164,231 +204,76 @@ export default function StatsDisplay({
   const dnfCount = ordered.filter((r) => !isFinite(r.finalTime)).length;
   const currentSessionSolves = ordered.length;
 
+  const extended = (
+    [
+      ["ao25", "Current Ao25", ao25],
+      ["ao50", "Current Ao50", ao50],
+      ["ao100", "Current Ao100", ao100],
+    ] as const
+  ).filter(([key]) => extendedStatsVisibility[key]);
+
   return (
     <>
-      <div className="timer-card">
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={() => setShowStats(!showStats)}
-            className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-            title={showStats ? "Hide statistics" : "Show statistics"}
-          >
-            <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-              Statistics
-            </h3>
-            {showStats ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="p-1.5 text-(--text-muted) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-              title="View session statistics"
+      <CollapsibleCard
+        title="Statistics"
+        open={showStats}
+        onOpenChange={setShowStats}
+        actions={
+          <IconButton
+            size="sm"
+            aria-label="Session statistics"
+            icon={<BarChart3 />}
+            onClick={() => setIsModalOpen(true)}
+          />
+        }
+      >
+        <div className="space-y-5">
+          <div className="grid grid-cols-3 gap-x-3 gap-y-4">
+            <Metric label="Best Single" value={bestTime} tone="primary" />
+            <Metric label="Current Mo3" value={mo3} tone="primary" />
+            <Metric label="Current Ao5" value={ao5} tone="primary" />
+            <Metric label="Worst Single" value={worstTime} tone="error" />
+            <Metric label="Current Ao12" value={ao12} tone="primary" />
+            <Metric label="Session Mean" value={mean} tone="accent" />
+          </div>
+
+          {extended.length > 0 && (
+            <div
+              className={`grid gap-3 pt-4 border-t border-(--border) ${
+                extended.length === 1
+                  ? "grid-cols-1"
+                  : extended.length === 2
+                    ? "grid-cols-2"
+                    : "grid-cols-3"
+              }`}
             >
-              <BarChart3 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setShowStats(!showStats)}
-              className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-              title={showStats ? "Hide statistics" : "Show statistics"}
-            >
-              {showStats ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
-            </button>
+              {extended.map(([key, label, value]) => (
+                <Metric key={key} label={label} value={value} tone="primary" />
+              ))}
+            </div>
+          )}
+
+          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-(--border)">
+            <Metric label="Solves" text={String(currentSessionSolves)} size="sm" />
+            <Metric
+              label="Std Dev"
+              text={
+                standardDeviation != null
+                  ? `± ${formatMs(roundToCentisMs(standardDeviation))}`
+                  : "–"
+              }
+              size="sm"
+              tone="muted"
+            />
+            <Metric
+              label="DNFs"
+              text={String(dnfCount)}
+              size="sm"
+              tone={dnfCount > 0 ? "error" : "muted"}
+            />
           </div>
         </div>
-
-        {showStats && (
-          <>
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="text-center">
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
-                  Best Single
-                </div>
-                <div className="text-lg font-bold text-(--primary) font-mono">
-                  {bestTime != null ? formatMs(bestTime) : "-"}
-                </div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
-                  Current Mo3
-                </div>
-                <div
-                  className={`text-lg font-bold font-mono ${mo3 === Infinity ? "text-(--error)" : "text-(--primary)"}`}
-                >
-                  {mo3 == null ? "-" : isFinite(mo3) ? formatMs(mo3) : "DNF"}
-                </div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
-                  Current Ao5
-                </div>
-                <div
-                  className={`text-lg font-bold font-mono ${ao5 === Infinity ? "text-(--error)" : "text-(--primary)"}`}
-                >
-                  {ao5 == null ? "-" : isFinite(ao5) ? formatMs(ao5) : "DNF"}
-                </div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
-                  Worst Single
-                </div>
-                <div className="text-lg font-bold text-(--error) font-mono">
-                  {worstTime != null ? formatMs(worstTime) : "-"}
-                </div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
-                  Current Ao12
-                </div>
-                <div
-                  className={`text-lg font-bold font-mono ${ao12 === Infinity ? "text-(--error)" : "text-(--primary)"}`}
-                >
-                  {ao12 == null ? "-" : isFinite(ao12) ? formatMs(ao12) : "DNF"}
-                </div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
-                  Session Mean
-                </div>
-                <div className="text-lg font-bold text-(--accent) font-mono">
-                  {mean != null ? formatMs(mean) : "-"}
-                </div>
-              </div>
-            </div>
-
-            {/* Extended Averages - Ao25, Ao50, Ao100 */}
-            {(extendedStatsVisibility.ao25 ||
-              extendedStatsVisibility.ao50 ||
-              extendedStatsVisibility.ao100) && (
-              <div
-                className={`grid gap-4 mb-6 pt-4 border-t border-(--border) ${
-                  [
-                    extendedStatsVisibility.ao25,
-                    extendedStatsVisibility.ao50,
-                    extendedStatsVisibility.ao100,
-                  ].filter(Boolean).length === 1
-                    ? "grid-cols-1"
-                    : [
-                          extendedStatsVisibility.ao25,
-                          extendedStatsVisibility.ao50,
-                          extendedStatsVisibility.ao100,
-                        ].filter(Boolean).length === 2
-                      ? "grid-cols-2"
-                      : "grid-cols-3"
-                }`}
-              >
-                {extendedStatsVisibility.ao25 && (
-                  <div className="text-center">
-                    <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
-                      Current Ao25
-                    </div>
-                    <div
-                      className={`text-lg font-bold font-mono ${
-                        ao25 === Infinity
-                          ? "text-(--error)"
-                          : "text-(--primary)"
-                      }`}
-                    >
-                      {ao25 == null
-                        ? "-"
-                        : isFinite(ao25)
-                          ? formatMs(ao25)
-                          : "DNF"}
-                    </div>
-                  </div>
-                )}
-
-                {extendedStatsVisibility.ao50 && (
-                  <div className="text-center">
-                    <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
-                      Current Ao50
-                    </div>
-                    <div
-                      className={`text-lg font-bold font-mono ${
-                        ao50 === Infinity
-                          ? "text-(--error)"
-                          : "text-(--primary)"
-                      }`}
-                    >
-                      {ao50 == null
-                        ? "-"
-                        : isFinite(ao50)
-                          ? formatMs(ao50)
-                          : "DNF"}
-                    </div>
-                  </div>
-                )}
-
-                {extendedStatsVisibility.ao100 && (
-                  <div className="text-center">
-                    <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
-                      Current Ao100
-                    </div>
-                    <div
-                      className={`text-lg font-bold font-mono ${
-                        ao100 === Infinity
-                          ? "text-(--error)"
-                          : "text-(--primary)"
-                      }`}
-                    >
-                      {ao100 == null
-                        ? "-"
-                        : isFinite(ao100)
-                          ? formatMs(ao100)
-                          : "DNF"}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Total solves */}
-            <div className="grid grid-cols-1 gap-4 mb-6">
-              <div className="text-center">
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
-                  Total Solves
-                </div>
-                <div className="text-lg font-bold text-(--text-primary) font-mono">
-                  {currentSessionSolves}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-6 pt-4 border-t border-(--border)">
-              <div className="text-center">
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
-                  Standard Deviation
-                </div>
-                <div className="text-m font-medium text-(--text-secondary) font-mono">
-                  {standardDeviation != null
-                    ? `± ${formatMs(roundToCentisMs(standardDeviation))}`
-                    : "-"}
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
-                  DNFs
-                </div>
-                <div className="text-m font-medium text-(--error) font-mono">
-                  {dnfCount}
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
+      </CollapsibleCard>
 
       <SessionStatsModal
         isOpen={isModalOpen}

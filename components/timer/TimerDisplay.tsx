@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Settings, Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
+import { Settings } from "lucide-react";
+import { CollapsibleCard } from "@/components/ui/Card";
+import { IconButton } from "@/components/ui/IconButton";
+import { Spinner } from "@/components/ui/Spinner";
 import {
   getSplitMethod,
   ConsistencyCoachSettings,
@@ -1020,52 +1023,20 @@ export default function TimerDisplay({
   );
 
   return (
-    <div className="timer-card">
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={() => setShowTimer(!showTimer)}
-          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-          title={showTimer ? "Hide timer" : "Show timer"}
-        >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            Timer
-          </h3>
-          {showTimer ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="p-1.5 text-(--text-secondary) hover:text-(--primary) transition-colors"
-            title="Timer Settings"
-          >
-            <Settings className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setShowTimer(!showTimer)}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={showTimer ? "Hide timer" : "Show timer"}
-          >
-            {showTimer ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-
-      <div
-        ref={timerContentRef}
-        className="overflow-hidden transition-all duration-300 ease-in-out"
-        style={{
-          height: showTimer ? "auto" : "0",
-          opacity: showTimer ? 1 : 0,
-        }}
-      >
+    <CollapsibleCard
+      title="Timer"
+      open={showTimer}
+      onOpenChange={setShowTimer}
+      actions={
+        <IconButton
+          size="sm"
+          aria-label="Timer settings"
+          icon={<Settings />}
+          onClick={() => setShowSettings(!showSettings)}
+        />
+      }
+    >
+      <div ref={timerContentRef}>
         {/* Render timer based on selected mode */}
         {timerMode === "normal" && (
           <>
@@ -1090,11 +1061,12 @@ export default function TimerDisplay({
 
                 {/* Saving Indicator */}
                 {state === "stopped" && isSavingSolve && (
-                  <div className="flex items-center justify-center gap-2 py-2">
-                    <div className="w-4 h-4 border-2 border-(--primary) border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-sm text-(--text-secondary) font-inter">
-                      Saving time...
-                    </span>
+                  <div
+                    role="status"
+                    className="flex items-center justify-center gap-2 py-2 text-(--text-secondary)"
+                  >
+                    <Spinner size="sm" className="text-(--primary)" />
+                    <span className="text-sm font-inter">Saving time…</span>
                   </div>
                 )}
 
@@ -1181,6 +1153,6 @@ export default function TimerDisplay({
         }
         onToggleExtendedStat={onToggleExtendedStat || (() => {})}
       />
-    </div>
+    </CollapsibleCard>
   );
 }

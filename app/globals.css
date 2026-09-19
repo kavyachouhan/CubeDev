@@ -696,8 +696,10 @@
     box-shadow: var(--shadow-card-hover);
   }
 
-  /* A card that does not react to hover (dashboards, static panels) */
-  .card-static:hover {
+  /* A card that does not react to hover (dashboards, static panels, skeletons) */
+  .card-static:hover,
+  .timer-card.animate-pulse:hover,
+  .timer-card[aria-busy="true"]:hover {
     border-color: var(--border);
     box-shadow: var(--shadow-card);
   }

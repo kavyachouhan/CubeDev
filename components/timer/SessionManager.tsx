@@ -1,37 +1,15 @@
 "use client";
 
-import {
-  ChevronDown,
-  ChevronRight,
-  Plus,
-  Edit2,
-  Trash2,
-  FolderOpen,
-  Check,
-  X,
-  Eye,
-  EyeOff,
-} from "lucide-react";
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { useIsMobile } from "@/lib/hooks/useMediaQuery";
-import SessionBottomSheet from "./SessionBottomSheet";
+import { useEffect, useState } from "react";
+import { ChevronDown, FolderOpen } from "lucide-react";
+import { CollapsibleCard } from "@/components/ui/Card";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { Popover } from "@/components/ui/Menu";
 import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
+import SessionList from "./SessionList";
+import type { TimerSession } from "./SessionList";
 
-interface Session {
-  id: string;
-  name: string;
-  event: string;
-  createdAt: Date;
-  solveCount: number;
-  convexId?: string;
-}
+type Session = TimerSession;
 
 interface SessionManagerProps {
   currentSession: Session;
@@ -40,10 +18,9 @@ interface SessionManagerProps {
   onCreateSession: (name: string, event: string) => Promise<void>;
   onRenameSession: (sessionId: string, newName: string) => void;
   onDeleteSession: (sessionId: string) => void;
-  allSolveHistory?: Array<{ sessionId: string; [key: string]: any }>;
+  allSolveHistory?: ReadonlyArray<{ sessionId: string }>;
 }
 
-// Persistent boolean that reads/writes localStorage on first render
 function usePersistentBool(key: string, defaultValue: boolean) {
   const [state, setState] = useState<boolean>(() => {
     if (typeof window === "undefined") return defaultValue;
@@ -57,7 +34,9 @@ function usePersistentBool(key: string, defaultValue: boolean) {
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(state));
-    } catch {}
+    } catch {
+      // Storage can be unavailable (private mode); the preference just won't persist.
+    }
   }, [key, state]);
   return [state, setState] as const;
 }
@@ -71,147 +50,13 @@ export default function SessionManager({
   onDeleteSession,
   allSolveHistory = [],
 }: SessionManagerProps) {
-  const isMobile = useIsMobile();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const [isRenaming, setIsRenaming] = useState<string | null>(null);
-  const [newSessionName, setNewSessionName] = useState("");
-  const [renameValue, setRenameValue] = useState("");
-
   const [isExpanded, setIsExpanded] = usePersistentBool(
     "cubelab-session-manager-expanded",
-    true
+    true,
   );
 
-  // Helper to count solves in a session
-  const getLiveSolveCount = (sessionId: string) => {
-    return allSolveHistory.filter((solve) => solve.sessionId === sessionId)
-      .length;
-  };
-
-  // State to control body visibility during expand/collapse
-  const [isBodyVisible, setIsBodyVisible] = useState<boolean>(isExpanded);
-
-  // Refs to measure heights
-  const cardRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const bodyRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Max height for smooth transition
-  const [maxH, setMaxH] = useState<number>(0);
-
-  // Function to measure heights
-  const measureHeights = useMemo(
-    () => () => {
-      const card = cardRef.current;
-      const header = headerRef.current;
-      const body = bodyRef.current;
-      if (!card || !header || !body) return { collapsed: 0, expanded: 0 };
-
-      const styles = getComputedStyle(card);
-      const padY =
-        parseFloat(styles.paddingTop || "0") +
-        parseFloat(styles.paddingBottom || "0");
-      const headerH = header.offsetHeight;
-      const bodyH = body.scrollHeight; // use scrollHeight to get full height even if not visible
-
-      return {
-        collapsed: Math.ceil(headerH + padY),
-        expanded: Math.ceil(headerH + bodyH + padY),
-      };
-    },
-    []
-  );
-
-  // Initial layout
-  useLayoutEffect(() => {
-    const { collapsed, expanded } = measureHeights();
-    setMaxH(isExpanded ? expanded : collapsed);
-    setIsBodyVisible(isExpanded);
-  }, []);
-
-  // Adjust max height on expand/collapse or content change
-  useEffect(() => {
-    const apply = () => {
-      const { collapsed, expanded } = measureHeights();
-      setMaxH(isExpanded ? expanded : collapsed);
-    };
-    apply();
-
-    const ro = new ResizeObserver(apply);
-    if (cardRef.current) ro.observe(cardRef.current);
-    if (bodyRef.current) ro.observe(bodyRef.current);
-    if (headerRef.current) ro.observe(headerRef.current);
-    window.addEventListener("resize", apply);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", apply);
-    };
-  }, [isExpanded, sessions.length, currentSession.name, measureHeights]);
-
-  // After expand animation ends, show body content
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    const onEnd = (e: TransitionEvent) => {
-      if (e.propertyName !== "max-height") return;
-      if (isExpanded) setIsBodyVisible(true);
-    };
-    el.addEventListener("transitionend", onEnd);
-    return () => el.removeEventListener("transitionend", onEnd);
-  }, [isExpanded]);
-
-  // Toggle expand/collapse
-  const toggleExpanded = () => {
-    if (isExpanded) {
-      // collapsing: hide body first, then collapse
-      setIsBodyVisible(false);
-      setIsExpanded(false);
-    } else {
-      // expanding: expand first, then show body
-      setIsExpanded(true);
-    }
-  };
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const onDoc = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-        setIsCreating(false);
-        setIsRenaming(null);
-        setNewSessionName("");
-        setRenameValue("");
-      }
-    };
-    if (isDropdownOpen && !isMobile) {
-      document.addEventListener("mousedown", onDoc);
-      return () => document.removeEventListener("mousedown", onDoc);
-    }
-  }, [isDropdownOpen, isMobile]);
-
-  // Create session handler
-  const handleCreateSession = async () => {
-    if (newSessionName.trim()) {
-      await onCreateSession(newSessionName.trim(), currentSession.event);
-      setNewSessionName("");
-      setIsCreating(false);
-      setIsDropdownOpen(false);
-    }
-  };
-
-  const handleRenameSession = (sessionId: string) => {
-    if (renameValue.trim()) {
-      onRenameSession(sessionId, renameValue.trim());
-      setRenameValue("");
-      setIsRenaming(null);
-    }
-  };
+  const getLiveSolveCount = (sessionId: string) =>
+    allSolveHistory.filter((solve) => solve.sessionId === sessionId).length;
 
   const sessionDelete = useConfirmDelete<Session>(async (session) => {
     await onDeleteSession(session.id);
@@ -223,290 +68,52 @@ export default function SessionManager({
     if (session) sessionDelete.request(session);
   };
 
-  return (
-    <div
-      ref={cardRef}
-      className={[
-        "timer-card",
-        "transition-[max-height] duration-300 ease-in-out",
-        isDropdownOpen ? "relative z-[60]" : "",
-      ].join(" ")}
-      style={{
-        maxHeight: maxH ? `${maxH}px` : undefined,
-        overflow: isExpanded && isBodyVisible ? "visible" : "hidden",
-      }}
-    >
-      {/* Header */}
-      <div
-        ref={headerRef}
-        className={`flex items-center justify-between ${
-          isExpanded ? "mb-4" : "mb-0"
-        }`}
-      >
-        <button
-          onClick={toggleExpanded}
-          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-          title={isExpanded ? "Hide session" : "Show session"}
-        >
-        <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-          Session
-        </h3>
-          {isExpanded ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={toggleExpanded}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={isExpanded ? "Hide session" : "Show session"}
-          >
-            {isExpanded ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
+  const currentCount = getLiveSolveCount(currentSession.id);
 
-      {/* Body */}
-      <div
-        ref={bodyRef}
-        className={
-          isBodyVisible
-            ? "pb-4"
-            : "invisible pointer-events-none select-none pb-4"
-        }
-        aria-hidden={!isBodyVisible}
-      >
-        <div className="relative" ref={dropdownRef}>
-          {/* Dropdown button */}
+  return (
+    <CollapsibleCard title="Session" open={isExpanded} onOpenChange={setIsExpanded}>
+      <Popover
+        title="Sessions"
+        className="w-[min(24rem,calc(100vw-1rem))]"
+        trigger={(props) => (
           <button
-            onClick={() => setIsDropdownOpen((v) => !v)}
-            className="w-full flex items-center justify-between p-2 md:p-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
+            {...props}
+            type="button"
+            className="input input-lg flex items-center gap-3 text-left"
           >
-            <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-              <FolderOpen className="w-4 h-4 text-(--primary) shrink-0" />
-              <div className="text-left min-w-0 flex-1">
-                <div className="font-medium text-(--text-primary) font-statement truncate">
-                  {currentSession.name}
-                </div>
-                <div className="text-xs text-(--text-muted) font-inter truncate">
-                  {getLiveSolveCount(currentSession.id)} solves
-                </div>
-              </div>
-            </div>
+            <span className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-(--radius-control) bg-(--primary) text-(--on-primary)">
+              <FolderOpen className="w-4 h-4" aria-hidden />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="block font-statement text-(--text-primary) truncate">
+                {currentSession.name}
+              </span>
+              <span className="block type-caption">
+                {currentCount} {currentCount === 1 ? "solve" : "solves"}
+              </span>
+            </span>
             <ChevronDown
-              className={`w-4 h-4 text-(--text-secondary) transition-transform shrink-0 ${
-                isDropdownOpen ? "rotate-180" : ""
+              aria-hidden
+              className={`w-4 h-4 shrink-0 text-(--text-muted) transition-transform ${
+                props["aria-expanded"] ? "rotate-180" : ""
               }`}
             />
           </button>
-
-          {/* Dropdown (desktop) */}
-          {isDropdownOpen && !isMobile && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-80 overflow-hidden">
-              {/* Create New Session */}
-              <div className="p-3 border-b border-(--border) bg-(--surface-elevated)">
-                {isCreating ? (
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={newSessionName}
-                      onChange={(e) => setNewSessionName(e.target.value)}
-                      placeholder="Session name..."
-                      className="w-full px-3 py-2 pr-16 bg-(--background) border border-(--border) rounded-md text-sm font-inter text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
-                      autoFocus
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleCreateSession();
-                        }
-                        if (e.key === "Escape") {
-                          setIsCreating(false);
-                          setNewSessionName("");
-                        }
-                        // Prevent spacebar from triggering timer events
-                        if (e.key === " ") {
-                          e.stopPropagation();
-                        }
-                      }}
-                    />
-                    <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                      <button
-                        onClick={handleCreateSession}
-                        className="p-1.5 bg-(--success) text-white rounded hover:opacity-90 transition-opacity"
-                        title="Create session"
-                      >
-                        <Check className="w-3 h-3" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setIsCreating(false);
-                          setNewSessionName("");
-                        }}
-                        className="p-1.5 bg-(--error)/15 text-(--error) border border-(--error)/30 rounded hover:bg-(--error)/25 transition-colors"
-                        title="Cancel"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setIsRenaming(null);
-                      setRenameValue("");
-                      setIsCreating(true);
-                    }}
-                    className="w-full flex items-center gap-2 p-2 text-(--primary) hover:bg-(--surface) rounded-md transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span className="text-sm font-medium font-button">
-                      New Session
-                    </span>
-                  </button>
-                )}
-              </div>
-
-              {/* Session list */}
-              <div className="max-h-56 overflow-y-auto">
-                {sessions.map((session) => (
-                  <div
-                    key={session.id}
-                    className={`group flex items-center justify-between p-3 hover:bg-(--surface-elevated) transition-colors border-b border-(--border)/50 last:border-b-0 ${
-                      session.id === currentSession.id
-                        ? "bg-(--primary)/20 border-(--primary)/30"
-                        : "bg-(--background)"
-                    }`}
-                  >
-                    <div
-                      className="flex-1 cursor-pointer min-w-0 pr-3"
-                      onClick={() => {
-                        if (isRenaming !== session.id) {
-                          onSessionChange(session);
-                          setIsDropdownOpen(false);
-                        }
-                      }}
-                    >
-                      {isRenaming === session.id ? (
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={renameValue}
-                            onChange={(e) => setRenameValue(e.target.value)}
-                            className="w-full px-2 py-1 pr-14 bg-(--surface-elevated) border border-(--border) rounded text-sm font-inter text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
-                            autoFocus
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleRenameSession(session.id);
-                              }
-                              if (e.key === "Escape") {
-                                setIsRenaming(null);
-                                setRenameValue("");
-                              }
-                              // Prevent spacebar from triggering timer events
-                              if (e.key === " ") {
-                                e.stopPropagation();
-                              }
-                            }}
-                          />
-                          <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleRenameSession(session.id);
-                              }}
-                              className="p-1 bg-(--success) text-white rounded hover:opacity-90 transition-opacity"
-                              title="Save changes"
-                            >
-                              <Check className="w-3 h-3" />
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setIsRenaming(null);
-                                setRenameValue("");
-                              }}
-                              className="p-1 bg-(--error)/15 text-(--error) border border-(--error)/30 rounded hover:bg-(--error)/25 transition-colors"
-                              title="Cancel editing"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div>
-                          <div className="font-medium text-(--text-primary) font-statement truncate">
-                            {session.name}
-                          </div>
-                          <div className="text-xs text-(--text-muted) font-inter truncate">
-                            {getLiveSolveCount(session.id)} solves
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {isRenaming !== session.id && (
-                      <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsCreating(false);
-                            setNewSessionName("");
-                            setIsRenaming(session.id);
-                            setRenameValue(session.name);
-                          }}
-                          className="p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--surface) rounded-md transition-colors"
-                          title="Rename session"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        {sessions.length > 1 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              requestDeleteSession(session.id);
-                            }}
-                            className="p-2 text-(--text-muted) hover:text-(--error) hover:bg-(--surface) rounded-md transition-colors"
-                            title="Delete session"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <SessionBottomSheet
-        isOpen={isDropdownOpen && isMobile}
-        onClose={() => {
-          setIsDropdownOpen(false);
-          setIsCreating(false);
-          setIsRenaming(null);
-          setNewSessionName("");
-          setRenameValue("");
-        }}
-        currentSession={currentSession}
-        sessions={sessions}
-        onSessionChange={onSessionChange}
-        onCreateSession={onCreateSession}
-        onRenameSession={onRenameSession}
-        onDeleteSession={requestDeleteSession}
-        getSolveCount={getLiveSolveCount}
-      />
+        )}
+      >
+        {(close) => (
+          <SessionList
+            currentSession={currentSession}
+            sessions={sessions}
+            onSessionChange={onSessionChange}
+            onCreateSession={onCreateSession}
+            onRenameSession={onRenameSession}
+            onDeleteSession={requestDeleteSession}
+            getSolveCount={getLiveSolveCount}
+            onDone={close}
+          />
+        )}
+      </Popover>
 
       <ConfirmDeleteModal
         isOpen={sessionDelete.isOpen}
@@ -517,12 +124,10 @@ export default function SessionManager({
         description="Are you sure you want to delete this session?"
         itemName={sessionDelete.target?.name}
         warning={`This will permanently delete the session and all ${
-          sessionDelete.target
-            ? getLiveSolveCount(sessionDelete.target.id)
-            : 0
+          sessionDelete.target ? getLiveSolveCount(sessionDelete.target.id) : 0
         } of its solves.`}
         confirmLabel="Delete Session"
       />
-    </div>
+    </CollapsibleCard>
   );
 }

@@ -1,8 +1,12 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Download, Upload, Loader2 } from "lucide-react";
+import { Download, Upload } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader } from "@/components/ui/Card";
+import { StatTile } from "@/components/ui/StatTile";
+import { useToast } from "@/components/ui/Toast";
 import { useQuery, useMutation, useConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import ImportModal from "../timer/ImportModal";
@@ -31,6 +35,7 @@ interface Session {
 
 export default function DataManagementSection() {
   const { user } = useUser();
+  const toast = useToast();
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -237,9 +242,9 @@ export default function DataManagementSection() {
         (sum, r) => sum + r.importedCount,
         0
       );
-      alert(
-        `Successfully imported ${totalImported} solves across ${importResults.length} session(s)!`
-      );
+      toast.success(`Imported ${totalImported} solves`, {
+        description: `Across ${importResults.length} session${importResults.length === 1 ? "" : "s"}.`,
+      });
     } catch (error) {
       console.error("Error importing solves:", error);
       throw error; // Re-throw to let ImportModal handle the error display
@@ -250,100 +255,59 @@ export default function DataManagementSection() {
 
   return (
     <>
-      <div className="timer-card">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div>
-              <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
-                Data Management
-              </h3>
-              <p className="text-sm text-(--text-muted)">
-                Import and export your solve data
-              </p>
-            </div>
-          </div>
-        </div>
+      <Card variant="static">
+        <CardHeader
+          title="Data Management"
+          description="Import and export your solve data"
+        />
 
-        <div className="space-y-6">
-          {/* Data Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-            <div className="bg-(--surface-elevated) rounded-lg p-3 md:p-4 border border-(--border)">
-              <div className="text-lg md:text-2xl font-bold text-(--text-primary)">
-                {(solveCount ?? timerSolves.length).toLocaleString()}
-              </div>
-              <div className="text-xs md:text-sm text-(--text-muted)">
-                Total Solves
-              </div>
-            </div>
-
-            <div className="bg-(--surface-elevated) rounded-lg p-3 md:p-4 border border-(--border)">
-              <div className="text-lg md:text-2xl font-bold text-(--text-primary)">
-                {timerSessions.length}
-              </div>
-              <div className="text-xs md:text-sm text-(--text-muted)">
-                Sessions
-              </div>
-            </div>
-
-            <div className="bg-(--surface-elevated) rounded-lg p-3 md:p-4 border border-(--border) col-span-2 lg:col-span-1">
-              <div className="text-lg md:text-2xl font-bold text-(--text-primary)">
-                {new Set(timerSolves.map((s) => s.event)).size}
-              </div>
-              <div className="text-xs md:text-sm text-(--text-muted)">
-                Events
-              </div>
-            </div>
+        <div className="space-y-5">
+          <div className="grid grid-cols-3 gap-3">
+            <StatTile
+              size="sm"
+              label="Solves"
+              value={(solveCount ?? timerSolves.length).toLocaleString()}
+            />
+            <StatTile size="sm" label="Sessions" value={timerSessions.length} />
+            <StatTile
+              size="sm"
+              label="Events"
+              value={new Set(timerSolves.map((s) => s.event)).size}
+            />
           </div>
 
-          {/* Action Buttons */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-            {/* Export Button */}
-            <button
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Button
+              variant="secondary"
+              size="lg"
               onClick={handleExport}
-              disabled={isExporting || (solveCount ?? timerSolves.length) === 0}
-              className="flex items-center justify-center gap-2 px-4 py-2 md:py-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) rounded-lg text-(--text-primary) font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+              disabled={(solveCount ?? timerSolves.length) === 0}
+              loading={isExporting}
+              loadingText="Exporting…"
+              iconLeft={<Download className="w-4 h-4" />}
             >
-              {isExporting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Exporting...
-                </>
-              ) : (
-                <>
-                  <Download className="w-4 h-4" />
-                  Export Data
-                </>
-              )}
-            </button>
-
-            {/* Import Button */}
-            <button
+              Export Data
+            </Button>
+            <Button
+              size="lg"
               onClick={() => setIsImportModalOpen(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2 md:py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-medium transition-colors text-sm md:text-base"
+              iconLeft={<Upload className="w-4 h-4" />}
             >
-              <Upload className="w-4 h-4" />
               Import Data
-            </button>
+            </Button>
           </div>
 
-          {/* Info Section */}
-          <div className="bg-(--surface-elevated) rounded-lg p-3 md:p-4 border border-(--border)">
-            <div className="flex items-start gap-3">
-              <div className="text-xs md:text-sm text-(--text-secondary)">
-                <div className="font-medium text-(--text-primary) mb-2">
-                  Export includes:
-                </div>
-                <div className="space-y-1">
-                  <div>• All solve times and scrambles</div>
-                  <div>• Session information and organization</div>
-                  <div>• Notes and tags</div>
-                  <div>• Compatible with major timer formats</div>
-                </div>
-              </div>
-            </div>
+          <div className="rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) p-3 md:p-4">
+            <p className="type-label mb-2">Export includes</p>
+            <ul className="list-disc pl-4 space-y-1 text-sm text-(--text-secondary) font-inter">
+              <li>All solve times and scrambles</li>
+              <li>Session information and organization</li>
+              <li>Notes and tags</li>
+              <li>Compatible with major timer formats</li>
+            </ul>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Import Modal */}
       <ImportModal

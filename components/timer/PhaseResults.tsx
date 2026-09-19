@@ -8,6 +8,7 @@ import {
   getSplitMethod,
   type PhaseSplit,
 } from "@/lib/phase-splits";
+import { Alert } from "@/components/ui/Alert";
 
 interface PhaseResultsProps {
   splits: PhaseSplit[];
@@ -35,43 +36,44 @@ export default function PhaseResults({
   const largestStall = findLargestStall(phaseTimes, splitMethod);
 
   return (
-    <div className={`timer-card ${className}`}>
-      <div className="flex items-center gap-2 mb-3">
-        <h4 className="text-m font-semibold text-(--text-primary) font-statement">
-          Phase Breakdown
-        </h4>
-        <span className="text-sm text-(--text-muted)">{method.name}</span>
+    <div className={`bg-(--surface-elevated) border border-(--border) rounded-(--radius-panel) p-3 sm:p-4 ${className}`}>
+      <div className="flex items-baseline gap-2 mb-3">
+        <h4 className="type-card-title text-base!">Phase Breakdown</h4>
+        <span className="type-caption">{method.name}</span>
       </div>
 
-      {/* Phase Times Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
-        {phaseTimes.map((phase, index) => {
-          const methodPhase = method.phases.find((p) => p.id === phase.phase);
+        {phaseTimes.map((phase) => {
+          const phaseIndex = method.phases.findIndex((p) => p.id === phase.phase);
+          const methodPhase = method.phases[phaseIndex];
           const isLargestStall = largestStall?.phase === phase.phase;
 
           return (
             <div
               key={phase.phase}
-              className={`p-2 bg-(--surface-elevated) rounded border ${
+              className={`p-2 rounded-(--radius-control) border ${
                 isLargestStall
-                  ? "border-orange-400/50 bg-orange-400/10"
-                  : "border-(--border)"
+                  ? "border-(--warning)/50 bg-(--warning)/10"
+                  : "border-(--border) bg-(--surface)"
               }`}
             >
-              <div className="flex items-center gap-1 mb-1">
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    methodPhase?.color?.replace("text-", "bg-") || "bg-gray-400"
-                  }`}
+              <div className="flex items-center gap-1.5 mb-1">
+                <span
+                  aria-hidden
+                  className="w-2 h-2 rounded-full shrink-0"
+                  style={{ background: `var(--chart-${(Math.max(phaseIndex, 0) % 5) + 1})` }}
                 />
-                <span className="text-xs font-medium text-(--text-primary)">
+                <span className="text-xs font-medium text-(--text-primary) truncate">
                   {methodPhase?.name || phase.phase}
                 </span>
                 {isLargestStall && (
-                  <AlertTriangle className="w-3 h-3 text-orange-500" />
+                  <AlertTriangle
+                    className="w-3 h-3 shrink-0 text-(--warning)"
+                    aria-label="Largest stall"
+                  />
                 )}
               </div>
-              <div className="text-sm font-bold font-mono text-(--text-primary)">
+              <div className="text-sm font-bold type-time text-(--text-primary)">
                 {formatPhaseTime(phase.duration)}s
               </div>
             </div>
@@ -79,17 +81,13 @@ export default function PhaseResults({
         })}
       </div>
 
-      {/* Largest Stall Indicator */}
       {largestStall && (
-        <div className="flex items-center gap-2 p-2 bg-orange-400/10 border border-orange-400/30 rounded text-xs">
-          <TrendingUp className="w-3 h-3 text-orange-500" />
-          <span className="text-(--text-primary)">
-            <strong>Largest stall:</strong>{" "}
-            {method.phases.find((p) => p.id === largestStall.phase)?.name ||
-              largestStall.phase}{" "}
-            ({formatPhaseTime(largestStall.duration)}s)
-          </span>
-        </div>
+        <Alert tone="warning" size="sm" icon={<TrendingUp />}>
+          <strong className="text-(--text-primary)">Largest stall:</strong>{" "}
+          {method.phases.find((p) => p.id === largestStall.phase)?.name ||
+            largestStall.phase}{" "}
+          ({formatPhaseTime(largestStall.duration)}s)
+        </Alert>
       )}
     </div>
   );

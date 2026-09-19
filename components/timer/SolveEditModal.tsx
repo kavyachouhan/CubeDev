@@ -1,8 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { formatTime, secondsToCentisMs, truncToCentisMs } from "@/lib/stats-utils";
+import { Button } from "@/components/ui/Button";
+import { Field, Input } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { TimeValue } from "@/components/ui/TimeValue";
 
 interface SolveEditModalProps {
   isOpen: boolean;
@@ -330,22 +335,13 @@ export default function SolveEditModal({
     onClose();
   };
 
-  // Handle keyboard shortcuts
+  // Enter saves; Escape and timer isolation are handled by Modal.
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
       handleSave();
-    } else if (e.key === "Escape") {
-      e.preventDefault();
-      onClose();
-    }
-    // Prevent spacebar from triggering timer
-    if (e.key === " ") {
-      e.stopPropagation();
     }
   };
-
-  if (!isOpen) return null;
 
   // Calculate final time with penalty for preview
   const getFinalTime = (): number => {
@@ -356,190 +352,117 @@ export default function SolveEditModal({
     return parsedTime;
   };
 
+  const finalPenaltyForPreview =
+    parsedTime === 0 ? "DNF" : penalty;
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      onKeyDown={(e) => {
-        // Prevent all keyboard events from bubbling to timer
-        e.stopPropagation();
-      }}
-    >
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
+    <Modal open={isOpen} onClose={onClose} size="md" mobile="sheet">
+      <Modal.Header title="Edit Solve Time" />
+      <Modal.Body className="space-y-5">
+        <Field
+          label="Time"
+          error={error || undefined}
+          hint={
+            <span className="block space-y-0.5">
+              <span className="block">Supported formats:</span>
+              <span className="block pl-2">
+                <span className="type-time">12.34</span> — seconds with decimals
+              </span>
+              <span className="block pl-2">
+                <span className="type-time">12</span>, <span className="type-time">123</span>,{" "}
+                <span className="type-time">1234</span> — auto-formats to 12.00, 1.23, 12.34
+              </span>
+              <span className="block pl-2">
+                <span className="type-time">12.34+2</span> — with +2 penalty
+              </span>
+              <span className="block pl-2">
+                <span className="type-time">12.34(DNF)</span> or{" "}
+                <span className="type-time">DNF</span> — DNF penalty
+              </span>
+            </span>
+          }
+        >
+          <Input
+            type="text"
+            inputMode="decimal"
+            autoComplete="off"
+            value={timeInput}
+            onChange={(e) => handleInputChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="e.g. 12.34 or 1:23.45"
+            size="lg"
+            className="type-time text-xl!"
+            data-autofocus
+          />
+        </Field>
 
-      {/* Modal */}
-      <div className="relative bg-(--surface) border border-(--border) rounded-lg shadow-xl max-w-md w-full mx-4">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-(--border)">
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
-            Edit Solve Time
-          </h3>
-          <button
-            onClick={onClose}
-            className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors"
+        {parsedTime !== null && !error && (
+          <div
+            aria-live="polite"
+            className="rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) p-4"
           >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-6 space-y-4">
-          {/* Time Input */}
-          <div>
-            <label className="block text-sm font-medium text-(--text-secondary) mb-2">
-              Time
-            </label>
-            <input
-              type="text"
-              value={timeInput}
-              onChange={(e) => handleInputChange(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="e.g., 12.34 or 1:23.45"
-              className="w-full px-4 py-3 text-lg font-mono bg-(--background) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
-              autoFocus
-            />
-
-            {/* Format hints */}
-            <div className="mt-2 text-xs text-(--text-muted) space-y-1">
-              <div>Supported formats:</div>
-              <div className="pl-2">
-                • <span className="font-mono">12.34</span> (seconds with
-                decimals)
-              </div>
-              <div className="pl-2">
-                • <span className="font-mono">12</span>,{" "}
-                <span className="font-mono">123</span>, or{" "}
-                <span className="font-mono">1234</span> (auto-formats: 12.00,
-                1.23, 12.34)
-              </div>
-              <div className="pl-2">
-                • <span className="font-mono">12.34+2</span> or{" "}
-                <span className="font-mono">12.34 + 2</span> (with +2 penalty)
-              </div>
-              <div className="pl-2">
-                • <span className="font-mono">12.34(DNF)</span> or{" "}
-                <span className="font-mono">DNF</span> (DNF penalty)
-              </div>
-            </div>
-
-            {/* Error message */}
-            {error && (
-              <div className="mt-2 text-sm text-(--error)">{error}</div>
-            )}
-          </div>
-
-          {/* Preview */}
-          {parsedTime !== null && !error && (
-            <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
-              <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-2">
-                Preview
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-(--text-secondary)">
-                    Raw Time:
-                  </span>
-                  <span className="font-mono text-(--text-primary)">
+            <p className="type-overline mb-3">Preview</p>
+            <dl className="space-y-2 text-sm font-inter">
+              <div className="flex justify-between">
+                <dt className="text-(--text-secondary)">Raw time</dt>
+                <dd>
+                  <TimeValue>
                     {parsedTime === 0 && penalty === "DNF"
                       ? "DNF"
                       : formatTimeDisplay(parsedTime, "none")}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-(--text-secondary)">Penalty:</span>
-                  <span
-                    className={`font-mono ${
-                      penalty === "+2"
-                        ? "text-yellow-400"
-                        : penalty === "DNF"
-                          ? "text-red-400"
-                          : "text-(--text-primary)"
-                    }`}
-                  >
-                    {penalty === "none" ? "None" : penalty}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm border-t border-(--border) pt-2">
-                  <span className="text-(--text-secondary) font-semibold">
-                    Final Time:
-                  </span>
-                  <span
-                    className={`font-mono font-semibold ${
-                      penalty === "+2"
-                        ? "text-yellow-400"
-                        : penalty === "DNF" || parsedTime === 0
-                          ? "text-red-400"
-                          : "text-(--text-primary)"
-                    }`}
-                  >
-                    {formatTimeDisplay(getFinalTime(), penalty)}
-                  </span>
-                </div>
+                  </TimeValue>
+                </dd>
               </div>
-            </div>
-          )}
-
-          {/* Penalty Buttons */}
-          <div>
-            <label className="block text-sm font-medium text-(--text-secondary) mb-2">
-              Penalty
-            </label>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPenalty("none")}
-                className={`flex-1 px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
-                  penalty === "none"
-                    ? "bg-(--primary) text-white"
-                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
-                }`}
-              >
-                OK
-              </button>
-              <button
-                onClick={() => setPenalty("+2")}
-                className={`flex-1 px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
-                  penalty === "+2"
-                    ? "bg-(--warning) text-white"
-                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
-                }`}
-              >
-                +2
-              </button>
-              <button
-                onClick={() => setPenalty("DNF")}
-                className={`flex-1 px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
-                  penalty === "DNF"
-                    ? "bg-(--error) text-white"
-                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
-                }`}
-              >
-                DNF
-              </button>
-            </div>
+              <div className="flex justify-between">
+                <dt className="text-(--text-secondary)">Penalty</dt>
+                <dd>
+                  <TimeValue penalty={penalty}>
+                    {penalty === "none" ? "None" : penalty}
+                  </TimeValue>
+                </dd>
+              </div>
+              <div className="flex justify-between border-t border-(--border) pt-2">
+                <dt className="font-semibold text-(--text-primary)">Final time</dt>
+                <dd>
+                  <TimeValue penalty={finalPenaltyForPreview} className="font-semibold text-base">
+                    {formatTimeDisplay(getFinalTime(), penalty)}
+                  </TimeValue>
+                </dd>
+              </div>
+            </dl>
           </div>
+        )}
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-2">
-            <button
-              onClick={handleSave}
-              disabled={!!error || !timeInput.trim()}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-(--primary)"
-            >
-              <Check className="w-4 h-4" />
-              Save Changes
-            </button>
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-secondary) rounded-lg font-medium transition-colors border border-(--border)"
-            >
-              Cancel
-            </button>
-          </div>
+        <div className="space-y-1.5">
+          <p className="type-label" aria-hidden>
+            Penalty
+          </p>
+          <SegmentedControl
+            aria-label="Penalty"
+            value={penalty}
+            onChange={setPenalty}
+            fullWidth
+            size="lg"
+            options={[
+              { value: "none", label: "OK" },
+              { value: "+2", label: "+2", tone: "warning" },
+              { value: "DNF", label: "DNF", tone: "error" },
+            ]}
+          />
         </div>
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button
+          onClick={handleSave}
+          disabled={!!error || !timeInput.trim()}
+          iconLeft={<Check className="w-4 h-4" />}
+        >
+          Save Changes
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }

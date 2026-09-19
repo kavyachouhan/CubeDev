@@ -78,9 +78,12 @@ export default function ConfettiCelebration({
     const burstOffsets = [0, 300, 650, 1000, 1450, 1900, 2400, 2900, 3300];
     const burstCounts = [60, 50, 45, 40, 35, 28, 22, 16, 10];
 
+    // Honor both the OS setting and CubeDev's own Reduce Motion preference;
+    // this animation runs in JS, so the global CSS clamp can't reach it.
     const prefersReduced =
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.documentElement.dataset.reduceMotion === "true" ||
+      (window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
     burstOffsets.forEach((delay, bIdx) => {
       const t = window.setTimeout(() => {
@@ -281,7 +284,7 @@ export default function ConfettiCelebration({
             "celebration-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
         }}
       >
-        <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl bg-(--surface) border border-(--primary) shadow-lg">
+        <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-(--radius-panel) bg-(--surface) border border-(--primary) shadow-(--shadow-popover)">
           <div className="flex items-center gap-2">
             {achievementType === "single" ? (
               <Zap

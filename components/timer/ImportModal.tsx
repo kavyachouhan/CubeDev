@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useRef } from "react";
-import {
-  Upload,
-  AlertCircle,
-  CircleCheck,
-  X,
-  File,
-  FolderOpen,
-} from "lucide-react";
+import { ClipboardPaste, File, FolderOpen, Upload } from "lucide-react";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { CardIcon } from "@/components/ui/Card";
+import { Field, Textarea } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { Tabs } from "@/components/ui/Tabs";
 
 interface TimerRecord {
   id: string;
@@ -770,271 +769,151 @@ export default function ImportModal({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
+    <Modal
+      open={isOpen}
+      onClose={onClose}
+      size="xl"
+      mobile="fullscreen"
+      dismissible={!isImporting}
+      closeOnBackdrop={false}
+    >
+      <Modal.Header
+        title="Import Timer Data"
+        description="csTimer, CubeDesk, Twisty Timer, CubeTime and CubeDev exports are supported."
       />
+      <Modal.Body className="space-y-4">
+        <Tabs
+          aria-label="Import method"
+          value={activeTab}
+          onChange={setActiveTab}
+          items={[
+            { value: "paste", label: "Paste data", icon: <ClipboardPaste /> },
+            { value: "file", label: "Upload file", icon: <File /> },
+          ]}
+        />
 
-      {/* Modal */}
-      <div className="relative bg-(--surface) border border-(--border) rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-(--border)">
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
-            Import Timer Data
-          </h3>
-          <button
-            onClick={onClose}
-            className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-4 space-y-4">
-          {/* Tab Navigation */}
-          <div className="flex border-b border-(--border)">
-            <button
-              onClick={() => setActiveTab("paste")}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === "paste"
-                  ? "border-(--primary) text-(--primary)"
-                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary)"
+        {activeTab === "paste" ? (
+          <Field label="Timer data" hideLabel>
+            <Textarea
+              value={importData}
+              onChange={(e) => handleDataChange(e.target.value)}
+              placeholder="Paste your timer data here…"
+              rows={8}
+              className="type-time text-sm! resize-none"
+            />
+          </Field>
+        ) : (
+          <>
+            <div
+              className={`relative border-2 border-dashed rounded-(--radius-panel) p-8 text-center transition-colors ${
+                isDragOver
+                  ? "border-(--primary) bg-(--primary)/5"
+                  : "border-(--border) hover:border-(--primary)/50"
               }`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
             >
-              Paste Data
-            </button>
-            <button
-              onClick={() => setActiveTab("file")}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === "file"
-                  ? "border-(--primary) text-(--primary)"
-                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary)"
-              }`}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".txt,.json,.csv,text/csv"
+                onChange={handleFileUpload}
+                aria-label="Choose a timer export file"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              <div className="space-y-4 pointer-events-none">
+                <CardIcon className="mx-auto w-12 h-12 [&_svg]:w-6 [&_svg]:h-6">
+                  <File />
+                </CardIcon>
+                <div>
+                  <p className="type-label mb-1">
+                    {isDragOver ? "Drop your file here" : "Choose a file or drag it here"}
+                  </p>
+                  <p className="type-caption">Supports .txt, .json, and .csv files</p>
+                </div>
+                <span className="btn btn-subtle btn-md">
+                  <FolderOpen className="w-4 h-4" aria-hidden />
+                  Browse files
+                </span>
+              </div>
+            </div>
+
+            {importData && (
+              <div className="space-y-1.5">
+                <p className="type-label">File preview</p>
+                <pre className="max-h-32 overflow-y-auto p-3 bg-(--background-subtle) border border-(--border) rounded-(--radius-control) text-xs type-time text-(--text-secondary) whitespace-pre-wrap break-all">
+                  {importData.slice(0, 500)}
+                  {importData.length > 500 && "…"}
+                </pre>
+              </div>
+            )}
+          </>
+        )}
+
+        {importProgress && (
+          <div className="space-y-2" role="status">
+            <div className="flex justify-between text-sm font-inter">
+              <span className="text-(--text-secondary)">Importing solves…</span>
+              <span className="type-time text-(--text-primary)">
+                {importProgress.current} / {importProgress.total}
+              </span>
+            </div>
+            <div
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={importProgress.total}
+              aria-valuenow={importProgress.current}
+              className="w-full bg-(--surface-elevated) rounded-full h-2"
             >
-              Upload File
-            </button>
-          </div>
-
-          {activeTab === "paste" ? (
-            <>
-              <div className="text-sm text-(--text-secondary)">
-                Paste your timer data below. Supported formats: csTimer,
-                CubeDesk, Twisty Timer, CubeTime, and CubeDev.
-              </div>
-
-              {/* Text area */}
-              <div>
-                <textarea
-                  value={importData}
-                  onChange={(e) => handleDataChange(e.target.value)}
-                  placeholder="Paste your timer data here..."
-                  className="w-full h-48 p-3 text-sm bg-(--background) border border-(--border) rounded resize-none focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-mono"
-                  onKeyDown={(e) => {
-                    // Prevent spacebar from triggering timer events
-                    if (e.key === " ") {
-                      e.stopPropagation();
-                    }
-                  }}
-                />
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="text-sm text-(--text-secondary)">
-                Upload a TXT or JSON file containing your timer data.
-              </div>
-
-              {/* File upload area */}
               <div
-                className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                  isDragOver
-                    ? "border-(--primary) bg-(--primary)/5"
-                    : "border-(--border) hover:border-(--primary)/50"
-                }`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-              >
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".txt,.json,.csv,text/csv"
-                  onChange={handleFileUpload}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-
-                <div className="space-y-4">
-                  <div className="mx-auto w-12 h-12 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
-                    <File className="w-6 h-6 text-(--primary)" />
-                  </div>
-
-                  <div>
-                    <div className="text-(--text-primary) font-medium mb-2">
-                      {isDragOver
-                        ? "Drop your file here"
-                        : "Choose a file or drag it here"}
-                    </div>
-                    <div className="text-sm text-(--text-secondary)">
-                      Supports .txt, .json, and .csv files
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-primary) font-medium transition-colors"
-                  >
-                    <FolderOpen className="w-4 h-4" />
-                    Browse Files
-                  </button>
-                </div>
-              </div>
-
-              {/* File content preview */}
-              {importData && (
-                <div className="space-y-2">
-                  <div className="text-sm font-medium text-(--text-primary)">
-                    File Content Preview:
-                  </div>
-                  <div className="max-h-32 overflow-y-auto p-3 bg-(--background) border border-(--border) rounded text-xs font-mono text-(--text-secondary)">
-                    {importData.slice(0, 500)}
-                    {importData.length > 500 && "..."}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-
-          {/* Import Progress */}
-          {importProgress && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-(--text-secondary)">
-                  Importing solves...
-                </span>
-                <span className="text-(--text-primary)">
-                  {importProgress.current} / {importProgress.total}
-                </span>
-              </div>
-              <div className="w-full bg-(--surface-elevated) rounded-full h-2">
-                <div
-                  className="bg-(--primary) h-2 rounded-full transition-all duration-300"
-                  style={{
-                    width: `${(importProgress.current / importProgress.total) * 100}%`,
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Import result */}
-          {importResult && (
-            <div
-              className={`flex items-center gap-2 p-3 rounded-lg ${
-                importResult.success
-                  ? "bg-(--success)/20 border border-(--success)/30"
-                  : "bg-(--error)/20 border border-(--error)/30"
-              }`}
-            >
-              {importResult.success ? (
-                <CircleCheck className="w-4 h-4 text-(--success) shrink-0" />
-              ) : (
-                <AlertCircle className="w-4 h-4 text-(--error) shrink-0" />
-              )}
-              <span
-                className={`text-sm ${
-                  importResult.success ? "text-(--success)" : "text-(--error)"
-                }`}
-              >
-                {importResult.message}
-              </span>
-            </div>
-          )}
-
-          {/* Validation status */}
-          {validationStatus && (
-            <div
-              className={`flex items-center gap-2 p-3 rounded-lg ${
-                validationStatus.isValid
-                  ? "bg-(--success)/20 border border-(--success)/30"
-                  : "bg-(--error)/20 border border-(--error)/30"
-              }`}
-            >
-              {validationStatus.isValid ? (
-                <CircleCheck className="w-4 h-4 text-(--success) shrink-0" />
-              ) : (
-                <AlertCircle className="w-4 h-4 text-(--error) shrink-0" />
-              )}
-              <span
-                className={`text-sm ${
-                  validationStatus.isValid
-                    ? "text-(--success)"
-                    : "text-(--error)"
-                }`}
-              >
-                {validationStatus.message}
-              </span>
-            </div>
-          )}
-
-          {/* Format help */}
-          <div className="bg-(--surface-elevated) rounded-lg p-3">
-            <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-2">
-              Supported Formats
-            </div>
-            <div className="space-y-1 text-sm text-(--text-secondary)">
-              <div>
-                • <strong>csTimer:</strong> Standard csTimer export format
-              </div>
-              <div>
-                • <strong>CubeDesk:</strong> CubeDesk txt format
-              </div>
-              <div>
-                • <strong>Twisty Timer:</strong> External text export format
-              </div>
-              <div>
-                • <strong>CubeTime:</strong> csTimer JSON and CSV exports
-              </div>
-              <div>
-                • <strong>CubeDev:</strong> Native CubeDev format
-              </div>
+                className="bg-(--primary) h-2 rounded-full transition-all duration-300"
+                style={{
+                  width: `${(importProgress.current / importProgress.total) * 100}%`,
+                }}
+              />
             </div>
           </div>
+        )}
 
-          {/* Actions */}
-          <div className="flex gap-3">
-            <button
-              onClick={handleImport}
-              disabled={
-                !validationStatus?.isValid ||
-                isImporting ||
-                importResult?.success
-              }
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-(--primary) hover:bg-(--primary-hover) disabled:bg-(--surface-elevated) disabled:text-(--text-muted) text-white rounded-lg font-medium transition-colors"
-            >
-              <Upload className="w-4 h-4" />
-              {isImporting
-                ? "Importing..."
-                : importResult?.success
-                  ? "Import Complete"
-                  : "Import Data"}
-            </button>
-            <button
-              onClick={onClose}
-              disabled={isImporting}
-              className="px-4 py-2 bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-medium transition-colors"
-            >
-              {importResult?.success ? "Close" : "Cancel"}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+        {importResult && (
+          <Alert tone={importResult.success ? "success" : "error"}>
+            {importResult.message}
+          </Alert>
+        )}
+
+        {validationStatus && !importResult && (
+          <Alert tone={validationStatus.isValid ? "success" : "error"}>
+            {validationStatus.message}
+          </Alert>
+        )}
+
+        <section className="rounded-(--radius-panel) bg-(--surface-elevated) border border-(--border) p-3">
+          <h3 className="type-overline mb-2">Supported formats</h3>
+          <ul className="space-y-1 text-sm text-(--text-secondary) font-inter list-disc pl-4">
+            <li><strong className="text-(--text-primary)">csTimer:</strong> standard csTimer export</li>
+            <li><strong className="text-(--text-primary)">CubeDesk:</strong> CubeDesk txt export</li>
+            <li><strong className="text-(--text-primary)">Twisty Timer:</strong> external text export</li>
+            <li><strong className="text-(--text-primary)">CubeTime:</strong> csTimer JSON and CSV exports</li>
+            <li><strong className="text-(--text-primary)">CubeDev:</strong> native CubeDev format</li>
+          </ul>
+        </section>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose} disabled={isImporting}>
+          {importResult?.success ? "Close" : "Cancel"}
+        </Button>
+        <Button
+          onClick={handleImport}
+          disabled={!validationStatus?.isValid || importResult?.success}
+          loading={isImporting}
+          loadingText="Importing…"
+          iconLeft={<Upload className="w-4 h-4" />}
+        >
+          {importResult?.success ? "Import complete" : "Import data"}
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }

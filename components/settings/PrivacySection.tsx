@@ -5,9 +5,14 @@ import { UserPen, Trophy, Check } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader } from "@/components/ui/Card";
+import { SwitchRow } from "@/components/ui/Switch";
+import { useToast } from "@/components/ui/Toast";
 
 export default function PrivacySection() {
   const { user } = useUser();
+  const toast = useToast();
   const [hideProfile, setHideProfile] = useState(false);
   const [hideChallengeStats, setHideChallengeStats] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -41,8 +46,12 @@ export default function PrivacySection() {
         hideChallengeStats,
       });
 
+      toast.success("Privacy settings saved");
     } catch (error) {
       console.error("Failed to update privacy settings:", error);
+      toast.error("Couldn't save privacy settings", {
+        description: "Please try again.",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -56,95 +65,42 @@ export default function PrivacySection() {
   if (!user) return null;
 
   return (
-    <div className="timer-card">
-      <div className="flex items-center gap-3 mb-6">
-        <div>
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
-            Privacy Settings
-          </h3>
-          <p className="text-sm text-(--text-muted)">
-            Control your CubeDev profile visibility and data sharing options
-          </p>
-        </div>
-      </div>
+    <Card variant="static">
+      <CardHeader
+        title="Privacy Settings"
+        description="Control your CubeDev profile visibility and data sharing options"
+      />
 
-      <div className="space-y-6">
-        {/* Profile Visibility */}
-        <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-3 md:p-4">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-(--primary)/10 rounded-lg shrink-0">
-                <UserPen className="w-4 h-4 text-(--primary)" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h4 className="font-semibold text-(--text-primary) text-sm md:text-base">
-                  Hide Profile from Public View
-                </h4>
-                <p className="text-xs md:text-sm text-(--text-muted) mt-1">
-                  Hide your CubeDev statistics and activity from public view.
-                  Your WCA profile still remains public.
-                </p>
-              </div>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer shrink-0">
-              <input
-                type="checkbox"
-                checked={hideProfile}
-                onChange={(e) => setHideProfile(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-(--border) peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-(--primary)"></div>
-            </label>
-          </div>
-        </div>
+      <div className="space-y-3">
+        <SwitchRow
+          icon={<UserPen />}
+          label="Hide Profile from Public View"
+          description="Hide your CubeDev statistics and activity from public view. Your WCA profile still remains public."
+          checked={hideProfile}
+          onChange={setHideProfile}
+        />
+        <SwitchRow
+          icon={<Trophy />}
+          label="Hide Challenge Room Statistics"
+          description="Hide your challenge room statistics from public view. You'll still appear in leaderboards during active rooms."
+          checked={hideChallengeStats}
+          onChange={setHideChallengeStats}
+        />
 
-        {/* Challenge Stats Visibility */}
-        <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-3 md:p-4">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-(--secondary)/10 rounded-lg shrink-0">
-                <Trophy className="w-4 h-4 text-(--secondary)" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h4 className="font-semibold text-(--text-primary) text-sm md:text-base">
-                  Hide Challenge Room Statistics
-                </h4>
-                <p className="text-xs md:text-sm text-(--text-muted) mt-1">
-                  Hide your challenge room statistics from public view. You'll
-                  still appear in leaderboards during active rooms.
-                </p>
-              </div>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer shrink-0">
-              <input
-                type="checkbox"
-                checked={hideChallengeStats}
-                onChange={(e) => setHideChallengeStats(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-(--border) peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-(--primary)"></div>
-            </label>
-          </div>
-        </div>
-
-        {/* Save Button */}
         {hasChanges && (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <button
+          <div className="flex justify-end pt-2">
+            <Button
               onClick={handleSaveSettings}
-              disabled={isSaving}
-              className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm md:text-base w-full sm:w-auto justify-center"
+              loading={isSaving}
+              loadingText="Saving…"
+              iconLeft={<Check className="w-4 h-4" />}
+              className="w-full sm:w-auto"
             >
-              {isSaving ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <Check className="w-4 h-4" />
-              )}
-              {isSaving ? "Saving..." : "Save Privacy Settings"}
-            </button>
+              Save Privacy Settings
+            </Button>
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

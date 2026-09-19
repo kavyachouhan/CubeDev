@@ -2,6 +2,10 @@
 
 import { useState, useEffect, useRef, ReactNode } from "react";
 import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Field, Input } from "@/components/ui/Field";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { TimeValue } from "@/components/ui/TimeValue";
 import ConfettiCelebration from "./ConfettiCelebration";
 
 interface ManualTimerCoreProps {
@@ -431,167 +435,116 @@ export default function ManualTimerCore({
 
       {/* Inspection Display */}
       {isInspecting && (
-        <div className="text-center p-6 bg-(--surface-elevated) rounded-lg border border-(--border)">
+        <div className="text-center p-6 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
           <div
-            className={`text-6xl font-bold font-mono mb-2 transition-colors ${
+            role="timer"
+            aria-live="off"
+            className={`text-6xl font-bold type-time mb-2 transition-colors ${
               inspectionTime <= 3
-                ? "text-red-400"
+                ? "text-(--error)"
                 : inspectionTime <= 8
-                  ? "text-yellow-400"
-                  : "text-green-400"
+                  ? "text-(--warning)"
+                  : "text-(--success)"
             }`}
           >
             {inspectionTime.toFixed(2)}
           </div>
-          <div className="text-sm text-(--text-muted)">
-            Inspection time remaining
-          </div>
-          <button
-            onClick={handleStopInspection}
-            className="mt-4 px-4 py-2 bg-(--error) hover:bg-(--error)/80 text-white rounded-lg font-medium transition-colors"
-          >
+          <p className="type-caption">Inspection time remaining</p>
+          <Button variant="danger" onClick={handleStopInspection} className="mt-4">
             Stop Inspection
-          </button>
+          </Button>
         </div>
       )}
 
       {/* Manual Entry Form */}
       {!isInspecting && (
         <div className="space-y-4">
-          {/* Time Input */}
-          <div>
-            <label className="block text-sm font-medium text-(--text-secondary) mb-2">
-              Enter Time
-            </label>
-            <input
+          <Field
+            label="Enter Time"
+            error={error || undefined}
+            hint="Formats: 12.34, 1:23.45, 1234, DNF, 12.34+2"
+          >
+            <Input
               type="text"
+              inputMode="decimal"
+              autoComplete="off"
               value={timeInput}
               onChange={(e) => handleInputChange(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="e.g., 12.34 or 1:23.45 or DNF"
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-mono bg-(--background) border-2 border-(--border) rounded-lg focus:outline-none focus:border-(--primary) text-(--text-primary) transition-colors"
+              placeholder="e.g. 12.34 or 1:23.45 or DNF"
+              size="lg"
+              className="type-time text-lg!"
               autoFocus
             />
+          </Field>
 
-            {/* Format hints */}
-            <div className="mt-2 text-xs text-(--text-muted) space-y-1">
-              <div>Formats: 12.34, 1:23.45, 1234, DNF, 12.34+2</div>
-            </div>
-
-            {/* Error message */}
-            {error && (
-              <div className="mt-2 text-sm text-(--error)">{error}</div>
-            )}
-          </div>
-
-          {/* Preview */}
           {parsedTime !== null && !error && (
-            <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
-              <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-2">
-                Preview
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-(--text-secondary)">
-                    Raw Time:
-                  </span>
-                  <span className="font-mono text-(--text-primary)">
+            <div
+              aria-live="polite"
+              className="rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) p-4"
+            >
+              <p className="type-overline mb-3">Preview</p>
+              <div className="space-y-2 text-sm font-inter">
+                <div className="flex justify-between">
+                  <span className="text-(--text-secondary)">Raw time</span>
+                  <TimeValue>
                     {parsedTime === 0 && penalty === "DNF"
                       ? "DNF"
                       : formatTimeDisplay(parsedTime, "none")}
-                  </span>
+                  </TimeValue>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-(--text-secondary)">Penalty:</span>
-                  <span
-                    className={`font-mono ${
-                      penalty === "+2"
-                        ? "text-yellow-400"
-                        : penalty === "DNF"
-                          ? "text-red-400"
-                          : "text-(--text-primary)"
-                    }`}
-                  >
+                <div className="flex justify-between">
+                  <span className="text-(--text-secondary)">Penalty</span>
+                  <TimeValue penalty={penalty}>
                     {penalty === "none" ? "None" : penalty}
-                  </span>
+                  </TimeValue>
                 </div>
-                <div className="flex justify-between text-sm border-t border-(--border) pt-2">
-                  <span className="text-(--text-secondary) font-semibold">
-                    Final Time:
-                  </span>
-                  <span
-                    className={`font-mono font-semibold ${
-                      penalty === "+2"
-                        ? "text-yellow-400"
-                        : penalty === "DNF" || parsedTime === 0
-                          ? "text-red-400"
-                          : "text-(--text-primary)"
-                    }`}
+                <div className="flex justify-between border-t border-(--border) pt-2">
+                  <span className="font-semibold text-(--text-primary)">Final time</span>
+                  <TimeValue
+                    penalty={parsedTime === 0 ? "DNF" : penalty}
+                    className="font-semibold"
                   >
                     {formatTimeDisplay(getFinalTime(), penalty)}
-                  </span>
+                  </TimeValue>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Penalty Buttons */}
-          <div>
-            <label className="block text-sm font-medium text-(--text-secondary) mb-2">
+          <div className="space-y-1.5">
+            <p className="type-label" aria-hidden>
               Penalty
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                onClick={() => setPenalty("none")}
-                className={`px-3 sm:px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
-                  penalty === "none"
-                    ? "bg-(--primary) text-white"
-                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
-                }`}
-              >
-                OK
-              </button>
-              <button
-                onClick={() => setPenalty("+2")}
-                className={`px-3 sm:px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
-                  penalty === "+2"
-                    ? "bg-(--warning) text-white"
-                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
-                }`}
-              >
-                +2
-              </button>
-              <button
-                onClick={() => setPenalty("DNF")}
-                className={`px-3 sm:px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
-                  penalty === "DNF"
-                    ? "bg-(--error) text-white"
-                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
-                }`}
-              >
-                DNF
-              </button>
-            </div>
+            </p>
+            <SegmentedControl
+              aria-label="Penalty"
+              value={penalty}
+              onChange={setPenalty}
+              fullWidth
+              size="lg"
+              options={[
+                { value: "none", label: "OK" },
+                { value: "+2", label: "+2", tone: "warning" },
+                { value: "DNF", label: "DNF", tone: "error" },
+              ]}
+            />
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
             {inspectionEnabled && (
-              <button
-                onClick={handleStartInspection}
-                className="flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) rounded-lg font-medium transition-colors border border-(--border)"
-              >
-                <span className="text-sm sm:text-base">Start Inspection</span>
-              </button>
+              <Button variant="secondary" size="lg" onClick={handleStartInspection}>
+                Start Inspection
+              </Button>
             )}
-            <button
+            <Button
+              size="lg"
               onClick={handleSubmit}
               disabled={!!error || !timeInput.trim()}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-(--primary)"
+              iconLeft={<Plus className="w-4 h-4" />}
+              className="flex-1"
             >
-              <Plus className="w-4 h-4" />
-              <span className="text-sm sm:text-base">Add Solve</span>
-            </button>
+              Add Solve
+            </Button>
           </div>
 
           {children}

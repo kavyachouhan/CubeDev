@@ -1,7 +1,8 @@
 "use client";
 
-import { Eye, Zap, Contrast } from "lucide-react";
+import { Contrast, Eye, Zap } from "lucide-react";
 import { useTheme } from "@/lib/theme-context";
+import { SwitchRow } from "@/components/ui/Switch";
 
 export default function AccessibilitySettings() {
   const {
@@ -18,7 +19,7 @@ export default function AccessibilitySettings() {
       id: "reduceMotion",
       label: "Reduce Motion",
       description: "Minimize animations and transitions",
-      icon: <Zap className="w-5 h-5" />,
+      icon: <Zap />,
       checked: reduceMotion,
       onChange: setReduceMotion,
     },
@@ -26,7 +27,7 @@ export default function AccessibilitySettings() {
       id: "disableGlow",
       label: "Disable Glow Effects",
       description: "Remove glowing shadows and effects",
-      icon: <Eye className="w-5 h-5" />,
+      icon: <Eye />,
       checked: disableGlow,
       onChange: setDisableGlow,
     },
@@ -34,60 +35,29 @@ export default function AccessibilitySettings() {
       id: "highContrast",
       label: "High Contrast",
       description: "Increase contrast for better visibility",
-      icon: <Contrast className="w-5 h-5" />,
+      icon: <Contrast />,
       checked: highContrast,
       onChange: setHighContrast,
     },
   ];
 
   return (
-    <div>
-      <label className="text-sm font-medium text-(--text-secondary) mb-3 block">
+    <fieldset>
+      <legend className="type-label text-(--text-secondary)! mb-3">
         Accessibility & Effects
-      </label>
+      </legend>
       <div className="space-y-3">
         {settings.map((setting) => (
-          <div
+          <SwitchRow
             key={setting.id}
-            className="flex items-start gap-3 p-4 rounded-lg border border-(--border) hover:border-(--border-hover) transition-colors"
-          >
-            <div className="text-(--primary) mt-0.5">{setting.icon}</div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h4 className="text-sm font-medium text-(--text-primary)">
-                    {setting.label}
-                  </h4>
-                  <p className="text-xs text-(--text-muted) mt-0.5">
-                    {setting.description}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setting.onChange(!setting.checked)}
-                  className={`
-                    relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0
-                    ${
-                      setting.checked
-                        ? "bg-(--primary)"
-                        : "bg-(--border)"
-                    }
-                  `}
-                  role="switch"
-                  aria-checked={setting.checked}
-                  aria-label={setting.label}
-                >
-                  <span
-                    className={`
-                      inline-block h-4 w-4 transform rounded-full bg-white transition-transform
-                      ${setting.checked ? "translate-x-6" : "translate-x-1"}
-                    `}
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
+            icon={setting.icon}
+            label={setting.label}
+            description={setting.description}
+            checked={setting.checked}
+            onChange={setting.onChange}
+          />
         ))}
       </div>
-    </div>
+    </fieldset>
   );
 }

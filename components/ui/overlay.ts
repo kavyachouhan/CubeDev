@@ -116,6 +116,10 @@ export function useOverlay({
     const onKeyDown = (event: KeyboardEvent) => {
       if (!isTop(id)) return;
 
+      // A control inside the layer that handles Escape itself (an inline
+      // edit field) calls preventDefault; the layer then stays open.
+      if (event.key === "Escape" && event.defaultPrevented) return;
+
       if (event.key === "Escape") {
         if (!dismissibleRef.current) return;
         event.preventDefault();
@@ -147,12 +151,12 @@ export function useOverlay({
       }
     };
 
-    // Capture phase so the top layer handles Escape before anything below it.
-    document.addEventListener("keydown", onKeyDown, true);
+    // Bubble phase, so handlers inside the layer see the key first.
+    document.addEventListener("keydown", onKeyDown);
 
     return () => {
       cancelAnimationFrame(frame);
-      document.removeEventListener("keydown", onKeyDown, true);
+      document.removeEventListener("keydown", onKeyDown);
       const index = stack.indexOf(id);
       if (index !== -1) stack.splice(index, 1);
       if (shouldLock) unlockScroll();
@@ -173,10 +177,18 @@ export function useMounted() {
   return mounted;
 }
 
-/** Stops key events inside a layer from reaching window-level shortcuts (the timer). */
+/**
+ * Stops key events inside a layer from reaching window-level shortcuts (the
+ * timer's spacebar). Escape and Tab still propagate: the layer stack listens
+ * for them on `document` to close and to trap focus.
+ */
+const isolate = (event: ReactKeyboardEvent) => {
+  if (event.key !== "Escape" && event.key !== "Tab") event.stopPropagation();
+};
+
 export const isolateKeys = {
-  onKeyDown: (event: ReactKeyboardEvent) => event.stopPropagation(),
-  onKeyUp: (event: ReactKeyboardEvent) => event.stopPropagation(),
+  onKeyDown: isolate,
+  onKeyUp: isolate,
 };
 
 export type Placement = "bottom-start" | "bottom-end" | "top-start" | "top-end";

@@ -1,5 +1,6 @@
 "use client";
 
+import { Card, CardHeader } from "@/components/ui/Card";
 import ThemeModeSelector from "./ThemeModeSelector";
 import ColorSchemeSelector from "./ColorSchemeSelector";
 import TimerCustomization from "./TimerCustomization";
@@ -8,29 +9,18 @@ import AccessibilitySettings from "./AccessibilitySettings";
 
 export default function ThemeSection() {
   return (
-    <div className="timer-card">
-      <div className="flex items-center gap-3 mb-6">
-        <div>
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
-            Theme & Appearance
-          </h3>
-          <p className="text-sm text-(--text-muted)">
-            Customize your CubeDev experience
-          </p>
-        </div>
-      </div>
-
-      <div className="space-y-6">
+    <Card variant="static">
+      <CardHeader
+        title="Theme & Appearance"
+        description="Customize your CubeDev experience"
+      />
+      <div className="space-y-6 divide-y divide-(--border) [&>*:not(:first-child)]:pt-6">
         <ThemeModeSelector />
-        <div className="border-t border-(--border)" />
         <ColorSchemeSelector />
-        <div className="border-t border-(--border)" />
         <TimerCustomization />
-        <div className="border-t border-(--border)" />
         <CubeViewSelector />
-        <div className="border-t border-(--border)" />
         <AccessibilitySettings />
       </div>
-    </div>
+    </Card>
   );
 }

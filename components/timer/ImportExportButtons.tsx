@@ -1,14 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Download,
-  Upload,
-  ChevronDown,
-  ChevronRight,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { Download, Upload } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { CollapsibleCard } from "@/components/ui/Card";
 import ImportModal from "./ImportModal";
 
 interface TimerRecord {
@@ -55,7 +50,9 @@ function usePersistentBool(key: string, defaultValue: boolean) {
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(state));
-    } catch {}
+    } catch {
+      // Storage can be unavailable (private mode); the preference just won't persist.
+    }
   }, [key, state]);
   return [state, setState] as const;
 }
@@ -139,63 +136,30 @@ export default function ImportExportButtons({
 
   return (
     <>
-      <div className="timer-card">
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-            title={isExpanded ? "Hide data management" : "Show data management"}
+      <CollapsibleCard
+        title="Data Management"
+        open={isExpanded}
+        onOpenChange={setIsExpanded}
+      >
+        <p className="type-body mb-4">Import and export your timer data.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={handleExport}
+            iconLeft={<Download className="w-4 h-4" />}
           >
-            <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-              Data Management
-            </h3>
-            {isExpanded ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={isExpanded ? "Hide data management" : "Show data management"}
+            Export Data
+          </Button>
+          <Button
+            size="lg"
+            onClick={() => setImportModalOpen(true)}
+            iconLeft={<Upload className="w-4 h-4" />}
           >
-            {isExpanded ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
+            Import Data
+          </Button>
         </div>
-
-        {isExpanded && (
-          <div className="space-y-3">
-            <div className="text-sm text-(--text-secondary) mb-4">
-              Import and export your timer data.
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {/* Export Button */}
-              <button
-                onClick={handleExport}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) rounded-lg text-(--text-primary) font-medium transition-colors"
-              >
-                <Download className="w-4 h-4" />
-                Export Data
-              </button>
-
-              {/* Import Button */}
-              <button
-                onClick={() => setImportModalOpen(true)}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-medium transition-colors"
-              >
-                <Upload className="w-4 h-4" />
-                Import Data
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+      </CollapsibleCard>
 
       {/* Import Modal */}
       <ImportModal
