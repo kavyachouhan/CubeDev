@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { requireAdmin, requireMatchingUser, getMatchingUserOrNull } from "./auth";
 
 // Define current survey versions for each type. This allows us to track when we need to prompt users for new feedback based on version changes.
 export const SURVEY_VERSIONS = {
@@ -26,6 +27,10 @@ export const submitFeedback = mutation({
     userAgent: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    if (args.userId) {
+      await requireMatchingUser(ctx, args.userId);
+    }
+
     // Basic validation
     if (
       args.uiuxRating !== undefined &&
@@ -88,6 +93,11 @@ export const hasRecentFeedback = query({
       return false;
     }
 
+    const authUser = await getMatchingUserOrNull(ctx, args.userId);
+    if (!authUser) {
+      return false;
+    }
+
     const daysAgo = args.daysAgo || 30;
     const cutoffTime = Date.now() - daysAgo * 24 * 60 * 60 * 1000;
 
@@ -116,6 +126,11 @@ export const needsSurveyForVersion = query({
   },
   handler: async (ctx, args) => {
     if (!args.userId) {
+      return false;
+    }
+
+    const authUser = await getMatchingUserOrNull(ctx, args.userId);
+    if (!authUser) {
       return false;
     }
 
@@ -157,6 +172,11 @@ export const getLastSubmittedVersion = query({
       return null;
     }
 
+    const authUser = await getMatchingUserOrNull(ctx, args.userId);
+    if (!authUser) {
+      return null;
+    }
+
     const lastSubmission = await ctx.db
       .query("feedbackResponses")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -176,6 +196,7 @@ export const getAllFeedback = query({
     surveyVersion: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     let query = ctx.db
       .query("feedbackResponses")
       .withIndex("by_created")
@@ -221,6 +242,7 @@ export const getFeedbackStats = query({
     surveyVersion: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     let responses = await ctx.db.query("feedbackResponses").collect();
 
     // Filter by survey type if specified
@@ -330,6 +352,7 @@ export const getDetailedFeedbackStats = query({
     surveyType: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     const now = Date.now();
     const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
     const oneMonthAgo = now - 30 * 24 * 60 * 60 * 1000;

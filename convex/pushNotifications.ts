@@ -1,6 +1,8 @@
 import { v } from "convex/values";
 import { query, mutation, action, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
+import { requireMatchingUser } from "./auth";
+import { convexConfig } from "./config";
 
 const GOAL_TIMES: Record<string, number> = {
   "sub-60": 60000,
@@ -37,7 +39,7 @@ function getDayKeyInTimeZone(
 }
 
 // Get VAPID public key for client-side subscription
-const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || "";
+const VAPID_PUBLIC_KEY = convexConfig.vapidPublicKey;
 
 // Get VAPID public key for client-side subscription
 export const getVapidPublicKey = query({
@@ -60,6 +62,8 @@ export const saveSubscription = mutation({
     deviceName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const now = Date.now();
 
     // Check if subscription already exists
@@ -111,6 +115,7 @@ export const removeSubscription = mutation({
       .first();
 
     if (subscription) {
+      await requireMatchingUser(ctx, subscription.userId);
       await ctx.db.patch(subscription._id, { isActive: false });
     }
   },
@@ -122,6 +127,8 @@ export const getUserSubscriptions = query({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const subscriptions = await ctx.db
       .query("pushSubscriptions")
       .withIndex("by_user_active", (q) =>
@@ -146,6 +153,8 @@ export const deleteSubscription = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const subscription = await ctx.db.get(args.subscriptionId);
     if (subscription && subscription.userId === args.userId) {
       await ctx.db.delete(args.subscriptionId);
@@ -775,6 +784,14 @@ export const testPushNotification = action({
     message?: string;
     error?: string;
   }> => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity?.subject) {
+      throw new Error("Not authenticated");
+    }
+    if (identity.subject !== args.userId) {
+      throw new Error("Not authorized");
+    }
+
     return await ctx.runAction(
       internal.pushNodeActions.testPushNotificationAction,
       {

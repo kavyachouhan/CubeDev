@@ -302,11 +302,10 @@ function WCABirthdays() {
 
       // Fetch person data
       const personRes = await fetch(
-        `https://www.worldcubeassociation.org/api/v0/persons/${id}`,
+        `/api/wca/persons/${id}`,
         {
           headers: {
             Accept: "application/json",
-            "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
           },
         },
       );
@@ -324,11 +323,10 @@ function WCABirthdays() {
 
       // Fetch competition history to find first competition
       const resultsRes = await fetch(
-        `https://www.worldcubeassociation.org/api/v0/persons/${id}/results`,
+        `/api/wca/persons/${id}/results`,
         {
           headers: {
             Accept: "application/json",
-            "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
           },
         },
       );
@@ -353,11 +351,10 @@ function WCABirthdays() {
           const promises = batch.map(async (compId) => {
             try {
               const compRes = await fetch(
-                `https://www.worldcubeassociation.org/api/v0/competitions/${compId}`,
+                `/api/wca/competitions/${compId}`,
                 {
                   headers: {
                     Accept: "application/json",
-                    "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
                   },
                 },
               );
@@ -538,11 +535,10 @@ function KinchRanks() {
 
       // Fetch person data
       const personRes = await fetch(
-        `https://www.worldcubeassociation.org/api/v0/persons/${id}`,
+        `/api/wca/persons/${id}`,
         {
           headers: {
             Accept: "application/json",
-            "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
           },
         },
       );
@@ -573,11 +569,10 @@ function KinchRanks() {
           wrAverageData = cachedWR.averages;
         } else {
           const wrRes = await fetch(
-            "https://www.worldcubeassociation.org/api/v0/records",
+            "/api/wca/records",
             {
               headers: {
                 Accept: "application/json",
-                "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
               },
             },
           );
@@ -875,11 +870,10 @@ function SumOfRanks() {
         }
 
         const personRes = await fetch(
-          `https://www.worldcubeassociation.org/api/v0/persons/${id}`,
+          `/api/wca/persons/${id}`,
           {
             headers: {
               Accept: "application/json",
-              "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
             },
           },
         );
@@ -1206,11 +1200,10 @@ function RecordStreak() {
 
       // Fetch person
       const personRes = await fetch(
-        `https://www.worldcubeassociation.org/api/v0/persons/${id}`,
+        `/api/wca/persons/${id}`,
         {
           headers: {
             Accept: "application/json",
-            "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
           },
         },
       );
@@ -1228,11 +1221,10 @@ function RecordStreak() {
 
       // Fetch results
       const resultsRes = await fetch(
-        `https://www.worldcubeassociation.org/api/v0/persons/${id}/results`,
+        `/api/wca/persons/${id}/results`,
         {
           headers: {
             Accept: "application/json",
-            "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
           },
         },
       );
@@ -1283,11 +1275,10 @@ function RecordStreak() {
         const promises = batch.map(async (compId) => {
           try {
             const compRes = await fetch(
-              `https://www.worldcubeassociation.org/api/v0/competitions/${compId}`,
+              `/api/wca/competitions/${compId}`,
               {
                 headers: {
                   Accept: "application/json",
-                  "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
                 },
               },
             );

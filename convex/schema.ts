@@ -940,4 +940,9 @@ export default defineSchema({
     .index("by_category_order", ["categoryId", "order"])
     .index("by_published", ["isPublished"])
     .index("by_featured", ["isFeatured"]),
+
+  identifierCounters: defineTable({
+    prefix: v.string(),
+    nextSequence: v.number(),
+  }).index("by_prefix", ["prefix"]),
 });

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
-import { getWCAOAuthUrl } from "@/lib/wca-config";
+import { wcaSignInHref } from "@/lib/wca-config";
 
 export default function CallToAction() {
   const { user } = useUser();
@@ -11,8 +11,7 @@ export default function CallToAction() {
   const sectionRef = useRef<HTMLElement>(null);
 
   const handleWCASignIn = () => {
-    const wcaAuthUrl = getWCAOAuthUrl();
-    window.location.href = wcaAuthUrl;
+    window.location.href = wcaSignInHref();
   };
 
   useEffect(() => {

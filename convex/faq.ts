@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { requireAdmin } from "./auth";
 
 // Public queries
 
@@ -198,6 +199,7 @@ export const submitHelpfulFeedback = mutation({
 export const getAllCategories = query({
   args: {},
   handler: async (ctx) => {
+    await requireAdmin(ctx);
     const categories = await ctx.db.query("faqCategories").collect();
     categories.sort((a, b) => a.order - b.order);
 
@@ -224,6 +226,7 @@ export const getAllCategories = query({
 export const getAllArticlesByCategory = query({
   args: { categoryId: v.id("faqCategories") },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     const articles = await ctx.db
       .query("faqArticles")
       .withIndex("by_category", (q) => q.eq("categoryId", args.categoryId))
@@ -237,6 +240,7 @@ export const getAllArticlesByCategory = query({
 export const getAllArticles = query({
   args: {},
   handler: async (ctx) => {
+    await requireAdmin(ctx);
     const articles = await ctx.db.query("faqArticles").collect();
 
     const withCategories = await Promise.all(
@@ -264,6 +268,7 @@ export const createCategory = mutation({
     isPublished: v.boolean(),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     const now = Date.now();
     return await ctx.db.insert("faqCategories", {
       ...args,
@@ -285,6 +290,7 @@ export const updateCategory = mutation({
     isPublished: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     const { id, ...updates } = args;
     await ctx.db.patch(id, {
       ...updates,
@@ -297,6 +303,7 @@ export const updateCategory = mutation({
 export const deleteCategory = mutation({
   args: { id: v.id("faqCategories") },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     // Delete all articles in this category
     const articles = await ctx.db
       .query("faqArticles")
@@ -336,6 +343,7 @@ export const createArticle = mutation({
     isFeatured: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     const now = Date.now();
     return await ctx.db.insert("faqArticles", {
       ...args,
@@ -374,6 +382,7 @@ export const updateArticle = mutation({
     isFeatured: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     const { id, ...updates } = args;
     await ctx.db.patch(id, {
       ...updates,
@@ -386,6 +395,7 @@ export const updateArticle = mutation({
 export const deleteArticle = mutation({
   args: { id: v.id("faqArticles") },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     await ctx.db.delete(args.id);
   },
 });

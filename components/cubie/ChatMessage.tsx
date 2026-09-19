@@ -14,6 +14,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Message } from "./ChatInterface";
 import { useUser } from "@/components/UserProvider";
+import { getAvatarUrl } from "@/lib/avatar";
 import FeedbackModal from "./FeedbackModal";
 import LinkWarningModal from "./LinkWarningModal";
 
@@ -134,7 +135,7 @@ export default function ChatMessage({
         {isUser ? (
           user?.avatar ? (
             <Image
-              src={user.avatar.url || user.avatar}
+              src={getAvatarUrl(user.avatar) ?? ""}
               alt={`${user.name}'s avatar`}
               width={40}
               height={40}

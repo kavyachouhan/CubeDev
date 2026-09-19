@@ -32,17 +32,30 @@ from app.utils.cache_manager import get_cache_manager, get_wca_cache, get_rag_ca
 
 load_dotenv()
 
+_env = os.getenv("ENV", "production").lower()
+_is_dev = _env in ("development", "dev", "local")
+_cors_origins = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", "https://cubedev.xyz").split(",")
+    if origin.strip()
+]
+if "*" in _cors_origins and not _is_dev:
+    _cors_origins = ["https://cubedev.xyz"]
+
 # Initialize FastAPI app
 app = FastAPI(
     title="Cubie AI Backend API",
     description="Agentic RAG system for speedcubing assistance on CubeDev platform",
     version="2.0.0",
+    docs_url="/docs" if _is_dev else None,
+    redoc_url="/redoc" if _is_dev else None,
+    openapi_url="/openapi.json" if _is_dev else None,
 )
 
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("CORS_ORIGINS", "*").split(","),
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -109,7 +122,7 @@ async def read_root(request: Request):
         "service": "Cubie AI Backend",
         "version": "2.0.0",
         "status": "operational",
-        "documentation": "/docs"
+        "documentation": "/docs" if _is_dev else None,
     }
 
 
@@ -129,8 +142,8 @@ async def health_check(request: Request):
         timestamp=datetime.now().isoformat(),
         services={
             "database": db_status,
-            "llm": "operational",
-            "knowledge_base": "operational"
+            "llm": "not_probed",
+            "knowledge_base": "not_probed"
         }
     )
 

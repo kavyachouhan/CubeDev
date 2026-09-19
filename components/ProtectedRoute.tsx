@@ -4,7 +4,7 @@ import { useUser } from "@/components/UserProvider";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import { getWCAOAuthUrl } from "@/lib/wca-config";
+import { wcaSignInHref } from "@/lib/wca-config";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -22,12 +22,7 @@ export default function ProtectedRoute({
   const pathname = usePathname();
 
   const handleWCASignIn = () => {
-    // Store the current path to redirect back after authentication
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("redirectAfterAuth", pathname);
-    }
-    const wcaAuthUrl = getWCAOAuthUrl();
-    window.location.href = wcaAuthUrl;
+    window.location.href = wcaSignInHref(pathname);
   };
 
   useEffect(() => {

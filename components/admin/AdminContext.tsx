@@ -46,16 +46,14 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
       try {
         const response = await fetch("/api/admin/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: user.email }),
+          method: "GET",
+          credentials: "include",
         });
 
         const data = await response.json();
-        setIsAdmin(data.isAdmin);
+        setIsAdmin(data.isAdmin === true);
         setLastVerifiedEmail(user.email);
-      } catch (error) {
-        console.error("Admin verification failed:", error);
+      } catch {
         setIsAdmin(false);
       } finally {
         setIsVerifying(false);

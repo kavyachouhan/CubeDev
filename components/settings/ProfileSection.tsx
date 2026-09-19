@@ -2,8 +2,9 @@
 
 import { User, ExternalLink } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
-import { getWCAOAuthUrl } from "@/lib/wca-config";
+import { wcaSignInHref } from "@/lib/wca-config";
 import { isCubeDevIdentifier } from "@/lib/identifier-utils";
+import { getAvatarUrl } from "@/lib/avatar";
 
 export default function ProfileSection() {
   const { user } = useUser();
@@ -14,8 +15,7 @@ export default function ProfileSection() {
   const isCdUser = isCubeDevIdentifier(user.wcaId);
 
   const handleReauth = () => {
-    const wcaAuthUrl = getWCAOAuthUrl();
-    window.location.href = wcaAuthUrl;
+    window.location.href = wcaSignInHref();
   };
 
   return (
@@ -37,9 +37,9 @@ export default function ProfileSection() {
         {/* Profile Card */}
         <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-3 md:p-4">
           <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-4">
-            {user.avatar ? (
+            {getAvatarUrl(user.avatar) ? (
               <img
-                src={user.avatar}
+                src={getAvatarUrl(user.avatar)}
                 alt={user.name}
                 className="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-(--border)"
               />

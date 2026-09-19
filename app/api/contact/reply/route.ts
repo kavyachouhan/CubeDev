@@ -1,21 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { escapeHtml } from "@/lib/html-escape";
+import { getSessionFromRequest } from "@/lib/session";
+import { logger } from "@/lib/logger";
+import { clientKey, rateLimit } from "@/lib/rate-limit";
+import { isAdminEmail, serverConfig } from "@/lib/config";
 
-// Configure nodemailer transporter using environment variables
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
+    user: serverConfig.smtpUser,
+    pass: serverConfig.smtpPassword,
   },
 });
 
 export async function POST(req: NextRequest) {
+  const session = await getSessionFromRequest(req);
+  if (!isAdminEmail(session?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const limited = rateLimit(`contact-reply:${clientKey(req)}`, 20, 60_000);
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(limited.retryAfterSeconds) },
+      },
+    );
+  }
+
   try {
     const { recipientEmail, recipientName, subject, message, originalSubject } =
       await req.json();
 
-    // Basic validation
     if (!recipientEmail || !subject || !message) {
       return NextResponse.json(
         { error: "Recipient email, subject, and message are required" },
@@ -23,58 +42,37 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Construct the HTML content for the reply email
+    const safeName = escapeHtml(String(recipientName || "there"));
+    const safeMessage = escapeHtml(String(message));
+    const safeOriginal = originalSubject ? escapeHtml(String(originalSubject)) : "";
+
     const replyEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
-          CubeDev Support Response
-        </h2>
-        
-        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <p>Hi ${recipientName || "there"},</p>
-          
-          <p style="white-space: pre-wrap; line-height: 1.6;">${message}</p>
-          
-          <p>Best regards,<br>
-          <strong>CubeDev Team</strong><br>
-          <a href="https://cubedev.xyz" style="color: #007bff;">https://cubedev.xyz</a></p>
-        </div>
-        
+        <h2>CubeDev Support Response</h2>
+        <p>Hi ${safeName},</p>
+        <p style="white-space: pre-wrap;">${safeMessage}</p>
         ${
-          originalSubject
-            ? `
-        <div style="margin-top: 30px; padding: 15px; background-color: #e9ecef; border-radius: 8px;">
-          <p style="margin: 0 0 10px 0; color: #6c757d; font-size: 14px;">
-            <strong>In response to:</strong> ${originalSubject}
-          </p>
-        </div>
-        `
+          safeOriginal
+            ? `<p><strong>In response to:</strong> ${safeOriginal}</p>`
             : ""
         }
-        
-        <div style="margin-top: 20px; padding: 15px; background-color: #f1f1f1; border-radius: 8px;">
-          <p style="margin: 0; color: #6c757d; font-size: 12px;">
-            This email was sent from CubeDev Support. If you have any questions, feel free to reply to this email or contact us at hello.cubedev@gmail.com.
-          </p>
-        </div>
       </div>
     `;
 
-    // Send reply email to user
     await transporter.sendMail({
-      from: `"CubeDev" <${process.env.SMTP_USER}>`,
+      from: `"CubeDev" <${serverConfig.smtpUser}>`,
       to: recipientEmail,
-      subject: subject,
+      subject: String(subject).slice(0, 200),
       html: replyEmailHtml,
-      replyTo: process.env.SMTP_USER,
+      text: String(message),
+      replyTo: serverConfig.smtpUser,
     });
 
-    return NextResponse.json(
-      { message: "Reply sent successfully!" },
-      { status: 200 },
-    );
+    return NextResponse.json({ message: "Reply sent successfully!" });
   } catch (error) {
-    console.error("Error sending reply email:", error);
+    logger.error("contact_reply_failed", {
+      error: error instanceof Error ? error.message : "unknown",
+    });
     return NextResponse.json(
       { error: "Failed to send reply. Please try again later." },
       { status: 500 },

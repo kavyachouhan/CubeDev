@@ -1,12 +1,43 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
+import { mutation, query, QueryCtx, MutationCtx } from "./_generated/server";
+import { Doc, Id } from "./_generated/dataModel";
 import { resolveUserByIdentifierOrAlias } from "./identifierResolver";
+import { requireMatchingUser, requireUser } from "./auth";
+
+type Ctx = QueryCtx | MutationCtx;
 
 // Helper to resolve user by canonical identifier or alias.
-async function getUserByIdentifier(ctx: any, identifier: string) {
+async function getUserByIdentifier(ctx: Ctx, identifier: string) {
   const { user } = await resolveUserByIdentifierOrAlias(ctx, identifier);
   return user;
+}
+
+async function requireWcaIdAccess(ctx: Ctx, wcaId: string) {
+  const authUser = await requireUser(ctx);
+  const user = await getUserByIdentifier(ctx, wcaId);
+
+  if (!user) {
+    return null;
+  }
+
+  if (authUser._id !== user._id) {
+    throw new Error("Not authorized");
+  }
+
+  return user;
+}
+
+async function requireSimulationOwner(
+  ctx: Ctx,
+  simulationId: Id<"competitionSimulations">,
+): Promise<Doc<"competitionSimulations">> {
+  const simulation = await ctx.db.get(simulationId);
+  if (!simulation) {
+    throw new Error("Simulation not found");
+  }
+
+  await requireMatchingUser(ctx, simulation.userId);
+  return simulation;
 }
 
 // Create a new competition simulation
@@ -30,15 +61,16 @@ export const createSimulation = mutation({
     }),
   },
   handler: async (ctx, args) => {
-    if (!args.wcaId) {
-      throw new Error("Not authenticated");
-    }
+    const authUser = await requireUser(ctx);
 
-    // Get user from database
     const user = await getUserByIdentifier(ctx, args.wcaId);
 
     if (!user) {
       throw new Error("User not found");
+    }
+
+    if (authUser._id !== user._id) {
+      throw new Error("Not authorized");
     }
 
     const now = Date.now();
@@ -71,8 +103,7 @@ export const createSimulation = mutation({
 export const getSimulation = query({
   args: { simulationId: v.id("competitionSimulations") },
   handler: async (ctx, args) => {
-    const simulation = await ctx.db.get(args.simulationId);
-    return simulation;
+    return await requireSimulationOwner(ctx, args.simulationId);
   },
 });
 
@@ -87,7 +118,7 @@ export const getUserSimulationsForCompetition = query({
       return [];
     }
 
-    const user = await getUserByIdentifier(ctx, args.wcaId);
+    const user = await requireWcaIdAccess(ctx, args.wcaId);
 
     if (!user) {
       return [];
@@ -116,7 +147,7 @@ export const getUserRecentSimulations = query({
       return [];
     }
 
-    const user = await getUserByIdentifier(ctx, args.wcaId);
+    const user = await requireWcaIdAccess(ctx, args.wcaId);
 
     if (!user) {
       return [];
@@ -141,10 +172,7 @@ export const updateSimulationProgress = mutation({
     eventProgress: v.any(),
   },
   handler: async (ctx, args) => {
-    const simulation = await ctx.db.get(args.simulationId);
-    if (!simulation) {
-      throw new Error("Simulation not found");
-    }
+    await requireSimulationOwner(ctx, args.simulationId);
 
     await ctx.db.patch(args.simulationId, {
       completedEvents: args.completedEvents,
@@ -158,10 +186,7 @@ export const updateSimulationProgress = mutation({
 export const completeSimulation = mutation({
   args: { simulationId: v.id("competitionSimulations") },
   handler: async (ctx, args) => {
-    const simulation = await ctx.db.get(args.simulationId);
-    if (!simulation) {
-      throw new Error("Simulation not found");
-    }
+    await requireSimulationOwner(ctx, args.simulationId);
 
     await ctx.db.patch(args.simulationId, {
       status: "completed",
@@ -175,10 +200,7 @@ export const completeSimulation = mutation({
 export const abandonSimulation = mutation({
   args: { simulationId: v.id("competitionSimulations") },
   handler: async (ctx, args) => {
-    const simulation = await ctx.db.get(args.simulationId);
-    if (!simulation) {
-      throw new Error("Simulation not found");
-    }
+    await requireSimulationOwner(ctx, args.simulationId);
 
     await ctx.db.patch(args.simulationId, {
       status: "abandoned",
@@ -208,10 +230,7 @@ export const saveRoundResult = mutation({
     best: v.number(),
   },
   handler: async (ctx, args) => {
-    const simulation = await ctx.db.get(args.simulationId);
-    if (!simulation) {
-      throw new Error("Simulation not found");
-    }
+    const simulation = await requireSimulationOwner(ctx, args.simulationId);
 
     const now = Date.now();
 
@@ -241,6 +260,8 @@ export const saveRoundResult = mutation({
 export const getSimulationResults = query({
   args: { simulationId: v.id("competitionSimulations") },
   handler: async (ctx, args) => {
+    await requireSimulationOwner(ctx, args.simulationId);
+
     const results = await ctx.db
       .query("competitionSimulationResults")
       .withIndex("by_simulation", (q) =>
@@ -263,7 +284,7 @@ export const getUserEventResults = query({
       return [];
     }
 
-    const user = await getUserByIdentifier(ctx, args.wcaId);
+    const user = await requireWcaIdAccess(ctx, args.wcaId);
 
     if (!user) {
       return [];
@@ -290,7 +311,7 @@ export const getInProgressSimulations = query({
       return [];
     }
 
-    const user = await getUserByIdentifier(ctx, args.wcaId);
+    const user = await requireWcaIdAccess(ctx, args.wcaId);
 
     if (!user) {
       return [];

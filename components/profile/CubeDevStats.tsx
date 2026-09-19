@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import SolveHeatmap from "../stats/SolveHeatmap";
 import { EventStatsSkeleton, PlatformStatsSkeleton } from "../SkeletonLoaders";
+import { useUser } from "@/components/UserProvider";
+import { formatTime as formatMs } from "@/lib/stats-utils";
 
 interface CubeDevStatsProps {
   wcaId: string;
@@ -41,15 +43,6 @@ const EVENT_NAMES = {
   sq1: "Square-1",
 };
 
-// Format milliseconds to string (M:SS.ss or SS.ss)
-const formatMs = (ms: number) => {
-  if (!isFinite(ms)) return "DNF";
-  const total = ms / 1000;
-  const m = Math.floor(total / 60);
-  const s = (total % 60).toFixed(2);
-  return m > 0 ? `${m}:${s.padStart(5, "0")}` : s;
-};
-
 export default function CubeDevStats({
   wcaId,
   cubeDevUserId,
@@ -57,19 +50,19 @@ export default function CubeDevStats({
   const [selectedEvent, setSelectedEvent] = useState<string>("333");
   const [showEventDropdown, setShowEventDropdown] = useState(false);
   const router = useRouter();
+  const { user: currentUser } = useUser();
 
   // Check privacy settings first
   const privacySettings = useQuery(api.users.isUserProfilePrivate, { wcaId });
 
   // Query user's CubeDev data
-  const users = useQuery(api.users.getAllUsers);
-  const cubeDevUser = users?.find((user) => user.wcaId === wcaId);
+  const cubeDevUser = useQuery(api.users.getUserByWcaId, { wcaId });
 
   // Determine if we should skip data queries based on privacy settings
   // Skip if: privacy settings haven't loaded, profile is private/hidden, user is deleted, or user doesn't exist
   const shouldSkipDataQueries =
     privacySettings === undefined ||
-    users === undefined ||
+    cubeDevUser === undefined ||
     privacySettings?.isPrivate ||
     privacySettings?.hideProfile ||
     privacySettings?.isDeleted ||
@@ -93,9 +86,16 @@ export default function CubeDevStats({
       : { userId: cubeDevUser!._id, daysBack: 365 },
   );
 
+  const isOwnProfile = Boolean(
+    currentUser?.convexId &&
+      cubeDevUser?._id &&
+      currentUser.convexId === cubeDevUser._id,
+  );
+
   // If user has heatmap data (solves exist) but no cached stats, trigger a recalculation
   useEffect(() => {
     if (
+      isOwnProfile &&
       !shouldSkipDataQueries &&
       cubeDevUser?._id &&
       eventStats !== undefined &&
@@ -108,6 +108,7 @@ export default function CubeDevStats({
       recalculateAllStats({ userId: cubeDevUser._id }).catch(console.error);
     }
   }, [
+    isOwnProfile,
     shouldSkipDataQueries,
     cubeDevUser?._id,
     eventStats,
@@ -230,7 +231,7 @@ export default function CubeDevStats({
   );
 
   // Show loading state while privacy settings are loading
-  if (privacySettings === undefined || users === undefined) {
+  if (privacySettings === undefined || cubeDevUser === undefined) {
     return <EventStatsSkeleton />;
   }
 

@@ -1,6 +1,31 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, QueryCtx, MutationCtx } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
+import { requireMatchingUser, getMatchingUserOrNull } from "./auth";
+
+type Ctx = QueryCtx | MutationCtx;
+
+async function requireCustomSetOwner(
+  ctx: Ctx,
+  setId: Id<"customAlgorithmSets">,
+) {
+  const set = await ctx.db.get(setId);
+  if (!set) throw new Error("Custom set not found");
+  await requireMatchingUser(ctx, set.userId);
+  return set;
+}
+
+async function requireCustomSetReadAccess(
+  ctx: Ctx,
+  setId: Id<"customAlgorithmSets">,
+) {
+  const set = await ctx.db.get(setId);
+  if (!set) return null;
+  if (!set.isPublic) {
+    await requireMatchingUser(ctx, set.userId);
+  }
+  return set;
+}
 
 // Algorithm SRS calculation function
 export const getAllSets = query({
@@ -163,6 +188,8 @@ export const getUserSetProgress = query({
     setId: v.id("algorithmSets"),
   },
   handler: async (ctx, { userId, setId }) => {
+    await requireMatchingUser(ctx, userId);
+
     // Get all cases in the set
     const cases = await ctx.db
       .query("algorithmCases")
@@ -212,6 +239,8 @@ export const getUserCaseProgress = query({
     caseId: v.id("algorithmCases"),
   },
   handler: async (ctx, { userId, caseId }) => {
+    await requireMatchingUser(ctx, userId);
+
     const progress = await ctx.db
       .query("userAlgorithmProgress")
       .withIndex("by_user_case", (q) =>
@@ -227,6 +256,11 @@ export const getUserCaseProgress = query({
 export const getDueReviews = query({
   args: { userId: v.id("users") },
   handler: async (ctx, { userId }) => {
+    const authUser = await getMatchingUserOrNull(ctx, userId);
+    if (!authUser) {
+      return [];
+    }
+
     const now = Date.now();
 
     const allProgress = await ctx.db
@@ -262,6 +296,11 @@ export const getDueReviews = query({
 export const getReviewsForNotifications = query({
   args: { userId: v.id("users") },
   handler: async (ctx, { userId }) => {
+    const authUser = await getMatchingUserOrNull(ctx, userId);
+    if (!authUser) {
+      return [];
+    }
+
     const now = Date.now();
     const oneDayFromNow = now + 24 * 60 * 60 * 1000;
 
@@ -306,6 +345,11 @@ export const getReviewsForNotifications = query({
 export const getAllLearnedCases = query({
   args: { userId: v.id("users") },
   handler: async (ctx, { userId }) => {
+    const authUser = await getMatchingUserOrNull(ctx, userId);
+    if (!authUser) {
+      return [];
+    }
+
     const allProgress = await ctx.db
       .query("userAlgorithmProgress")
       .withIndex("by_user", (q) => q.eq("userId", userId))
@@ -345,6 +389,8 @@ export const getRandomPracticeCases = query({
     ),
   },
   handler: async (ctx, { userId, count = 10, setId, difficulty }) => {
+    await requireMatchingUser(ctx, userId);
+
     // Get user's progress for all cases
     const allProgress = await ctx.db
       .query("userAlgorithmProgress")
@@ -502,6 +548,8 @@ export const getCaseForPractice = query({
     caseSlug: v.string(),
   },
   handler: async (ctx, { userId, caseSlug }) => {
+    await requireMatchingUser(ctx, userId);
+
     // Get the case by slug
     const algorithmCase = await ctx.db
       .query("algorithmCases")
@@ -541,6 +589,11 @@ export const getCaseForPractice = query({
 export const getUserStats = query({
   args: { userId: v.id("users") },
   handler: async (ctx, { userId }) => {
+    const authUser = await getMatchingUserOrNull(ctx, userId);
+    if (!authUser) {
+      return null;
+    }
+
     const allProgress = await ctx.db
       .query("userAlgorithmProgress")
       .withIndex("by_user", (q) => q.eq("userId", userId))
@@ -575,6 +628,11 @@ export const getUserStats = query({
 export const getUserReviewHistory = query({
   args: { userId: v.id("users") },
   handler: async (ctx, { userId }) => {
+    const authUser = await getMatchingUserOrNull(ctx, userId);
+    if (!authUser) {
+      return [];
+    }
+
     const allProgress = await ctx.db
       .query("userAlgorithmProgress")
       .withIndex("by_user", (q) => q.eq("userId", userId))
@@ -605,6 +663,11 @@ export const getUserReviewHistory = query({
 export const getRecognitionMetrics = query({
   args: { userId: v.id("users") },
   handler: async (ctx, { userId }) => {
+    const authUser = await getMatchingUserOrNull(ctx, userId);
+    if (!authUser) {
+      return null;
+    }
+
     const allProgress = await ctx.db
       .query("userAlgorithmProgress")
       .withIndex("by_user", (q) => q.eq("userId", userId))
@@ -690,6 +753,8 @@ export const getRecentSessions = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, { userId, limit = 10 }) => {
+    await requireMatchingUser(ctx, userId);
+
     const sessions = await ctx.db
       .query("algorithmPracticeSessions")
       .withIndex("by_user_date", (q) => q.eq("userId", userId))
@@ -708,6 +773,8 @@ export const startLearning = mutation({
     preferredAlgId: v.id("algorithms"),
   },
   handler: async (ctx, { userId, caseId, preferredAlgId }) => {
+    await requireMatchingUser(ctx, userId);
+
     // Check if progress already exists
     const existing = await ctx.db
       .query("userAlgorithmProgress")
@@ -769,6 +836,8 @@ export const recordReview = mutation({
       executionTime,
       wasCorrect,
     } = args;
+
+    await requireMatchingUser(ctx, userId);
 
     let progress = await ctx.db
       .query("userAlgorithmProgress")
@@ -902,6 +971,8 @@ export const changePreferredAlgorithm = mutation({
     newAlgId: v.id("algorithms"),
   },
   handler: async (ctx, { userId, caseId, newAlgId }) => {
+    await requireMatchingUser(ctx, userId);
+
     const progress = await ctx.db
       .query("userAlgorithmProgress")
       .withIndex("by_user_case", (q) =>
@@ -936,6 +1007,8 @@ export const recordPracticeSession = mutation({
     duration: v.number(),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const sessionId = await ctx.db.insert("algorithmPracticeSessions", {
       ...args,
       createdAt: Date.now(),
@@ -1079,6 +1152,11 @@ function calculateSRS(
 export const getUserCustomSets = query({
   args: { userId: v.id("users") },
   handler: async (ctx, { userId }) => {
+    const authUser = await getMatchingUserOrNull(ctx, userId);
+    if (!authUser) {
+      return [];
+    }
+
     const sets = await ctx.db
       .query("customAlgorithmSets")
       .withIndex("by_user", (q) => q.eq("userId", userId))
@@ -1104,7 +1182,7 @@ export const getUserCustomSets = query({
 export const getCustomSetById = query({
   args: { setId: v.id("customAlgorithmSets") },
   handler: async (ctx, { setId }) => {
-    return await ctx.db.get(setId);
+    return await requireCustomSetReadAccess(ctx, setId);
   },
 });
 
@@ -1116,30 +1194,30 @@ export const getAllCasesForCustomSets = query({
     const sets = await ctx.db.query("algorithmSets").collect();
 
     const setMap = new Map(sets.map((s) => [s._id, s.name]));
+    const allAlgorithms = await ctx.db.query("algorithms").collect();
 
-    // For each case, also fetch the default algorithm and count of algorithms to provide more context in the selection UI
-    const casesWithAlgorithms = await Promise.all(
-      cases.map(async (c) => {
-        const defaultAlg = await ctx.db
-          .query("algorithms")
-          .withIndex("by_case_default", (q) =>
-            q.eq("caseId", c._id).eq("isDefault", true),
-          )
-          .first();
+    const algorithmsByCaseId = new Map<Id<"algorithmCases">, Doc<"algorithms">[]>();
+    for (const algorithm of allAlgorithms) {
+      const existing = algorithmsByCaseId.get(algorithm.caseId);
+      if (existing) {
+        existing.push(algorithm);
+      } else {
+        algorithmsByCaseId.set(algorithm.caseId, [algorithm]);
+      }
+    }
 
-        const allAlgs = await ctx.db
-          .query("algorithms")
-          .withIndex("by_case", (q) => q.eq("caseId", c._id))
-          .collect();
+    const casesWithAlgorithms = cases.map((c) => {
+      const caseAlgorithms = algorithmsByCaseId.get(c._id) ?? [];
+      const defaultAlg = caseAlgorithms.find((alg) => alg.isDefault);
 
-        return {
-          ...c,
-          setName: setMap.get(c.setId) || "Unknown",
-          defaultAlgorithm: defaultAlg?.notation || allAlgs[0]?.notation || "",
-          algorithmCount: allAlgs.length,
-        };
-      }),
-    );
+      return {
+        ...c,
+        setName: setMap.get(c.setId) || "Unknown",
+        defaultAlgorithm:
+          defaultAlg?.notation || caseAlgorithms[0]?.notation || "",
+        algorithmCount: caseAlgorithms.length,
+      };
+    });
 
     return casesWithAlgorithms;
   },
@@ -1164,6 +1242,8 @@ export const createCustomSet = mutation({
     isPublic: v.boolean(),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const now = Date.now();
     const setId = await ctx.db.insert("customAlgorithmSets", {
       userId: args.userId,
@@ -1186,7 +1266,13 @@ export const updateCustomSet = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, { setId, name, description }) => {
-    const updates: any = { updatedAt: Date.now() };
+    await requireCustomSetOwner(ctx, setId);
+
+    const updates: {
+      updatedAt: number;
+      name?: string;
+      description?: string;
+    } = { updatedAt: Date.now() };
     if (name !== undefined) updates.name = name;
     // Allow clearing description by passing empty string
     if (description !== undefined)
@@ -1200,6 +1286,7 @@ export const updateCustomSet = mutation({
 export const deleteCustomSet = mutation({
   args: { setId: v.id("customAlgorithmSets") },
   handler: async (ctx, { setId }) => {
+    await requireCustomSetOwner(ctx, setId);
     await ctx.db.delete(setId);
   },
 });
@@ -1211,8 +1298,7 @@ export const addCaseToCustomSet = mutation({
     caseId: v.id("algorithmCases"),
   },
   handler: async (ctx, { setId, caseId }) => {
-    const set = await ctx.db.get(setId);
-    if (!set) throw new Error("Custom set not found");
+    const set = await requireCustomSetOwner(ctx, setId);
 
     if (!set.caseIds.includes(caseId)) {
       await ctx.db.patch(setId, {
@@ -1230,8 +1316,7 @@ export const removeCaseFromCustomSet = mutation({
     caseId: v.id("algorithmCases"),
   },
   handler: async (ctx, { setId, caseId }) => {
-    const set = await ctx.db.get(setId);
-    if (!set) throw new Error("Custom set not found");
+    const set = await requireCustomSetOwner(ctx, setId);
 
     await ctx.db.patch(setId, {
       caseIds: set.caseIds.filter((id) => id !== caseId),
@@ -1244,8 +1329,7 @@ export const removeCaseFromCustomSet = mutation({
 export const toggleCustomSetVisibility = mutation({
   args: { setId: v.id("customAlgorithmSets") },
   handler: async (ctx, { setId }) => {
-    const set = await ctx.db.get(setId);
-    if (!set) throw new Error("Custom set not found");
+    const set = await requireCustomSetOwner(ctx, setId);
 
     await ctx.db.patch(setId, {
       isPublic: !set.isPublic,
@@ -1265,15 +1349,17 @@ export const importCustomSet = mutation({
     }),
   },
   handler: async (ctx, { userId, data }) => {
+    await requireMatchingUser(ctx, userId);
+
     const now = Date.now();
 
     // Validate case IDs exist
-    const validCaseIds: any[] = [];
+    const validCaseIds: Id<"algorithmCases">[] = [];
     for (const caseIdStr of data.caseIds) {
       try {
-        const caseDoc = await ctx.db.get(caseIdStr as any);
+        const caseDoc = await ctx.db.get(caseIdStr as Id<"algorithmCases">);
         if (caseDoc) {
-          validCaseIds.push(caseIdStr);
+          validCaseIds.push(caseIdStr as Id<"algorithmCases">);
         }
       } catch {
         // Skip invalid IDs
@@ -1301,8 +1387,10 @@ export const getCustomSetCasesForPractice = query({
     setId: v.id("customAlgorithmSets"),
   },
   handler: async (ctx, { userId, setId }) => {
-    const customSet = await ctx.db.get(setId);
+    const customSet = await requireCustomSetReadAccess(ctx, setId);
     if (!customSet) return [];
+
+    await requireMatchingUser(ctx, userId);
 
     // Get predefined cases with their details
     const predefinedCases = await Promise.all(
@@ -1378,6 +1466,8 @@ export const markAsLearned = mutation({
     preferredAlgId: v.optional(v.id("algorithms")),
   },
   handler: async (ctx, { userId, caseId, preferredAlgId }) => {
+    await requireMatchingUser(ctx, userId);
+
     // Check if progress already exists
     const existing = await ctx.db
       .query("userAlgorithmProgress")
@@ -1445,6 +1535,8 @@ export const bulkMarkAsLearned = mutation({
     caseIds: v.array(v.id("algorithmCases")),
   },
   handler: async (ctx, { userId, caseIds }) => {
+    await requireMatchingUser(ctx, userId);
+
     const now = Date.now();
     const sevenDaysLater = now + 7 * 24 * 60 * 60 * 1000;
     let count = 0;
@@ -1528,8 +1620,7 @@ export const addCustomAlgorithmToSet = mutation({
     notes: v.optional(v.string()),
   },
   handler: async (ctx, { setId, name, notation, notes }) => {
-    const set = await ctx.db.get(setId);
-    if (!set) throw new Error("Custom set not found");
+    const set = await requireCustomSetOwner(ctx, setId);
 
     const newAlg = {
       id: `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -1559,8 +1650,7 @@ export const updateCustomAlgorithmInSet = mutation({
     notes: v.optional(v.string()),
   },
   handler: async (ctx, { setId, algorithmId, name, notation, notes }) => {
-    const set = await ctx.db.get(setId);
-    if (!set) throw new Error("Custom set not found");
+    const set = await requireCustomSetOwner(ctx, setId);
 
     const algList = set.customAlgorithms || [];
     const algExists = algList.some((alg) => alg.id === algorithmId);
@@ -1593,8 +1683,7 @@ export const removeCustomAlgorithmFromSet = mutation({
     algorithmId: v.string(),
   },
   handler: async (ctx, { setId, algorithmId }) => {
-    const set = await ctx.db.get(setId);
-    if (!set) throw new Error("Custom set not found");
+    const set = await requireCustomSetOwner(ctx, setId);
 
     const algList = set.customAlgorithms || [];
     await ctx.db.patch(setId, {
@@ -1608,7 +1697,7 @@ export const removeCustomAlgorithmFromSet = mutation({
 export const getCustomSetWithDetails = query({
   args: { setId: v.id("customAlgorithmSets") },
   handler: async (ctx, { setId }) => {
-    const customSet = await ctx.db.get(setId);
+    const customSet = await requireCustomSetReadAccess(ctx, setId);
     if (!customSet) return null;
 
     // Resolve predefined cases with their algorithms

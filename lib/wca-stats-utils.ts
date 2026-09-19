@@ -1,5 +1,5 @@
 // Utility functions for WCA stats calculations and API interactions
-export const WCA_API_BASE = "https://www.worldcubeassociation.org/api/v0";
+export const WCA_API_BASE = "/api/wca";
 
 export const WCA_EVENTS: Record<string, string> = {
   "222": "2x2x2",
@@ -175,9 +175,7 @@ export async function fetchWCAPerson(wcaId: string) {
   const response = await fetch(`${WCA_API_BASE}/persons/${wcaId}`, {
     headers: {
       Accept: "application/json",
-      "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
     },
-    next: { revalidate: 3600 }, // Cache for 1 hour since personal details don't change often
   });
 
   if (!response.ok) {
@@ -193,9 +191,7 @@ export async function fetchWCAPersonResults(wcaId: string) {
   const response = await fetch(`${WCA_API_BASE}/persons/${wcaId}/results`, {
     headers: {
       Accept: "application/json",
-      "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
     },
-    next: { revalidate: 3600 },
   });
 
   if (!response.ok) {

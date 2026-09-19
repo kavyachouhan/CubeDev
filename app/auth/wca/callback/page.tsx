@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { isSafeReturnPath } from "@/lib/safe-return-path";
 
 function WCACallbackContent() {
   const router = useRouter();
@@ -20,6 +21,7 @@ function WCACallbackContent() {
       }
 
       const code = searchParams.get("code");
+      const state = searchParams.get("state");
       const error = searchParams.get("error");
 
       // Don't process if no params are present
@@ -66,25 +68,17 @@ function WCACallbackContent() {
           return;
         }
 
-        console.log(
-          "Starting token exchange for code:",
-          code.slice(0, 8) + "...",
-        );
-
-        // Exchange code for access token
         const response = await fetch("/api/auth/wca/token", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ code }),
+          credentials: "include",
+          body: JSON.stringify({ code, state }),
         });
-
-        console.log("Token exchange response status:", response.status);
 
         if (!response.ok) {
           const errorData = await response.json();
-          console.error("Token exchange failed:", errorData);
           const authResult = {
             success: false,
             error: errorData.error || "Failed to exchange code for token",
@@ -94,10 +88,6 @@ function WCACallbackContent() {
         }
 
         const data = await response.json();
-        console.log("Token exchange successful:", {
-          success: data.success,
-          hasUser: !!data.user,
-        });
 
         if (data.success) {
           // Store successful auth result
@@ -113,28 +103,28 @@ function WCACallbackContent() {
           if (data.user) {
             const userData = {
               ...data.user,
-              convexId: data.user.convexId, // Ensure convexId is included
-              accessToken: data.accessToken,
+              convexId: data.user.convexId,
               loginTime: Date.now(),
             };
             localStorage.setItem("wca_user", JSON.stringify(userData));
-
-            // Dispatch custom event to notify UserProvider of the update
             window.dispatchEvent(new CustomEvent("userUpdated"));
           }
 
           // Show warning if database save failed
           if (data.warning) {
-            console.warn("Database warning:", data.warning);
+            setMessage(data.warning);
           }
 
           // Redirect to original destination or default page after a short delay
           setTimeout(() => {
-            const redirectUrl = sessionStorage.getItem("redirectAfterAuth");
-            if (redirectUrl) {
+            const stored = sessionStorage.getItem("redirectAfterAuth");
+            const redirectUrl =
+              data.returnTo || (isSafeReturnPath(stored) ? stored : null);
+            if (redirectUrl && isSafeReturnPath(redirectUrl)) {
               sessionStorage.removeItem("redirectAfterAuth");
               window.location.href = redirectUrl;
             } else {
+              sessionStorage.removeItem("redirectAfterAuth");
               router.push("/cube-lab/timer");
             }
           }, 2000);
@@ -148,7 +138,6 @@ function WCACallbackContent() {
           setMessage(data.error || "Authentication failed");
         }
       } catch (error) {
-        console.error("WCA OAuth callback error:", error);
         setStatus("error");
         if (error instanceof Error && error.message) {
           setMessage(error.message);

@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { requireAdmin } from "./auth";
 
 // Submit a contact form message
 export const submitContactMessage = mutation({
@@ -50,6 +51,7 @@ export const getContactMessages = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     let query = ctx.db.query("contactMessages").order("desc");
 
     const messages = await query.collect();
@@ -75,6 +77,7 @@ export const markMessageAsRead = mutation({
     messageId: v.id("contactMessages"),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     await ctx.db.patch(args.messageId, {
       status: "read",
       isRead: true,
@@ -95,7 +98,8 @@ export const updateMessageStatus = mutation({
     adminNotes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const updates: any = { status: args.status };
+    await requireAdmin(ctx);
+    const updates: Record<string, unknown> = { status: args.status };
 
     if (args.adminNotes) {
       updates.adminNotes = args.adminNotes;

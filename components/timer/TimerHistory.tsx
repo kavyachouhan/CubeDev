@@ -18,6 +18,7 @@ import {
 import dynamic from "next/dynamic";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
+import { formatTime as formatMs } from "@/lib/stats-utils";
 
 // Dynamically import ScramblePreview to avoid loading heavy 3D library on initial load
 const ScramblePreview = dynamic(() => import("./ScramblePreview"), {
@@ -220,10 +221,7 @@ function SolveDetailsModal({
     penalty: "none" | "+2" | "DNF" = "none",
   ) => {
     if (penalty === "DNF" || timeMs === Infinity || timeMs === 0) return "DNF";
-    const seconds = timeMs / 1000;
-    const mins = Math.floor(seconds / 60);
-    const secs = (seconds % 60).toFixed(2);
-    return mins > 0 ? `${mins}:${secs.padStart(5, "0")}` : secs;
+    return formatMs(timeMs);
   };
 
   const getEventName = (eventId: string) => {
@@ -921,10 +919,7 @@ export default function TimerHistory({
     penalty: "none" | "+2" | "DNF" = "none",
   ) => {
     if (penalty === "DNF" || timeMs === Infinity || timeMs === 0) return "DNF";
-    const seconds = timeMs / 1000;
-    const mins = Math.floor(seconds / 60);
-    const secs = (seconds % 60).toFixed(2);
-    return mins > 0 ? `${mins}:${secs.padStart(5, "0")}` : secs;
+    return formatMs(timeMs);
   };
 
   // Get event display name

@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { getWCAOAuthUrl } from "@/lib/wca-config";
+import { wcaSignInHref } from "@/lib/wca-config";
 import { useUser } from "@/components/UserProvider";
+import { getAvatarUrl } from "@/lib/avatar";
 import UserDropdown from "@/components/UserDropdown";
 import { useLogo } from "@/lib/use-logo";
 
@@ -46,8 +47,7 @@ export default function Header() {
   }, [lastScrollY, mobileMenuOpen]);
 
   const handleWCASignIn = () => {
-    const wcaAuthUrl = getWCAOAuthUrl();
-    window.location.href = wcaAuthUrl;
+    window.location.href = wcaSignInHref();
   };
 
   const navItems = [
@@ -182,7 +182,7 @@ export default function Header() {
                   <div className="flex items-center gap-3 px-4 py-3 bg-(--surface-elevated) rounded-lg">
                     {user.avatar && (
                       <Image
-                        src={user.avatar.url || user.avatar}
+                        src={getAvatarUrl(user.avatar) ?? ""}
                         alt={`${user.name}'s avatar`}
                         width={40}
                         height={40}

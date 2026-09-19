@@ -81,8 +81,15 @@ async def verify_token(token: str) -> dict:
         HTTPException: If token is invalid
     """
     try:
-        # Skip validation in development mode (DANGEROUS - only for local dev)
-        if os.getenv("SKIP_AUTH_VALIDATION", "false").lower() == "true":
+        # Skip validation in development mode only
+        skip_auth = os.getenv("SKIP_AUTH_VALIDATION", "false").lower() == "true"
+        env = os.getenv("ENV", "production").lower()
+        if skip_auth:
+            if env not in ("development", "dev", "local"):
+                raise HTTPException(
+                    status_code=500,
+                    detail="SKIP_AUTH_VALIDATION is not allowed outside development",
+                )
             print("WARNING: AUTH VALIDATION DISABLED - DEVELOPMENT MODE ONLY")
             return {
                 "sub": "dev_user_id",
@@ -105,39 +112,6 @@ async def verify_token(token: str) -> dict:
             except JWTError as e:
                 print(f"CubeDev JWT validation failed: {e}")
                 # Continue to try other methods
-        
-        # Fallback: Try simple base64 token (legacy method - to be deprecated)
-        try:
-            import base64
-            import json
-            decoded = base64.b64decode(token).decode('utf-8')
-            payload = json.loads(decoded)
-            
-            # Verify it has required fields
-            if 'convexId' in payload and 'timestamp' in payload:
-                # Check token is not too old (24 hours)
-                from datetime import datetime, timedelta
-                token_time = datetime.fromtimestamp(payload['timestamp'] / 1000)
-                if datetime.now() - token_time > timedelta(hours=24):
-                    raise HTTPException(
-                        status_code=401,
-                        detail="Token expired"
-                    )
-                
-                print(f"⚠ Legacy token verified for convexId: {payload['convexId']}")
-                print("  Note: This authentication method is deprecated. Please upgrade to JWT.")
-                
-                # Return normalized payload
-                return {
-                    "sub": payload['convexId'],
-                    "user_id": payload['convexId'],
-                    "email": payload.get('email'),
-                    "wca_id": payload.get('wcaId'),
-                    "token_type": "legacy_base64"
-                }
-        except Exception:
-            # Not a simple token, continue to Convex JWT
-            pass
         
         # Fallback: Try Convex-issued JWT token
         if CONVEX_URL:
@@ -354,7 +328,7 @@ async def check_user_permissions(
     """
     # Implement permission checking logic
     # This would query Convex for user permissions
-    return True  # Placeholder
+    return False
 
 
 # Rate limiting per user

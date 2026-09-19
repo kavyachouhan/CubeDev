@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
 
 // Helper function to create URL-friendly slugs
 function createSlug(name: string): string {
@@ -13,7 +13,7 @@ function createSlug(name: string): string {
 }
 
 // This mutation seeds the database with COLL (Corners and Orientation of Last Layer) algorithms
-export const seedCOLLAlgorithms = mutation({
+export const seedCOLLAlgorithms = internalMutation({
   args: {},
   handler: async (ctx) => {
     // Check if already seeded

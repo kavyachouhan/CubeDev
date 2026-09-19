@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../../convex/_generated/api";
 import { isWcaIdentifier, normalizeIdentifier } from "@/lib/identifier-utils";
+import { getSessionFromRequest, getWcaAccessTokenFromRequest } from "@/lib/session";
+import { fetchWithTimeout } from "@/lib/fetch-with-timeout";
+import { logger } from "@/lib/logger";
+import { publicConfig, wcaEndpoints } from "@/lib/config";
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+const convex = new ConvexHttpClient(publicConfig.convexUrl);
 
 type RegistrationStatus = "accepted" | "pending" | "waitlisted";
 
@@ -106,9 +110,10 @@ const sortCompetitionsByStartDate = (a: WcaCompetition, b: WcaCompetition) =>
 const fetchFromMineEndpoint = async (
   accessToken: string,
 ): Promise<RegisteredCompetition[] | null> => {
-  const response = await fetch(
-    "https://www.worldcubeassociation.org/api/v0/competitions/mine",
+  const response = await fetchWithTimeout(
+      `${wcaEndpoints.apiBaseUrl}/competitions/mine`,
     {
+      timeoutMs: 10_000,
       headers: {
         ...WCA_DEFAULT_HEADERS,
         Authorization: `Bearer ${accessToken}`,
@@ -150,9 +155,10 @@ const fetchFromMineEndpoint = async (
 const fetchFromPublicUserEndpoint = async (
   wcaUserId: number,
 ): Promise<RegisteredCompetition[] | null> => {
-  const response = await fetch(
-    `https://www.worldcubeassociation.org/api/v0/users/${wcaUserId}?upcoming_competitions=true`,
+  const response = await fetchWithTimeout(
+    `${wcaEndpoints.apiBaseUrl}/users/${wcaUserId}?upcoming_competitions=true`,
     {
+      timeoutMs: 10_000,
       headers: WCA_DEFAULT_HEADERS,
     },
   );
@@ -212,10 +218,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Primary source: WCA mine endpoint, which includes the user's registration status for each competition. Requires authentication, so only available if the user has linked their WCA ID and granted access to their data.
-    if (user.accessToken) {
+    const session = await getSessionFromRequest(request);
+    const sessionWcaToken = getWcaAccessTokenFromRequest(request);
+    if (
+      session?.wcaId &&
+      normalizeIdentifier(session.wcaId) === normalizedWcaId &&
+      sessionWcaToken
+    ) {
       const competitionsFromMine = await fetchFromMineEndpoint(
-        user.accessToken,
+        decodeURIComponent(sessionWcaToken),
       );
 
       if (competitionsFromMine) {
@@ -225,10 +236,7 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      console.warn(
-        "WCA mine endpoint failed, falling back to public user endpoint:",
-        normalizedWcaId,
-      );
+      logger.warn("wca_mine_endpoint_failed", { wcaId: normalizedWcaId });
     }
 
     // Fallback source: accepted upcoming competitions from public endpoint.
@@ -251,7 +259,9 @@ export async function GET(request: NextRequest) {
       { status: 502 },
     );
   } catch (error) {
-    console.error("Error fetching upcoming competitions:", error);
+    logger.error("upcoming_competitions_failed", {
+      error: error instanceof Error ? error.message : "unknown",
+    });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },

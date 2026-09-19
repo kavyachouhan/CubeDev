@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../../convex/_generated/api";
+import { publicConfig } from "@/lib/config";
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+const convex = new ConvexHttpClient(publicConfig.convexUrl);
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if the room exists using the getRoomDetails query
+    // Query the Convex backend to check if the room exists
     const roomDetails = await convex.query(api.challengeRooms.getRoomDetails, {
       roomId: roomId.trim().toUpperCase(),
     });

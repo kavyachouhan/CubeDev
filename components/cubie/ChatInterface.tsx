@@ -76,8 +76,11 @@ export default function ChatInterface({
   const loadedSessionRef = useRef<string | null>(null);
   const isLoadingSessionRef = useRef(false);
 
-  const BACKEND_URL = process.env.NEXT_PUBLIC_CUBIE_BACKEND_URL;
+  const BACKEND_URL = "/api/cubie/proxy";
   const MAX_INPUT_LENGTH = 4000; // Max characters for input
+
+  const cubieFetch = (input: string, init: RequestInit = {}) =>
+    fetch(input, { ...init, credentials: "include" });
 
   // Scroll to bottom helper
   const scrollToBottom = () => {
@@ -89,7 +92,7 @@ export default function ChatInterface({
     if (!token) return;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/chat/sessions`, {
+      const response = await cubieFetch(`${BACKEND_URL}/chat/sessions`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -142,7 +145,7 @@ export default function ChatInterface({
       setError(null);
 
       try {
-        const response = await fetch(
+        const response = await cubieFetch(
           `${BACKEND_URL}/chat/session/${sessionId}`,
           {
             headers: {
@@ -238,7 +241,7 @@ export default function ChatInterface({
     if (!token) return null;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/chat/session`, {
+      const response = await cubieFetch(`${BACKEND_URL}/chat/session`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -355,7 +358,7 @@ export default function ChatInterface({
       }
 
       // Send message to backend
-      const response = await fetch(`${BACKEND_URL}/chat`, {
+      const response = await cubieFetch(`${BACKEND_URL}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -496,7 +499,7 @@ export default function ChatInterface({
         await new Promise((resolve) => setTimeout(resolve, 500)); // Brief delay to ensure backend has updated session
 
         try {
-          const sessionResponse = await fetch(
+          const sessionResponse = await cubieFetch(
             `${BACKEND_URL}/chat/session/${sessionId}`,
             {
               headers: {
@@ -578,7 +581,7 @@ export default function ChatInterface({
     if (!token) return;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/chat/session/${sessionId}`, {
+      const response = await cubieFetch(`${BACKEND_URL}/chat/session/${sessionId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -618,7 +621,7 @@ export default function ChatInterface({
     if (!token) return;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/chat/session/${sessionId}`, {
+      const response = await cubieFetch(`${BACKEND_URL}/chat/session/${sessionId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -687,7 +690,7 @@ export default function ChatInterface({
     if (!token) return;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/chat/feedback`, {
+      const response = await cubieFetch(`${BACKEND_URL}/chat/feedback`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

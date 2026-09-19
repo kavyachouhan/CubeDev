@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { serverConfig } from "@/lib/config";
+import { getSessionFromRequest } from "@/lib/session";
 
-const CUBIE_BACKEND_URL =
-  process.env.NEXT_PUBLIC_CUBIE_BACKEND_URL || "http://localhost:8000";
+const CUBIE_BACKEND_URL = serverConfig.cubieBackendUrl;
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSessionFromRequest(request);
+    if (!session?.sub) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const authHeader = request.headers.get("authorization");
 
@@ -34,6 +40,11 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await getSessionFromRequest(request);
+    if (!session?.sub) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const authHeader = request.headers.get("authorization");
 
     if (!authHeader) {

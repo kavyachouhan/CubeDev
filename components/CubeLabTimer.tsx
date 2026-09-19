@@ -160,7 +160,7 @@ export default function CubeLabTimer({
     api.users.getUserById,
     user?.convexId
       ? {
-          id: user.convexId as any,
+          id: user.convexId,
         }
       : "skip",
   );
@@ -537,12 +537,21 @@ export default function CubeLabTimer({
           tags: importedSolve.tags,
         }));
 
-        // Use batch import mutation for much better performance
-        const result = await batchImportSolves({
-          userId: user.convexId as any,
-          sessionId: currentSession.convexId as any,
-          solves: solvesToImport,
-        });
+        // Chunk to the per-mutation cap; there is no overall import size limit
+        const IMPORT_BATCH_SIZE = 2000;
+        let importedCount = 0;
+        let totalAttempted = 0;
+        for (let i = 0; i < solvesToImport.length; i += IMPORT_BATCH_SIZE) {
+          const chunk = solvesToImport.slice(i, i + IMPORT_BATCH_SIZE);
+          const result = await batchImportSolves({
+            userId: user.convexId as any,
+            sessionId: currentSession.convexId as any,
+            solves: chunk,
+          });
+          importedCount += result.importedCount;
+          totalAttempted += result.totalAttempted;
+        }
+        const result = { importedCount, totalAttempted };
 
         console.log(
           `Batch import completed: ${result.importedCount}/${result.totalAttempted} solves imported`,

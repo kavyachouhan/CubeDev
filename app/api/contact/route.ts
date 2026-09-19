@@ -1,20 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { escapeHtml } from "@/lib/html-escape";
+import { logger } from "@/lib/logger";
+import { clientKey, rateLimit } from "@/lib/rate-limit";
+import { serverConfig } from "@/lib/config";
 
-// Configure the email transporter using environment variables for security
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
+    user: serverConfig.smtpUser,
+    pass: serverConfig.smtpPassword,
   },
 });
 
 export async function POST(req: NextRequest) {
+  const limited = rateLimit(`contact:${clientKey(req)}`, 5, 15 * 60_000);
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(limited.retryAfterSeconds) },
+      },
+    );
+  }
+
   try {
     const { name, email, subject, message, wcaId } = await req.json();
 
-    // Validate required fields
     if (!name || !email || !subject || !message) {
       return NextResponse.json(
         { error: "All fields are required" },
@@ -22,85 +35,56 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Email content for you (the admin)
+    if (typeof message !== "string" || message.length > 2000) {
+      return NextResponse.json(
+        { error: "Message must be 2000 characters or fewer" },
+        { status: 400 },
+      );
+    }
+
+    const safeName = escapeHtml(String(name));
+    const safeEmail = escapeHtml(String(email));
+    const safeSubject = escapeHtml(String(subject));
+    const safeMessage = escapeHtml(String(message));
+    const safeWcaId = wcaId ? escapeHtml(String(wcaId)) : "";
+    const adminTo = serverConfig.contactEmailTo;
+
     const adminEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
-          New Contact Form Submission - CubeDev
-        </h2>
-        
-        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #495057; margin-top: 0;">Contact Information</h3>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          ${wcaId ? `<p><strong>WCA ID:</strong> ${wcaId}</p>` : ""}
-          <p><strong>Subject:</strong> ${subject}</p>
-        </div>
-
-        <div style="background-color: #ffffff; padding: 20px; border-left: 4px solid #007bff; margin: 20px 0;">
-          <h3 style="color: #495057; margin-top: 0;">Message</h3>
-          <p style="white-space: pre-wrap; line-height: 1.6;">${message}</p>
-        </div>
-
-        <div style="margin-top: 30px; padding: 15px; background-color: #e9ecef; border-radius: 8px;">
-          <p style="margin: 0; color: #6c757d; font-size: 14px;">
-            This message was sent through the CubeDev contact form at ${new Date().toLocaleString()}.
-          </p>
-        </div>
+        <h2>New Contact Form Submission - CubeDev</h2>
+        <p><strong>Name:</strong> ${safeName}</p>
+        <p><strong>Email:</strong> ${safeEmail}</p>
+        ${safeWcaId ? `<p><strong>WCA ID:</strong> ${safeWcaId}</p>` : ""}
+        <p><strong>Subject:</strong> ${safeSubject}</p>
+        <p style="white-space: pre-wrap;">${safeMessage}</p>
       </div>
     `;
 
-    // Email content for the user (confirmation)
     const userEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
-          Thank you for contacting CubeDev!
-        </h2>
-        
-        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <p>Hi ${name},</p>
-          
-          <p>Thank you for reaching out to CubeDev! We've received your message and will get back to you as soon as possible.</p>
-          
-          <p>Here's a copy of what you sent:</p>
-          
-          <div style="background-color: #ffffff; padding: 15px; border-left: 4px solid #007bff; margin: 15px 0;">
-            <p><strong>Subject:</strong> ${subject}</p>
-            <p><strong>Message:</strong></p>
-            <p style="white-space: pre-wrap; line-height: 1.6;">${message}</p>
-          </div>
-          
-          <p>Thanks for being part of the CubeDev community!</p>
-          
-          <p>Best regards,<br>
-          <strong>CubeDev</strong><br>
-          <a href="https://cubedev.xyz">https://cubedev.xyz</a></p>
-        </div>
-        
-        <div style="margin-top: 30px; padding: 15px; background-color: #e9ecef; border-radius: 8px;">
-          <p style="margin: 0; color: #6c757d; font-size: 14px;">
-            This is an automated confirmation. Please do not reply to this email.
-          </p>
-        </div>
+        <h2>Thank you for contacting CubeDev!</h2>
+        <p>Hi ${safeName},</p>
+        <p>We've received your message and will get back to you as soon as possible.</p>
+        <p><strong>Subject:</strong> ${safeSubject}</p>
+        <p style="white-space: pre-wrap;">${safeMessage}</p>
       </div>
     `;
 
-    // Send email to admin
     await transporter.sendMail({
-      from: `"CubeDev Contact Form" <${process.env.SMTP_USER}>`,
-      to: process.env.SMTP_USER,
-      subject: `[CubeDev Contact] ${subject}`,
+      from: `"CubeDev Contact Form" <${serverConfig.smtpUser}>`,
+      to: adminTo,
+      subject: `[CubeDev Contact] ${String(subject).slice(0, 120)}`,
       html: adminEmailHtml,
+      text: `${name}\n${email}\n${subject}\n${message}`,
       replyTo: email,
     });
 
-    // Send confirmation email to user
     await transporter.sendMail({
-      from: `"CubeDev" <${process.env.SMTP_USER}>`,
+      from: `"CubeDev" <${serverConfig.smtpUser}>`,
       to: email,
       subject: "Thank you for contacting CubeDev!",
       html: userEmailHtml,
-      replyTo: process.env.SMTP_USER,
+      replyTo: serverConfig.smtpUser,
     });
 
     return NextResponse.json(
@@ -108,7 +92,9 @@ export async function POST(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Error sending email:", error);
+    logger.error("contact_send_failed", {
+      error: error instanceof Error ? error.message : "unknown",
+    });
     return NextResponse.json(
       { error: "Failed to send message. Please try again later." },
       { status: 500 },

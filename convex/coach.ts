@@ -2,11 +2,21 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import { resolveUserByIdentifierOrAlias } from "./identifierResolver";
+import {
+  requireMatchingUser,
+  getMatchingUserOrNull,
+  getPublicProfileUser,
+} from "./auth";
 
 // Get coach profile for a user
 export const getCoachProfile = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    const authUser = await getMatchingUserOrNull(ctx, args.userId);
+    if (!authUser) {
+      return null;
+    }
+
     return await ctx.db
       .query("coachProfiles")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -25,10 +35,15 @@ export const getCoachProfileByWcaId = query({
       return null;
     }
 
+    const readable = await getPublicProfileUser(ctx, user._id);
+    if (!readable) {
+      return null;
+    }
+
     // Then get their coach profile
     const profile = await ctx.db
       .query("coachProfiles")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .withIndex("by_user", (q) => q.eq("userId", readable.user._id))
       .first();
 
     if (!profile || !profile.onboardingCompleted) {
@@ -38,8 +53,8 @@ export const getCoachProfileByWcaId = query({
     // Return profile with user info for display
     return {
       ...profile,
-      userName: user.name,
-      userAvatar: user.avatar,
+      userName: readable.user.name,
+      userAvatar: readable.user.avatar,
     };
   },
 });
@@ -52,6 +67,11 @@ export const getProgressStatsByWcaId = query({
     const { user } = await resolveUserByIdentifierOrAlias(ctx, args.wcaId);
 
     if (!user) {
+      return null;
+    }
+
+    const readable = await getPublicProfileUser(ctx, user._id);
+    if (!readable) {
       return null;
     }
 
@@ -224,6 +244,8 @@ export const saveCoachProfile = mutation({
     baselineSessionId: v.optional(v.id("sessions")),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const now = Date.now();
 
     // Check if profile exists
@@ -287,6 +309,8 @@ export const updateGoal = mutation({
     practiceSchedule: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const now = Date.now();
 
     const existing = await ctx.db
@@ -399,6 +423,8 @@ export const getGoalHistory = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const query = ctx.db
       .query("coachGoalHistory")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -425,9 +451,14 @@ export const getGoalHistoryByWcaId = query({
       return [];
     }
 
+    const readable = await getPublicProfileUser(ctx, user._id);
+    if (!readable) {
+      return [];
+    }
+
     const query = ctx.db
       .query("coachGoalHistory")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .withIndex("by_user", (q) => q.eq("userId", readable.user._id))
       .order("desc");
 
     if (args.limit) {
@@ -441,6 +472,8 @@ export const getGoalHistoryByWcaId = query({
 export const getActiveTrainingPlan = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     return await ctx.db
       .query("coachTrainingPlans")
       .withIndex("by_user_status", (q) =>
@@ -454,6 +487,8 @@ export const getActiveTrainingPlan = query({
 export const getTrainingPlans = query({
   args: { userId: v.id("users"), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const query = ctx.db
       .query("coachTrainingPlans")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -474,6 +509,8 @@ export const generateTrainingPlan = mutation({
     weekNumber: v.number(),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const profile = await ctx.db.get(args.profileId);
     if (!profile) throw new Error("Coach profile not found");
 
@@ -729,6 +766,8 @@ export const getTasksForDate = query({
     dayOfWeek: v.optional(v.number()), // Allow client to specify day of week (0-6) to handle timezone differences, otherwise calculate from date
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     // Get active training plan for this user
     const plans = await ctx.db
       .query("coachTrainingPlans")
@@ -785,6 +824,8 @@ export const getJournalEntries = query({
     endDate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     let query = ctx.db
       .query("coachJournalEntries")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -813,6 +854,8 @@ export const getJournalEntries = query({
 export const getJournalEntryByDate = query({
   args: { userId: v.id("users"), date: v.number() },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const startOfDay = getStartOfDay(args.date);
     const endOfDay = startOfDay + 24 * 60 * 60 * 1000 - 1;
 
@@ -833,7 +876,11 @@ export const getJournalEntryByDate = query({
 export const getJournalEntryById = query({
   args: { entryId: v.id("coachJournalEntries") },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.entryId);
+    const entry = await ctx.db.get(args.entryId);
+    if (!entry) return null;
+
+    await requireMatchingUser(ctx, entry.userId);
+    return entry;
   },
 });
 
@@ -870,6 +917,8 @@ export const saveJournalEntry = mutation({
     mediaTypes: v.optional(v.array(v.string())), // MIME types of media files
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const now = Date.now();
     const { entryId, ...entryData } = args;
 
@@ -905,6 +954,8 @@ export const deleteJournalEntry = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const entry = await ctx.db.get(args.entryId);
     if (!entry) {
       throw new Error("Entry not found");
@@ -925,6 +976,8 @@ export const deleteJournalEntry = mutation({
 export const getProgressSnapshots = query({
   args: { userId: v.id("users"), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const query = ctx.db
       .query("coachProgressSnapshots")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -955,6 +1008,8 @@ export const createProgressSnapshot = mutation({
     aiInsights: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const now = Date.now();
 
     return await ctx.db.insert("coachProgressSnapshots", {
@@ -969,6 +1024,8 @@ export const createProgressSnapshot = mutation({
 export const getUserSessions = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     return await ctx.db
       .query("sessions")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -981,6 +1038,8 @@ export const getUserSessions = query({
 export const getUserSessionsWith3x3Stats = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+
     const sessions = await ctx.db
       .query("sessions")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -1013,6 +1072,11 @@ export const getUserSessionsWith3x3Stats = query({
 export const getSessionStats = query({
   args: { sessionId: v.id("sessions"), event: v.optional(v.string()) },
   handler: async (ctx, args) => {
+    const session = await ctx.db.get(args.sessionId);
+    if (!session) return null;
+
+    await requireMatchingUser(ctx, session.userId);
+
     const eventFilter = args.event || "333"; // Default to 3x3
 
     const solves = await ctx.db
@@ -1055,6 +1119,11 @@ export const getSessionStats = query({
 export const getProgressStats = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    const authUser = await getMatchingUserOrNull(ctx, args.userId);
+    if (!authUser) {
+      return null;
+    }
+
     const now = Date.now();
     const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
     const twoWeeksAgo = now - 14 * 24 * 60 * 60 * 1000;

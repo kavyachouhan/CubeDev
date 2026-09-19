@@ -24,6 +24,7 @@ import {
   Tag,
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
+import { getAvatarUrl } from "@/lib/avatar";
 import SidebarUserDropdown from "@/components/SidebarUserDropdown";
 import { useLogo } from "@/lib/use-logo";
 
@@ -349,7 +350,7 @@ export default function AdminLayout({
                 title={`${user.name} - Tap to open menu`}
               >
                 <Image
-                  src={user.avatar.url || user.avatar}
+                  src={getAvatarUrl(user.avatar) ?? ""}
                   alt={`${user.name}'s avatar`}
                   width={32}
                   height={32}

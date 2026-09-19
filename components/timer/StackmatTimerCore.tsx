@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, ReactNode } from "react";
 import { Mic, MicOff, AlertCircle, Info, Wifi } from "lucide-react";
 import { useStackmatAudio } from "./hooks/useStackmatAudio";
 import ConfettiCelebration from "./ConfettiCelebration";
+import { formatTime as formatMs } from "@/lib/stats-utils";
 
 interface StackmatTimerCoreProps {
   onSolveComplete: (time: number, penalty: "none" | "+2" | "DNF") => void;
@@ -90,13 +91,7 @@ export default function StackmatTimerCore({
   };
 
   // Format time
-  const formatTime = (timeMs: number) => {
-    if (timeMs === Infinity) return "DNF";
-    const seconds = timeMs / 1000;
-    const mins = Math.floor(seconds / 60);
-    const secs = (seconds % 60).toFixed(2);
-    return mins > 0 ? `${mins}:${secs.padStart(5, "0")}` : secs;
-  };
+  const formatTime = (timeMs: number) => formatMs(timeMs);
 
   // Handle inspection
   useEffect(() => {

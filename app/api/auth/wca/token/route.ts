@@ -1,12 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../../../convex/_generated/api";
+import { attachSessionCookies, createSessionToken, isSafeReturnPath, OAUTH_RETURN_COOKIE, OAUTH_STATE_COOKIE } from "@/lib/session";
+import { logger } from "@/lib/logger";
+import { fetchWithTimeout } from "@/lib/fetch-with-timeout";
+import { clientKey, rateLimit } from "@/lib/rate-limit";
+import { assertServerEnv, publicConfig, serverConfig, wcaEndpoints } from "@/lib/config";
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+const convex = new ConvexHttpClient(publicConfig.convexUrl);
+
+function redactUpsertError(message: string) {
+  if (
+    message.includes("serverSecret") ||
+    message.includes("ArgumentValidationError") ||
+    message.includes("Object contains extra field")
+  ) {
+    return "Convex rejected upsertUser arguments";
+  }
+  return message;
+}
 
 export async function POST(request: NextRequest) {
+  const limited = rateLimit(`wca-token:${clientKey(request)}`, 10, 60_000);
+  if (!limited.ok) {
+    return NextResponse.json(
+      { success: false, error: "Too many requests" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(limited.retryAfterSeconds) },
+      },
+    );
+  }
+
   try {
-    const { code } = await request.json();
+    assertServerEnv();
+    const { code, state } = await request.json();
+    const expectedState = request.cookies.get(OAUTH_STATE_COOKIE)?.value;
 
     if (!code) {
       return NextResponse.json(
@@ -15,50 +44,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // WCA OAuth configuration
-    const WCA_CLIENT_ID = process.env.WCA_CLIENT_ID;
-    const WCA_CLIENT_SECRET = process.env.WCA_CLIENT_SECRET;
-    const WCA_REDIRECT_URI = process.env.WCA_REDIRECT_URI;
-
-    console.log("WCA OAuth Debug:", {
-      hasClientId: !!WCA_CLIENT_ID,
-      hasClientSecret: !!WCA_CLIENT_SECRET,
-      hasRedirectUri: !!WCA_REDIRECT_URI,
-      redirectUri: WCA_REDIRECT_URI,
-    });
-
-    if (!WCA_CLIENT_ID || !WCA_CLIENT_SECRET) {
-      console.error("Missing WCA OAuth credentials:", {
-        WCA_CLIENT_ID: !!WCA_CLIENT_ID,
-        WCA_CLIENT_SECRET: !!WCA_CLIENT_SECRET,
-      });
+    if (!expectedState || !state || expectedState !== state) {
       return NextResponse.json(
-        { success: false, error: "Server configuration error" },
-        { status: 500 },
+        { success: false, error: "Invalid OAuth state" },
+        { status: 400 },
       );
     }
 
-    // Exchange authorization code for access token
-    const tokenResponse = await fetch(
-      "https://www.worldcubeassociation.org/oauth/token",
+    const WCA_CLIENT_ID = serverConfig.wcaClientId;
+    const WCA_CLIENT_SECRET = serverConfig.wcaClientSecret;
+    const WCA_REDIRECT_URI = serverConfig.wcaRedirectUri;
+
+    const tokenResponse = await fetchWithTimeout(
+      wcaEndpoints.tokenUrl,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
+        timeoutMs: 10_000,
         body: JSON.stringify({
           grant_type: "authorization_code",
           client_id: WCA_CLIENT_ID,
           client_secret: WCA_CLIENT_SECRET,
-          code: code,
+          code,
           redirect_uri: WCA_REDIRECT_URI,
         }),
       },
     );
 
     if (!tokenResponse.ok) {
-      const errorData = await tokenResponse.text();
-      console.error("Token exchange failed:", errorData);
+      logger.warn("wca_token_exchange_failed", { status: tokenResponse.status });
       return NextResponse.json(
         { success: false, error: "Failed to exchange authorization code" },
         { status: 400 },
@@ -67,18 +81,16 @@ export async function POST(request: NextRequest) {
 
     const tokenData = await tokenResponse.json();
 
-    // Fetch user information from WCA
-    const userResponse = await fetch(
-      "https://www.worldcubeassociation.org/api/v0/me",
+    const userResponse = await fetchWithTimeout(
+      `${wcaEndpoints.apiBaseUrl}/me`,
       {
-        headers: {
-          Authorization: `Bearer ${tokenData.access_token}`,
-        },
+        headers: { Authorization: `Bearer ${tokenData.access_token}` },
+        timeoutMs: 10_000,
       },
     );
 
     if (!userResponse.ok) {
-      console.error("Failed to fetch user data from WCA");
+      logger.warn("wca_profile_fetch_failed", { status: userResponse.status });
       return NextResponse.json(
         { success: false, error: "Failed to fetch user information" },
         { status: 400 },
@@ -86,69 +98,62 @@ export async function POST(request: NextRequest) {
     }
 
     const userData = await userResponse.json();
+    logger.info("wca_oauth_profile_loaded", {
+      wcaUserId: userData.me?.id,
+      hasEmail: Boolean(userData.me?.email),
+    });
 
-    // Debug log to see what data we're getting from WCA
-    console.log("WCA User Data:", JSON.stringify(userData, null, 2));
-
-    // Save user data to Convex database
     try {
-      const userDataForConvex: any = {
+      const userDataForConvex = {
         wcaId: userData.me.wca_id || undefined,
         wcaUserId: userData.me.id,
         name: userData.me.name,
         countryIso2: userData.me.country_iso2,
         avatar: userData.me.avatar?.url || undefined,
-        accessToken: tokenData.access_token,
-        dateOfBirth: userData.me.date_of_birth || undefined,
         gender: userData.me.gender || undefined,
-        region: userData.me.region || undefined,
+        ...(userData.me.email ? { email: userData.me.email } : {}),
+        serverSecret: serverConfig.jwtSecretKey,
       };
 
-      // Only add email if it exists in the response
-      if (userData.me.email) {
-        userDataForConvex.email = userData.me.email;
-      }
-
-      const userId = await convex.mutation(
-        api.users.upsertUser,
-        userDataForConvex,
-      );
-
-      const userRecord = await convex.query(api.users.getUserById, {
-        id: userId,
+      const userId = await convex.mutation(api.users.upsertUser, userDataForConvex);
+      const sessionToken = await createSessionToken({
+        userId: String(userId),
+        wcaId: userData.me.wca_id || undefined,
+        email: userData.me.email,
+        wcaUserId: userData.me.id,
       });
 
-      if (!userRecord) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Failed to load user after authentication",
-          },
-          { status: 500 },
-        );
-      }
+      const returnToCookie = request.cookies.get(OAUTH_RETURN_COOKIE)?.value;
+      const returnTo = isSafeReturnPath(returnToCookie) ? returnToCookie : undefined;
 
-      // Return success with user data including Convex user ID
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
+        returnTo,
         user: {
           id: userData.me.id,
           convexId: userId,
           name: userData.me.name,
-          wcaId: userRecord.wcaId,
-          idSource: userRecord.idSource,
+          wcaId: userData.me.wca_id,
           countryIso2: userData.me.country_iso2,
           avatar: userData.me.avatar,
           email: userData.me.email,
         },
-        accessToken: tokenData.access_token,
       });
+      attachSessionCookies(response, {
+        sessionToken,
+        wcaAccessToken: tokenData.access_token,
+      });
+      response.cookies.set(OAUTH_STATE_COOKIE, "", { path: "/", maxAge: 0 });
+      response.cookies.set(OAUTH_RETURN_COOKIE, "", { path: "/", maxAge: 0 });
+      return response;
     } catch (convexError) {
-      console.error("Failed to save user to Convex:", convexError);
       const errorMessage =
         convexError instanceof Error
           ? convexError.message
           : "Failed to save user to database";
+      logger.error("wca_upsert_failed", {
+        error: redactUpsertError(errorMessage),
+      });
 
       if (errorMessage.includes("already linked to another account")) {
         return NextResponse.json(
@@ -161,15 +166,14 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json(
-        {
-          success: false,
-          error: errorMessage,
-        },
+        { success: false, error: "Failed to save user to database" },
         { status: 500 },
       );
     }
   } catch (error) {
-    console.error("WCA OAuth error:", error);
+    logger.error("wca_oauth_error", {
+      error: error instanceof Error ? error.message : "unknown",
+    });
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },

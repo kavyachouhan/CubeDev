@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { requireAdmin } from "./auth";
 
 const labelType = v.union(
   v.literal("new"),
@@ -28,6 +29,7 @@ export const getActiveLabels = query({
 export const getAllLabels = query({
   args: {},
   handler: async (ctx) => {
+    await requireAdmin(ctx);
     return ctx.db.query("featureLabels").order("desc").collect();
   },
 });
@@ -41,6 +43,7 @@ export const createLabel = mutation({
     enabled: v.boolean(),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     if (args.endAt <= args.startAt) {
       throw new Error("endAt must be after startAt");
     }
@@ -68,6 +71,7 @@ export const updateLabel = mutation({
     enabled: v.boolean(),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     if (args.endAt <= args.startAt) {
       throw new Error("endAt must be after startAt");
     }
@@ -88,6 +92,7 @@ export const deleteLabel = mutation({
     id: v.id("featureLabels"),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     await ctx.db.delete(args.id);
   },
 });
