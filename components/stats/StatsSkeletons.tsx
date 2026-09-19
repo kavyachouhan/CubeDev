@@ -1,85 +1,73 @@
+import { Skeleton, SkeletonCard, SkeletonStats } from "@/components/ui/Skeleton";
+
 export function StatsFiltersSkeleton() {
   return (
-    <div className="timer-card animate-pulse">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i}>
-            <div className="h-4 skeleton-box rounded w-20 mb-2" />
-            <div className="h-10 skeleton-box rounded-lg" />
+    <SkeletonCard label="Loading filters">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="space-y-1.5">
+            <Skeleton className="h-3.5 w-20" />
+            <Skeleton radius="control" className="h-10" />
           </div>
         ))}
       </div>
-    </div>
+    </SkeletonCard>
   );
 }
 
 export function TimeProgressChartSkeleton() {
   return (
-    <div className="timer-card animate-pulse">
-      <div className="h-6 skeleton-box rounded w-48 mb-4" />
-      <div className="h-64 skeleton-box-subtle rounded-lg" />
-    </div>
+    <SkeletonCard label="Loading time progress">
+      <Skeleton className="h-5 w-40 mb-4" />
+      <SkeletonStats count={4} className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4" />
+      <Skeleton radius="panel" className="h-48 lg:h-64" />
+    </SkeletonCard>
   );
 }
 
 export function PersonalBestsCardSkeleton() {
   return (
-    <div className="timer-card animate-pulse">
-      <div className="h-6 skeleton-box rounded w-40 mb-4" />
-      <div className="space-y-3">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="flex items-center justify-between">
-            <div className="h-4 skeleton-box rounded w-24" />
-            <div className="h-4 skeleton-box rounded w-16" />
-          </div>
+    <SkeletonCard label="Loading personal bests">
+      <Skeleton className="h-5 w-36 mb-4" />
+      <SkeletonStats count={3} className="grid grid-cols-3 gap-3 mb-4" />
+      <div className="space-y-2">
+        {[1, 2, 3].map((i) => (
+          <Skeleton key={i} radius="control" className="h-16" />
         ))}
       </div>
-    </div>
+    </SkeletonCard>
   );
 }
 
 export function TimeDistributionChartSkeleton() {
   return (
-    <div className="timer-card animate-pulse">
-      <div className="h-6 skeleton-box rounded w-48 mb-4" />
-      <div className="h-64 skeleton-box-subtle rounded-lg" />
-    </div>
+    <SkeletonCard label="Loading time distribution">
+      <Skeleton className="h-5 w-40 mb-4" />
+      <SkeletonStats count={2} className="grid grid-cols-2 gap-3 mb-4" />
+      <Skeleton radius="panel" className="h-56" />
+    </SkeletonCard>
   );
 }
 
 export function SolveHeatmapSkeleton() {
   return (
-    <div className="timer-card animate-pulse">
-      <div className="h-6 skeleton-box rounded w-40 mb-4" />
-      <div className="grid grid-cols-7 gap-2">
-        {Array.from({ length: 52 }).map((_, i) => (
-          <div key={i} className="aspect-square skeleton-box rounded" />
-        ))}
-      </div>
-      <div className="flex items-center justify-between mt-4">
-        <div className="h-4 skeleton-box rounded w-32" />
-        <div className="h-4 skeleton-box rounded w-24" />
-      </div>
-    </div>
+    <SkeletonCard label="Loading solve activity">
+      <Skeleton className="h-5 w-36 mb-4" />
+      <SkeletonStats count={4} className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4" />
+      <Skeleton radius="panel" className="h-40" />
+    </SkeletonCard>
   );
 }
 
 export function StatsPageSkeleton() {
   return (
-    <div className="p-6 space-y-6">
-      {/* Filters Skeleton */}
+    <div className="container-responsive py-4 md:py-8 space-y-4 md:space-y-6">
       <StatsFiltersSkeleton />
-
-      {/* Time Progress Chart Skeleton */}
       <TimeProgressChartSkeleton />
-
-      {/* Charts Grid Skeleton */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <PersonalBestsCardSkeleton />
         <TimeDistributionChartSkeleton />
       </div>
-
-      {/* Heatmap Skeleton */}
       <SolveHeatmapSkeleton />
     </div>
   );

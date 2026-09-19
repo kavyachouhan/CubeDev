@@ -16,6 +16,10 @@ import PersonalBestsCard from "./stats/PersonalBestsCard";
 import StatsEmptyState from "./stats/StatsEmptyState";
 import { StatsPageSkeleton } from "./stats/StatsSkeletons";
 import { getCachedStats, cacheStats } from "@/lib/stats-cache";
+import { User } from "lucide-react";
+import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 interface TimerRecord {
   id: string;
@@ -255,30 +259,14 @@ export default function CubeLabStats() {
 
   if (!user) {
     return (
-      <div className="p-8 text-center">
-        <div className="timer-card max-w-md mx-auto">
-          <div className="w-16 h-16 mx-auto mb-4 bg-(--surface-elevated) rounded-lg flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-(--text-muted)"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-xl font-semibold text-(--text-primary) mb-2">
-            Login Required
-          </h3>
-          <p className="text-(--text-secondary)">
-            Please log in to view your statistics
-          </p>
-        </div>
+      <div className="container-responsive py-4 md:py-8">
+        <Card variant="static" className="max-w-md mx-auto">
+          <EmptyState
+            icon={<User />}
+            title="Login required"
+            description="Please log in to view your statistics."
+          />
+        </Card>
       </div>
     );
   }
@@ -292,8 +280,13 @@ export default function CubeLabStats() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Filters */}
+    <div className="container-responsive py-4 md:py-8 space-y-4 md:space-y-6">
+      <PageHeader
+        title="Statistics"
+        description="Trends, personal bests and practice activity across your solves."
+        hideTitleOnMobile
+      />
+
       <StatsFilters
         filters={filters}
         onFilterChange={handleFilterChange}
@@ -302,32 +295,18 @@ export default function CubeLabStats() {
         allSolveHistory={solves}
       />
 
-      {/* Time Progress Chart */}
-      <div className="timer-card lg:col-span-2">
-        <TimeProgressChart solves={filteredSolves} />
+      <TimeProgressChart solves={filteredSolves} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 items-start">
+        <PersonalBestsCard
+          solves={filteredSolves}
+          precomputedStats={eventStats}
+          selectedEvent={filters.eventFilter}
+        />
+        <TimeDistributionChart solves={filteredSolves} />
       </div>
 
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        {/* Personal Bests */}
-        <div className="timer-card">
-          <PersonalBestsCard
-            solves={filteredSolves}
-            precomputedStats={eventStats}
-            selectedEvent={filters.eventFilter}
-          />
-        </div>
-
-        {/* Time Distribution */}
-        <div className="timer-card">
-          <TimeDistributionChart solves={filteredSolves} />
-        </div>
-      </div>
-
-      {/* Solve Heatmap */}
-      <div className="timer-card">
-        <SolveHeatmap heatmapData={heatmapData} />
-      </div>
+      <SolveHeatmap heatmapData={heatmapData} />
     </div>
   );
 }

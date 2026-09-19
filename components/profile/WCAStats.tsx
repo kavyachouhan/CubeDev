@@ -265,10 +265,10 @@ export default function WCAStats({
   const getIntensityColor = (level: number) => {
     const colors = {
       0: "bg-(--surface) border-(--border)",
-      1: "bg-blue-100 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800",
-      2: "bg-blue-300 dark:bg-blue-700/50 border-blue-400 dark:border-blue-600",
-      3: "bg-blue-500 dark:bg-blue-600/70 border-blue-600 dark:border-blue-500",
-      4: "bg-blue-700 dark:bg-blue-400 border-blue-800 dark:border-blue-300",
+      1: "bg-(--primary)/25 border-(--primary)/30",
+      2: "bg-(--primary)/50 border-(--primary)/55",
+      3: "bg-(--primary)/75 border-(--primary)/80",
+      4: "bg-(--primary) border-(--primary)",
     };
     return colors[level as keyof typeof colors] || colors[0];
   };
@@ -285,8 +285,8 @@ export default function WCAStats({
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
-                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -300,8 +300,8 @@ export default function WCAStats({
             </div>
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-green-500/10 rounded-lg">
-                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -315,8 +315,8 @@ export default function WCAStats({
             </div>
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-yellow-500/10 rounded-lg">
-                  <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -330,8 +330,8 @@ export default function WCAStats({
             </div>
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-purple-500/10 rounded-lg">
-                  <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -345,8 +345,8 @@ export default function WCAStats({
             </div>
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-red-500/10 rounded-lg">
-                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-red-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -360,8 +360,8 @@ export default function WCAStats({
             </div>
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-orange-500/10 rounded-lg">
-                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -375,8 +375,8 @@ export default function WCAStats({
             </div>
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-indigo-500/10 rounded-lg">
-                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -395,8 +395,8 @@ export default function WCAStats({
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
-                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -410,8 +410,8 @@ export default function WCAStats({
             </div>
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-green-500/10 rounded-lg">
-                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -425,8 +425,8 @@ export default function WCAStats({
             </div>
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-yellow-500/10 rounded-lg">
-                  <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -440,8 +440,8 @@ export default function WCAStats({
             </div>
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-purple-500/10 rounded-lg">
-                  <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -455,8 +455,8 @@ export default function WCAStats({
             </div>
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-red-500/10 rounded-lg">
-                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-red-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -470,8 +470,8 @@ export default function WCAStats({
             </div>
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-orange-500/10 rounded-lg">
-                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -485,8 +485,8 @@ export default function WCAStats({
             </div>
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-indigo-500/10 rounded-lg">
-                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -547,7 +547,7 @@ export default function WCAStats({
                       )}
                       {record.average_world_ranking &&
                         record.average_world_ranking > 0 && (
-                          <span className="text-xs bg-green-500/10 text-green-600 px-2 py-1 rounded">
+                          <span className="text-xs bg-(--primary)/10 text-(--success) px-2 py-1 rounded">
                             #{record.average_world_ranking} WR Avg
                           </span>
                         )}

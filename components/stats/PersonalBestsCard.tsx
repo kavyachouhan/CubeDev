@@ -1,16 +1,9 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import {
-  Eye,
-  EyeOff,
-  Trophy,
-  Calendar,
-  Target,
-  TrendingUp,
-  ChevronDown,
-  ChevronRight,
-} from "lucide-react";
+import { Trophy, Calendar, Target, TrendingUp } from "lucide-react";
+import { CardIcon, CollapsibleCard } from "@/components/ui/Card";
+import { StatTile } from "@/components/ui/StatTile";
 
 interface TimerRecord {
   id: string;
@@ -299,208 +292,116 @@ export default function PersonalBestsCard({
       value: displayBestSingle,
       date: personalBests?.bestSingle?.solve?.timestamp,
       icon: Trophy,
-      color: "text-(--warning)",
-      bgColor: "bg-(--warning)/10",
+      tone: "warning" as const,
     },
     {
       label: "Best Ao5",
       value: displayBestAo5,
       date: personalBests?.bestAo5?.solve?.timestamp,
       icon: Target,
-      color: "text-(--primary)",
-      bgColor: "bg-(--primary)/10",
+      tone: "primary" as const,
     },
     {
       label: "Best Ao12",
       value: displayBestAo12,
       date: personalBests?.bestAo12?.solve?.timestamp,
       icon: TrendingUp,
-      color: "text-(--accent)",
-      bgColor: "bg-(--accent)/10",
+      tone: "accent" as const,
     },
   ];
 
+  const averageText = (value: number | null | undefined) =>
+    value && isFinite(value) ? formatTime(value) : value === Infinity ? "DNF" : "—";
+
+  const successTone =
+    displayTotalSolves === 0
+      ? "default"
+      : displaySuccessRate >= 95
+        ? "success"
+        : displaySuccessRate >= 85
+          ? "warning"
+          : "error";
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => setShowPersonalBests(!showPersonalBests)}
-          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-          title={
-            showPersonalBests ? "Hide personal bests" : "Show personal bests"
-          }
-        >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            Personal Bests
-          </h3>
-          {showPersonalBests ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <button
-          onClick={() => setShowPersonalBests(!showPersonalBests)}
-          className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-          title={
-            showPersonalBests ? "Hide personal bests" : "Show personal bests"
-          }
-        >
-          {showPersonalBests ? (
-            <EyeOff className="w-4 h-4" />
-          ) : (
-            <Eye className="w-4 h-4" />
-          )}
-        </button>
-      </div>
+    <CollapsibleCard
+      title="Personal Bests"
+      open={showPersonalBests}
+      onOpenChange={setShowPersonalBests}
+      variant="static"
+    >
+      <div className="space-y-5">
+        <div className="grid grid-cols-3 gap-3">
+          <StatTile
+            label="Total"
+            icon={<Target />}
+            value={displayTotalSolves.toLocaleString()}
+            tone="primary"
+          />
+          <StatTile
+            label="Success"
+            icon={<Trophy />}
+            value={displayTotalSolves === 0 ? "—" : `${displaySuccessRate.toFixed(1)}%`}
+            tone={successTone}
+          />
+          <StatTile
+            label="Average"
+            icon={<TrendingUp />}
+            value={personalBests?.averageTime ? formatTime(personalBests.averageTime) : "—"}
+          />
+        </div>
 
-      {showPersonalBests && (
-        <>
-          {/* Personal Best Times */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-            <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="p-1 bg-(--primary)/10 rounded">
-                  <Target className="w-3 h-3 text-(--primary)" />
-                </div>
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                  Total
-                </div>
-              </div>
-              <div className="text-sm sm:text-lg font-bold text-(--primary) font-mono truncate">
-                {displayTotalSolves.toLocaleString()}
-              </div>
-            </div>
-
-            <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="p-1 bg-(--success)/10 rounded">
-                  <Trophy className="w-3 h-3 text-(--success)" />
-                </div>
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                  Success
-                </div>
-              </div>
-              <div
-                className={`text-sm sm:text-lg font-bold font-mono truncate ${
-                  displayTotalSolves === 0
-                    ? "text-(--text-muted)"
-                    : displaySuccessRate >= 95
-                      ? "text-(--success)"
-                      : displaySuccessRate >= 85
-                        ? "text-(--warning)"
-                        : "text-(--error)"
-                }`}
+        <section className="space-y-2">
+          <h4 className="type-label pb-2 border-b border-(--border)">Personal Best Times</h4>
+          <ul className="space-y-2">
+            {records.map((record) => (
+              <li
+                key={record.label}
+                className="flex items-center justify-between gap-3 p-3 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated)"
               >
-                {displayTotalSolves === 0
-                  ? "—"
-                  : `${displaySuccessRate.toFixed(1)}%`}
-              </div>
-            </div>
-
-            <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="p-1 bg-(--accent)/10 rounded">
-                  <TrendingUp className="w-3 h-3 text-(--accent)" />
-                </div>
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                  Average
-                </div>
-              </div>
-              <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-mono truncate">
-                {personalBests?.averageTime
-                  ? formatTime(personalBests.averageTime)
-                  : "—"}
-              </div>
-            </div>
-          </div>
-
-          {/* Personal Best Times */}
-          <div className="space-y-3">
-            <div className="text-sm font-medium text-(--text-primary) border-b border-(--border) pb-2">
-              Personal Best Times
-            </div>
-
-            {records.map((record, index) => (
-              <div
-                key={index}
-                className={`flex items-center justify-between p-3 rounded-lg ${record.bgColor} border border-(--border) hover:border-(--border-hover) transition-colors`}
-              >
-                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                  <div
-                    className={`p-2 ${record.bgColor} rounded-lg shrink-0`}
-                  >
-                    <record.icon className={`w-4 h-4 ${record.color}`} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div
-                      className={`font-semibold text-sm sm:text-base ${record.color} truncate`}
-                    >
-                      {record.label}
-                    </div>
+                <div className="flex items-center gap-3 min-w-0">
+                  <CardIcon tone={record.tone}>
+                    <record.icon />
+                  </CardIcon>
+                  <div className="min-w-0">
+                    <p className="type-label truncate">{record.label}</p>
                     {record.date && (
-                      <div className="text-xs text-(--text-muted) flex items-center gap-1 truncate">
-                        <Calendar className="w-3 h-3 shrink-0" />
-                        <span className="truncate">
-                          {formatDate(record.date)}
-                        </span>
-                      </div>
+                      <p className="type-caption flex items-center gap-1 truncate">
+                        <Calendar className="w-3 h-3 shrink-0" aria-hidden />
+                        {formatDate(record.date)}
+                      </p>
                     )}
                   </div>
                 </div>
-                <div className="text-right shrink-0">
-                  <div
-                    className={`font-mono font-bold text-sm sm:text-lg ${record.color}`}
-                  >
-                    {record.value ? formatTime(record.value) : "—"}
-                  </div>
-                </div>
-              </div>
+                <span
+                  className={`type-time font-bold text-base sm:text-lg shrink-0 ${
+                    record.value ? "text-(--text-primary)" : "text-(--text-muted)"
+                  }`}
+                >
+                  {record.value ? formatTime(record.value) : "—"}
+                </span>
+              </li>
             ))}
+          </ul>
+        </section>
 
-            {/* Current Averages */}
-            <div className="pt-4 border-t border-(--border) space-y-3">
-              <div className="text-sm font-medium text-(--text-primary)">
-                Current Averages
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
-                  <div>
-                    <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                      Current Ao5
-                    </div>
-                    <div className="font-mono font-bold text-sm sm:text-base text-(--primary) truncate">
-                      {personalBests?.currentAo5 &&
-                      isFinite(personalBests.currentAo5)
-                        ? formatTime(personalBests.currentAo5)
-                        : personalBests?.currentAo5 === Infinity
-                          ? "DNF"
-                          : "—"}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
-                  <div>
-                    <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                      Current Ao12
-                    </div>
-                    <div className="font-mono font-bold text-sm sm:text-base text-(--accent) truncate">
-                      {personalBests?.currentAo12 &&
-                      isFinite(personalBests.currentAo12)
-                        ? formatTime(personalBests.currentAo12)
-                        : personalBests?.currentAo12 === Infinity
-                          ? "DNF"
-                          : "—"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <section className="pt-4 border-t border-(--border) space-y-2">
+          <h4 className="type-label">Current Averages</h4>
+          <div className="grid grid-cols-2 gap-3">
+            <StatTile
+              size="sm"
+              label="Current Ao5"
+              value={averageText(personalBests?.currentAo5)}
+              tone={personalBests?.currentAo5 === Infinity ? "error" : "primary"}
+            />
+            <StatTile
+              size="sm"
+              label="Current Ao12"
+              value={averageText(personalBests?.currentAo12)}
+              tone={personalBests?.currentAo12 === Infinity ? "error" : "accent"}
+            />
           </div>
-        </>
-      )}
-    </div>
+        </section>
+      </div>
+    </CollapsibleCard>
   );
 }

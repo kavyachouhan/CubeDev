@@ -17,12 +17,17 @@ export function EventIcon({
   eventId,
   size = "md",
   tone = "primary",
+  src,
+  alt,
   className,
 }: {
   eventId: string;
   size?: keyof typeof SIZES;
   /** `muted` for unselected rows in dense lists. */
   tone?: "primary" | "muted";
+  /** Explicit icon path, for features that use WCA ids (e.g. `333bf`). */
+  src?: string;
+  alt?: string;
   className?: string;
 }) {
   const { box, px } = SIZES[size];
@@ -36,8 +41,8 @@ export function EventIcon({
       )}
     >
       <Image
-        src={getEventIconPath(eventId)}
-        alt={getTimerEvent(eventId).name}
+        src={src ?? getEventIconPath(eventId)}
+        alt={alt ?? getTimerEvent(eventId).name}
         width={px}
         height={px}
         className="w-full h-full object-contain brightness-0 invert"

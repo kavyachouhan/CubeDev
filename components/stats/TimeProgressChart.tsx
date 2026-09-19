@@ -15,12 +15,10 @@ import {
   TooltipItem,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import {
-  Eye,
-  EyeOff,
-  ChevronDown,
-  ChevronRight,
-} from "lucide-react";
+import { useThemeColors, withAlpha } from "@/lib/hooks/useThemeColors";
+import { CollapsibleCard } from "@/components/ui/Card";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { StatTile } from "@/components/ui/StatTile";
 
 // Register ChartJS components
 ChartJS.register(
@@ -49,31 +47,6 @@ interface TimerRecord {
 
 interface TimeProgressChartProps {
   solves: TimerRecord[];
-}
-
-// Hook to detect current theme
-function useEffectiveTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  useEffect(() => {
-    const checkTheme = () => {
-      const dataTheme = document.documentElement.getAttribute("data-theme");
-      setTheme((dataTheme as "light" | "dark") || "dark");
-    };
-
-    checkTheme();
-
-    // Observe changes to data-theme attribute
-    const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return theme;
 }
 
 // Persistent boolean that reads/writes localStorage on first render
@@ -170,7 +143,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
   const windowSize = useWindowSize();
   const isMobile = windowSize.width < 640;
   const isTablet = windowSize.width < 1024;
-  const effectiveTheme = useEffectiveTheme();
+  const colors = useThemeColors();
   const [showChart, setShowChart] = usePersistentBool(
     "cubelab-time-progress-chart-expanded",
     true
@@ -252,26 +225,13 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
       }
     }
 
-    // Theme-aware colors
-    const isLight = effectiveTheme === "light";
-    const textColor = isLight
-      ? "rgba(17, 24, 39, 0.7)"
-      : "rgba(255, 255, 255, 0.7)";
-    const textSecondaryColor = isLight
-      ? "rgba(75, 85, 99, 0.6)"
-      : "rgba(255, 255, 255, 0.6)";
-    const gridColor = isLight
-      ? "rgba(0, 0, 0, 0.1)"
-      : "rgba(255, 255, 255, 0.1)";
-    const singlesColor = isLight
-      ? "rgba(75, 85, 99, 0.7)"
-      : "rgba(255, 255, 255, 0.7)";
-    const singlesColorBg = isLight
-      ? "rgba(75, 85, 99, 0.1)"
-      : "rgba(255, 255, 255, 0.1)";
-    const pointBorderColor = isLight
-      ? "rgba(17, 24, 39, 1)"
-      : "rgba(255, 255, 255, 1)";
+    // Series colors follow the active theme and color scheme.
+    const textColor = colors["--text-secondary"];
+    const textSecondaryColor = colors["--text-muted"];
+    const gridColor = withAlpha(colors["--border"], 0.6);
+    const singlesColor = withAlpha(colors["--text-secondary"], 0.75);
+    const singlesColorBg = withAlpha(colors["--text-secondary"], 0.1);
+    const pointBorderColor = colors["--surface"];
 
     return {
       labels,
@@ -292,9 +252,9 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
         {
           label: "Ao5",
           data: ao5Data,
-          borderColor: "rgba(59, 130, 246, 1)",
-          backgroundColor: "rgba(59, 130, 246, 0.1)",
-          pointBackgroundColor: "rgba(59, 130, 246, 1)",
+          borderColor: colors["--primary"],
+          backgroundColor: withAlpha(colors["--primary"], 0.1),
+          pointBackgroundColor: colors["--primary"],
           pointBorderColor: pointBorderColor,
           pointBorderWidth: 1,
           pointRadius: 3,
@@ -306,9 +266,9 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
         {
           label: "Ao12",
           data: ao12Data,
-          borderColor: "rgba(168, 85, 247, 1)",
-          backgroundColor: "rgba(168, 85, 247, 0.1)",
-          pointBackgroundColor: "rgba(168, 85, 247, 1)",
+          borderColor: colors["--accent"],
+          backgroundColor: withAlpha(colors["--accent"], 0.1),
+          pointBackgroundColor: colors["--accent"],
           pointBorderColor: pointBorderColor,
           pointBorderWidth: 1,
           pointRadius: 3,
@@ -320,8 +280,8 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
         {
           label: "Trend",
           data: trendData,
-          borderColor: "rgba(34, 197, 94, 0.8)",
-          backgroundColor: "rgba(34, 197, 94, 0.05)",
+          borderColor: withAlpha(colors["--success"], 0.85),
+          backgroundColor: withAlpha(colors["--success"], 0.05),
           pointRadius: 0,
           pointHoverRadius: 0,
           borderWidth: 2,
@@ -336,7 +296,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
       textSecondaryColor,
       gridColor,
     };
-  }, [solves, dataRange, showDataLines, effectiveTheme]);
+  }, [solves, dataRange, showDataLines, colors]);
 
   const progressStats = useMemo(() => {
     // Calculate trend from Ao12 data
@@ -403,10 +363,11 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
       tooltip: {
         mode: "index" as const,
         intersect: false,
-        backgroundColor: "var(--surface-elevated)",
-        titleColor: chartData?.textColor || "rgba(255, 255, 255, 0.9)",
-        bodyColor: chartData?.textSecondaryColor || "rgba(255, 255, 255, 0.9)",
-        borderColor: "var(--border)",
+        // Canvas can't read CSS variables, so pass resolved token values.
+        backgroundColor: colors["--surface-elevated"],
+        titleColor: colors["--text-primary"],
+        bodyColor: colors["--text-secondary"],
+        borderColor: colors["--border"],
         borderWidth: 1,
         cornerRadius: 8,
         displayColors: true,
@@ -496,8 +457,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
         radius: isMobile ? 1.5 : 2,
         hoverRadius: isMobile ? 3 : 4,
         hoverBorderWidth: isMobile ? 1 : 2,
-        hoverBorderColor:
-          effectiveTheme === "light" ? "rgba(17, 24, 39, 1)" : "white",
+        hoverBorderColor: colors["--text-primary"],
       },
       line: {
         borderWidth: isMobile ? 1.5 : 2,
@@ -509,266 +469,137 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
     setShowDataLines((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const trend = progressStats.trend;
+  const trendTone = !trend
+    ? "default"
+    : trend.isImproving
+      ? "success"
+      : trend.improvement === 0
+        ? "default"
+        : "error";
+
+  const series = [
+    { key: "singles" as const, label: "Singles", color: "var(--text-secondary)" },
+    { key: "ao5" as const, label: "Ao5", color: "var(--primary)" },
+    { key: "ao12" as const, label: "Ao12", color: "var(--accent)" },
+    { key: "trend" as const, label: "Trend", color: "var(--success)", dashed: true },
+  ];
+
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowChart(!showChart)}
-            className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-            title={showChart ? "Hide chart" : "Show chart"}
-          >
-            <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-              Time Progress
-            </h3>
-            {showChart ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-          <button
-            onClick={() => setShowChart(!showChart)}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={showChart ? "Hide chart" : "Show chart"}
-          >
-            {showChart ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
+    <CollapsibleCard
+      title="Time Progress"
+      open={showChart}
+      onOpenChange={setShowChart}
+      variant="static"
+      actions={
+        showChart ? (
+          <SegmentedControl
+            aria-label="Solves shown"
+            size="sm"
+            value={dataRange}
+            onChange={setDataRange}
+            options={[
+              { value: "25", label: "25", "aria-label": "Last 25 solves" },
+              { value: "50", label: "50", "aria-label": "Last 50 solves" },
+              { value: "100", label: "100", "aria-label": "Last 100 solves" },
+              { value: "all", label: "All" },
+            ]}
+          />
+        ) : undefined
+      }
+    >
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+          <StatTile
+            size="sm"
+            label="Progress Trend"
+            value={trend ? `${Math.abs(trend.improvementPercent).toFixed(1)}%` : "—"}
+            tone={trendTone}
+            trend={
+              trend
+                ? {
+                    direction: trend.isImproving
+                      ? "down"
+                      : trend.improvement === 0
+                        ? "flat"
+                        : "up",
+                    label: trend.isImproving ? "faster" : trend.improvement === 0 ? "flat" : "slower",
+                    good: trend.improvement === 0 ? undefined : trend.isImproving,
+                  }
+                : undefined
+            }
+          />
+          <StatTile
+            size="sm"
+            label="Best Single"
+            value={progressStats.bestSingle ? formatTime(progressStats.bestSingle) : "—"}
+            tone={progressStats.bestSingle ? "warning" : "default"}
+          />
+          <StatTile
+            size="sm"
+            label="Sessions"
+            mono={false}
+            value={progressStats.uniqueSessions}
+            tone={progressStats.uniqueSessions > 0 ? "primary" : "default"}
+          />
+          {trend === null && (
+            <StatTile
+              size="sm"
+              label="Consistency"
+              value={
+                progressStats.consistencyScore === null
+                  ? "—"
+                  : `${progressStats.consistencyScore.toFixed(1)}%`
+              }
+              tone={
+                progressStats.consistencyScore === null
+                  ? "default"
+                  : progressStats.consistencyScore < 15
+                    ? "success"
+                    : progressStats.consistencyScore < 25
+                      ? "warning"
+                      : "error"
+              }
+            />
+          )}
         </div>
 
-        {showChart && (
-          <div className="flex items-center gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border) sm:overflow-x-auto">
-            {(
-              [
-                ["25", "Last 25"],
-                ["50", "Last 50"],
-                ["100", "Last 100"],
-                ["all", "All"],
-              ] as const
-            ).map(([range, label]) => (
+        <div role="group" aria-label="Chart series" className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          {series.map(({ key, label, color, dashed }) => {
+            const on = showDataLines[key];
+            return (
               <button
-                key={range}
-                onClick={() => setDataRange(range)}
-                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap flex-1 sm:flex-none ${
-                  dataRange === range
-                    ? "bg-(--primary) text-white shadow-sm"
-                    : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface)"
+                key={key}
+                type="button"
+                aria-pressed={on}
+                onClick={() => toggleDataLine(key)}
+                className={`inline-flex items-center gap-2 h-8 px-3 rounded-full border text-xs sm:text-sm font-medium font-inter transition-colors ${
+                  on
+                    ? "bg-(--surface-elevated) text-(--text-primary) border-(--border-hover)"
+                    : "border-transparent text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
                 }`}
               >
+                <span
+                  aria-hidden
+                  className={`w-2.5 h-2.5 rounded-full shrink-0 ${dashed ? "border-2 border-dashed" : ""}`}
+                  style={
+                    dashed
+                      ? { borderColor: on ? color : "var(--border)" }
+                      : { background: on ? color : "var(--border)" }
+                  }
+                />
                 {label}
               </button>
-            ))}
+            );
+          })}
+        </div>
+
+        <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-2 sm:p-4 border border-(--border) overflow-hidden">
+          <div className="h-40 sm:h-48 lg:h-64 w-full min-w-0">
+            <Line data={chartData} options={chartOptions} />
           </div>
-        )}
+        </div>
       </div>
-
-      {showChart && (
-        <>
-          {/* Progress Stats - Show useful metrics */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-            {/* Trend Card - reads "—" until there is enough Ao12 data */}
-            <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
-              <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-                <div
-                  className={`p-1 sm:p-1.5 rounded-md ${
-                    !progressStats.trend
-                      ? "bg-(--text-muted)/10"
-                      : progressStats.trend.isImproving
-                        ? "bg-emerald-500/10"
-                        : progressStats.trend.improvement === 0
-                          ? "bg-(--text-muted)/10"
-                          : "bg-red-500/10"
-                  }`}
-                ></div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                    Progress Trend
-                  </div>
-                  <div
-                    className={`text-xs sm:text-sm font-bold font-mono ${
-                      !progressStats.trend
-                        ? "text-(--text-muted)"
-                        : progressStats.trend.isImproving
-                          ? "text-emerald-400"
-                          : progressStats.trend.improvement === 0
-                            ? "text-(--text-muted)"
-                            : "text-red-400"
-                    }`}
-                  >
-                    {!progressStats.trend ? (
-                      "—"
-                    ) : (
-                      <>
-                        {progressStats.trend.isImproving
-                          ? "↗"
-                          : progressStats.trend.improvement === 0
-                            ? "→"
-                            : "↘"}{" "}
-                        {Math.abs(
-                          progressStats.trend.improvementPercent
-                        ).toFixed(1)}
-                        %
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Best Single Card */}
-            <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
-              <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1 truncate">
-                Best Single
-              </div>
-              <div
-                className={`text-xs sm:text-sm font-bold font-mono ${
-                  progressStats.bestSingle
-                    ? "text-yellow-400"
-                    : "text-(--text-muted)"
-                }`}
-              >
-                {progressStats.bestSingle
-                  ? formatTime(progressStats.bestSingle)
-                  : "—"}
-              </div>
-            </div>
-
-            {/* Sessions Count Card */}
-            <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
-              <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
-                Sessions
-              </div>
-              <div
-                className={`text-xs sm:text-sm font-bold ${
-                  progressStats.uniqueSessions > 0
-                    ? "text-blue-400"
-                    : "text-(--text-muted)"
-                }`}
-              >
-                {progressStats.uniqueSessions}
-              </div>
-            </div>
-
-            {/* Consistency Score Card - the trend card supersedes it once available */}
-            {progressStats.trend === null && (
-              <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
-                <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
-                  Consistency
-                </div>
-                <div
-                  className={`text-xs sm:text-sm font-bold font-mono ${
-                    progressStats.consistencyScore === null
-                      ? "text-(--text-muted)"
-                      : progressStats.consistencyScore < 15
-                        ? "text-emerald-400"
-                        : progressStats.consistencyScore < 25
-                          ? "text-yellow-400"
-                          : "text-red-400"
-                  }`}
-                >
-                  {progressStats.consistencyScore === null
-                    ? "—"
-                    : `${progressStats.consistencyScore.toFixed(1)}%`}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Data Line Toggle Buttons */}
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
-            <button
-              onClick={() => toggleDataLine("singles")}
-              className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg transition-all ${
-                showDataLines.singles
-                  ? "bg-(--surface-elevated) text-(--text-primary) border border-(--border)"
-                  : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
-              }`}
-            >
-              <div
-                className="w-2 h-2 rounded-full shrink-0"
-                style={{
-                  backgroundColor: showDataLines.singles
-                    ? effectiveTheme === "light"
-                      ? "rgba(75, 85, 99, 0.7)"
-                      : "rgba(255, 255, 255, 0.8)"
-                    : "rgba(156, 163, 175, 0.3)",
-                }}
-              />
-              <span className="whitespace-nowrap">Singles</span>
-            </button>
-
-            <button
-              onClick={() => toggleDataLine("ao5")}
-              className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg transition-all ${
-                showDataLines.ao5
-                  ? "bg-(--surface-elevated) text-blue-400 border border-(--border)"
-                  : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
-              }`}
-            >
-              <div
-                className="w-2 h-2 rounded-full shrink-0"
-                style={{
-                  backgroundColor: showDataLines.ao5
-                    ? "rgba(59, 130, 246, 1)"
-                    : "rgba(156, 163, 175, 0.3)",
-                }}
-              />
-              <span className="whitespace-nowrap">Ao5</span>
-            </button>
-
-            <button
-              onClick={() => toggleDataLine("ao12")}
-              className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg transition-all ${
-                showDataLines.ao12
-                  ? "bg-(--surface-elevated) text-purple-400 border border-(--border)"
-                  : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
-              }`}
-            >
-              <div
-                className="w-2 h-2 rounded-full shrink-0"
-                style={{
-                  backgroundColor: showDataLines.ao12
-                    ? "rgba(168, 85, 247, 1)"
-                    : "rgba(156, 163, 175, 0.3)",
-                }}
-              />
-              <span className="whitespace-nowrap">Ao12</span>
-            </button>
-
-            <button
-              onClick={() => toggleDataLine("trend")}
-              className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg transition-all ${
-                showDataLines.trend
-                  ? "bg-(--surface-elevated) text-emerald-400 border border-(--border)"
-                  : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
-              }`}
-            >
-              <div
-                className="w-2 h-2 rounded-full border border-dashed shrink-0"
-                style={{
-                  borderColor: showDataLines.trend
-                    ? "rgba(34, 197, 94, 0.8)"
-                    : "rgba(156, 163, 175, 0.3)",
-                  backgroundColor: "transparent",
-                }}
-              />
-              <span className="whitespace-nowrap">Trend</span>
-            </button>
-          </div>
-
-          {/* Chart */}
-          <div className="bg-(--surface) rounded-lg p-2 sm:p-4 border border-(--border) overflow-hidden">
-            <div className="h-32 xs:h-40 sm:h-48 lg:h-64 w-full min-w-0">
-              <Line data={chartData} options={chartOptions} />
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+    </CollapsibleCard>
   );
 }

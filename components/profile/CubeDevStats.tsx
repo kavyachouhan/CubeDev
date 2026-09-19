@@ -16,6 +16,7 @@ import {
   Users,
   EyeOff,
 } from "lucide-react";
+import { SelectMenu } from "@/components/ui/Menu";
 import SolveHeatmap from "../stats/SolveHeatmap";
 import { EventStatsSkeleton, PlatformStatsSkeleton } from "../SkeletonLoaders";
 import { useUser } from "@/components/UserProvider";
@@ -241,8 +242,8 @@ export default function CubeDevStats({
       <div className="timer-card">
         <div className="text-center py-12">
           <div className="flex justify-center mb-4">
-            <div className="p-4 bg-gray-500/10 rounded-full">
-              <Users className="w-8 h-8 text-gray-500" />
+            <div className="p-4 bg-(--text-muted)/10 rounded-full">
+              <Users className="w-8 h-8 text-(--text-muted)" />
             </div>
           </div>
           <h3 className="text-lg font-semibold text-(--text-primary) mb-2">
@@ -289,48 +290,27 @@ export default function CubeDevStats({
               <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
                 Event Statistics
               </h3>
-              <div className="relative">
-                <button
-                  onClick={() => setShowEventDropdown(!showEventDropdown)}
-                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) hover:bg-(--border) transition-colors"
-                >
-                  <span className="font-medium">
-                    {EVENT_NAMES[selectedEvent as keyof typeof EVENT_NAMES] ||
-                      selectedEvent}
-                  </span>
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-
-                {showEventDropdown && (
-                  <div className="absolute top-full right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-lg z-10 min-w-[200px]">
-                    {attemptedEvents.map((event) => (
-                      <button
-                        key={event}
-                        onClick={() => {
-                          setSelectedEvent(event);
-                          setShowEventDropdown(false);
-                        }}
-                        className={`w-full text-left px-4 py-2 hover:bg-(--surface-elevated) transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                          selectedEvent === event
-                            ? "bg-(--primary)/20 text-(--primary)"
-                            : "text-(--text-primary)"
-                        }`}
-                      >
-                        {EVENT_NAMES[event as keyof typeof EVENT_NAMES] ||
-                          event}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <SelectMenu
+                label="Event"
+                placement="bottom-end"
+                fullWidth={false}
+                value={selectedEvent}
+                onChange={setSelectedEvent}
+                className="min-w-44"
+                options={attemptedEvents.map((event) => ({
+                  value: event,
+                  label:
+                    EVENT_NAMES[event as keyof typeof EVENT_NAMES] || event,
+                }))}
+              />
             </div>
 
             {/* Event Statistics Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
-                    <Target className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
+                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                    <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -345,8 +325,8 @@ export default function CubeDevStats({
 
               <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-green-500/10 rounded-lg">
-                    <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                    <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -363,8 +343,8 @@ export default function CubeDevStats({
 
               <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-yellow-500/10 rounded-lg">
-                    <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
+                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                    <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -381,8 +361,8 @@ export default function CubeDevStats({
 
               <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-purple-500/10 rounded-lg">
-                    <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
+                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                    <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -440,8 +420,8 @@ export default function CubeDevStats({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-orange-500/10 rounded-lg">
-                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -456,8 +436,8 @@ export default function CubeDevStats({
 
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-red-500/10 rounded-lg">
-                  <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-red-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -472,8 +452,8 @@ export default function CubeDevStats({
 
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-green-500/10 rounded-lg">
-                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -488,8 +468,8 @@ export default function CubeDevStats({
 
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
-                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -536,8 +516,8 @@ export default function CubeDevStats({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-yellow-500/10 rounded-lg">
-                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -552,8 +532,8 @@ export default function CubeDevStats({
 
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
-                  <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Users className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -568,8 +548,8 @@ export default function CubeDevStats({
 
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-green-500/10 rounded-lg">
-                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -624,7 +604,7 @@ export default function CubeDevStats({
                           <div className="text-sm text-(--text-muted)">
                             {showIncomplete ? (
                               <>
-                                <span className="text-red-500 font-medium">
+                                <span className="text-(--primary) font-medium">
                                   Incomplete
                                 </span>{" "}
                                 •{" "}

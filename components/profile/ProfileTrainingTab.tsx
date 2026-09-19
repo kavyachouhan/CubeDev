@@ -359,8 +359,8 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
           <StatCard
             icon={TrendingUp}
-            iconColor="text-green-500"
-            bgColor="bg-green-500/10"
+            iconColor="text-(--primary)"
+            bgColor="bg-(--primary)/10"
             label="Improved"
             value={
               improvement > 0
@@ -372,10 +372,10 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
           <StatCard
             icon={Calendar}
             iconColor={
-              status === "expired" ? "text-yellow-500" : "text-purple-500"
+              status === "expired" ? "text-(--primary)" : "text-(--primary)"
             }
             bgColor={
-              status === "expired" ? "bg-yellow-500/10" : "bg-purple-500/10"
+              status === "expired" ? "bg-(--primary)/10" : "bg-(--primary)/10"
             }
             label={
               status === "expired"
@@ -395,15 +395,15 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
           />
           <StatCard
             icon={Clock}
-            iconColor="text-blue-500"
-            bgColor="bg-blue-500/10"
+            iconColor="text-(--primary)"
+            bgColor="bg-(--primary)/10"
             label="Training For"
             value={formatDuration(daysSinceStart)}
           />
           <StatCard
             icon={Flame}
-            iconColor="text-orange-500"
-            bgColor="bg-orange-500/10"
+            iconColor="text-(--primary)"
+            bgColor="bg-(--primary)/10"
             label="Current Streak"
             value={
               progressStats?.currentStreak
@@ -424,15 +424,15 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
             <StatCard
               icon={Target}
-              iconColor="text-blue-500"
-              bgColor="bg-blue-500/10"
+              iconColor="text-(--primary)"
+              bgColor="bg-(--primary)/10"
               label="Total Solves"
               value={progressStats.allTime?.solves?.toLocaleString() || "0"}
             />
             <StatCard
               icon={Clock}
-              iconColor="text-green-500"
-              bgColor="bg-green-500/10"
+              iconColor="text-(--primary)"
+              bgColor="bg-(--primary)/10"
               label="Practice Time"
               value={formatPracticeTime(
                 progressStats.allTime?.practiceMinutes || 0,
@@ -440,15 +440,15 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
             />
             <StatCard
               icon={Calendar}
-              iconColor="text-purple-500"
-              bgColor="bg-purple-500/10"
+              iconColor="text-(--primary)"
+              bgColor="bg-(--primary)/10"
               label="Journal Entries"
               value={progressStats.allTime?.entries?.toString() || "0"}
             />
             <StatCard
               icon={Flame}
-              iconColor="text-orange-500"
-              bgColor="bg-orange-500/10"
+              iconColor="text-(--primary)"
+              bgColor="bg-(--primary)/10"
               label="Longest Streak"
               value={`${progressStats.longestStreak || 0}d`}
             />
