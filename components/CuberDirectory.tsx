@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useQuery } from "convex/react";
@@ -17,45 +17,41 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-interface CubeDevUser {
-  _id: string;
-  name: string;
-  wcaId: string;
-  countryIso2: string;
-  createdAt: number;
-  avatar?: string;
-}
-
 const USERS_PER_PAGE = 12;
 
 export default function CuberDirectory() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageCursors, setPageCursors] = useState<(string | null)[]>([null]);
   const { user } = useUser();
 
-  // Get all CubeDev users
-  const cubeDevUsers = useQuery(api.users.getAllUsers, {}) as
-    | CubeDevUser[]
-    | undefined;
+  const directoryPage = useQuery(api.users.getAllUsers, {
+    limit: USERS_PER_PAGE,
+    cursor: pageCursors[currentPage - 1] ?? undefined,
+    search: searchTerm.trim() || undefined,
+  });
 
-  const filteredUsers =
-    cubeDevUsers?.filter(
-      (user: CubeDevUser) =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.wcaId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.countryIso2.toLowerCase().includes(searchTerm.toLowerCase()),
-    ) || [];
+  const cubeDevUsers = (directoryPage?.users ?? []).flatMap((entry) =>
+    entry ? [entry] : [],
+  );
+  const hasNextPage = directoryPage ? !directoryPage.isDone : false;
+  const paginatedUsers = cubeDevUsers;
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
-  const startIndex = (currentPage - 1) * USERS_PER_PAGE;
-  const endIndex = startIndex + USERS_PER_PAGE;
-  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+  useEffect(() => {
+    if (!directoryPage?.cursor || directoryPage.isDone) {
+      return;
+    }
+    setPageCursors((prev) => {
+      const next = [...prev];
+      next[currentPage] = directoryPage.cursor;
+      return next;
+    });
+  }, [directoryPage, currentPage]);
 
-  // Reset to page 1 when search changes
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
     setCurrentPage(1);
+    setPageCursors([null]);
   };
 
   // Avatar component for consistent circular display
@@ -64,7 +60,7 @@ export default function CuberDirectory() {
     size = 48,
     className = "",
   }: {
-    user: CubeDevUser;
+    user: { name: string; avatar?: string };
     size?: number;
     className?: string;
   }) => {
@@ -141,7 +137,8 @@ export default function CuberDirectory() {
           <div className="timer-card text-center">
             <Users className="w-8 h-8 text-(--primary) mx-auto mb-3" />
             <div className="text-2xl font-bold text-(--text-primary) font-mono">
-              {cubeDevUsers?.length || 0}
+              {directoryPage === undefined ? "…" : cubeDevUsers.length}
+              {hasNextPage ? "+" : ""}
             </div>
             <div className="text-(--text-secondary) font-inter">
               Active Cubers
@@ -151,21 +148,19 @@ export default function CuberDirectory() {
           <div className="timer-card text-center">
             <Globe className="w-8 h-8 text-(--primary) mx-auto mb-3" />
             <div className="text-2xl font-bold text-(--text-primary) font-mono">
-              {new Set(cubeDevUsers?.map((u: CubeDevUser) => u.countryIso2))
-                .size || 0}
+              {new Set(cubeDevUsers.map((u) => u.countryIso2)).size || 0}
             </div>
             <div className="text-(--text-secondary) font-inter">Countries</div>
           </div>
         </div>
 
         {/* Results Summary */}
-        {filteredUsers.length > 0 && (
+        {paginatedUsers.length > 0 && (
           <div className="mb-6">
             <p className="text-(--text-secondary) font-inter">
-              Showing {startIndex + 1}-
-              {Math.min(endIndex, filteredUsers.length)} of{" "}
-              {filteredUsers.length} cubers
-              {searchTerm && <span> matching "{searchTerm}"</span>}
+              Showing {paginatedUsers.length} cubers
+              {searchTerm && <span> matching &quot;{searchTerm}&quot;</span>}
+              {hasNextPage && <span> (more available)</span>}
             </p>
           </div>
         )}
@@ -173,7 +168,7 @@ export default function CuberDirectory() {
         {/* User Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {paginatedUsers.length > 0 ? (
-            paginatedUsers.map((user: CubeDevUser) => (
+            paginatedUsers.map((user) => (
               <Link
                 key={user._id}
                 href={`/cuber/${user.wcaId}`}
@@ -231,8 +226,7 @@ export default function CuberDirectory() {
           )}
         </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
+        {(currentPage > 1 || hasNextPage) && (
           <div className="timer-card">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <button
@@ -245,64 +239,19 @@ export default function CuberDirectory() {
                 <span className="sm:hidden">PREVIOUS</span>
               </button>
 
-              <div className="flex items-center gap-2 flex-wrap justify-center">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNumber;
-                  if (totalPages <= 5) {
-                    pageNumber = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNumber = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNumber = totalPages - 4 + i;
-                  } else {
-                    pageNumber = currentPage - 2 + i;
-                  }
-
-                  return (
-                    <button
-                      key={pageNumber}
-                      onClick={() => setCurrentPage(pageNumber)}
-                      className={`w-10 h-10 rounded-lg font-statement font-medium transition-all duration-200 ${
-                        currentPage === pageNumber
-                          ? "bg-(--primary) text-white"
-                          : "bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary)"
-                      }`}
-                    >
-                      {pageNumber}
-                    </button>
-                  );
-                })}
-
-                {totalPages > 5 && currentPage < totalPages - 2 && (
-                  <>
-                    <span className="text-(--text-muted)">...</span>
-                    <button
-                      onClick={() => setCurrentPage(totalPages)}
-                      className="w-10 h-10 rounded-lg bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) font-statement font-medium transition-all duration-200"
-                    >
-                      {totalPages}
-                    </button>
-                  </>
-                )}
-              </div>
+              <p className="text-sm text-(--text-muted) font-inter">
+                Page {currentPage}
+              </p>
 
               <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+                disabled={!hasNextPage}
                 className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-statement font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
               >
                 <span className="hidden sm:inline">Next</span>
                 <span className="sm:hidden">NEXT</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
-            </div>
-
-            <div className="text-center mt-4">
-              <p className="text-sm text-(--text-muted) font-inter">
-                Page {currentPage} of {totalPages}
-              </p>
             </div>
           </div>
         )}

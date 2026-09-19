@@ -1,14 +1,24 @@
 import { v } from "convex/values";
-import { mutation, query, internalMutation } from "./_generated/server";
+import { mutation, query, internalMutation, MutationCtx } from "./_generated/server";
 import { internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 import {
   isCubeDevIdentifier,
   isWcaIdentifier,
   normalizeIdentifier,
   resolveUserByIdentifierOrAlias,
 } from "./identifierResolver";
+import {
+  getIdentityUser,
+  getPublicProfileUser,
+  requireMatchingUser,
+  getMatchingUserOrNull,
+} from "./auth";
+import { toOwnerUser, toPublicUser } from "./userProjection";
+import { convexConfig } from "./config";
 
 const TIMER_IMPORT_ONBOARDING_REMINDER_MS = 7 * 24 * 60 * 60 * 1000;
+const MAX_IMPORT_SOLVES = 2000;
 
 const DEFAULT_COACHING_NOTIFICATION_SETTINGS = {
   dailyPracticeReminder: true,
@@ -20,6 +30,15 @@ const DEFAULT_COACHING_NOTIFICATION_SETTINGS = {
 
 const DEFAULT_ALGORITHM_REMINDERS = true;
 
+function computeFinalTime(
+  time: number,
+  penalty: "none" | "+2" | "DNF",
+): number {
+  if (penalty === "+2") return time + 2000;
+  if (penalty === "DNF") return Infinity;
+  return time;
+}
+
 const getFirstNameToken = (name: string) => {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   const firstName = parts[0] || "USER";
@@ -29,15 +48,15 @@ const getFirstNameToken = (name: string) => {
 };
 
 const createIdentifierAlias = async (
-  ctx: any,
+  ctx: MutationCtx,
   aliasId: string,
-  userId: any,
+  userId: Id<"users">,
   reason = "cd_to_wca_migration",
 ) => {
   const normalizedAlias = normalizeIdentifier(aliasId);
   const existingAlias = await ctx.db
     .query("userIdentifierAliases")
-    .withIndex("by_alias_id", (q: any) => q.eq("aliasId", normalizedAlias))
+    .withIndex("by_alias_id", (q) => q.eq("aliasId", normalizedAlias))
     .first();
 
   if (existingAlias) {
@@ -53,7 +72,7 @@ const createIdentifierAlias = async (
 };
 
 const generateCubeDevIdentifier = async (
-  ctx: any,
+  ctx: MutationCtx,
   name: string,
   now: number,
 ) => {
@@ -64,41 +83,22 @@ const generateCubeDevIdentifier = async (
   const prefix = `CD${year}${token}`;
   const sequenceRegex = new RegExp(`^${prefix}(\\d{2})$`);
 
-  const users = await ctx.db.query("users").collect();
-  const aliases = await ctx.db.query("userIdentifierAliases").collect();
-  let maxSequence = 0;
+  const counter = await ctx.db
+    .query("identifierCounters")
+    .withIndex("by_prefix", (q) => q.eq("prefix", prefix))
+    .first();
 
-  for (const user of users) {
-    const identifier = normalizeIdentifier(user.wcaId);
-    const match = identifier.match(sequenceRegex);
+  let sequence = counter ? counter.nextSequence : 1;
 
-    if (match) {
-      const seq = Number.parseInt(match[1], 10);
-      if (!Number.isNaN(seq)) {
-        maxSequence = Math.max(maxSequence, seq);
-      }
-    }
-  }
-
-  for (const alias of aliases) {
-    const identifier = normalizeIdentifier(alias.aliasId);
-
-    const match = identifier.match(sequenceRegex);
-
-    if (match) {
-      const seq = Number.parseInt(match[1], 10);
-      if (!Number.isNaN(seq)) {
-        maxSequence = Math.max(maxSequence, seq);
-      }
-    }
-  }
-
-  for (let sequence = maxSequence + 1; sequence <= 99; sequence++) {
+  for (; sequence <= 99; sequence++) {
     const candidate = `${prefix}${sequence.toString().padStart(2, "0")}`;
+    if (!sequenceRegex.test(candidate)) {
+      continue;
+    }
 
     const existingUser = await ctx.db
       .query("users")
-      .withIndex("by_wca_id", (q: any) => q.eq("wcaId", candidate))
+      .withIndex("by_wca_id", (q) => q.eq("wcaId", candidate))
       .first();
     if (existingUser) {
       continue;
@@ -106,10 +106,19 @@ const generateCubeDevIdentifier = async (
 
     const existingAlias = await ctx.db
       .query("userIdentifierAliases")
-      .withIndex("by_alias_id", (q: any) => q.eq("aliasId", candidate))
+      .withIndex("by_alias_id", (q) => q.eq("aliasId", candidate))
       .first();
     if (existingAlias) {
       continue;
+    }
+
+    if (counter) {
+      await ctx.db.patch(counter._id, { nextSequence: sequence + 1 });
+    } else {
+      await ctx.db.insert("identifierCounters", {
+        prefix,
+        nextSequence: sequence + 1,
+      });
     }
 
     return candidate;
@@ -127,11 +136,14 @@ export const upsertUser = mutation({
     email: v.optional(v.string()),
     countryIso2: v.string(),
     avatar: v.optional(v.string()),
-    accessToken: v.optional(v.string()),
     gender: v.optional(v.string()),
     region: v.optional(v.string()),
+    serverSecret: v.string(),
   },
   handler: async (ctx, args) => {
+    if (args.serverSecret !== convexConfig.jwtSecretKey) {
+      throw new Error("Not authorized");
+    }
     const now = Date.now();
     const normalizedWcaId = args.wcaId
       ? normalizeIdentifier(args.wcaId)
@@ -212,7 +224,6 @@ export const upsertUser = mutation({
         name: args.name,
         countryIso2: args.countryIso2,
         avatar: args.avatar,
-        accessToken: args.accessToken,
         gender: args.gender,
         updatedAt: now,
         lastLoginAt: now,
@@ -262,7 +273,6 @@ export const upsertUser = mutation({
       name: args.name,
       countryIso2: args.countryIso2,
       avatar: args.avatar,
-      accessToken: args.accessToken,
       gender: args.gender,
       createdAt: now,
       updatedAt: now,
@@ -280,7 +290,7 @@ export const upsertUser = mutation({
 });
 
 // Get or create user by WCA ID (used during OAuth login)
-export const getOrCreateUser = mutation({
+export const getOrCreateUser = internalMutation({
   args: {
     wcaId: v.string(),
     wcaUserId: v.number(),
@@ -333,7 +343,9 @@ export const getUserByWcaId = query({
   args: { wcaId: v.string() },
   handler: async (ctx, args) => {
     const { user } = await resolveUserByIdentifierOrAlias(ctx, args.wcaId);
-    return user;
+    if (!user) return null;
+    const readable = await getPublicProfileUser(ctx, user._id);
+    return toPublicUser(readable?.user);
   },
 });
 
@@ -345,31 +357,93 @@ export const getUserByIdentifier = query({
       ctx,
       args.identifier,
     );
+    if (!user) {
+      return {
+        user: null,
+        redirectTo: undefined,
+        canonicalIdentifier: undefined,
+      };
+    }
+    const readable = await getPublicProfileUser(ctx, user._id);
+    if (!readable) {
+      return {
+        user: null,
+        redirectTo: undefined,
+        canonicalIdentifier: undefined,
+      };
+    }
     return {
-      user,
+      user: toPublicUser(readable.user),
       redirectTo,
-      canonicalIdentifier: user?.wcaId,
+      canonicalIdentifier: readable.user.wcaId,
     };
   },
 });
 
-// Get user by ID
 export const getUserById = query({
   args: { id: v.id("users") },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
+    const readable = await getPublicProfileUser(ctx, args.id);
+    if (!readable) return null;
+    if (readable.isOwner) {
+      return toOwnerUser(readable.user);
+    }
+    return toPublicUser(readable.user);
   },
 });
 
-// Get all users (for directory/discovery) - excludes deleted users
-export const getAllUsers = query({
+export const getCurrentUser = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db
+    const user = await getIdentityUser(ctx);
+    return toOwnerUser(user);
+  },
+});
+
+export const getAllUsers = query({
+  args: {
+    limit: v.optional(v.number()),
+    cursor: v.optional(v.string()),
+    search: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const limit = Math.min(args.limit ?? 24, 100);
+    const search = args.search?.trim().toLowerCase();
+    if (search) {
+      const candidates = await ctx.db
+        .query("users")
+        .filter((q) => q.neq(q.field("isDeleted"), true))
+        .take(300);
+      const matched = candidates.filter(
+        (user) =>
+          !user.hideProfile &&
+          (user.name.toLowerCase().includes(search) ||
+            user.wcaId.toLowerCase().includes(search) ||
+            user.countryIso2.toLowerCase().includes(search)),
+      );
+      return {
+        users: matched.slice(0, limit).map((user) => toPublicUser(user)),
+        cursor: null,
+        isDone: matched.length <= limit,
+      };
+    }
+
+    const result = await ctx.db
       .query("users")
-      .filter((q) => q.neq(q.field("isDeleted"), true))
+      .filter((q) =>
+        q.and(
+          q.neq(q.field("isDeleted"), true),
+          q.neq(q.field("hideProfile"), true),
+        ),
+      )
       .order("desc")
-      .collect();
+      .paginate({ numItems: limit, cursor: args.cursor ?? null });
+
+    return {
+      users: result.page.map((user) => toPublicUser(user)),
+      cursor: result.continueCursor,
+      isDone: result.isDone,
+    };
   },
 });
 
@@ -381,6 +455,7 @@ export const updatePrivacySettings = mutation({
     hideChallengeStats: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     const { userId, ...updates } = args;
     await ctx.db.patch(userId, {
       ...updates,
@@ -404,6 +479,7 @@ export const updateThemeSettings = mutation({
     highContrast: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     const { userId, ...updates } = args;
     await ctx.db.patch(userId, {
       ...updates,
@@ -418,6 +494,7 @@ export const getNotificationSettings = query({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     const user = await ctx.db.get(args.userId);
     if (!user) {
       return {
@@ -465,6 +542,7 @@ export const updateNotificationSettings = mutation({
     notificationTimeZone: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     const { userId, ...updates } = args;
     await ctx.db.patch(userId, {
       ...updates,
@@ -479,6 +557,7 @@ export const dismissTimerImportOnboarding = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     const now = Date.now();
 
     await ctx.db.patch(args.userId, {
@@ -496,6 +575,7 @@ export const completeTimerImportOnboarding = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     const now = Date.now();
 
     await ctx.db.patch(args.userId, {
@@ -512,6 +592,7 @@ export const deleteUserAccount = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     const now = Date.now();
     const user = await ctx.db.get(args.userId);
 
@@ -632,6 +713,7 @@ export const createSession = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     const sessionId = await ctx.db.insert("sessions", {
       userId: args.userId,
       name: args.name,
@@ -650,6 +732,7 @@ export const createSession = mutation({
 export const getUserSessions = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     return await ctx.db
       .query("sessions")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -668,6 +751,11 @@ export const updateSession = mutation({
   },
   handler: async (ctx, args) => {
     const { sessionId, ...updates } = args;
+    const session = await ctx.db.get(sessionId);
+    if (!session) {
+      throw new Error("Session not found");
+    }
+    await requireMatchingUser(ctx, session.userId);
     await ctx.db.patch(sessionId, updates);
   },
 });
@@ -685,13 +773,8 @@ export const addSolve = mutation({
     comment: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Calculate final time based on penalty
-    let finalTime = args.time;
-    if (args.penalty === "+2") {
-      finalTime = args.time + 2000; // Add 2 seconds
-    } else if (args.penalty === "DNF") {
-      finalTime = Infinity;
-    }
+    await requireMatchingUser(ctx, args.userId);
+    const finalTime = computeFinalTime(args.time, args.penalty);
 
     const solveId = await ctx.db.insert("solves", {
       userId: args.userId,
@@ -700,7 +783,7 @@ export const addSolve = mutation({
       time: args.time,
       scramble: args.scramble,
       penalty: args.penalty,
-      finalTime: finalTime,
+      finalTime,
       solveDate: Date.now(),
       comment: args.comment,
       createdAt: Date.now(),
@@ -748,6 +831,7 @@ export const saveSolve = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     const now = Date.now();
 
     const solveId = await ctx.db.insert("solves", {
@@ -757,7 +841,7 @@ export const saveSolve = mutation({
       scramble: args.scramble,
       time: args.time,
       penalty: args.penalty,
-      finalTime: args.finalTime,
+      finalTime: computeFinalTime(args.time, args.penalty),
       comment: args.comment,
       tags: args.tags,
       splits: args.splits,
@@ -827,6 +911,16 @@ export const batchImportSolves = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
+    if (args.solves.length > MAX_IMPORT_SOLVES) {
+      throw new Error(
+        `Cannot import more than ${MAX_IMPORT_SOLVES} solves per request; split into batches`,
+      );
+    }
+    const session = await ctx.db.get(args.sessionId);
+    if (!session || session.userId !== args.userId) {
+      throw new Error("Not authorized");
+    }
     const now = Date.now();
     const savedSolveIds = [];
 
@@ -840,7 +934,7 @@ export const batchImportSolves = mutation({
           scramble: solve.scramble,
           time: solve.time,
           penalty: solve.penalty,
-          finalTime: solve.finalTime,
+          finalTime: computeFinalTime(solve.time, solve.penalty),
           comment: solve.comment,
           tags: solve.tags,
           splits: solve.splits,
@@ -897,6 +991,11 @@ export const getSessionSolves = query({
     cursor: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const session = await ctx.db.get(args.sessionId);
+    if (!session) {
+      return { solves: [], cursor: null, isDone: true };
+    }
+    await requireMatchingUser(ctx, session.userId);
     const limit = args.limit ?? 500; // Default limit to prevent loading too many solves at once
 
     const result = await ctx.db
@@ -921,6 +1020,7 @@ export const getUserSolves = query({
     cursor: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     const limit = args.limit ?? 1000; // Default limit to prevent loading 20k+ solves at once
 
     const result = await ctx.db
@@ -944,6 +1044,7 @@ export const getUserRecentSolves = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     const limit = args.limit ?? 200; // Default to 200 recent solves for display
 
     return await ctx.db
@@ -958,6 +1059,10 @@ export const getUserRecentSolves = query({
 export const getUserSolveCount = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    const authUser = await getMatchingUserOrNull(ctx, args.userId);
+    if (!authUser) {
+      return 0;
+    }
     // Use pre-computed event stats for accurate count without loading all solves
     const eventStats = await ctx.db
       .query("userEventStats")
@@ -975,6 +1080,7 @@ export const deleteSolve = mutation({
   handler: async (ctx, args) => {
     const solve = await ctx.db.get(args.solveId);
     if (solve) {
+      await requireMatchingUser(ctx, solve.userId);
       const userId = solve.userId;
       const event = solve.event;
       const sessionId = solve.sessionId;
@@ -1008,6 +1114,11 @@ export const deleteSolve = mutation({
 export const deleteSession = mutation({
   args: { sessionId: v.id("sessions") },
   handler: async (ctx, args) => {
+    const session = await ctx.db.get(args.sessionId);
+    if (!session) {
+      throw new Error("Session not found");
+    }
+    await requireMatchingUser(ctx, session.userId);
     // Delete solves in batches to prevent timeout on large sessions
     let hasMore = true;
     while (hasMore) {
@@ -1043,26 +1154,19 @@ export const updateSolve = mutation({
     finalTime: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const { solveId, ...updates } = args;
+    const { solveId, finalTime: _clientFinalTime, ...updates } = args;
     const solve = await ctx.db.get(solveId);
-
     if (!solve) return;
+    await requireMatchingUser(ctx, solve.userId);
 
-    // If time or penalty is updated, recalculate finalTime
+    // If time or penalty is updated, recalculate finalTime from the server
     if (updates.time !== undefined || updates.penalty !== undefined) {
       const newTime = updates.time ?? solve.time;
       const newPenalty = updates.penalty ?? solve.penalty;
 
-      let finalTime = newTime;
-      if (newPenalty === "+2") {
-        finalTime = newTime + 2000;
-      } else if (newPenalty === "DNF") {
-        finalTime = Infinity;
-      }
-
       await ctx.db.patch(solveId, {
         ...updates,
-        finalTime: finalTime,
+        finalTime: computeFinalTime(newTime, newPenalty),
       });
 
       // Schedule stats recalculation if time/penalty changed
@@ -1084,6 +1188,7 @@ export const updateSolve = mutation({
 export const getUserStats = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     // Get all user sessions
     const sessions = await ctx.db
       .query("sessions")
@@ -1156,7 +1261,6 @@ export const getUserAccountStatus = query({
       isDeleted: !!user.isDeleted,
       deletedAt: user.deletedAt,
       name: user.name,
-      email: user.email,
       hasAvatar: !!user.avatar,
       sessionCount: sessions.length,
       solveCount,
@@ -1173,6 +1277,7 @@ export const dismissNotification = mutation({
     progressId: v.id("userAlgorithmProgress"),
   },
   handler: async (ctx, { userId, progressId }) => {
+    await requireMatchingUser(ctx, userId);
     const user = await ctx.db.get(userId);
     if (!user) {
       throw new Error("User not found");
@@ -1206,6 +1311,7 @@ export const undismissNotification = mutation({
     progressId: v.id("userAlgorithmProgress"),
   },
   handler: async (ctx, { userId, progressId }) => {
+    await requireMatchingUser(ctx, userId);
     const user = await ctx.db.get(userId);
     if (!user) {
       throw new Error("User not found");
@@ -1230,6 +1336,7 @@ export const clearAllDismissedNotifications = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, { userId }) => {
+    await requireMatchingUser(ctx, userId);
     const user = await ctx.db.get(userId);
     if (!user) {
       throw new Error("User not found");
@@ -1395,6 +1502,10 @@ export const recalculateUserEventStats = internalMutation({
 export const getUserEventStats = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    const readable = await getPublicProfileUser(ctx, args.userId);
+    if (!readable) {
+      return [];
+    }
     return await ctx.db
       .query("userEventStats")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -1409,6 +1520,10 @@ export const getUserEventStatsByEvent = query({
     event: v.string(),
   },
   handler: async (ctx, args) => {
+    const readable = await getPublicProfileUser(ctx, args.userId);
+    if (!readable) {
+      return null;
+    }
     return await ctx.db
       .query("userEventStats")
       .withIndex("by_user_event", (q) =>
@@ -1423,6 +1538,7 @@ export const getUserEventStatsByEvent = query({
 export const recalculateAllUserStats = mutation({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    await requireMatchingUser(ctx, args.userId);
     // Get all unique events for this user
     const solves = await ctx.db
       .query("solves")
@@ -1525,6 +1641,10 @@ export const getSolveHeatmapData = query({
     daysBack: v.optional(v.number()), // How many days of history (default 365)
   },
   handler: async (ctx, args) => {
+    const readable = await getPublicProfileUser(ctx, args.userId);
+    if (!readable) {
+      return [];
+    }
     const daysBack = args.daysBack ?? 365;
     const cutoffDate = Date.now() - daysBack * 24 * 60 * 60 * 1000;
 

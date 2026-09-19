@@ -3,7 +3,7 @@
 > The bar for any change to this codebase, human or AI.
 > Last verified against commit `ed01603`.
 
-Related: [PRD.md](./PRD.md) · [Architecture.md](./Architecture.md) · [Design.md](./Design.md)
+Related: [PRD.md](./PRD.md) · [Architecture.md](./Architecture.md) · [Design.md](./Design.md) · [Production-Readiness-Changes.md](./Production-Readiness-Changes.md)
 
 ---
 

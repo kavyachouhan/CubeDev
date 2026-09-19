@@ -197,14 +197,16 @@ class QueryCacheManager:
     def __init__(self, cache: CacheManager):
         self.cache = cache
     
-    async def get_response(self, query: str, use_rag: bool = True) -> Optional[dict]:
-        """Get cached response for a query."""
-        key = f"query:{hashlib.md5(query.lower().strip().encode()).hexdigest()}:rag={use_rag}"
+    async def get_response(self, query: str, use_rag: bool = True, user_id: str | None = None) -> Optional[dict]:
+        """Get cached response for a query, scoped to the requesting user."""
+        user_part = user_id or "anon"
+        key = f"query:{user_part}:{hashlib.md5(query.lower().strip().encode()).hexdigest()}:rag={use_rag}"
         return await self.cache.get(key)
     
-    async def set_response(self, query: str, use_rag: bool, response_data: dict):
-        """Cache a query response."""
-        key = f"query:{hashlib.md5(query.lower().strip().encode()).hexdigest()}:rag={use_rag}"
+    async def set_response(self, query: str, use_rag: bool, response_data: dict, user_id: str | None = None):
+        """Cache a query response for a specific user."""
+        user_part = user_id or "anon"
+        key = f"query:{user_part}:{hashlib.md5(query.lower().strip().encode()).hexdigest()}:rag={use_rag}"
         await self.cache.set(key, response_data, self.RESPONSE_TTL)
 
 

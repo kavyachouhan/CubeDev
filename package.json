@@ -5,7 +5,15 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/unit tests/security/open-redirect.test.ts tests/security/ssrf-xss.test.ts",
+    "test:convex": "vitest run tests/convex tests/security/idor.convex.test.ts",
+    "test:api": "vitest run tests/api",
+    "test:e2e": "playwright test",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
@@ -37,14 +45,20 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@edge-runtime/vm": "^5.0.0",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@types/recharts": "^1.8.29",
     "@types/web-push": "^3.6.4",
+    "@vitest/coverage-v8": "^3.2.4",
     "baseline-browser-mapping": "^2.9.19",
+    "convex-test": "^0.0.58",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
 
 // Helper to create URL-friendly slugs
 function createSlug(text: string): string {
@@ -1815,7 +1815,7 @@ const CUBIE_AI_ARTICLES = [
 ];
 
 // ===== Seed Mutation =====
-export const seedFAQ = mutation({
+export const seedFAQ = internalMutation({
   args: {},
   handler: async (ctx) => {
     // Check if already seeded
@@ -1895,7 +1895,7 @@ export const seedFAQ = mutation({
 });
 
 // Utility: Delete all FAQ data (useful for re-seeding)
-export const clearFAQ = mutation({
+export const clearFAQ = internalMutation({
   args: {},
   handler: async (ctx) => {
     const articles = await ctx.db.query("faqArticles").collect();

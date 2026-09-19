@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
 
 // Helper function to create URL-friendly slugs
 function createSlug(name: string): string {
@@ -13,7 +13,7 @@ function createSlug(name: string): string {
 
 // This mutation seeds the database with CLL (Corners of Last Layer) algorithms for 2x2
 // CLL is used after solving the first layer on a 2x2 cube - 42 algorithms
-export const seedCLL2x2Algorithms = mutation({
+export const seedCLL2x2Algorithms = internalMutation({
   args: {},
   handler: async (ctx) => {
     // Check if already seeded

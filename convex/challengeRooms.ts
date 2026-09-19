@@ -1,5 +1,7 @@
-import { mutation, query, internalMutation } from "./_generated/server";
+import { mutation, query, internalMutation, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+import { getPublicProfileUser, requireMatchingUser, requireUser } from "./auth";
+import { toPublicUser } from "./userProjection";
 
 // Generate a unique room ID (6-character alphanumeric)
 function generateRoomId(): string {
@@ -23,12 +25,7 @@ export const createRoom = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Get user from database
-    const user = await ctx.db.get(args.userId);
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await requireMatchingUser(ctx, args.userId);
 
     // Generate unique room ID
     let roomId: string;
@@ -37,7 +34,7 @@ export const createRoom = mutation({
       roomId = generateRoomId();
       existingRoom = await ctx.db
         .query("challengeRooms")
-        .filter((q) => q.eq(q.field("roomId"), roomId))
+        .withIndex("by_room_id", (q) => q.eq("roomId", roomId))
         .first();
     } while (existingRoom);
 
@@ -72,17 +69,12 @@ export const joinRoom = mutation({
     roomId: v.string(),
   },
   handler: async (ctx, args) => {
-    // Get user from database
-    const user = await ctx.db.get(args.userId);
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await requireMatchingUser(ctx, args.userId);
 
     // Find the room
     const room = await ctx.db
       .query("challengeRooms")
-      .filter((q) => q.eq(q.field("roomId"), args.roomId))
+      .withIndex("by_room_id", (q) => q.eq("roomId", args.roomId))
       .first();
 
     if (!room) {
@@ -97,11 +89,8 @@ export const joinRoom = mutation({
     // Check if user already joined
     const existingParticipant = await ctx.db
       .query("roomParticipants")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("roomId"), room._id),
-          q.eq(q.field("userId"), user._id)
-        )
+      .withIndex("by_room_user", (q) =>
+        q.eq("roomId", room._id).eq("userId", user._id),
       )
       .first();
 
@@ -142,17 +131,12 @@ export const submitSolve = mutation({
     comment: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Get user from database
-    const user = await ctx.db.get(args.userId);
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await requireMatchingUser(ctx, args.userId);
 
     // Find the room
     const room = await ctx.db
       .query("challengeRooms")
-      .filter((q) => q.eq(q.field("roomId"), args.roomId))
+      .withIndex("by_room_id", (q) => q.eq("roomId", args.roomId))
       .first();
 
     if (!room) {
@@ -167,11 +151,8 @@ export const submitSolve = mutation({
     // Find participant record
     const participant = await ctx.db
       .query("roomParticipants")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("roomId"), room._id),
-          q.eq(q.field("userId"), user._id)
-        )
+      .withIndex("by_room_user", (q) =>
+        q.eq("roomId", room._id).eq("userId", user._id),
       )
       .first();
 
@@ -330,7 +311,7 @@ export const getRoomDetails = query({
     // Find the room
     const room = await ctx.db
       .query("challengeRooms")
-      .filter((q) => q.eq(q.field("roomId"), args.roomId))
+      .withIndex("by_room_id", (q) => q.eq("roomId", args.roomId))
       .first();
 
     if (!room) {
@@ -341,20 +322,21 @@ export const getRoomDetails = query({
     const isExpired = Date.now() - room.createdAt > 48 * 60 * 60 * 1000;
 
     // Get room creator
-    const creator = await ctx.db.get(room.createdBy);
+    const creatorDoc = await ctx.db.get(room.createdBy);
+    const creator = toPublicUser(creatorDoc);
 
     // Get participants with user details
     const participants = await ctx.db
       .query("roomParticipants")
-      .filter((q) => q.eq(q.field("roomId"), room._id))
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
       .collect();
 
     const participantsWithUsers = await Promise.all(
       participants.map(async (participant) => {
-        const user = await ctx.db.get(participant.userId);
+        const userDoc = await ctx.db.get(participant.userId);
         return {
           ...participant,
-          user,
+          user: toPublicUser(userDoc),
         };
       })
     );
@@ -391,17 +373,12 @@ export const getUserParticipation = query({
     roomId: v.string(),
   },
   handler: async (ctx, args) => {
-    // Get user from database
-    const user = await ctx.db.get(args.userId);
-
-    if (!user) {
-      return null;
-    }
+    const user = await requireMatchingUser(ctx, args.userId);
 
     // Find the room
     const room = await ctx.db
       .query("challengeRooms")
-      .filter((q) => q.eq(q.field("roomId"), args.roomId))
+      .withIndex("by_room_id", (q) => q.eq("roomId", args.roomId))
       .first();
 
     if (!room) {
@@ -411,11 +388,8 @@ export const getUserParticipation = query({
     // Find participant record
     const participant = await ctx.db
       .query("roomParticipants")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("roomId"), room._id),
-          q.eq(q.field("userId"), user._id)
-        )
+      .withIndex("by_room_user", (q) =>
+        q.eq("roomId", room._id).eq("userId", user._id),
       )
       .first();
 
@@ -446,17 +420,12 @@ export const getUserRecentRooms = query({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    // Get user from database
-    const user = await ctx.db.get(args.userId);
-
-    if (!user) {
-      return [];
-    }
+    const user = await requireMatchingUser(ctx, args.userId);
 
     // Get recent participations for the user (limit to 20 for performance, we'll filter to 5 valid rooms later)
     const participations = await ctx.db
       .query("roomParticipants")
-      .filter((q) => q.eq(q.field("userId"), user._id))
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
       .order("desc")
       .take(20);
 
@@ -520,27 +489,17 @@ export const updateRoom = mutation({
     description: v.string(),
   },
   handler: async (ctx, args) => {
-    // Get user from database
-    const user = await ctx.db.get(args.userId);
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
     // Find the room
     const room = await ctx.db
       .query("challengeRooms")
-      .filter((q) => q.eq(q.field("roomId"), args.roomId))
+      .withIndex("by_room_id", (q) => q.eq("roomId", args.roomId))
       .first();
 
     if (!room) {
       throw new Error("Room not found");
     }
 
-    // Check if user is the room creator
-    if (room.createdBy.toString() !== user._id.toString()) {
-      throw new Error("Only the room creator can edit this room");
-    }
+    await requireMatchingUser(ctx, room.createdBy);
 
     // Update the room
     await ctx.db.patch(room._id, {
@@ -558,24 +517,34 @@ export const updateParticipantRanks = mutation({
     roomId: v.string(),
   },
   handler: async (ctx, args) => {
+    const user = await requireUser(ctx);
+
     // Find the room
     const room = await ctx.db
       .query("challengeRooms")
-      .filter((q) => q.eq(q.field("roomId"), args.roomId))
+      .withIndex("by_room_id", (q) => q.eq("roomId", args.roomId))
       .first();
 
     if (!room) {
       throw new Error("Room not found");
     }
 
+    const callerParticipant = await ctx.db
+      .query("roomParticipants")
+      .withIndex("by_room_user", (q) =>
+        q.eq("roomId", room._id).eq("userId", user._id),
+      )
+      .first();
+
+    if (!callerParticipant && room.createdBy !== user._id) {
+      throw new Error("Not authorized");
+    }
+
     // Get all completed participants
     const participants = await ctx.db
       .query("roomParticipants")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("roomId"), room._id),
-          q.eq(q.field("isCompleted"), true)
-        )
+      .withIndex("by_completion", (q) =>
+        q.eq("roomId", room._id).eq("isCompleted", true),
       )
       .collect();
 
@@ -606,11 +575,11 @@ export const updateParticipantRanks = mutation({
 });
 
 // Internal helper to update participant ranks
-const updateRanksForRoom = async (ctx: any, roomId: string) => {
+const updateRanksForRoom = async (ctx: MutationCtx, roomId: string) => {
   // Find the room
   const room = await ctx.db
     .query("challengeRooms")
-    .filter((q: any) => q.eq(q.field("roomId"), roomId))
+    .withIndex("by_room_id", (q) => q.eq("roomId", roomId))
     .first();
 
   if (!room) {
@@ -620,16 +589,13 @@ const updateRanksForRoom = async (ctx: any, roomId: string) => {
   // Get all completed participants
   const participants = await ctx.db
     .query("roomParticipants")
-    .filter((q: any) =>
-      q.and(
-        q.eq(q.field("roomId"), room._id),
-        q.eq(q.field("isCompleted"), true)
-      )
+    .withIndex("by_completion", (q) =>
+      q.eq("roomId", room._id).eq("isCompleted", true),
     )
     .collect();
 
   // Sort by average time
-  participants.sort((a: any, b: any) => {
+  participants.sort((a, b) => {
     if (a.average && b.average) {
       return a.average - b.average;
     }
@@ -654,7 +620,7 @@ const updateRanksForRoom = async (ctx: any, roomId: string) => {
 };
 
 // Clean up expired rooms (48 hours old)
-export const cleanupExpiredRooms = mutation({
+export const cleanupExpiredRooms = internalMutation({
   args: {},
   handler: async (ctx) => {
     const fortyEightHoursAgo = Date.now() - 48 * 60 * 60 * 1000;
@@ -700,24 +666,17 @@ export const processExpiredRooms = internalMutation({
   args: {},
   handler: async (ctx) => {
     const now = Date.now();
-    const fortyEightHoursAgo = now - 48 * 60 * 60 * 1000;
 
-    // Find rooms that just expired (within the last hour to avoid reprocessing)
-    const oneHourAgo = now - 60 * 60 * 1000;
-    const recentlyExpiredRooms = await ctx.db
+    // Find all active rooms past their expiry time
+    const expiredActiveRooms = await ctx.db
       .query("challengeRooms")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("status"), "active"),
-          q.lt(q.field("expiresAt"), now),
-          q.gt(q.field("expiresAt"), oneHourAgo)
-        )
-      )
-      .collect();
+      .withIndex("by_status", (q) => q.eq("status", "active"))
+      .collect()
+      .then((rooms) => rooms.filter((room) => room.expiresAt < now));
 
     let processedRooms = 0;
 
-    for (const room of recentlyExpiredRooms) {
+    for (const room of expiredActiveRooms) {
       // Update room status to expired
       await ctx.db.patch(room._id, { status: "expired" });
 
@@ -770,6 +729,11 @@ export const processExpiredRooms = internalMutation({
 export const getUserRoomParticipations = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    const readable = await getPublicProfileUser(ctx, args.userId);
+    if (!readable || (!readable.isOwner && readable.user.hideChallengeStats)) {
+      return [];
+    }
+
     // Get all participations for the user
     const participations = await ctx.db
       .query("roomParticipants")

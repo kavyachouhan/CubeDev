@@ -1,5 +1,12 @@
 import { query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
+import { getPublicProfileUser } from "./auth";
+
+const EMPTY_CHALLENGE_STATS = {
+  roomsWon: 0,
+  roomsParticipated: 0,
+  roomsCreated: 0,
+};
 
 // Get user's challenge statistics
 export const getUserChallengeStats = query({
@@ -7,27 +14,22 @@ export const getUserChallengeStats = query({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    // Get user from database
-    const user = await ctx.db.get(args.userId);
-
-    if (!user) {
-      return {
-        roomsWon: 0,
-        roomsParticipated: 0,
-        roomsCreated: 0,
-      };
+    const readable = await getPublicProfileUser(ctx, args.userId);
+    if (!readable || (!readable.isOwner && readable.user.hideChallengeStats)) {
+      return EMPTY_CHALLENGE_STATS;
     }
+    const user = readable.user;
 
     // Get rooms created by user
     const roomsCreated = await ctx.db
       .query("challengeRooms")
-      .filter((q) => q.eq(q.field("createdBy"), user._id))
+      .withIndex("by_creator", (q) => q.eq("createdBy", user._id))
       .collect();
 
     // Get user's participations
     const participations = await ctx.db
       .query("roomParticipants")
-      .filter((q) => q.eq(q.field("userId"), user._id))
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
       .collect();
 
     // Count rooms won (where user has finalRank = 1)

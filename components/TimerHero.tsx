@@ -9,7 +9,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
-import { getWCAOAuthUrl } from "@/lib/wca-config";
+import { wcaSignInHref } from "@/lib/wca-config";
 
 interface TimerRecord {
   id: string;
@@ -44,8 +44,7 @@ export default function TimerHero() {
   const inspectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleWCASignIn = () => {
-    const wcaAuthUrl = getWCAOAuthUrl();
-    window.location.href = wcaAuthUrl;
+    window.location.href = wcaSignInHref();
   };
 
   // Sound effects

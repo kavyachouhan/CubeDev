@@ -9,22 +9,27 @@
  */
 
 import type * as admin from "../admin.js";
+import type * as adminAuth from "../adminAuth.js";
 import type * as adminChallenges from "../adminChallenges.js";
 import type * as adminCompetitions from "../adminCompetitions.js";
 import type * as adminContact from "../adminContact.js";
 import type * as adminNotifications from "../adminNotifications.js";
 import type * as adminTimers from "../adminTimers.js";
 import type * as algorithms from "../algorithms.js";
+import type * as auth from "../auth.js";
 import type * as challengeRooms from "../challengeRooms.js";
 import type * as challengeStats from "../challengeStats.js";
 import type * as coach from "../coach.js";
 import type * as competitionSimulations from "../competitionSimulations.js";
+import type * as config from "../config.js";
 import type * as contactMessages from "../contactMessages.js";
 import type * as crons from "../crons.js";
 import type * as faq from "../faq.js";
 import type * as featureLabels from "../featureLabels.js";
 import type * as feedbackResponses from "../feedbackResponses.js";
+import type * as http from "../http.js";
 import type * as identifierResolver from "../identifierResolver.js";
+import type * as jwksNode from "../jwksNode.js";
 import type * as pushNodeActions from "../pushNodeActions.js";
 import type * as pushNotifications from "../pushNotifications.js";
 import type * as seedAlgorithms from "../seedAlgorithms.js";
@@ -37,6 +42,7 @@ import type * as seedFAQ from "../seedFAQ.js";
 import type * as seedOLL from "../seedOLL.js";
 import type * as seedZBLL from "../seedZBLL.js";
 import type * as updateZBLL from "../updateZBLL.js";
+import type * as userProjection from "../userProjection.js";
 import type * as users from "../users.js";
 
 import type {
@@ -47,22 +53,27 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
+  adminAuth: typeof adminAuth;
   adminChallenges: typeof adminChallenges;
   adminCompetitions: typeof adminCompetitions;
   adminContact: typeof adminContact;
   adminNotifications: typeof adminNotifications;
   adminTimers: typeof adminTimers;
   algorithms: typeof algorithms;
+  auth: typeof auth;
   challengeRooms: typeof challengeRooms;
   challengeStats: typeof challengeStats;
   coach: typeof coach;
   competitionSimulations: typeof competitionSimulations;
+  config: typeof config;
   contactMessages: typeof contactMessages;
   crons: typeof crons;
   faq: typeof faq;
   featureLabels: typeof featureLabels;
   feedbackResponses: typeof feedbackResponses;
+  http: typeof http;
   identifierResolver: typeof identifierResolver;
+  jwksNode: typeof jwksNode;
   pushNodeActions: typeof pushNodeActions;
   pushNotifications: typeof pushNotifications;
   seedAlgorithms: typeof seedAlgorithms;
@@ -75,6 +86,7 @@ declare const fullApi: ApiFromModules<{
   seedOLL: typeof seedOLL;
   seedZBLL: typeof seedZBLL;
   updateZBLL: typeof updateZBLL;
+  userProjection: typeof userProjection;
   users: typeof users;
 }>;
 

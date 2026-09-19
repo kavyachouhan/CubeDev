@@ -1,4 +1,4 @@
-import { query } from "./_generated/server";
+import { query } from "./adminAuth";
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
 

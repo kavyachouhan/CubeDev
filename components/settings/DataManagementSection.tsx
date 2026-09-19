@@ -206,19 +206,27 @@ export default function DataManagementSection() {
           tags: solve.tags,
         }));
 
-        // Import solves in batch
-        const result = await batchImportSolves({
-          userId: user.convexId as any,
-          sessionId: sessionId,
-          solves: solvesToImport,
-        });
+        // Chunk to the per-mutation cap; there is no overall import size limit
+        const IMPORT_BATCH_SIZE = 2000;
+        let importedCount = 0;
+        let totalAttempted = 0;
+        for (let i = 0; i < solvesToImport.length; i += IMPORT_BATCH_SIZE) {
+          const chunk = solvesToImport.slice(i, i + IMPORT_BATCH_SIZE);
+          const result = await batchImportSolves({
+            userId: user.convexId as any,
+            sessionId: sessionId,
+            solves: chunk,
+          });
+          importedCount += result.importedCount;
+          totalAttempted += result.totalAttempted;
+        }
 
         importResults.push({
           event,
           sessionId,
           sessionName,
-          importedCount: result.importedCount,
-          totalAttempted: result.totalAttempted,
+          importedCount,
+          totalAttempted,
         });
       }
 

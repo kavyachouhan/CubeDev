@@ -12,6 +12,7 @@ import {
 import Image from "next/image";
 import ProfileShareMenu from "./ProfileShareMenu";
 import { canOpenWcaProfile } from "@/lib/identifier-utils";
+import { formatMonthYear } from "@/lib/date-utils";
 
 interface WCAPersonalRecord {
   event_id: string;
@@ -89,10 +90,7 @@ export default function ProfileSidebar({
   personalRecords,
 }: ProfileSidebarProps) {
   const joinDate = cubeDevUser
-    ? new Date(cubeDevUser._creationTime).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-      })
+    ? formatMonthYear(cubeDevUser.createdAt ?? cubeDevUser._creationTime)
     : null;
 
   const lastActive = cubeDevUser?.lastLoginAt

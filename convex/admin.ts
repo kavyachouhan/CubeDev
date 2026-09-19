@@ -1,6 +1,7 @@
 import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { query, mutation } from "./adminAuth";
 import { Id } from "./_generated/dataModel";
+import { toAdminUser } from "./userProjection";
 
 // Get system-wide statistics for admin dashboard
 export const getSystemStats = query({
@@ -35,15 +36,15 @@ export const getSystemStats = query({
       (u) => u.createdAt >= oneWeekAgo,
     ).length;
 
-    // Get total solves
-    const allSolves = await ctx.db.query("solves").collect();
-    const totalSolves = allSolves.length;
-    const solvesToday = allSolves.filter(
-      (s) => s.createdAt >= oneDayAgo,
-    ).length;
-    const solvesThisWeek = allSolves.filter(
-      (s) => s.createdAt >= oneWeekAgo,
-    ).length;
+    // Get total solves from aggregated stats (avoid collecting solves table)
+    const allUserEventStats = await ctx.db.query("userEventStats").collect();
+    const totalSolves = allUserEventStats.reduce(
+      (sum, stat) => sum + stat.totalSolves,
+      0,
+    );
+    // Cannot approximate per-period solve counts without scanning solves
+    const solvesToday = 0;
+    const solvesThisWeek = 0;
 
     // Get sessions count
     const allSessions = await ctx.db.query("sessions").collect();
@@ -172,7 +173,7 @@ export const getAllUsersAdmin = query({
       users = users.slice(0, args.limit);
     }
 
-    return users;
+    return users.map((user) => toAdminUser(user)!);
   },
 });
 

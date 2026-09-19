@@ -273,3 +273,30 @@ export function getCompetitionStatusDisplay(
       };
   }
 }
+
+/**
+ * Formats a unix-ms timestamp as "Month Year", or null when the value is missing/invalid.
+ * Public user projections expose `createdAt`, not Convex `_creationTime`.
+ */
+export function formatMonthYear(timestamp: unknown): string | null {
+  const ms =
+    typeof timestamp === "number"
+      ? timestamp
+      : typeof timestamp === "string" && timestamp.trim() !== ""
+        ? Number(timestamp)
+        : NaN;
+
+  if (!Number.isFinite(ms)) {
+    return null;
+  }
+
+  const date = new Date(ms);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+  });
+}

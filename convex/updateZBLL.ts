@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { internalMutation, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
 
 /**
@@ -658,7 +658,7 @@ function buildZBLLCases() {
 /**
  * Query to check current ZBLL state before migration
  */
-export const checkZBLLState = query({
+export const checkZBLLState = internalQuery({
   args: {},
   handler: async (ctx) => {
     const zbllSet = await ctx.db
@@ -714,7 +714,7 @@ export const checkZBLLState = query({
  * 3. Only adding new cases if they don't exist
  * 4. Marking deprecated cases instead of deleting them
  */
-export const updateZBLLAlgorithms = mutation({
+export const updateZBLLAlgorithms = internalMutation({
   args: {},
   handler: async (ctx) => {
     const zbllSet = await ctx.db
@@ -829,7 +829,7 @@ export const updateZBLLAlgorithms = mutation({
 /**
  * Helper mutation to view algorithm data for a specific subset
  */
-export const viewZBLLSubset = query({
+export const viewZBLLSubset = internalQuery({
   args: {},
   handler: async (ctx) => {
     const zbllSet = await ctx.db
@@ -871,7 +871,7 @@ export const viewZBLLSubset = query({
  * Update a specific algorithm by case name
  * Use this to fix individual algorithms without running full migration
  */
-export const updateSingleAlgorithm = mutation({
+export const updateSingleAlgorithm = internalMutation({
   args: {
     caseName: v.string(),
     newAlgorithm: v.string(),
@@ -927,7 +927,7 @@ export const updateSingleAlgorithm = mutation({
  * Remove duplicate/extra ZBLL cases safely
  * Only removes cases that have no user progress associated
  */
-export const cleanupExtraCases = mutation({
+export const cleanupExtraCases = internalMutation({
   args: {
     dryRun: v.optional(v.boolean()),
   },
@@ -1049,7 +1049,7 @@ export const cleanupExtraCases = mutation({
 /**
  * Get statistics about current ZBLL data quality
  */
-export const getZBLLStats = query({
+export const getZBLLStats = internalQuery({
   args: {},
   handler: async (ctx) => {
     const zbllSet = await ctx.db

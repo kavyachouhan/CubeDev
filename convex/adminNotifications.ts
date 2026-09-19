@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, action } from "./_generated/server";
+import { query, action } from "./adminAuth";
 import { internal } from "./_generated/api";
 
 // Admin API for managing push notifications, viewing logs, and analytics

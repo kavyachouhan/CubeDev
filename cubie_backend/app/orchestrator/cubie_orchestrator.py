@@ -188,7 +188,7 @@ class CubieOrchestrator:
             
             # Use cache only for first messages in a session (no context dependency)
             if len(chat_history_preview) == 0:
-                cached_response = await self.query_cache.get_response(user_query, use_rag)
+                cached_response = await self.query_cache.get_response(user_query, use_rag, user_id)
                 if cached_response:
                     # Save cached user message
                     self.chat_service.create_message(
@@ -357,7 +357,7 @@ class CubieOrchestrator:
             
             # Cache the result if it's a first message in session (for future users with same query)
             if len(chat_history_preview) == 0:
-                await self.query_cache.set_response(user_query, use_rag, result)
+                await self.query_cache.set_response(user_query, use_rag, result, user_id)
             
             return result
             

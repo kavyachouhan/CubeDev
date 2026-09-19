@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { useTheme } from "@/lib/theme-context";
+import { formatTime as formatMs } from "@/lib/stats-utils";
 
 type TimerState =
   | "idle"
@@ -37,13 +38,7 @@ export default function TimerCore({
   const { timerUpdateMode, reduceMotion } = useTheme();
 
   // Format time
-  const formatTime = (timeMs: number) => {
-    if (timeMs === Infinity) return "DNF";
-    const seconds = timeMs / 1000;
-    const mins = Math.floor(seconds / 60);
-    const secs = (seconds % 60).toFixed(2);
-    return mins > 0 ? `${mins}:${secs.padStart(5, "0")}` : secs;
-  };
+  const formatTime = (timeMs: number) => formatMs(timeMs);
 
   // Format time for "seconds only" mode
   const formatTimeSecondsOnly = (timeMs: number) => {

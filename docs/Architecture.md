@@ -3,7 +3,7 @@
 > How the system is wired, so you know where code goes.
 > Last verified against commit `ed01603`.
 
-Related: [PRD.md](./PRD.md) · [Rules.md](./Rules.md) · [Design.md](./Design.md)
+Related: [PRD.md](./PRD.md) · [Rules.md](./Rules.md) · [Design.md](./Design.md) · [Production-Readiness-Changes.md](./Production-Readiness-Changes.md)
 
 ---
 
@@ -16,7 +16,7 @@ Related: [PRD.md](./PRD.md) · [Rules.md](./Rules.md) · [Design.md](./Design.md
 | Language | TypeScript 5, `strict: true` | Path alias `@/* → ./*` |
 | Styling | **Tailwind CSS v4** via PostCSS | **No `tailwind.config` file exists.** Tokens are CSS custom properties in [app/globals.css](../app/globals.css) — see [Design.md](./Design.md) |
 | Database & backend | **Convex 1.27** | Queries, mutations, actions, crons. The only persistence layer |
-| Auth | **WCA OAuth 2.0** | No Clerk / NextAuth / Convex Auth |
+| Auth | **WCA OAuth 2.0** + httpOnly session JWT; Convex `customJwt` ES256 via `setAuth` | No Clerk / NextAuth. See [Production-Readiness-Changes.md](./Production-Readiness-Changes.md) |
 | Cubing | `cubing` (cubing.js) 0.58 | Scramble generation and twisty player |
 | 3D | `three`, `@react-three/fiber`, `@react-three/drei` | |
 | Animation | `framer-motion` | |

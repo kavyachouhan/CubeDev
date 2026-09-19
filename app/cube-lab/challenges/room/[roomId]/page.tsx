@@ -4,7 +4,7 @@ import { use } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@/components/UserProvider";
-import { getWCAOAuthUrl } from "@/lib/wca-config";
+import { wcaSignInHref } from "@/lib/wca-config";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import Head from "next/head";
@@ -24,10 +24,7 @@ export default function RoomPage({ params }: RoomPageProps) {
   const roomDetails = useQuery(api.challengeRooms.getRoomDetails, { roomId });
 
   const handleWCASignIn = () => {
-    // Store the current URL to redirect back after sign-in
-    localStorage.setItem("wca_redirect_url", window.location.href);
-    const wcaAuthUrl = getWCAOAuthUrl();
-    window.location.href = wcaAuthUrl;
+    window.location.href = wcaSignInHref(window.location.pathname);
   };
 
   // Show loading state while checking authentication or fetching room details

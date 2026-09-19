@@ -11,9 +11,8 @@ interface User {
   name: string;
   wcaId?: string;
   countryIso2: string;
-  avatar?: any;
+  avatar?: { url?: string } | string;
   email: string;
-  accessToken?: string;
   loginTime?: number;
 }
 
@@ -26,46 +25,80 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | null>(null);
 
+function withoutAccessToken<T extends Record<string, unknown>>(value: T): T {
+  const copy = { ...value };
+  delete copy.accessToken;
+  delete copy.refreshToken;
+  return copy;
+}
+
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch additional user data from Convex if logged in
   const convexUser = useQuery(
     api.users.getUserById,
-    user?.convexId ? { id: user.convexId } : "skip"
+    user?.convexId ? { id: user.convexId } : "skip",
   );
 
   useEffect(() => {
-    // Load user from localStorage on mount
-    const loadUser = () => {
-      const storedUser = localStorage.getItem("wca_user");
-      if (storedUser) {
+    const loadUser = async () => {
+      let storedUser: User | null = null;
+      const raw = localStorage.getItem("wca_user");
+      if (raw) {
         try {
-          const parsedUser = JSON.parse(storedUser);
-          setUser(parsedUser);
-        } catch (error) {
-          console.error("Failed to parse stored user data:", error);
+          storedUser = withoutAccessToken(JSON.parse(raw)) as User;
+        } catch {
           localStorage.removeItem("wca_user");
+        }
+      }
+
+      try {
+        const sessionResponse = await fetch("/api/auth/session", {
+          credentials: "include",
+        });
+        if (!sessionResponse.ok) {
+          localStorage.removeItem("wca_user");
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
+        const session = await sessionResponse.json();
+        if (storedUser) {
+          setUser({
+            ...storedUser,
+            convexId: session.user?.convexId ?? storedUser.convexId,
+            wcaId: session.user?.wcaId ?? storedUser.wcaId,
+            email: session.user?.email ?? storedUser.email,
+          });
+        } else if (session.user?.convexId) {
+          setUser({
+            id: 0,
+            convexId: session.user.convexId,
+            name: "",
+            wcaId: session.user.wcaId,
+            countryIso2: "",
+            email: session.user.email || "",
+            loginTime: Date.now(),
+          });
+        }
+      } catch {
+        if (storedUser) {
+          setUser(storedUser);
         }
       }
       setIsLoading(false);
     };
 
-    loadUser();
+    void loadUser();
 
-    // Listen for storage events (for cross-tab sync)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "wca_user") {
         if (e.newValue) {
           try {
-            const parsedUser = JSON.parse(e.newValue);
-            setUser(parsedUser);
-          } catch (error) {
-            console.error(
-              "Failed to parse user data from storage event:",
-              error
-            );
+            setUser(withoutAccessToken(JSON.parse(e.newValue)) as User);
+          } catch {
+            setUser(null);
           }
         } else {
           setUser(null);
@@ -73,9 +106,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    // Listen for custom user update events
     const handleUserUpdate = () => {
-      loadUser();
+      void loadUser();
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -90,26 +122,37 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const signOut = () => {
     setUser(null);
     localStorage.removeItem("wca_user");
+    void fetch("/api/auth/session", { method: "DELETE", credentials: "include" });
   };
 
   const refreshUser = () => {
-    // Reload user data from localStorage
     const storedUser = localStorage.getItem("wca_user");
     if (storedUser) {
       try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error("Failed to parse stored user data:", error);
+        setUser(withoutAccessToken(JSON.parse(storedUser)) as User);
+      } catch {
         signOut();
       }
-    } else {
-      signOut();
     }
   };
 
+  const mergedUser =
+    convexUser && user
+      ? {
+          ...user,
+          name: convexUser.name || user.name,
+          wcaId: convexUser.wcaId || user.wcaId,
+          countryIso2: convexUser.countryIso2 || user.countryIso2,
+          avatar: convexUser.avatar ?? user.avatar,
+          email:
+            typeof convexUser.email === "string" && convexUser.email
+              ? convexUser.email
+              : user.email,
+        }
+      : user;
+
   const value: UserContextType = {
-    user: convexUser && user ? { ...user, ...convexUser } : user,
+    user: mergedUser,
     isLoading,
     signOut,
     refreshUser,

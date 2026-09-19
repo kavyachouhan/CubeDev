@@ -15,7 +15,7 @@ export default function PrivacySection() {
   // Get current privacy settings
   const currentUser = useQuery(
     api.users.getUserById,
-    user?.convexId ? { id: user.convexId as any } : "skip"
+    user?.convexId ? { id: user.convexId } : "skip"
   );
 
   // Update mutation

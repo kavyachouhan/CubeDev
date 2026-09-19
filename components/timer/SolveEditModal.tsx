@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, Check } from "lucide-react";
+import { formatTime, secondsToCentisMs, truncToCentisMs } from "@/lib/stats-utils";
 
 interface SolveEditModalProps {
   isOpen: boolean;
@@ -29,33 +30,26 @@ export default function SolveEditModal({
       setTimeInput(formatTimeForInput(currentTime));
       setPenalty(currentPenalty);
       setError("");
-      setParsedTime(currentTime);
+      setParsedTime(
+        !isFinite(currentTime) || currentTime === 0
+          ? currentTime
+          : truncToCentisMs(currentTime),
+      );
     }
   }, [isOpen, currentTime, currentPenalty]);
 
   // Format time for input field
   const formatTimeForInput = (timeMs: number): string => {
     if (timeMs === Infinity || timeMs === 0) return "DNF";
-
-    const seconds = timeMs / 1000;
-    const mins = Math.floor(seconds / 60);
-    const secs = (seconds % 60).toFixed(2);
-
-    return mins > 0 ? `${mins}:${secs.padStart(5, "0")}` : secs;
+    return formatTime(timeMs);
   };
 
-  // Format time for display in the preview
   const formatTimeDisplay = (
     timeMs: number,
     penalty: "none" | "+2" | "DNF"
   ): string => {
     if (penalty === "DNF" || timeMs === Infinity || timeMs === 0) return "DNF";
-
-    const seconds = timeMs / 1000;
-    const mins = Math.floor(seconds / 60);
-    const secs = (seconds % 60).toFixed(2);
-    const formatted = mins > 0 ? `${mins}:${secs.padStart(5, "0")}` : secs;
-
+    const formatted = formatTime(timeMs);
     return penalty === "+2" ? `${formatted}+` : formatted;
   };
 
@@ -150,7 +144,7 @@ export default function SolveEditModal({
         };
       }
 
-      const timeMs = (minutes * 60 + seconds) * 1000;
+      const timeMs = secondsToCentisMs(minutes * 60 + seconds);
       return {
         time: timeMs,
         penalty: detectedPenalty,
@@ -195,7 +189,7 @@ export default function SolveEditModal({
           };
         }
 
-        const timeMs = (minutes * 60 + seconds) * 1000;
+        const timeMs = secondsToCentisMs(minutes * 60 + seconds);
         return {
           time: timeMs,
           penalty: detectedPenalty,
@@ -225,7 +219,7 @@ export default function SolveEditModal({
           };
         }
 
-        const timeMs = (minutes * 60 + seconds) * 1000;
+        const timeMs = secondsToCentisMs(minutes * 60 + seconds);
         return {
           time: timeMs,
           penalty: detectedPenalty,
@@ -255,7 +249,7 @@ export default function SolveEditModal({
           };
         }
 
-        const timeMs = (minutes * 60 + seconds) * 1000;
+        const timeMs = secondsToCentisMs(minutes * 60 + seconds);
         return {
           time: timeMs,
           penalty: detectedPenalty,
@@ -275,7 +269,7 @@ export default function SolveEditModal({
       };
     }
 
-    const timeMs = seconds * 1000;
+    const timeMs = secondsToCentisMs(seconds);
     return {
       time: timeMs,
       penalty: detectedPenalty,

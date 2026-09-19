@@ -20,11 +20,17 @@ export interface PhaseSplit {
   time: number;
 }
 
-// Format time in milliseconds to human-readable string
-export const formatTime = (ms: number): string => {
-  if (ms === Infinity) return "DNF";
+// Format time in milliseconds to human-readable string.
+// WCA singles truncate to centiseconds (1.265s -> 1.26, not 1.27).
+export const truncToCentisMs = (ms: number): number => {
+  if (!isFinite(ms)) return ms;
+  return Math.floor(ms / 10) * 10;
+};
 
-  const totalSeconds = ms / 1000;
+export const formatTime = (ms: number): string => {
+  if (!isFinite(ms) || ms === Infinity) return "DNF";
+
+  const totalSeconds = truncToCentisMs(ms) / 1000;
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
 
@@ -33,6 +39,13 @@ export const formatTime = (ms: number): string => {
   }
 
   return seconds.toFixed(2);
+};
+
+/** Convert a seconds value to ms at centisecond resolution.
+ *  Avoids `0.29 * 1000 === 289.999...` drifting the stored time. */
+export const secondsToCentisMs = (seconds: number): number => {
+  if (!isFinite(seconds)) return seconds;
+  return Math.round(seconds * 100) * 10;
 };
 
 // Format time in milliseconds to human-readable string

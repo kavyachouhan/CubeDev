@@ -36,7 +36,7 @@ interface WCAProfileData {
     class: string;
     delegate_status?: string;
     teams?: string[];
-    personal_records?: Record<string, any>;
+    personal_records?: Record<string, WCAApiEventRecord>;
   };
 }
 
@@ -79,6 +79,67 @@ interface CompetitionInfo {
   events: string[];
   bestResult: number;
   mainEvent?: string;
+}
+
+interface WCAApiRankedResult {
+  best?: number;
+  world_ranking?: number;
+  world_rank?: number;
+  continental_ranking?: number;
+  continent_rank?: number;
+  national_ranking?: number;
+  country_rank?: number;
+}
+
+interface WCAApiEventRecord {
+  single?: WCAApiRankedResult;
+  average?: WCAApiRankedResult;
+}
+
+function rankValue(result: WCAApiRankedResult | undefined, kind: "world" | "continent" | "country") {
+  if (!result) return 0;
+  if (kind === "world") return result.world_ranking || result.world_rank || 0;
+  if (kind === "continent") {
+    return result.continental_ranking || result.continent_rank || 0;
+  }
+  return result.national_ranking || result.country_rank || 0;
+}
+
+function personalRecordsFromPayload(
+  records: Record<string, WCAApiEventRecord> | undefined,
+): WCAPersonalRecord[] {
+  if (!records) return [];
+  return Object.entries(records)
+    .map(([eventId, record]) => ({
+      event_id: eventId,
+      best: record.single?.best || 0,
+      world_ranking: rankValue(record.single, "world"),
+      continental_ranking: rankValue(record.single, "continent"),
+      national_ranking: rankValue(record.single, "country"),
+      average: record.average?.best || 0,
+      average_world_ranking: rankValue(record.average, "world"),
+      average_continental_ranking: rankValue(record.average, "continent"),
+      average_national_ranking: rankValue(record.average, "country"),
+    }))
+    .filter((record) => record.best > 0 || (record.average || 0) > 0);
+}
+
+function withPersonRecords(
+  profile: WCAProfileData & {
+    personal_records?: Record<string, WCAApiEventRecord>;
+  },
+): WCAProfileData {
+  const records = profile.person.personal_records ?? profile.personal_records;
+  if (!records) {
+    return profile;
+  }
+  return {
+    ...profile,
+    person: {
+      ...profile.person,
+      personal_records: records,
+    },
+  };
 }
 
 export default function CuberProfile({ wcaId }: CuberProfileProps) {
@@ -216,28 +277,11 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
         );
 
         if (cachedProfile) {
-          setProfileData(cachedProfile);
-          // Extract personal records from cached profile
-          if (cachedProfile.person.personal_records) {
-            const records: WCAPersonalRecord[] = Object.entries(
-              cachedProfile.person.personal_records,
-            )
-              .map(([eventId, record]: [string, any]) => ({
-                event_id: eventId,
-                best: record.single?.best || 0,
-                world_ranking: record.single?.world_ranking || 0,
-                continental_ranking: record.single?.continental_ranking || 0,
-                national_ranking: record.single?.national_ranking || 0,
-                average: record.average?.best || 0,
-                average_world_ranking: record.average?.world_ranking || 0,
-                average_continental_ranking:
-                  record.average?.continental_ranking || 0,
-                average_national_ranking: record.average?.national_ranking || 0,
-              }))
-              .filter((record) => record.best > 0 || record.average > 0);
-
-            setPersonalRecords(records);
-          }
+          const normalizedCache = withPersonRecords(cachedProfile);
+          setProfileData(normalizedCache);
+          setPersonalRecords(
+            personalRecordsFromPayload(normalizedCache.person.personal_records),
+          );
         }
 
         if (cachedResults) {
@@ -251,13 +295,8 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
 
         // Fetch basic profile data
         const profileResponse = await fetch(
-          `https://www.worldcubeassociation.org/api/v0/persons/${resolvedIdentifier}`,
-          {
-            headers: {
-              Accept: "application/json",
-              "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
-            },
-          },
+          `/api/wca/persons/${resolvedIdentifier}`,
+          { headers: { Accept: "application/json" } },
         );
 
         if (!profileResponse.ok) {
@@ -267,45 +306,25 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
           throw new Error("Failed to fetch WCA profile");
         }
 
-        const profileData = await profileResponse.json();
+        const profileData = withPersonRecords(
+          (await profileResponse.json()) as WCAProfileData & {
+            personal_records?: Record<string, WCAApiEventRecord>;
+          },
+        );
         setProfileData(profileData);
 
         // Cache the profile data
         saveToCache(WCA_CACHE_KEYS.profile(resolvedIdentifier), profileData);
 
-        // Extract personal records
-        if (profileData.person.personal_records) {
-          const records: WCAPersonalRecord[] = Object.entries(
-            profileData.person.personal_records,
-          )
-            .map(([eventId, record]: [string, any]) => ({
-              event_id: eventId,
-              best: record.single?.best || 0,
-              world_ranking: record.single?.world_ranking || 0,
-              continental_ranking: record.single?.continental_ranking || 0,
-              national_ranking: record.single?.national_ranking || 0,
-              // Add average data
-              average: record.average?.best || 0,
-              average_world_ranking: record.average?.world_ranking || 0,
-              average_continental_ranking:
-                record.average?.continental_ranking || 0,
-              average_national_ranking: record.average?.national_ranking || 0,
-            }))
-            .filter((record) => record.best > 0 || record.average > 0);
-
-          setPersonalRecords(records);
-        }
+        setPersonalRecords(
+          personalRecordsFromPayload(profileData.person.personal_records),
+        );
 
         // Fetch competition results
         try {
           const resultsResponse = await fetch(
-            `https://www.worldcubeassociation.org/api/v0/persons/${resolvedIdentifier}/results`,
-            {
-              headers: {
-                Accept: "application/json",
-                "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
-              },
-            },
+            `/api/wca/persons/${resolvedIdentifier}/results`,
+            { headers: { Accept: "application/json" } },
           );
 
           if (resultsResponse.ok) {
@@ -324,7 +343,31 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
           console.warn("Failed to fetch competition results:", error);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        if (cubeDevUser) {
+          setProfileData((prev) =>
+            prev
+              ? prev
+              : {
+                  person: {
+                    name: cubeDevUser.name,
+                    wcaId: resolvedIdentifier,
+                    avatar: cubeDevUser.avatar
+                      ? { url: cubeDevUser.avatar }
+                      : undefined,
+                    country: {
+                      name: cubeDevUser.countryIso2,
+                      iso2: cubeDevUser.countryIso2,
+                    },
+                    gender: cubeDevUser.gender || "",
+                    class: "user",
+                    personal_records: {},
+                  },
+                },
+          );
+          setError(null);
+        } else {
+          setError(err instanceof Error ? err.message : "An error occurred");
+        }
         setIsLoading(false);
       } finally {
         setIsLoading(false);
@@ -421,13 +464,8 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
               await new Promise((resolve) => setTimeout(resolve, 100));
 
               const response = await fetch(
-                `https://www.worldcubeassociation.org/api/v0/competitions/${compId}`,
-                {
-                  headers: {
-                    Accept: "application/json",
-                    "User-Agent": "CubeDev/1.0 (https://cubedev.xyz)",
-                  },
-                },
+                `/api/wca/competitions/${compId}`,
+                { headers: { Accept: "application/json" } },
               );
 
               if (response.ok) {

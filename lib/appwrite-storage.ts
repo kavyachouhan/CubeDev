@@ -1,17 +1,12 @@
 import { Client, Storage, ID } from "appwrite";
+import { publicConfig } from "./config";
 
-// Initialize Appwrite client
-const client = new Client()
-  .setEndpoint(
-    process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1",
-  )
-  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || "");
-
-const storage = new Storage(client);
-
-// Bucket ID for journal media
-const JOURNAL_BUCKET_ID =
-  process.env.NEXT_PUBLIC_APPWRITE_JOURNAL_BUCKET_ID || "";
+function getStorage() {
+  const client = new Client()
+    .setEndpoint(publicConfig.appwriteEndpoint)
+    .setProject(publicConfig.appwriteProjectId);
+  return new Storage(client);
+}
 
 export interface UploadResult {
   fileId: string;
@@ -24,13 +19,10 @@ export interface UploadResult {
  * @returns Object containing fileId and viewable URL
  */
 export async function uploadJournalMedia(file: File): Promise<UploadResult> {
-  if (!JOURNAL_BUCKET_ID) {
-    throw new Error("Appwrite journal bucket ID not configured");
-  }
-
+  const bucketId = publicConfig.appwriteJournalBucketId;
   const fileId = ID.unique();
 
-  await storage.createFile(JOURNAL_BUCKET_ID, fileId, file);
+  await getStorage().createFile(bucketId, fileId, file);
 
   // Get the file view URL
   const url = getFileViewUrl(fileId);
@@ -43,11 +35,7 @@ export async function uploadJournalMedia(file: File): Promise<UploadResult> {
  * @param fileId - The file ID to delete
  */
 export async function deleteJournalMedia(fileId: string): Promise<void> {
-  if (!JOURNAL_BUCKET_ID) {
-    throw new Error("Appwrite journal bucket ID not configured");
-  }
-
-  await storage.deleteFile(JOURNAL_BUCKET_ID, fileId);
+  await getStorage().deleteFile(publicConfig.appwriteJournalBucketId, fileId);
 }
 
 /**
@@ -56,13 +44,11 @@ export async function deleteJournalMedia(fileId: string): Promise<void> {
  * @returns The URL to view the file
  */
 export function getFileViewUrl(fileId: string): string {
-  if (!JOURNAL_BUCKET_ID) return "";
+  const bucketId = publicConfig.appwriteJournalBucketId;
+  const endpoint = publicConfig.appwriteEndpoint;
+  const projectId = publicConfig.appwriteProjectId;
 
-  const endpoint =
-    process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1";
-  const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || "";
-
-  return `${endpoint}/storage/buckets/${JOURNAL_BUCKET_ID}/files/${fileId}/view?project=${projectId}`;
+  return `${endpoint}/storage/buckets/${bucketId}/files/${fileId}/view?project=${projectId}`;
 }
 
 /**
@@ -71,13 +57,11 @@ export function getFileViewUrl(fileId: string): string {
  * @returns The URL to download the file
  */
 export function getFileDownloadUrl(fileId: string): string {
-  if (!JOURNAL_BUCKET_ID) return "";
+  const bucketId = publicConfig.appwriteJournalBucketId;
+  const endpoint = publicConfig.appwriteEndpoint;
+  const projectId = publicConfig.appwriteProjectId;
 
-  const endpoint =
-    process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1";
-  const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || "";
-
-  return `${endpoint}/storage/buckets/${JOURNAL_BUCKET_ID}/files/${fileId}/download?project=${projectId}`;
+  return `${endpoint}/storage/buckets/${bucketId}/files/${fileId}/download?project=${projectId}`;
 }
 
 /**
@@ -116,13 +100,11 @@ export function getFilePreviewUrl(
   width?: number,
   height?: number,
 ): string {
-  if (!JOURNAL_BUCKET_ID) return "";
+  const bucketId = publicConfig.appwriteJournalBucketId;
+  const endpoint = publicConfig.appwriteEndpoint;
+  const projectId = publicConfig.appwriteProjectId;
 
-  const endpoint =
-    process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1";
-  const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || "";
-
-  let url = `${endpoint}/storage/buckets/${JOURNAL_BUCKET_ID}/files/${fileId}/preview?project=${projectId}`;
+  let url = `${endpoint}/storage/buckets/${bucketId}/files/${fileId}/preview?project=${projectId}`;
 
   if (width) url += `&width=${width}`;
   if (height) url += `&height=${height}`;

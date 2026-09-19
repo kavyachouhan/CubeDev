@@ -1,4 +1,4 @@
-import { query } from "./_generated/server";
+import { query } from "./adminAuth";
 import { v } from "convex/values";
 
 // Helper to format time in a human-readable way
@@ -149,42 +149,47 @@ const WCA_EVENTS: Record<string, string> = {
 export const getTimerAnalytics = query({
   args: {},
   handler: async (ctx) => {
-    // In a real application, we would want to optimize these queries and not fetch all data into memory.
-    const allSolves = await ctx.db.query("solves").collect();
     const allSessions = await ctx.db.query("sessions").collect();
     const allUserEventStats = await ctx.db.query("userEventStats").collect();
     const allUsers = await ctx.db.query("users").collect();
 
     const now = Date.now();
+    const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
 
-    // Basic counts and totals
-    const totalSolves = allSolves.length;
+    // Basic counts and totals from aggregated stats
+    const totalSolves = allUserEventStats.reduce(
+      (sum, stat) => sum + stat.totalSolves,
+      0,
+    );
     const totalSessions = allSessions.length;
-    const totalUsers = new Set(allSolves.map((s) => s.userId.toString())).size;
+    const totalUsers = new Set(
+      allUserEventStats.map((s) => s.userId.toString()),
+    ).size;
     const totalActiveUsers = new Set(
-      allSolves
-        .filter((s) => s.solveDate >= now - 30 * 24 * 60 * 60 * 1000)
+      allUserEventStats
+        .filter((s) => s.lastSolveDate && s.lastSolveDate >= thirtyDaysAgo)
         .map((s) => s.userId.toString()),
     ).size;
 
-    // Penalty statistics
-    const dnfCount = allSolves.filter((s) => s.penalty === "DNF").length;
-    const plusTwoCount = allSolves.filter((s) => s.penalty === "+2").length;
-    const cleanSolves = allSolves.filter((s) => s.penalty === "none").length;
-    const dnfRate =
-      totalSolves > 0 ? Math.round((dnfCount / totalSolves) * 100) : 0;
-    const plusTwoRate =
-      totalSolves > 0 ? Math.round((plusTwoCount / totalSolves) * 100) : 0;
+    // Penalty statistics require per-solve data
+    const dnfCount = 0;
+    const plusTwoCount = 0;
+    const cleanSolves = 0;
+    const dnfRate = 0;
+    const plusTwoRate = 0;
 
-    // Event distribution and user counts
+    // Event distribution and user counts from aggregated stats
     const eventCounts: Record<string, number> = {};
     const eventUserCounts: Record<string, Set<string>> = {};
-    for (const solve of allSolves) {
-      eventCounts[solve.event] = (eventCounts[solve.event] || 0) + 1;
-      if (!eventUserCounts[solve.event]) {
-        eventUserCounts[solve.event] = new Set();
+    for (const stat of allUserEventStats) {
+      eventCounts[stat.event] =
+        (eventCounts[stat.event] || 0) + stat.totalSolves;
+      if (!eventUserCounts[stat.event]) {
+        eventUserCounts[stat.event] = new Set();
       }
-      eventUserCounts[solve.event].add(solve.userId.toString());
+      if (stat.totalSolves > 0) {
+        eventUserCounts[stat.event].add(stat.userId.toString());
+      }
     }
 
     const eventDistribution = Object.entries(eventCounts)
@@ -196,36 +201,14 @@ export const getTimerAnalytics = query({
       }))
       .sort((a, b) => b.count - a.count);
 
-    // Timer mode distribution
-    const normalMode = allSolves.filter(
-      (s) => s.timerMode === "normal" || !s.timerMode,
-    ).length;
-    const manualMode = allSolves.filter((s) => s.timerMode === "manual").length;
-    const stackmatMode = allSolves.filter(
-      (s) => s.timerMode === "stackmat",
-    ).length;
-
+    // Timer mode and splits require per-solve data
     const timerModeDistribution = {
-      normal: normalMode,
-      manual: manualMode,
-      stackmat: stackmatMode,
+      normal: 0,
+      manual: 0,
+      stackmat: 0,
     };
-
-    // Splits usage
-    const solvesWithSplits = allSolves.filter(
-      (s) => s.splits && s.splits.length > 0,
-    ).length;
-    const splitUsageRate =
-      totalSolves > 0 ? Math.round((solvesWithSplits / totalSolves) * 100) : 0;
-
-    // Split method counts
+    const splitUsageRate = 0;
     const splitMethodCounts: Record<string, number> = {};
-    for (const solve of allSolves) {
-      if (solve.splitMethod) {
-        splitMethodCounts[solve.splitMethod] =
-          (splitMethodCounts[solve.splitMethod] || 0) + 1;
-      }
-    }
 
     // User categories based on 3x3 averages (using pre-computed stats for efficiency)
     const userCategories: Record<string, number> = {};
@@ -275,42 +258,21 @@ export const getTimerAnalytics = query({
         count: userCategories[cat] || 0,
       }));
 
-    // Daily trends for the last 30 days
-    const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
-    const recentSolves = allSolves.filter((s) => s.solveDate >= thirtyDaysAgo);
-    const solvesPerDay: Record<string, number> = {};
-    for (const solve of recentSolves) {
-      const date = new Date(solve.solveDate).toISOString().split("T")[0];
-      solvesPerDay[date] = (solvesPerDay[date] || 0) + 1;
-    }
-
-    // Generate daily trend data for the last 30 days
+    // Daily/weekly solve trends require per-solve data
     const dailyTrend: { date: string; count: number }[] = [];
     for (let i = 29; i >= 0; i--) {
       const date = new Date(now - i * 24 * 60 * 60 * 1000)
         .toISOString()
         .split("T")[0];
-      dailyTrend.push({
-        date,
-        count: solvesPerDay[date] || 0,
-      });
+      dailyTrend.push({ date, count: 0 });
     }
 
-    // Weekly trends for the last 8 weeks
     const weeklyTrend: { week: string; count: number; users: number }[] = [];
     for (let i = 7; i >= 0; i--) {
-      const weekStart = now - (i + 1) * 7 * 24 * 60 * 60 * 1000;
-      const weekEnd = now - i * 7 * 24 * 60 * 60 * 1000;
-      const weekSolves = allSolves.filter(
-        (s) => s.solveDate >= weekStart && s.solveDate < weekEnd,
-      );
-      const weekUsers = new Set(weekSolves.map((s) => s.userId.toString()))
-        .size;
-
       weeklyTrend.push({
         week: `W${8 - i}`,
-        count: weekSolves.length,
-        users: weekUsers,
+        count: 0,
+        users: 0,
       });
     }
 
@@ -352,45 +314,36 @@ export const getTimerAnalytics = query({
         averageFormatted: formatTime(u.average),
       }));
 
-    // Most active users based on total solve count
+    // Most active users based on aggregated solve counts
     const userSolveCounts: Map<string, { count: number; userId: string }> =
       new Map();
-    for (const solve of allSolves) {
-      const userId = solve.userId.toString();
+    for (const stat of allUserEventStats) {
+      const userId = stat.userId.toString();
       const current = userSolveCounts.get(userId);
       if (current) {
-        current.count++;
+        current.count += stat.totalSolves;
       } else {
-        userSolveCounts.set(userId, { count: 1, userId });
+        userSolveCounts.set(userId, { count: stat.totalSolves, userId });
       }
     }
 
-    const mostActiveUsers = await Promise.all(
-      Array.from(userSolveCounts.entries())
-        .sort((a, b) => b[1].count - a[1].count)
-        .slice(0, 10)
-        .map(async ([userId, data]) => {
-          const userIdTyped = userId as unknown;
-          const user = allUsers.find((u) => u._id.toString() === userId);
-          return {
-            userId,
-            name: user?.name || "Unknown User",
-            wcaId: user?.wcaId || "",
-            solveCount: data.count,
-          };
-        }),
-    );
+    const mostActiveUsers = Array.from(userSolveCounts.entries())
+      .sort((a, b) => b[1].count - a[1].count)
+      .slice(0, 10)
+      .map(([userId, data]) => {
+        const user = allUsers.find((u) => u._id.toString() === userId);
+        return {
+          userId,
+          name: user?.name || "Unknown User",
+          wcaId: user?.wcaId || "",
+          solveCount: data.count,
+        };
+      });
 
-    // Time period statistics
-    const todaySolves = allSolves.filter(
-      (s) => s.solveDate >= now - 24 * 60 * 60 * 1000,
-    ).length;
-    const thisWeekSolves = allSolves.filter(
-      (s) => s.solveDate >= now - 7 * 24 * 60 * 60 * 1000,
-    ).length;
-    const thisMonthSolves = allSolves.filter(
-      (s) => s.solveDate >= now - 30 * 24 * 60 * 60 * 1000,
-    ).length;
+    // Time period solve counts require per-solve data
+    const todaySolves = 0;
+    const thisWeekSolves = 0;
+    const thisMonthSolves = 0;
 
     // Best times and category breakdowns for 3x3 (can be extended to other events as needed)
     const all3x3Stats = allUserEventStats.filter((s) => s.event === "333");
@@ -506,15 +459,18 @@ export const getFilteredTimerAnalytics = query({
   handler: async (ctx, args) => {
     const eventFilter = args.event || "333"; // Default to 3x3
 
-    const allSolves = await ctx.db.query("solves").collect();
     const allUserEventStats = await ctx.db.query("userEventStats").collect();
     const allUsers = await ctx.db.query("users").collect();
 
-    // Filter solves for the selected event
-    const eventSolves = allSolves.filter((s) => s.event === eventFilter);
-
     // Filter user event stats for the selected event
     const eventStats = allUserEventStats.filter((s) => s.event === eventFilter);
+    const totalSolves = eventStats.reduce(
+      (sum, stat) => sum + stat.totalSolves,
+      0,
+    );
+    const totalUsers = new Set(
+      eventStats.filter((s) => s.totalSolves > 0).map((s) => s.userId.toString()),
+    ).size;
 
     // Categorize users based on their average times for the selected event
     const userCategories: Record<string, number> = {};
@@ -610,8 +566,8 @@ export const getFilteredTimerAnalytics = query({
     return {
       event: eventFilter,
       eventName: WCA_EVENTS[eventFilter] || eventFilter,
-      totalSolves: eventSolves.length,
-      totalUsers: new Set(eventSolves.map((s) => s.userId.toString())).size,
+      totalSolves,
+      totalUsers,
       userCategories: sortedCategories,
       topPerformers,
       bestOverallSingle: bestOverallSingle
@@ -697,16 +653,24 @@ export const getEventCategoryBreakdown = query({
 export const exportTimerData = query({
   args: {},
   handler: async (ctx) => {
-    const allSolves = await ctx.db.query("solves").collect();
+    const recentSolves = await ctx.db
+      .query("solves")
+      .order("desc")
+      .take(2000);
     const allSessions = await ctx.db.query("sessions").collect();
     const allUserEventStats = await ctx.db.query("userEventStats").collect();
     const allUsers = await ctx.db.query("users").collect();
 
+    const totalSolves = allUserEventStats.reduce(
+      (sum, stat) => sum + stat.totalSolves,
+      0,
+    );
+
     // Create a user map for easy lookup when formatting solves and sessions
     const userMap = new Map(allUsers.map((u) => [u._id.toString(), u]));
 
-    // Format solves for export
-    const solvesExport = allSolves.map((solve) => {
+    // Format solves for export (capped at 2000 most recent)
+    const solvesExport = recentSolves.map((solve) => {
       const user = userMap.get(solve.userId.toString());
       return {
         id: solve._id.toString(),
@@ -772,10 +736,12 @@ export const exportTimerData = query({
       sessions: sessionsExport,
       userStats: userStatsExport,
       summary: {
-        totalSolves: solvesExport.length,
+        totalSolves,
         totalSessions: sessionsExport.length,
         totalUserStats: userStatsExport.length,
-        uniqueUsers: new Set(solvesExport.map((s) => s.userId)).size,
+        uniqueUsers: new Set(
+          allUserEventStats.map((s) => s.userId.toString()),
+        ).size,
       },
     };
   },

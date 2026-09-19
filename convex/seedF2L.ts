@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
 
 // Helper function to create URL-friendly slugs
 function createSlug(name: string): string {
@@ -13,7 +13,7 @@ function createSlug(name: string): string {
 }
 
 // This mutation seeds the database with F2L (First Two Layers) algorithms
-export const seedF2LAlgorithms = mutation({
+export const seedF2LAlgorithms = internalMutation({
   args: {},
   handler: async (ctx) => {
     // Check if already seeded

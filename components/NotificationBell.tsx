@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Bell } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
-import { useQuery } from "convex/react";
+import { useConvexAuth, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import {
   useInAppNotifications,
@@ -20,11 +20,14 @@ export default function NotificationBell({
   collapsed = false,
 }: NotificationBellProps) {
   const { user } = useUser();
+  const { isAuthenticated, isLoading } = useConvexAuth();
 
   // Fetch reviews for notifications
   const reviews = useQuery(
     api.algorithms.getReviewsForNotifications,
-    user?.convexId ? { userId: user.convexId as any } : "skip",
+    user?.convexId && isAuthenticated && !isLoading
+      ? { userId: user.convexId }
+      : "skip",
   );
 
   // In-app notifications

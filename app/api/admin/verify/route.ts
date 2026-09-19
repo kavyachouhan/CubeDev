@@ -1,29 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSessionFromRequest } from "@/lib/session";
+import { isAdminEmail } from "@/lib/config";
+import { logger } from "@/lib/logger";
 
-// This API route verifies if a user has admin access
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const { email } = await request.json();
-
-    if (!email) {
-      return NextResponse.json(
-        { isAdmin: false, error: "No email provided" },
-        { status: 400 },
-      );
+    const session = await getSessionFromRequest(request);
+    if (!session?.sub) {
+      return NextResponse.json({ isAdmin: false }, { status: 401 });
     }
 
-    const adminEmails =
-      process.env.ADMIN_EMAIL?.split(",").map((e) => e.trim().toLowerCase()) ||
-      [];
-
-    const isAdmin = adminEmails.includes(email.toLowerCase());
-
-    return NextResponse.json({ isAdmin });
+    return NextResponse.json({ isAdmin: isAdminEmail(session.email) });
   } catch (error) {
-    console.error("Admin verification error:", error);
+    logger.error("admin_verify_failed", {
+      error: error instanceof Error ? error.message : "unknown",
+    });
     return NextResponse.json(
       { isAdmin: false, error: "Verification failed" },
       { status: 500 },
     );
   }
+}
+
+export async function POST(request: NextRequest) {
+  return GET(request);
 }

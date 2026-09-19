@@ -3,12 +3,12 @@
 import { v } from "convex/values";
 import { internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
+import { convexConfig } from "./config";
 import webpush from "web-push";
 
-// VAPID keys from environment variables
-const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY;
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
-const VAPID_SUBJECT = process.env.VAPID_SUBJECT || "";
+const VAPID_PUBLIC_KEY = convexConfig.vapidPublicKey;
+const VAPID_PRIVATE_KEY = convexConfig.vapidPrivateKey;
+const VAPID_SUBJECT = convexConfig.vapidSubject;
 const DAILY_REMINDER_WINDOW_MINUTES = 5;
 const STREAK_ALERT_HOUR = 20; // 8 PM local time
 const WEEKLY_SUMMARY_TARGET_DAY = 0; // Sunday
@@ -140,7 +140,7 @@ export const sendPushToSubscription = internalAction({
   },
   handler: async (ctx, args) => {
     // Check if VAPID keys are configured
-    if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
+    if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY || !VAPID_SUBJECT) {
       console.error("[Push] VAPID keys not configured");
       await ctx.runMutation(internal.pushNotifications.logNotification, {
         userId: args.userId,

@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
 
 // Helper function to create URL-friendly slugs
 function createSlug(name: string): string {
@@ -13,7 +13,7 @@ function createSlug(name: string): string {
 
 // This mutation seeds the database with EG-2 algorithms for 2x2
 // EG-2 is used when the first layer has one corner twisted counter-clockwise - 43 algorithms
-export const seedEG2Algorithms = mutation({
+export const seedEG2Algorithms = internalMutation({
   args: {},
   handler: async (ctx) => {
     // Check if already seeded
