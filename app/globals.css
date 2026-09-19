@@ -1238,41 +1238,43 @@
   }
 }
 
-.animate-fade-in {
+@utility animate-fade-in {
   animation: fade-in 0.6s var(--ease-out) forwards;
 }
 
-.animate-dialog-in {
+@utility animate-dialog-in {
   animation: dialog-in var(--duration-base) var(--ease-out) both;
 }
 
-.animate-sheet-in,
-.animate-slide-up {
+@utility animate-sheet-in {
   animation: sheet-in var(--duration-slow) var(--ease-out) both;
 }
 
-.animate-menu-in {
-  animation: menu-in var(--duration-fast) var(--ease-out) both;
-  transform-origin: top;
+@utility animate-slide-up {
+  animation: sheet-in var(--duration-slow) var(--ease-out) both;
 }
 
-.animate-scrim-in {
+@utility animate-menu-in {
+  animation: menu-in var(--duration-fast) var(--ease-out) both;
+}
+
+@utility animate-scrim-in {
   animation: scrim-in var(--duration-base) ease both;
 }
 
-.animate-toast-in {
+@utility animate-toast-in {
   animation: toast-in var(--duration-base) var(--ease-out) both;
 }
 
-.animate-float {
+@utility animate-float {
   animation: float 6s ease-in-out infinite;
 }
 
-.animate-pulse-glow {
+@utility animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-.animate-wave {
+@utility animate-wave {
   animation: wave 2s ease-in-out infinite;
 }
 

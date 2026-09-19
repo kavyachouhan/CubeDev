@@ -3,6 +3,7 @@
 import { useId } from "react";
 import type { ReactNode } from "react";
 import { cx } from "@/lib/cx";
+import { SettingRow } from "./SettingRow";
 
 export interface SwitchProps {
   checked: boolean;
@@ -27,7 +28,7 @@ export function Switch({
   ...aria
 }: SwitchProps) {
   const track = size === "sm" ? "w-9 h-5" : "w-11 h-6";
-  const thumb = size === "sm" ? "w-3.5 h-3.5" : "w-[1.125rem] h-[1.125rem]";
+  const thumb = size === "sm" ? "w-3.5 h-3.5" : "w-4.5 h-4.5";
   // Track inner width − thumb − 3px end margin, mirroring the 3px start.
   const travel = size === "sm" ? "translate-x-[1.0625rem]" : "translate-x-[1.3125rem]";
 
@@ -69,14 +70,19 @@ export interface SwitchRowProps
   icon?: ReactNode;
   /** `card` draws a bordered row, `plain` sits flush inside a list. */
   variant?: "card" | "plain";
+  disabledReason?: ReactNode;
+  /** Options revealed under the row, typically only when checked. */
+  children?: ReactNode;
 }
 
-/** Label + description + switch — the standard settings row. */
+/** Label + description + switch — the standard on/off setting. */
 export function SwitchRow({
   label,
   description,
   icon,
   variant = "card",
+  disabledReason,
+  children,
   className,
   ...switchProps
 }: SwitchRowProps) {
@@ -84,36 +90,25 @@ export function SwitchRow({
   const descriptionId = useId();
 
   return (
-    <div
-      className={cx(
-        "flex items-center gap-3",
-        variant === "card" &&
-          "p-4 rounded-(--radius-control) border border-(--border) bg-(--surface) hover:border-(--border-hover) transition-colors",
-        variant === "plain" && "py-3",
-        switchProps.disabled && "opacity-60",
-        className,
-      )}
+    <SettingRow
+      label={label}
+      description={description}
+      icon={icon}
+      variant={variant}
+      disabled={switchProps.disabled}
+      disabledReason={disabledReason}
+      labelId={labelId}
+      descriptionId={descriptionId}
+      className={className}
+      control={
+        <Switch
+          {...switchProps}
+          aria-labelledby={labelId}
+          aria-describedby={description ? descriptionId : undefined}
+        />
+      }
     >
-      {icon && (
-        <div className="shrink-0 text-(--primary) [&_svg]:w-5 [&_svg]:h-5 self-start mt-0.5">
-          {icon}
-        </div>
-      )}
-      <div className="flex-1 min-w-0">
-        <p id={labelId} className="type-label">
-          {label}
-        </p>
-        {description && (
-          <p id={descriptionId} className="type-caption mt-0.5">
-            {description}
-          </p>
-        )}
-      </div>
-      <Switch
-        {...switchProps}
-        aria-labelledby={labelId}
-        aria-describedby={description ? descriptionId : undefined}
-      />
-    </div>
+      {children}
+    </SettingRow>
   );
 }

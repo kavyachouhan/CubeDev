@@ -1,307 +1,210 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { AlertTriangle, Trash2, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
+import { AlertTriangle, HelpCircle, Trash2 } from "lucide-react";
+import { Alert } from "./Alert";
+import { Button } from "./Button";
+import { CardIcon } from "./Card";
+import { Field, Input } from "./Field";
+import { Modal } from "./Modal";
 
-export interface ConfirmDeleteModalProps {
+export type ConfirmTone = "danger" | "warning" | "primary";
+
+export interface ConfirmDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void | Promise<void>;
   title: string;
-  description: string;
+  description: ReactNode;
   itemName?: string;
-  warning?: string;
+  /** Caution line; defaults to "This action cannot be undone." except for `primary`. Pass `null` to hide. */
+  warning?: string | null;
   confirmLabel?: string;
   cancelLabel?: string;
+  /** Busy label while `onConfirm` runs. */
+  confirmingLabel?: string;
   requireTypedConfirmation?: string;
-  tone?: "danger" | "warning";
+  tone?: ConfirmTone;
+  /** Controlled busy state; otherwise tracked from the `onConfirm` promise. */
   isDeleting?: boolean;
+  confirmIcon?: ReactNode;
 }
 
-export default function ConfirmDeleteModal({
+/**
+ * Confirmation for consequential actions. `danger` for deletes, `warning`
+ * for reversible-but-disruptive actions, `primary` for neutral confirms.
+ * A sheet on mobile, a compact dialog on desktop. Enter confirms; focus
+ * starts on Cancel so a stray Enter never destroys anything.
+ */
+export function ConfirmDialog({
   isOpen,
   onClose,
   onConfirm,
   title,
   description,
   itemName,
-  warning = "This action cannot be undone.",
-  confirmLabel = "Delete",
+  warning,
+  confirmLabel,
   cancelLabel = "Cancel",
+  confirmingLabel,
   requireTypedConfirmation,
   tone = "danger",
   isDeleting: isDeletingProp,
-}: ConfirmDeleteModalProps) {
-  const titleId = useId();
-  const descriptionId = useId();
+  confirmIcon,
+}: ConfirmDialogProps) {
   const cancelRef = useRef<HTMLButtonElement>(null);
-  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
-  const onCloseRef = useRef(onClose);
-  const onConfirmRef = useRef(onConfirm);
-
-  const [mounted, setMounted] = useState(false);
   const [typedValue, setTypedValue] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [internalDeleting, setInternalDeleting] = useState(false);
+  const [internalBusy, setInternalBusy] = useState(false);
 
   const isControlled = isDeletingProp !== undefined;
-  const isDeleting = isControlled ? isDeletingProp : internalDeleting;
-  const isDanger = tone !== "warning";
+  const busy = isControlled ? isDeletingProp : internalBusy;
   const typedMatches =
     !requireTypedConfirmation || typedValue === requireTypedConfirmation;
-  const canConfirm = typedMatches && !isDeleting;
+  const canConfirm = typedMatches && !busy;
 
-  const canConfirmRef = useRef(canConfirm);
-  const isDeletingRef = useRef(isDeleting);
-  canConfirmRef.current = canConfirm;
-  isDeletingRef.current = isDeleting;
-
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  useEffect(() => {
-    onConfirmRef.current = onConfirm;
-  }, [onConfirm]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const resolvedWarning =
+    warning === undefined
+      ? tone === "primary"
+        ? null
+        : "This action cannot be undone."
+      : warning;
+  const resolvedConfirmLabel =
+    confirmLabel ?? (tone === "danger" ? "Delete" : "Confirm");
+  const resolvedBusyLabel =
+    confirmingLabel ?? (tone === "danger" ? "Deleting…" : "Working…");
 
   useEffect(() => {
     if (!isOpen) {
       setTypedValue("");
       setError(null);
-      setInternalDeleting(false);
+      setInternalBusy(false);
     }
   }, [isOpen]);
 
   const handleClose = useCallback(() => {
-    if (isDeletingRef.current) return;
-    onCloseRef.current();
-  }, []);
+    if (!busy) onClose();
+  }, [busy, onClose]);
 
-  const handleConfirm = useCallback(async () => {
-    if (!canConfirmRef.current) return;
-
+  const handleConfirm = async () => {
+    if (!canConfirm) return;
     setError(null);
-    if (!isControlled) setInternalDeleting(true);
-
+    if (!isControlled) setInternalBusy(true);
     try {
-      await onConfirmRef.current();
-      if (!isControlled) onCloseRef.current();
+      await onConfirm();
+      if (!isControlled) onClose();
     } catch (caught) {
-      const message =
+      setError(
         caught instanceof Error
           ? caught.message
-          : "Something went wrong. Please try again.";
-      setError(message);
+          : "Something went wrong. Please try again.",
+      );
     } finally {
-      if (!isControlled) setInternalDeleting(false);
+      if (!isControlled) setInternalBusy(false);
     }
-  }, [isControlled]);
+  };
 
-  useEffect(() => {
-    if (!isOpen) return;
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== "Enter" || event.shiftKey || !canConfirm) return;
+    const target = event.target as HTMLElement;
+    if (target.tagName === "TEXTAREA" || target.tagName === "BUTTON") return;
+    event.preventDefault();
+    void handleConfirm();
+  };
 
-    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+  const iconTone = tone === "danger" ? "error" : tone === "warning" ? "warning" : "primary";
+  const HeaderIcon = tone === "primary" ? HelpCircle : AlertTriangle;
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        event.stopPropagation();
-        handleClose();
-        return;
-      }
+  return (
+    <Modal
+      open={isOpen}
+      onClose={handleClose}
+      size="sm"
+      mobile="sheet"
+      role="alertdialog"
+      dismissible={!busy}
+      layer="nested"
+      initialFocusRef={requireTypedConfirmation ? undefined : cancelRef}
+    >
+      <div onKeyDown={onKeyDown} className="contents">
+        <Modal.Header
+          title={title}
+          icon={
+            <CardIcon tone={iconTone}>
+              <HeaderIcon />
+            </CardIcon>
+          }
+        />
+        <Modal.Body className="space-y-4">
+          <div className="type-body">{description}</div>
 
-      if (event.key === "Enter" && !event.shiftKey && canConfirmRef.current) {
-        const target = event.target as HTMLElement | null;
-        if (target?.tagName === "TEXTAREA" || target?.tagName === "BUTTON") {
-          return;
-        }
-        event.preventDefault();
-        event.stopPropagation();
-        void handleConfirm();
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    requestAnimationFrame(() => {
-      cancelRef.current?.focus();
-    });
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
-      previouslyFocusedRef.current?.focus?.();
-    };
-  }, [isOpen, handleClose, handleConfirm]);
-
-  if (!mounted || !isOpen) return null;
-
-  return createPortal(
-    <div className="fixed inset-0 z-[10050]">
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={handleClose}
-      />
-
-      <div className="absolute inset-0 flex items-end justify-center sm:items-center sm:p-4 pointer-events-none">
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          aria-describedby={descriptionId}
-          tabIndex={-1}
-          className="pointer-events-auto w-full max-w-md bg-(--surface) border border-(--border) rounded-t-2xl sm:rounded-xl shadow-lg outline-none animate-slide-up sm:animate-fade-in pb-[max(1rem,env(safe-area-inset-bottom))] sm:pb-0"
-          onClick={(event) => event.stopPropagation()}
-          onKeyDown={(event) => event.stopPropagation()}
-        >
-          <div className="flex justify-center pt-3 pb-1 sm:hidden">
-            <div className="w-10 h-1 bg-(--border) rounded-full" />
-          </div>
-
-          <div className="flex items-center justify-between p-4 border-b border-(--border)">
-            <div className="flex items-center gap-3 min-w-0">
-              <div
-                className={`p-2 rounded-lg shrink-0 ${
-                  isDanger ? "bg-(--error)/10" : "bg-(--warning)/10"
-                }`}
-              >
-                <AlertTriangle
-                  className={`w-5 h-5 ${
-                    isDanger ? "text-(--error)" : "text-(--warning)"
-                  }`}
-                />
-              </div>
-              <h2
-                id={titleId}
-                className="text-lg md:text-xl font-bold text-(--text-primary) font-statement truncate"
-              >
-                {title}
-              </h2>
+          {itemName && (
+            <div className="px-3 py-2.5 rounded-(--radius-control) bg-(--surface-elevated) border border-(--border)">
+              <p className="type-label truncate">{itemName}</p>
             </div>
-            <button
-              type="button"
-              onClick={handleClose}
-              disabled={isDeleting}
-              className="p-2 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Close"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          )}
 
-          <div className="p-4 space-y-4">
-            <p
-              id={descriptionId}
-              className="text-sm text-(--text-secondary) font-inter"
-            >
-              {description}
-            </p>
+          {resolvedWarning && (
+            <Alert tone={tone === "primary" ? "info" : tone === "danger" ? "error" : "warning"} size="sm">
+              {resolvedWarning}
+            </Alert>
+          )}
 
-            {itemName ? (
-              <div className="p-3 bg-(--surface-elevated) border border-(--border) rounded-lg">
-                <p className="text-sm font-medium text-(--text-primary) font-inter truncate">
-                  {itemName}
-                </p>
-              </div>
-            ) : null}
-
-            <div
-              className={`flex items-start gap-2 p-3 rounded-lg border ${
-                isDanger
-                  ? "bg-(--error)/10 border-(--error)/20"
-                  : "bg-(--warning)/10 border-(--warning)/20"
-              }`}
-            >
-              <AlertTriangle
-                className={`w-4 h-4 shrink-0 mt-0.5 ${
-                  isDanger ? "text-(--error)" : "text-(--warning)"
-                }`}
-              />
-              <p
-                className={`text-xs font-inter ${
-                  isDanger ? "text-(--error)" : "text-(--warning)"
-                }`}
-              >
-                {warning}
-              </p>
-            </div>
-
-            {requireTypedConfirmation ? (
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-(--text-secondary) font-inter">
-                  Type{" "}
-                  <span
-                    className={`font-bold ${
-                      isDanger ? "text-(--error)" : "text-(--warning)"
-                    }`}
-                  >
-                    {requireTypedConfirmation}
-                  </span>{" "}
-                  to confirm:
-                </label>
-                <input
-                  type="text"
-                  value={typedValue}
-                  onChange={(event) => setTypedValue(event.target.value)}
-                  placeholder={requireTypedConfirmation}
-                  disabled={isDeleting}
-                  autoComplete="off"
-                  className={`w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:border-transparent transition-all font-inter text-sm disabled:opacity-50 ${
-                    isDanger
-                      ? "focus:ring-(--error)"
-                      : "focus:ring-(--warning)"
-                  }`}
-                />
-              </div>
-            ) : null}
-
-            {error ? (
-              <div className="flex items-start gap-2 p-3 bg-(--error)/10 border border-(--error)/20 rounded-lg">
-                <AlertTriangle className="w-4 h-4 text-(--error) shrink-0 mt-0.5" />
-                <p className="text-xs text-(--error) font-inter">{error}</p>
-              </div>
-            ) : null}
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 p-4 border-t border-(--border) bg-(--surface-elevated) sm:rounded-b-xl">
-            <button
-              ref={cancelRef}
-              type="button"
-              onClick={handleClose}
-              disabled={isDeleting}
-              className="w-full sm:flex-1 px-4 py-2.5 sm:py-2 bg-(--surface) hover:bg-(--surface-elevated) border border-(--border) text-(--text-primary) rounded-lg transition-colors font-button text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {cancelLabel}
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleConfirm()}
-              disabled={!canConfirm}
-              className={`w-full sm:flex-1 px-4 py-2.5 sm:py-2 text-white rounded-lg transition-colors font-button text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
-                isDanger
-                  ? "bg-(--error) hover:bg-(--error)/90"
-                  : "bg-(--warning) hover:bg-(--warning)/90"
-              }`}
-            >
-              {isDeleting ? (
-                "Deleting..."
-              ) : (
+          {requireTypedConfirmation && (
+            <Field
+              label={
                 <>
-                  <Trash2 className="w-4 h-4" />
-                  {confirmLabel}
+                  Type <span className="type-time font-bold">{requireTypedConfirmation}</span> to confirm
                 </>
-              )}
-            </button>
-          </div>
-        </div>
+              }
+            >
+              <Input
+                value={typedValue}
+                onChange={(e) => setTypedValue(e.target.value)}
+                placeholder={requireTypedConfirmation}
+                disabled={busy}
+                autoComplete="off"
+                data-autofocus
+              />
+            </Field>
+          )}
+
+          {error && <Alert tone="error">{error}</Alert>}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            ref={cancelRef}
+            variant="secondary"
+            onClick={handleClose}
+            disabled={busy}
+          >
+            {cancelLabel}
+          </Button>
+          <Button
+            variant={tone === "danger" ? "danger" : "primary"}
+            onClick={() => void handleConfirm()}
+            disabled={!canConfirm}
+            loading={busy}
+            loadingText={resolvedBusyLabel}
+            iconLeft={
+              confirmIcon ??
+              (tone === "danger" ? <Trash2 className="w-4 h-4" /> : undefined)
+            }
+          >
+            {resolvedConfirmLabel}
+          </Button>
+        </Modal.Footer>
       </div>
-    </div>,
-    document.body
+    </Modal>
   );
+}
+
+export type ConfirmDeleteModalProps = Omit<ConfirmDialogProps, "tone"> & {
+  tone?: "danger" | "warning";
+};
+
+/** Delete confirmation — the destructive preset of ConfirmDialog. */
+export default function ConfirmDeleteModal(props: ConfirmDeleteModalProps) {
+  return <ConfirmDialog tone="danger" {...props} />;
 }

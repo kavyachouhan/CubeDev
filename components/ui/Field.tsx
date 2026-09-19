@@ -239,6 +239,38 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
   },
 );
 
+export interface SliderProps
+  extends Omit<ComponentProps<"input">, "type" | "onChange" | "value"> {
+  value: number;
+  onChange: (value: number) => void;
+  /** Shows the current value (optionally formatted) beside the track. */
+  showValue?: boolean | ((value: number) => ReactNode);
+}
+
+/** Native range input in the primary color, with an optional value readout. */
+export const Slider = forwardRef<HTMLInputElement, SliderProps>(function Slider(
+  { value, onChange, showValue = true, className, ...rest },
+  ref,
+) {
+  return (
+    <div className={cx("flex items-center gap-3", className)}>
+      <input
+        ref={ref}
+        type="range"
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="flex-1 min-w-24 h-6 accent-(--primary) cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+        {...rest}
+      />
+      {showValue && (
+        <span className="type-time text-xs text-(--text-secondary) w-9 text-right tabular-nums">
+          {typeof showValue === "function" ? showValue(value) : value}
+        </span>
+      )}
+    </div>
+  );
+});
+
 export interface CheckboxProps
   extends Omit<ComponentProps<"input">, "type" | "size"> {
   label?: ReactNode;
@@ -251,7 +283,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     const inputId = id ?? generatedId;
 
     const box = (
-      <span className="relative inline-flex shrink-0 w-[1.125rem] h-[1.125rem] mt-0.5">
+      <span className="relative inline-flex shrink-0 w-4.5 h-4.5 mt-0.5">
         <input
           ref={ref}
           id={inputId}

@@ -29,7 +29,7 @@ const variantConfig: Record<RibbonVariant, { label: string; bgColor: string }> =
     },
     "coming-soon": {
       label: "Coming Soon",
-      bgColor: "var(--muted)",
+      bgColor: "var(--text-muted)",
     },
   };
 
@@ -58,11 +58,10 @@ export default function FeatureRibbon({
           absolute font-semibold font-inter uppercase tracking-wider text-center
           ${sizeClasses}
           ${isTopRight ? "rotate-45 origin-center top-2 -right-1" : "-rotate-45 origin-center top-2 -left-1"}
-          ${isActive ? "bg-white/90 text-(--primary)" : "text-white"}
+          ${isActive ? "bg-(--on-primary) text-(--primary)" : "text-white"}
         `}
         style={{
           backgroundColor: isActive ? undefined : config.bgColor,
-          boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
         }}
       >
         {config.label}
