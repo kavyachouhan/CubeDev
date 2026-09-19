@@ -5,6 +5,7 @@ import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import { UserProvider } from "@/components/UserProvider";
 import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
 import { FeedbackProvider } from "@/components/feedback";
+import { ToastProvider } from "@/components/ui/Toast";
 import { DEFAULT_SURVEY_CONFIGS } from "@/components/feedback/surveyConfig";
 import { Analytics } from "@vercel/analytics/next";
 
@@ -117,9 +118,11 @@ export default function RootLayout({
         <ConvexClientProvider>
           <UserProvider>
             <ThemeProviderWrapper>
-              <FeedbackProvider defaultConfig={DEFAULT_SURVEY_CONFIGS.general}>
-                {children}
-              </FeedbackProvider>
+              <ToastProvider>
+                <FeedbackProvider defaultConfig={DEFAULT_SURVEY_CONFIGS.general}>
+                  {children}
+                </FeedbackProvider>
+              </ToastProvider>
               <Analytics />
             </ThemeProviderWrapper>
           </UserProvider>
