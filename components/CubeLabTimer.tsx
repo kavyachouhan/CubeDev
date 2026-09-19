@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useUser } from "@/components/UserProvider";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import type { OwnerUser } from "@/convex/userProjection";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
@@ -156,6 +157,7 @@ export default function CubeLabTimer({
     api.users.completeTimerImportOnboarding,
   );
 
+  // getUserById returns the owner projection for the signed-in user.
   const userProfile = useQuery(
     api.users.getUserById,
     user?.convexId
@@ -163,7 +165,7 @@ export default function CubeLabTimer({
           id: user.convexId,
         }
       : "skip",
-  );
+  ) as Partial<OwnerUser> | null | undefined;
 
   const userSolveCount = useQuery(
     api.users.getUserSolveCount,

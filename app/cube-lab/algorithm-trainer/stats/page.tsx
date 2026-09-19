@@ -14,8 +14,11 @@ import {
   RecognitionBenchmarks,
 } from "@/components/algorithm";
 import { AlgorithmStatsSkeleton } from "@/components/SkeletonLoaders";
-import { BarChart3, ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { BarChart3 } from "lucide-react";
+import { ButtonLink } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export default function AlgorithmStatsPage() {
   const { user } = useUser();
@@ -56,30 +59,32 @@ export default function AlgorithmStatsPage() {
     );
   }
 
-  // Check if there are any learned cases or practice sessions to determine if we should show the empty state
-  const hasSessions = recentSessions && recentSessions.length > 0;
+  // The queries return null when there is nothing to report for this user.
+  const sessions = recentSessions ?? [];
+  const hasCases = (metrics?.totalCases ?? 0) > 0;
 
-  if (metrics.totalCases === 0 && !hasSessions) {
+  if (!metrics || !userStats || (!hasCases && sessions.length === 0)) {
     return (
       <ProtectedRoute>
         <CubeLabLayout activeSection="algorithm-trainer">
-          <div className="h-full flex items-center justify-center p-4">
-            <div className="timer-card max-w-md text-center">
-              <BarChart3 className="w-16 h-16 text-(--text-muted) mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-(--text-primary) font-statement mb-4">
-                No Statistics Yet
-              </h2>
-              <p className="text-(--text-muted) mb-6">
-                Start learning algorithm cases or practicing custom sets to see
-                your analytics and progress tracking here.
-              </p>
-              <Link
-                href="/cube-lab/algorithm-trainer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors"
-              >
-                Browse Algorithm Sets
-              </Link>
-            </div>
+          <div className="container-responsive py-4 md:py-8">
+            <PageHeader
+              back={{ href: "/cube-lab/algorithm-trainer", label: "Algorithm Trainer" }}
+              title="Algorithm Statistics"
+            />
+            <Card variant="static">
+              <EmptyState
+                size="page"
+                icon={<BarChart3 />}
+                title="No statistics yet"
+                description="Start learning algorithm cases or practicing custom sets to see your analytics and progress here."
+                action={
+                  <ButtonLink href="/cube-lab/algorithm-trainer">
+                    Browse algorithm sets
+                  </ButtonLink>
+                }
+              />
+            </Card>
           </div>
         </CubeLabLayout>
       </ProtectedRoute>
@@ -89,33 +94,24 @@ export default function AlgorithmStatsPage() {
   return (
     <ProtectedRoute>
       <CubeLabLayout activeSection="algorithm-trainer">
-        <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <Link
-                href="/cube-lab/algorithm-trainer"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors w-fit"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Algorithm Trainer
-              </Link>
-              <h1 className="text-2xl font-bold text-(--text-primary) font-statement">
-                Algorithm Trainer Statistics
-              </h1>
-            </div>
-
+        <div className="container-responsive py-4 md:py-8">
+          <PageHeader
+            back={{ href: "/cube-lab/algorithm-trainer", label: "Algorithm Trainer" }}
+            title="Algorithm Statistics"
+            description="Recognition speed, mastery and practice history across your sets."
+          />
+          <div className="space-y-4 md:space-y-6">
             {/* Quick Stats Overview - show only if there are learned cases */}
             {metrics.totalCases > 0 && (
               <RecognitionOverview
                 metrics={metrics}
-                recentSessions={recentSessions}
+                recentSessions={sessions}
               />
             )}
 
             {/* Two Column Layout for Medium Stats - show only if there are learned cases */}
             {metrics.totalCases > 0 && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 <TimeBreakdown metrics={metrics} />
                 <MasteryProgress
                   totalCases={metrics.totalCases}
@@ -136,13 +132,11 @@ export default function AlgorithmStatsPage() {
             )}
 
             {/* Overall Session Statistics */}
-            {recentSessions.length > 0 && (
-              <SessionStats sessions={recentSessions} />
-            )}
+            {sessions.length > 0 && <SessionStats sessions={sessions} />}
 
             {/* Practice Session History */}
-            {recentSessions.length > 0 && (
-              <SessionHistory sessions={recentSessions} maxSessions={15} />
+            {sessions.length > 0 && (
+              <SessionHistory sessions={sessions} maxSessions={15} />
             )}
           </div>
         </div>

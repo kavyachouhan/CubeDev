@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import type { OwnerUser } from "@/convex/userProjection";
 
 export type ThemeMode = "light" | "dark" | "auto";
 export type ColorScheme = "blue" | "purple" | "green" | "orange" | "cyan";
@@ -67,10 +68,11 @@ export function ThemeProvider({
   );
 
   // Fetch user theme preferences from database
+  // getUserById returns the owner projection for the signed-in user.
   const user = useQuery(
     api.users.getUserById,
     userId ? { id: userId } : "skip"
-  );
+  ) as Partial<OwnerUser> | null | undefined;
 
   const updateTheme = useMutation(api.users.updateThemeSettings);
 

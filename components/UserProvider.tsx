@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
+import type { OwnerUser } from "../convex/userProjection";
 import { Id } from "../convex/_generated/dataModel";
 
 interface User {
@@ -36,10 +37,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // getUserById returns the owner projection for the signed-in user.
   const convexUser = useQuery(
     api.users.getUserById,
     user?.convexId ? { id: user.convexId } : "skip",
-  );
+  ) as Partial<OwnerUser> | null | undefined;
 
   useEffect(() => {
     const loadUser = async () => {
