@@ -3,15 +3,14 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@/components/UserProvider";
-import {
-  X,
-  Trophy,
-  Users,
-  ArrowRight,
-  ExternalLink,
-} from "lucide-react";
-import Image from "next/image";
+import { ArrowRight, ExternalLink, Trophy, Users } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { EventIcon } from "@/components/ui/EventIcon";
+import { Modal } from "@/components/ui/Modal";
+import { SkeletonList } from "@/components/ui/Skeleton";
 
 const EVENTS = {
   "333": { name: "3x3", icon: "/cube-icons/333.svg" },
@@ -83,72 +82,29 @@ export default function RecentRoomsModal({
     user?.convexId ? { userId: user.convexId } : "skip"
   );
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-6">
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement">
-              Recent Challenge Rooms
-            </h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated) self-start sm:self-auto"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
+    <Modal open={isOpen} onClose={onClose} size="xl" mobile="fullscreen">
+      <Modal.Header title="Recent Challenge Rooms" />
+      <Modal.Body>
         {!user ? (
-          <div className="text-center py-8">
-            <div className="w-12 h-12 bg-(--surface-elevated) rounded-full flex items-center justify-center mx-auto mb-3">
-              <Users className="w-6 h-6 text-(--text-muted)" />
-            </div>
-            <p className="text-(--text-secondary) font-inter">
-              Please sign in to view your recent rooms
-            </p>
-          </div>
+          <EmptyState
+            icon={<Users />}
+            title="Sign in to view your recent rooms"
+          />
         ) : recentRooms === undefined ? (
-          <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div
-                key={i}
-                className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-(--surface-elevated) border border-(--border) rounded-lg animate-pulse"
-              >
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="w-8 h-8 bg-(--border) rounded-lg shrink-0" />
-                  <div className="space-y-2 flex-1">
-                    <div className="h-4 bg-(--border) rounded w-full max-w-32" />
-                    <div className="h-3 bg-(--border) rounded w-full max-w-24" />
-                  </div>
-                </div>
-                <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:gap-1">
-                  <div className="h-6 bg-(--border) rounded w-16" />
-                  <div className="h-4 bg-(--border) rounded w-12" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <SkeletonList rows={5} withAvatar />
         ) : !recentRooms || recentRooms.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="w-12 h-12 bg-(--surface-elevated) rounded-full flex items-center justify-center mx-auto mb-3">
-              <Trophy className="w-6 h-6 text-(--text-muted)" />
-            </div>
-            <p className="text-(--text-secondary) font-inter mb-3">
-              No challenge rooms yet
-            </p>
-            <button
-              onClick={onClose}
-              className="inline-flex items-center gap-1 text-(--primary) hover:underline text-sm font-medium"
-            >
-              Create or join your first room <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
+          <EmptyState
+            icon={<Trophy />}
+            title="No challenge rooms yet"
+            action={
+              <Button variant="secondary" onClick={onClose} iconRight={<ArrowRight className="w-4 h-4" />}>
+                Create or join your first room
+              </Button>
+            }
+          />
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {recentRooms.map(({ participation, room }) => {
               if (!room) return null;
 
@@ -162,27 +118,31 @@ export default function RecentRoomsModal({
 
                 if (participation.finalRank === 1) {
                   return (
-                    <div className="flex items-center gap-1">
-                      <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
-                        <span className="text-xs text-white font-bold">1</span>
-                      </div>
-                      <span className="text-xs text-yellow-600 font-medium">
+                    <span className="inline-flex items-center gap-1.5">
+                      <span
+                        aria-hidden
+                        className="w-4 h-4 rounded-full flex items-center justify-center text-[0.625rem] text-white font-bold"
+                        style={{ background: "var(--medal-gold)" }}
+                      >
+                        1
+                      </span>
+                      <span className="text-xs font-medium" style={{ color: "var(--medal-gold)" }}>
                         Winner
                       </span>
-                    </div>
+                    </span>
                   );
                 } else if (participation.finalRank <= 3) {
                   return (
-                    <div className="flex items-center gap-1">
-                      <div className="w-4 h-4 bg-gray-400 rounded-full flex items-center justify-center">
-                        <span className="text-xs text-white font-bold">
-                          {participation.finalRank}
-                        </span>
-                      </div>
-                      <span className="text-xs text-gray-600 font-medium">
-                        Top 3
+                    <span className="inline-flex items-center gap-1.5">
+                      <span
+                        aria-hidden
+                        className="w-4 h-4 rounded-full flex items-center justify-center text-[0.625rem] text-white font-bold"
+                        style={{ background: "var(--medal-silver)" }}
+                      >
+                        {participation.finalRank}
                       </span>
-                    </div>
+                      <span className="text-xs font-medium text-(--text-secondary)">Top 3</span>
+                    </span>
                   );
                 } else {
                   return (
@@ -196,48 +156,29 @@ export default function RecentRoomsModal({
               return (
                 <div
                   key={participation._id}
-                  className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg hover:bg-(--border) transition-colors group"
+                  className="p-3 sm:p-4 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) hover:border-(--border-hover) transition-colors group"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="w-8 h-8 bg-(--primary) rounded-lg flex items-center justify-center shrink-0">
-                      <Image
-                        src={event.icon}
-                        alt={event.name}
-                        width={24}
-                        height={24}
-                        className="w-6 h-6 shrink-0 brightness-0 invert"
-                      />
-                      </div>
+                      <EventIcon eventId={room.event} src={event.icon} alt={event.name} />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium text-(--text-primary) font-inter truncate">
-                            {room.name}
-                          </h4>
-                          <span className="px-2 py-0.5 bg-(--primary)/10 text-(--primary) text-xs font-medium rounded shrink-0">
-                            {room.format.toUpperCase()}
-                          </span>
+                          <h4 className="type-label truncate">{room.name}</h4>
+                          <Badge tone="primary">{room.format.toUpperCase()}</Badge>
                         </div>
-                        <div className="flex items-center gap-2 sm:gap-3 text-xs text-(--text-muted) flex-wrap">
+                        <div className="flex items-center gap-2 type-caption flex-wrap">
                           <span>{event.name}</span>
-                          <span className="hidden sm:inline">•</span>
+                          <span aria-hidden>·</span>
                           <span>{formatTimeAgo(participation.joinedAt)}</span>
                           {participation.isCompleted ? (
                             <>
-                              <span className="hidden sm:inline">•</span>
-                              <span className="text-green-600 font-medium">
-                                Completed
-                              </span>
+                              <span aria-hidden>·</span>
+                              <span className="text-(--success) font-medium">Completed</span>
                             </>
-                          ) : isRoomExpiredAndIncomplete(
-                              room,
-                              participation
-                            ) ? (
+                          ) : isRoomExpiredAndIncomplete(room, participation) ? (
                             <>
-                              <span className="hidden sm:inline">•</span>
-                              <span className="text-red-500 font-medium">
-                                Incomplete
-                              </span>
+                              <span aria-hidden>·</span>
+                              <span className="text-(--error) font-medium">Incomplete</span>
                             </>
                           ) : null}
                         </div>
@@ -247,31 +188,25 @@ export default function RecentRoomsModal({
                     <div className="flex items-center gap-3 sm:gap-4 justify-between sm:justify-end">
                       <div className="text-left sm:text-right flex flex-col gap-1">
                         {isRoomExpiredAndIncomplete(room, participation) ? (
-                          <span className="text-red-500 text-sm font-medium">
-                            Incomplete
-                          </span>
+                          <span className="text-(--error) text-sm font-medium">Incomplete</span>
                         ) : participation.average ? (
-                          <span className="font-mono font-semibold text-(--text-primary)">
+                          <span className="type-time font-semibold text-(--text-primary)">
                             {formatTime(participation.average)}
                           </span>
                         ) : participation.isCompleted ? (
-                          <span className="text-(--text-muted) text-sm">
-                            DNF
-                          </span>
+                          <span className="type-caption">DNF</span>
                         ) : (
-                          <span className="text-(--text-muted) text-sm">
-                            {participation.solvesCompleted}/
-                            {participation.totalSolves}
+                          <span className="type-caption">
+                            {participation.solvesCompleted}/{participation.totalSolves}
                           </span>
                         )}
-                        {!isRoomExpiredAndIncomplete(room, participation) &&
-                          getRankDisplay()}
+                        {!isRoomExpiredAndIncomplete(room, participation) && getRankDisplay()}
                       </div>
 
                       <Link
                         href={`/cube-lab/challenges/room/${room.roomId}`}
-                        className="p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                        title="View Room"
+                        aria-label={`Open ${room.name}`}
+                        className="icon-btn w-9 h-9 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100 transition-opacity"
                       >
                         <ExternalLink className="w-4 h-4" />
                       </Link>
@@ -282,13 +217,12 @@ export default function RecentRoomsModal({
             })}
           </div>
         )}
-
-        <div className="flex justify-end pt-6 mt-6 border-t border-(--border)">
-          <button onClick={onClose} className="btn-secondary">
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }

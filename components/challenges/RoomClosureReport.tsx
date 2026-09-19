@@ -11,6 +11,7 @@ import {
   Clock,
   TrendingUp,
 } from "lucide-react";
+import { medalBadgeStyle, medalRowStyle } from "@/components/ui/medal";
 import UserSolvesModal from "./UserSolvesModal";
 
 function formatTime(ms: number): string {
@@ -68,44 +69,6 @@ export default function RoomClosureReport({
   const completionRate =
     totalParticipants > 0 ? (completedCount / totalParticipants) * 100 : 0;
 
-  const getRankColor = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return "bg-yellow-500";
-      case 2:
-        return "bg-gray-400";
-      case 3:
-        return "bg-orange-500";
-      default:
-        return "bg-slate-400";
-    }
-  };
-
-  const getRankBorderColor = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return "border-yellow-200";
-      case 2:
-        return "border-gray-200";
-      case 3:
-        return "border-orange-200";
-      default:
-        return "border-(--border)";
-    }
-  };
-
-  const getRankBgColor = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return "bg-yellow-50 dark:bg-yellow-900/10";
-      case 2:
-        return "bg-gray-50 dark:bg-gray-900/10";
-      case 3:
-        return "bg-orange-50 dark:bg-orange-900/10";
-      default:
-        return "bg-(--surface-elevated)";
-    }
-  };
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -163,7 +126,7 @@ export default function RoomClosureReport({
             </div>
           </div>
           <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
-            <Clock className="w-6 h-6 text-blue-500 mx-auto mb-2" />
+            <Clock className="w-6 h-6 text-(--primary) mx-auto mb-2" />
             <div className="text-2xl font-bold text-(--text-primary) font-statement">
               {Math.round(completionRate)}%
             </div>
@@ -172,7 +135,7 @@ export default function RoomClosureReport({
             </div>
           </div>
           <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
-            <Trophy className="w-6 h-6 text-yellow-500 mx-auto mb-2" />
+            <Trophy className="w-6 h-6 text-(--warning) mx-auto mb-2" />
             <div className="text-2xl font-bold text-(--text-primary) font-statement">
               {room.format.toUpperCase()}
             </div>
@@ -181,7 +144,7 @@ export default function RoomClosureReport({
             </div>
           </div>
           <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
-            <Users className="w-6 h-6 text-green-500 mx-auto mb-2" />
+            <Users className="w-6 h-6 text-(--success) mx-auto mb-2" />
             <div className="text-2xl font-bold text-(--text-primary) font-statement">
               {totalParticipants}
             </div>
@@ -203,16 +166,14 @@ export default function RoomClosureReport({
               <button
                 key={participant._id}
                 onClick={() => setSelectedParticipant(participant)}
-                className={`p-6 rounded-xl border transition-all duration-200 hover:scale-105 cursor-pointer ${getRankBgColor(
-                  participant.finalRank
-                )} ${getRankBorderColor(participant.finalRank)}`}
+                className="p-6 rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) transition-colors duration-200 cursor-pointer"
+                style={medalRowStyle(participant.finalRank)}
               >
                 <div className="text-center space-y-3">
                   {/* Rank Badge */}
                   <div
-                    className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center text-white ${getRankColor(
-                      participant.finalRank
-                    )}`}
+                    className="w-12 h-12 mx-auto rounded-full flex items-center justify-center text-white"
+                    style={medalBadgeStyle(participant.finalRank)}
                   >
                     {getRankIcon(participant.finalRank)}
                   </div>
@@ -328,9 +289,8 @@ export default function RoomClosureReport({
                 >
                   {/* Rank */}
                   <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-white ${getRankColor(
-                      participant.finalRank
-                    )}`}
+                    className="w-8 h-8 rounded-(--radius-control) flex items-center justify-center text-sm font-bold text-white shrink-0"
+                    style={medalBadgeStyle(participant.finalRank)}
                   >
                     {participant.finalRank}
                   </div>
@@ -440,7 +400,7 @@ export default function RoomClosureReport({
                   className="w-full flex items-center gap-3 p-4 bg-(--surface-elevated)/60 hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border)/50 transition-all duration-200 cursor-pointer"
                 >
                   {/* User Avatar */}
-                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-gray-400 text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--text-muted) text-white font-bold text-sm">
                     {participant.user?.avatar &&
                     !(
                       participant.user?.isDeleted ||
@@ -490,7 +450,7 @@ export default function RoomClosureReport({
                   </div>
 
                   {/* Status */}
-                  <div className="w-8 h-8 rounded-lg bg-gray-400 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-(--text-muted) flex items-center justify-center">
                     <Users className="w-4 h-4 text-white" />
                   </div>
 

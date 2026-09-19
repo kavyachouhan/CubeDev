@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { X, Search, ArrowRight, AlertCircle } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import { Field, Input } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
 
 interface JoinRoomModalProps {
   onClose: () => void;
@@ -54,93 +57,61 @@ export default function JoinRoomModal({ onClose }: JoinRoomModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="timer-card w-full max-w-md">
-        <div className="p-2">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div>
-                <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-                  Join Challenge
-                </h2>
-                <p className="text-sm text-(--text-secondary) font-inter">
-                  Enter a room code to join an existing challenge
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              className="p-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+    <Modal open onClose={onClose} size="md" mobile="sheet">
+      <Modal.Header
+        title="Join Challenge"
+        description="Enter a room code to join an existing challenge"
+      />
+      <form onSubmit={handleSubmit} className="contents">
+        <Modal.Body className="space-y-5">
+          <Field
+            label="Room Code"
+            required
+            error={error || undefined}
+            hint="Room codes are 6 characters long (letters and numbers)"
+          >
+            <Input
+              value={roomCode}
+              onChange={(e) => {
+                setRoomCode(e.target.value.toUpperCase());
+                setError("");
+              }}
+              placeholder="ABC123"
+              maxLength={6}
+              autoComplete="off"
+              autoCapitalize="characters"
+              size="lg"
+              leading={<Search />}
+              className="type-time text-lg! tracking-[0.3em] text-center"
+              required
+              data-autofocus
+            />
+          </Field>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-(--text-primary) font-inter mb-2">
-                Room Code
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={roomCode}
-                  onChange={(e) => {
-                    setRoomCode(e.target.value.toUpperCase());
-                    setError(""); // Clear error on change
-                  }}
-                  placeholder="ABC123"
-                  maxLength={6}
-                  className="w-full px-4 py-3 pl-12 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) transition-colors font-mono text-lg tracking-wider text-center"
-                  required
-                />
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-(--text-muted)" />
-              </div>
-              {error && (
-                <div className="mt-2 p-3 rounded-lg flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-                  <p className="text-sm text-red-500 font-inter">{error}</p>
-                </div>
-              )}
-              <p className="text-xs text-(--text-muted) font-inter mt-2 text-center">
-                Room codes are 6 characters long (letters and numbers)
-              </p>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isJoining || roomCode.length !== 6}
-              className="btn-primary w-full flex items-center justify-center gap-2 text-base"
-            >
-              {isJoining ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  {isValidating ? "Validating Room..." : "Joining Room..."}
-                </>
-              ) : (
-                <>
-                  <ArrowRight className="w-4 h-4" />
-                  Join Room
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Help Text */}
-          <div className="mt-6 p-4 bg-(--surface-elevated) border border-(--border) rounded-lg">
-            <h3 className="text-sm font-medium text-(--text-primary) font-inter mb-2">
-              How to join a room
-            </h3>
-            <ul className="text-sm text-(--text-secondary) font-inter space-y-1">
-              <li>• Get a room code from the room creator</li>
-              <li>• Enter the 6-character code above</li>
-              <li>• You'll be taken to the room to start solving</li>
+          <section className="rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) p-4">
+            <h3 className="type-label mb-2">How to join a room</h3>
+            <ul className="list-disc pl-4 space-y-1 text-sm text-(--text-secondary) font-inter">
+              <li>Get a room code from the room creator</li>
+              <li>Enter the 6-character code above</li>
+              <li>You&apos;ll be taken to the room to start solving</li>
             </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+          </section>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={onClose} disabled={isJoining}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={roomCode.length !== 6}
+            loading={isJoining}
+            loadingText={isValidating ? "Validating room…" : "Joining room…"}
+            iconLeft={<ArrowRight className="w-4 h-4" />}
+          >
+            Join Room
+          </Button>
+        </Modal.Footer>
+      </form>
+    </Modal>
   );
 }

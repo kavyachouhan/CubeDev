@@ -39,15 +39,15 @@ export default function RoomProgress({
         </div>
 
         {isCompleted && (
-          <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+          <div className="flex items-center gap-2 p-3 bg-(--success)/10 border border-(--success)/25 rounded-lg">
+            <div className="w-8 h-8 bg-(--success) rounded-full flex items-center justify-center">
               <Check className="w-5 h-5 text-white" />
             </div>
             <div>
-              <div className="text-sm font-medium text-green-800 font-inter">
+              <div className="text-sm font-medium text-(--success) font-inter">
                 Challenge Completed!
               </div>
-              <div className="text-xs text-green-600 font-inter">
+              <div className="text-xs text-(--success) font-inter">
                 Check the leaderboard for your ranking
               </div>
             </div>

@@ -5,8 +5,11 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@/components/UserProvider";
 import dynamic from "next/dynamic";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { ArrowLeft, Trophy } from "lucide-react";
+import { ButtonLink } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
+import { LoadingState } from "@/components/ui/Spinner";
 
 // Import components
 import RoomHeader from "./RoomHeader";
@@ -24,21 +27,10 @@ const ScramblePreview = dynamic(
   () => import("@/components/timer/ScramblePreview"),
   {
     loading: () => (
-      <div className="timer-card">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
-            Scramble Preview
-          </h3>
-        </div>
-        <div className="w-full min-h-[200px] bg-(--surface-elevated) rounded-lg flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-4xl mb-2">🧩</div>
-            <div className="text-sm text-(--text-muted)">
-              Loading preview...
-            </div>
-          </div>
-        </div>
-      </div>
+      <SkeletonCard label="Loading scramble preview">
+        <Skeleton className="h-5 w-40 mb-4" />
+        <Skeleton radius="panel" className="w-full min-h-50" />
+      </SkeletonCard>
     ),
     ssr: false,
   }
@@ -161,12 +153,7 @@ export default function ChallengeRoom({ roomId }: ChallengeRoomProps) {
   if (!roomDetails) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-(--primary) border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-(--text-secondary) font-inter">
-            Loading challenge room...
-          </p>
-        </div>
+        <LoadingState label="Loading challenge room…" />
       </div>
     );
   }
@@ -174,22 +161,21 @@ export default function ChallengeRoom({ roomId }: ChallengeRoomProps) {
   // Room not found
   if (!roomDetails.room) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-(--text-primary) mb-2">
-            Room Not Found
-          </h1>
-          <p className="text-(--text-secondary) mb-4">
-            The room code "{roomId}" does not exist or has expired.
-          </p>
-          <Link
-            href="/cube-lab/challenges"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Challenges
-          </Link>
-        </div>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <EmptyState
+          size="page"
+          icon={<Trophy />}
+          title="Room not found"
+          description={`The room code "${roomId}" does not exist or has expired.`}
+          action={
+            <ButtonLink
+              href="/cube-lab/challenges"
+              iconLeft={<ArrowLeft className="w-4 h-4" />}
+            >
+              Back to Challenges
+            </ButtonLink>
+          }
+        />
       </div>
     );
   }

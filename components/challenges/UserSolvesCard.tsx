@@ -59,9 +59,9 @@ export default function UserSolvesCard({
             {solves.length} / {totalSolves}
           </div>
           {isCompleted && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-green-500/10 border border-green-500/20 rounded-full">
-              <CircleCheck className="w-3 h-3 text-green-500" />
-              <span className="text-xs text-green-500 font-medium font-inter">
+            <div className="flex items-center gap-1 px-2 py-1 bg-(--success)/15 border border-(--success)/30 rounded-full">
+              <CircleCheck className="w-3 h-3 text-(--success)" />
+              <span className="text-xs text-(--success) font-medium font-inter">
                 Complete
               </span>
             </div>
@@ -87,7 +87,7 @@ export default function UserSolvesCard({
             <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-1">
               Best Single
             </div>
-            <div className="text-lg font-mono font-bold text-green-500">
+            <div className="text-lg font-mono font-bold text-(--success)">
               {bestSingle && bestSingle !== Infinity
                 ? formatTime(bestSingle)
                 : "--:--"}
@@ -126,9 +126,9 @@ export default function UserSolvesCard({
                   <span
                     className={`font-mono text-lg font-semibold ${
                       solve.penalty === "+2"
-                        ? "text-yellow-400"
+                        ? "text-(--warning)"
                         : solve.penalty === "DNF"
-                          ? "text-red-400"
+                          ? "text-(--error)"
                           : "text-(--text-primary)"
                     }`}
                   >
@@ -143,12 +143,12 @@ export default function UserSolvesCard({
                 {/* Penalty indicators */}
                 <div className="flex items-center gap-1 ml-2">
                   {solve.penalty === "+2" && (
-                    <span className="px-2 py-1 text-xs rounded font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                    <span className="px-2 py-1 text-xs rounded font-medium bg-(--warning)/15 text-(--warning) border border-(--warning)/30">
                       +2
                     </span>
                   )}
                   {solve.penalty === "DNF" && (
-                    <span className="px-2 py-1 text-xs rounded font-medium bg-red-500/20 text-red-400 border border-red-500/30">
+                    <span className="px-2 py-1 text-xs rounded font-medium bg-(--error)/15 text-(--error) border border-(--error)/30">
                       DNF
                     </span>
                   )}
@@ -178,9 +178,9 @@ export default function UserSolvesCard({
                         <span
                           className={
                             solve.penalty === "+2"
-                              ? "text-yellow-400"
+                              ? "text-(--warning)"
                               : solve.penalty === "DNF"
-                                ? "text-red-400"
+                                ? "text-(--error)"
                                 : "text-(--text-primary)"
                           }
                         >

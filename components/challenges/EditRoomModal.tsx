@@ -4,7 +4,11 @@ import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@/components/UserProvider";
-import { X } from "lucide-react";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { Field, Input, Textarea } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { useToast } from "@/components/ui/Toast";
 
 interface EditRoomModalProps {
   isOpen: boolean;
@@ -25,11 +29,13 @@ export default function EditRoomModal({
   room,
 }: EditRoomModalProps) {
   const { user } = useUser();
+  const toast = useToast();
   const [formData, setFormData] = useState({
     title: room.name,
     description: room.description || "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const updateRoom = useMutation(api.challengeRooms.updateRoom);
 
@@ -38,6 +44,7 @@ export default function EditRoomModal({
     if (isSubmitting || !user?.convexId) return;
 
     setIsSubmitting(true);
+    setError(null);
     try {
       await updateRoom({
         userId: user.convexId,
@@ -45,112 +52,73 @@ export default function EditRoomModal({
         title: formData.title,
         description: formData.description,
       });
+      toast.success("Room updated");
       onClose();
-    } catch (error) {
-      console.error("Failed to update room:", error);
+    } catch (caught) {
+      console.error("Failed to update room:", caught);
+      setError("Couldn't save your changes. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-            Edit Challenge Room
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <Modal open={isOpen} onClose={onClose} size="md" mobile="sheet">
+      <Modal.Header title="Edit Challenge Room" closeLabel="Close edit room" />
+      <form onSubmit={handleSubmit} className="contents">
+        <Modal.Body className="space-y-5">
+          {error && <Alert tone="error">{error}</Alert>}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Room Title
-            </label>
-            <input
-              type="text"
+          <Field label="Room Title" required>
+            <Input
               value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
-              placeholder="Enter room title..."
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="Enter room title…"
               required
               maxLength={100}
+              data-autofocus
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Description
-            </label>
-            <textarea
+          <Field label="Description">
+            <Textarea
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              rows={3}
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
-              placeholder="Enter room description..."
+              placeholder="Enter room description…"
               maxLength={500}
             />
-          </div>
+          </Field>
 
-          <div className="timer-card bg-(--surface-elevated) p-4 border border-(--border)">
-            <h3 className="text-sm font-medium text-(--text-primary) mb-3 font-statement">
-              Room Settings
-            </h3>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-(--text-muted) font-inter">
-                  Solves:
-                </span>
-                <span className="text-sm font-medium text-(--text-primary) font-inter">
-                  {room.format === "ao5" ? "5" : "12"}
-                </span>
+          <section className="rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) p-4">
+            <h3 className="type-overline mb-2">Room Settings</h3>
+            <dl className="space-y-1.5 text-sm font-inter">
+              <div className="flex justify-between gap-3">
+                <dt className="text-(--text-muted)">Solves</dt>
+                <dd className="type-label">{room.format === "ao5" ? "5" : "12"}</dd>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-(--text-muted) font-inter">
-                  Expires:
-                </span>
-                <span className="text-sm font-medium text-(--text-primary) font-inter">
+              <div className="flex justify-between gap-3">
+                <dt className="text-(--text-muted)">Expires</dt>
+                <dd className="type-label text-right">
                   {new Date(room.expiresAt).toLocaleString()}
-                </span>
+                </dd>
               </div>
-            </div>
-            <p className="text-xs text-(--text-muted) mt-3 font-inter">
-              Note: Solve count and expiration cannot be changed after room
-              creation.
+            </dl>
+            <p className="type-caption mt-3">
+              Solve count and expiration cannot be changed after room creation.
             </p>
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 btn-secondary"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? "Saving..." : "Save Changes"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+          </section>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button type="submit" loading={isSubmitting} loadingText="Saving…">
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </form>
+    </Modal>
   );
 }

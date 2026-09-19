@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { Check } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
 
 interface RoomTimerProps {
   onSolveComplete: (time: number, penalty: "none" | "+2" | "DNF") => void;
@@ -285,23 +287,23 @@ export default function RoomTimer({
 
   // Get timer color based on state
   const getTimerColor = () => {
-    if (isDisabled) return "text-gray-400";
+    if (isDisabled) return "text-(--text-muted)";
 
     switch (state) {
       case "holding":
-        return "text-orange-400";
+        return "text-(--warning)";
       case "inspection":
-        if (inspectionTime <= 3) return "text-red-400";
-        if (inspectionTime <= 8) return "text-yellow-400";
-        return "text-green-400";
+        if (inspectionTime <= 3) return "text-(--error)";
+        if (inspectionTime <= 8) return "text-(--warning)";
+        return "text-(--success)";
       case "ready":
-        return "text-green-400";
+        return "text-(--success)";
       case "running":
-        return "text-red-400";
+        return "text-(--error)";
       case "stopped":
-        return "text-blue-400";
+        return "text-(--primary)";
       default:
-        return "text-gray-400";
+        return "text-(--text-muted)";
     }
   };
 
@@ -361,15 +363,13 @@ export default function RoomTimer({
 
         {/* Penalty Indicator */}
         {currentPenalty !== "none" && state === "stopped" && (
-          <div
-            className={`text-xs font-semibold px-2 py-1 rounded-full transition-all duration-300 ${
-              currentPenalty === "+2"
-                ? "bg-yellow-100 text-yellow-800 border border-yellow-300"
-                : "bg-red-100 text-red-800 border border-red-300"
-            }`}
+          <Badge
+            tone={currentPenalty === "+2" ? "warning" : "danger"}
+            shape="pill"
+            size="md"
           >
-            {currentPenalty === "+2" ? "+2 Penalty Applied" : "DNF Applied"}
-          </div>
+            {currentPenalty === "+2" ? "+2 penalty applied" : "DNF applied"}
+          </Badge>
         )}
 
         <div className="text-sm text-(--text-secondary) font-inter select-none">
@@ -392,13 +392,17 @@ export default function RoomTimer({
                 e.preventDefault();
                 handlePenalty("+2");
               }}
-              className={`px-6 py-2 text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105 ${
+              aria-pressed={currentPenalty === "+2"}
+              className={`inline-flex items-center justify-center gap-1.5 min-w-24 min-h-11 px-5 text-sm rounded-(--radius-control) font-statement transition-colors ${
                 currentPenalty === "+2"
-                  ? "bg-(--warning) text-white ring-2 ring-yellow-300"
-                  : "bg-(--surface-elevated) text-(--text-primary) hover:bg-(--border)"
+                  ? "bg-(--penalty-plus2-hover) text-white ring-2 ring-offset-2 ring-offset-(--surface) ring-(--penalty-plus2)"
+                  : "bg-(--penalty-plus2) text-white hover:bg-(--penalty-plus2-hover)"
               }`}
             >
-              +2 {currentPenalty === "+2" ? "✓" : ""}
+              +2
+              {currentPenalty === "+2" && (
+                <Check className="w-4 h-4" strokeWidth={3} aria-hidden />
+              )}
             </button>
             <button
               onClick={(e) => {
@@ -406,13 +410,17 @@ export default function RoomTimer({
                 e.preventDefault();
                 handlePenalty("DNF");
               }}
-              className={`px-6 py-2 text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105 ${
+              aria-pressed={currentPenalty === "DNF"}
+              className={`inline-flex items-center justify-center gap-1.5 min-w-24 min-h-11 px-5 text-sm rounded-(--radius-control) font-statement transition-colors ${
                 currentPenalty === "DNF"
-                  ? "bg-(--error) text-white ring-2 ring-red-300"
-                  : "bg-(--surface-elevated) text-(--text-primary) hover:bg-(--border)"
+                  ? "bg-(--penalty-dnf-hover) text-white ring-2 ring-offset-2 ring-offset-(--surface) ring-(--penalty-dnf)"
+                  : "bg-(--penalty-dnf) text-white hover:bg-(--penalty-dnf-hover)"
               }`}
             >
-              DNF {currentPenalty === "DNF" ? "✓" : ""}
+              DNF
+              {currentPenalty === "DNF" && (
+                <Check className="w-4 h-4" strokeWidth={3} aria-hidden />
+              )}
             </button>
           </div>
 

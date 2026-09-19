@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import {
-  X,
   Trophy,
   Clock,
   ExternalLink,
@@ -16,6 +14,9 @@ import {
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { medalColor } from "@/components/ui/medal";
+import { Modal } from "@/components/ui/Modal";
 
 function formatTime(ms: number): string {
   if (ms === Number.MAX_SAFE_INTEGER || ms === Infinity) return "DNF";
@@ -105,16 +106,11 @@ export default function UserSolvesModal({
   const individualSolves = userSolves?.solves || [];
 
   const getRankDisplay = (rank: number) => {
-    if (rank === 1)
-      return { text: "1st", color: "text-yellow-500", icon: Trophy };
-    if (rank === 2) return { text: "2nd", color: "text-gray-400", icon: Award };
-    if (rank === 3)
-      return { text: "3rd", color: "text-orange-500", icon: Award };
-    return {
-      text: `${rank}th`,
-      color: "text-(--text-secondary)",
-      icon: Award,
-    };
+    const color = medalColor(rank) ?? "var(--text-secondary)";
+    if (rank === 1) return { text: "1st", color, icon: Trophy };
+    if (rank === 2) return { text: "2nd", color, icon: Award };
+    if (rank === 3) return { text: "3rd", color, icon: Award };
+    return { text: `${rank}th`, color, icon: Award };
   };
 
   const rankDisplay = getRankDisplay(participant.finalRank || 0);
@@ -133,34 +129,10 @@ export default function UserSolvesModal({
         validSolves.length
       : 0;
 
-  const modalContent = (
-    <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      {/* Modal Background */}
-      <div
-        className="bg-(--surface) border border-(--border) rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-(--border)">
-          <div className="flex items-center gap-4">
-            <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-              Performance Details
-            </h2>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="p-2 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Scrollable Content */}
-        <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
+  return (
+    <Modal open onClose={onClose} size="2xl" mobile="fullscreen" layer="nested">
+      <Modal.Header title="Performance Details" />
+      <Modal.Body padded={false}>
           {/* User Profile Section */}
           <div className="p-6 border-b border-(--border)">
             <div className="flex flex-col sm:flex-row sm:items-center gap-6">
@@ -219,10 +191,12 @@ export default function UserSolvesModal({
                     {participant.finalRank && (
                       <div className="flex items-center gap-1 px-2 py-1 bg-(--surface-elevated) border border-(--border) rounded-full">
                         <rankDisplay.icon
-                          className={`w-3 h-3 ${rankDisplay.color}`}
+                          className="w-3 h-3"
+                          style={{ color: rankDisplay.color }}
                         />
                         <span
-                          className={`text-xs font-semibold ${rankDisplay.color}`}
+                          className="text-xs font-semibold"
+                          style={{ color: rankDisplay.color }}
                         >
                           {rankDisplay.text}
                         </span>
@@ -254,12 +228,12 @@ export default function UserSolvesModal({
 
                 <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <Activity className="w-4 h-4 text-green-500" />
+                    <Activity className="w-4 h-4 text-(--success)" />
                     <span className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
                       Best Single
                     </span>
                   </div>
-                  <div className="text-xl font-mono font-bold text-green-500">
+                  <div className="text-xl font-mono font-bold text-(--success)">
                     {participant.bestSingle &&
                     participant.bestSingle !== Infinity
                       ? formatTime(participant.bestSingle)
@@ -269,24 +243,24 @@ export default function UserSolvesModal({
 
                 <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <Timer className="w-4 h-4 text-blue-500" />
+                    <Timer className="w-4 h-4 text-(--primary)" />
                     <span className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
                       Completed
                     </span>
                   </div>
-                  <div className="text-xl font-mono font-bold text-blue-500">
+                  <div className="text-xl font-mono font-bold text-(--primary)">
                     {participant.solvesCompleted} / {participant.totalSolves}
                   </div>
                 </div>
 
                 <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="w-4 h-4 text-purple-500" />
+                    <Calendar className="w-4 h-4 text-(--accent)" />
                     <span className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
                       Session Avg
                     </span>
                   </div>
-                  <div className="text-xl font-mono font-bold text-purple-500">
+                  <div className="text-xl font-mono font-bold text-(--accent)">
                     {avgTime > 0 ? formatTime(avgTime) : "--"}
                   </div>
                 </div>
@@ -330,9 +304,9 @@ export default function UserSolvesModal({
                             <span
                               className={`font-mono text-lg font-semibold ${
                                 solve.penalty === "+2"
-                                  ? "text-yellow-400"
+                                  ? "text-(--warning)"
                                   : solve.penalty === "DNF"
-                                    ? "text-red-400"
+                                    ? "text-(--error)"
                                     : "text-(--text-primary)"
                               }`}
                             >
@@ -347,12 +321,12 @@ export default function UserSolvesModal({
                           {/* Penalty indicators */}
                           <div className="flex items-center gap-1 ml-2">
                             {solve.penalty === "+2" && (
-                              <span className="px-2 py-1 text-xs rounded font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                              <span className="px-2 py-1 text-xs rounded font-medium bg-(--warning)/15 text-(--warning) border border-(--warning)/30">
                                 +2
                               </span>
                             )}
                             {solve.penalty === "DNF" && (
-                              <span className="px-2 py-1 text-xs rounded font-medium bg-red-500/20 text-red-400 border border-red-500/30">
+                              <span className="px-2 py-1 text-xs rounded font-medium bg-(--error)/15 text-(--error) border border-(--error)/30">
                                 DNF
                               </span>
                             )}
@@ -382,9 +356,9 @@ export default function UserSolvesModal({
                                   <span
                                     className={
                                       solve.penalty === "+2"
-                                        ? "text-yellow-400"
+                                        ? "text-(--warning)"
                                         : solve.penalty === "DNF"
-                                          ? "text-red-400"
+                                          ? "text-(--error)"
                                           : "text-(--text-primary)"
                                     }
                                   >
@@ -421,25 +395,16 @@ export default function UserSolvesModal({
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 text-(--text-muted)">
-                    <Clock className="w-12 h-12 mx-auto mb-4 text-(--text-muted) opacity-50" />
-                    <p className="text-lg font-medium mb-2">
-                      No solves recorded yet
-                    </p>
-                    <p className="text-sm">
-                      This participant hasn't submitted any solves for this
-                      challenge.
-                    </p>
-                  </div>
+                  <EmptyState
+                    icon={<Clock />}
+                    title="No solves recorded yet"
+                    description="This participant hasn't submitted any solves for this challenge."
+                  />
                 )}
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
-
-  // Render modal in portal
-  return createPortal(modalContent, document.body);
 }

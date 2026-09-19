@@ -62,13 +62,13 @@ export default function PublicRoomsList() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-gray-200 rounded-lg" />
+                  <div className="w-10 h-10 skeleton rounded-lg" />
                   <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-32" />
-                    <div className="h-3 bg-gray-200 rounded w-24" />
+                    <div className="h-4 skeleton rounded w-32" />
+                    <div className="h-3 skeleton rounded w-24" />
                   </div>
                 </div>
-                <div className="h-8 bg-gray-200 rounded w-20" />
+                <div className="h-8 skeleton rounded w-20" />
               </div>
             </div>
           ))}
@@ -172,7 +172,7 @@ export default function PublicRoomsList() {
                         <Calendar className="w-3 h-3 md:w-4 md:h-4" />
                         <span
                           className={
-                            isExpiring ? "text-orange-600 font-medium" : ""
+                            isExpiring ? "text-(--warning) font-medium" : ""
                           }
                         >
                           {timeRemaining} left
