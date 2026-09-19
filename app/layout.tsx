@@ -85,30 +85,23 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  // Apply theme preferences
-                  const stored = localStorage.getItem('cubedev-theme-preferences');
-                  let themeMode = 'dark';
-                  let colorScheme = 'blue';
-                  
-                  if (stored) {
-                    const prefs = JSON.parse(stored);
-                    themeMode = prefs.themeMode || 'dark';
-                    colorScheme = prefs.colorScheme || 'blue';
-                  }
-                  
-                  let effectiveTheme = themeMode;
+                  var root = document.documentElement;
+                  var stored = localStorage.getItem('cubedev-theme-preferences');
+                  var prefs = stored ? JSON.parse(stored) : {};
+                  var themeMode = prefs.themeMode || 'dark';
+
+                  var effectiveTheme = themeMode;
                   if (themeMode === 'auto') {
                     effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
                   }
-                  
-                  document.documentElement.setAttribute('data-theme', effectiveTheme);
-                  document.documentElement.setAttribute('data-color-scheme', colorScheme);
-                  
-                  // Apply sidebar state
-                  const sidebarState = localStorage.getItem('cubelab-sidebar-collapsed');
-                  if (sidebarState === 'true') {
-                    document.documentElement.setAttribute('data-sidebar-collapsed', 'true');
-                  }
+
+                  root.setAttribute('data-theme', effectiveTheme);
+                  root.setAttribute('data-color-scheme', prefs.colorScheme || 'blue');
+                  root.setAttribute('data-timer-size', prefs.timerFontSize || 'lg');
+                  root.setAttribute('data-timer-font', prefs.timerFontFamily || 'mono');
+                  if (prefs.reduceMotion) root.setAttribute('data-reduce-motion', 'true');
+                  if (prefs.disableGlow) root.setAttribute('data-disable-glow', 'true');
+                  if (prefs.highContrast) root.setAttribute('data-high-contrast', 'true');
                 } catch (e) {
                   document.documentElement.setAttribute('data-theme', 'dark');
                   document.documentElement.setAttribute('data-color-scheme', 'blue');

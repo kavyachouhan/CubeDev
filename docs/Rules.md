@@ -220,7 +220,9 @@ Adding a library is a decision, not a convenience. These are settled:
 | Validation | Convex `v.*` validators | zod, yup, joi |
 | Logging | `lib/logger.ts` (§10) | winston, pino, or a hosted SDK, without agreement |
 
-Also note: there is no `cn()` / `clsx` / `tailwind-merge` helper and no CVA. Class variants are done with template literals. Don't introduce a new pattern without agreement.
+Class composition uses the in-house [lib/cx.ts](../lib/cx.ts) — a dependency-free join of truthy strings. There is no `clsx`, `tailwind-merge` or CVA; don't add them. Because `cx()` does not resolve conflicts, pass only layout classes (margin, width, grid placement) into a primitive's `className`.
+
+Transient feedback uses the in-house toast in [components/ui/Toast.tsx](../components/ui/Toast.tsx) (`useToast()`); don't add a toast library.
 
 ## 13. Do not
 
