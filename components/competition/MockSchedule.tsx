@@ -16,6 +16,8 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Field";
 import Image from "next/image";
 import { WCA_EVENTS } from "./CompetitionBrowser";
 
@@ -247,11 +249,12 @@ export default function MockSchedule({
               <label className="text-sm text-(--text-secondary)">
                 Start:
               </label>
-              <input
+              <Input
                 type="time"
+                size="sm"
+                aria-label="Competition start time"
                 value={competitionStartTime}
                 onChange={(e) => setCompetitionStartTime(e.target.value)}
-                className="px-2 py-1 bg-(--surface) border border-(--border) rounded text-sm text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
                 disabled={isRunning}
               />
             </div>
@@ -440,13 +443,13 @@ export default function MockSchedule({
                   </button>
                 </>
               ) : (
-                <button
+                <Button
+                  className="flex-1 sm:flex-none"
                   onClick={startSchedule}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
+                  iconLeft={<Play className="w-4 h-4" />}
                 >
-                  <Play className="w-4 h-4" />
-                  Start Day
-                </button>
+                  Start day
+                </Button>
               )}
             </div>
           </div>

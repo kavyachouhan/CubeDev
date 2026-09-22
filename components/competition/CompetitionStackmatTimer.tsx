@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Mic, MicOff, Check, AlertCircle, RotateCcw } from "lucide-react";
 import { useStackmatAudio } from "../timer/hooks/useStackmatAudio";
+import { Button } from "@/components/ui/Button";
 
 interface CompetitionStackmatTimerProps {
   onSolveComplete: (
@@ -395,25 +396,25 @@ export default function CompetitionStackmatTimer({
                 Confirm your solve result
               </p>
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
-                <button
+                <Button
+                  variant="success"
                   onClick={() => handlePenaltySelect("none")}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-(--success) text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
+                  iconLeft={<Check className="w-4 h-4" />}
                 >
-                  <Check className="w-4 h-4" />
                   OK
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="warning"
                   onClick={() => handlePenaltySelect("+2")}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-(--warning) text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
                 >
                   +2
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="danger"
                   onClick={() => handlePenaltySelect("DNF")}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-(--error) text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
                 >
                   DNF
-                </button>
+                </Button>
               </div>
             </div>
           )}

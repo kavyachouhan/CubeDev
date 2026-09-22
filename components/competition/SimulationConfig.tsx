@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowLeft,
@@ -12,7 +11,6 @@ import {
   Play,
   Check,
   AlertTriangle,
-  Loader2,
   Volume2,
   Brain,
   Zap,
@@ -26,6 +24,9 @@ import { getFromCache, saveToCache } from "@/lib/wca-cache";
 import { WCA_EVENTS, WCACompetition } from "./CompetitionBrowser";
 import { useUser } from "@/components/UserProvider";
 import { SimulationConfigSkeleton } from "@/components/SkeletonLoaders";
+import { Button, ButtonLink } from "@/components/ui/Button";
+import { Slider } from "@/components/ui/Field";
+import { BackLink } from "@/components/ui/PageHeader";
 
 export interface AtmosphereSettings {
   crowdNoise: number; // 0-100
@@ -281,13 +282,12 @@ export default function SimulationConfig() {
           <p className="text-sm text-(--text-muted) mb-4">
             {error || "The competition could not be loaded."}
           </p>
-          <Link
+          <ButtonLink
             href="/cube-lab/competitions"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg text-sm"
+            iconLeft={<ArrowLeft className="w-4 h-4" />}
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Competitions
-          </Link>
+            Back to competitions
+          </ButtonLink>
         </div>
       </div>
     );
@@ -297,13 +297,9 @@ export default function SimulationConfig() {
     <div className="h-full overflow-y-auto p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
         {/* Back Link */}
-        <Link
-          href={`/cube-lab/competitions/${competitionId}`}
-          className="inline-flex items-center gap-2 text-sm text-(--text-muted) hover:text-(--primary) transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Competition
-        </Link>
+        <BackLink href={`/cube-lab/competitions/${competitionId}`}>
+          Back to competition
+        </BackLink>
 
         {/* Header */}
         <div className="timer-card">
@@ -365,7 +361,7 @@ export default function SimulationConfig() {
                 >
                   {isSelected && (
                     <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-4 h-4 sm:w-5 sm:h-5 bg-(--primary) rounded-full flex items-center justify-center">
-                      <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
+                      <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-(--on-primary)" />
                     </div>
                   )}
                   <div
@@ -426,18 +422,15 @@ export default function SimulationConfig() {
                   {atmosphere.crowdNoise}%
                 </span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
+              <Slider
+                min={0}
+                max={100}
+                showValue={false}
+                aria-label="Crowd noise"
                 value={atmosphere.crowdNoise}
-                onChange={(e) =>
-                  setAtmosphere({
-                    ...atmosphere,
-                    crowdNoise: parseInt(e.target.value),
-                  })
+                onChange={(crowdNoise) =>
+                  setAtmosphere({ ...atmosphere, crowdNoise })
                 }
-                className="w-full h-2 sm:h-3 bg-(--surface-elevated) rounded-lg appearance-none cursor-pointer accent-(--primary)"
               />
               <div className="flex justify-between text-[10px] sm:text-xs text-(--text-muted)">
                 <span>Silent</span>
@@ -459,18 +452,15 @@ export default function SimulationConfig() {
                   {atmosphere.pressure}%
                 </span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
+              <Slider
+                min={0}
+                max={100}
+                showValue={false}
+                aria-label="Competition pressure"
                 value={atmosphere.pressure}
-                onChange={(e) =>
-                  setAtmosphere({
-                    ...atmosphere,
-                    pressure: parseInt(e.target.value),
-                  })
+                onChange={(pressure) =>
+                  setAtmosphere({ ...atmosphere, pressure })
                 }
-                className="w-full h-2 sm:h-3 bg-(--surface-elevated) rounded-lg appearance-none cursor-pointer accent-(--warning)"
               />
               <div className="flex justify-between text-[10px] sm:text-xs text-(--text-muted)">
                 <span>Relaxed</span>
@@ -627,23 +617,17 @@ export default function SimulationConfig() {
 
         {/* Start Button */}
         <div className="timer-card">
-          <button
+          <Button
+            size="lg"
+            fullWidth
             onClick={handleStartSimulation}
-            disabled={selectedEvents.length === 0 || isStarting}
-            className="flex items-center justify-center gap-2 sm:gap-3 w-full px-6 py-3 sm:py-4 bg-(--primary) text-white text-sm sm:text-lg font-bold rounded-lg sm:rounded-xl hover:bg-(--primary-hover) transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={selectedEvents.length === 0}
+            loading={isStarting}
+            loadingText="Starting…"
+            iconLeft={<Play className="w-5 h-5" />}
           >
-            {isStarting ? (
-              <>
-                <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
-                Starting...
-              </>
-            ) : (
-              <>
-                <Play className="w-5 h-5 sm:w-6 sm:h-6" />
-                Start Competition Simulation
-              </>
-            )}
-          </button>
+            Start competition simulation
+          </Button>
 
           {selectedEvents.length === 0 && (
             <p className="text-center text-xs sm:text-sm text-(--error) mt-3">

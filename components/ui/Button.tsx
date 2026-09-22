@@ -11,7 +11,10 @@ export type ButtonVariant =
   | "secondary"
   | "subtle"
   | "ghost"
-  | "danger";
+  | "danger"
+  /* Status fills: only for actions that *are* the status (OK / +2 / DNF). */
+  | "success"
+  | "warning";
 export type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonStyleProps {

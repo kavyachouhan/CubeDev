@@ -35,6 +35,7 @@ import { WCA_EVENTS, WCACompetition } from "./CompetitionBrowser";
 import InspectionViolationTrainer from "./InspectionViolationTrainer";
 import JudgeErrorSimulator from "./JudgeErrorSimulator";
 import MockSchedule from "./MockSchedule";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import {
   CompetitionOverviewSkeleton,
   CompetitionEventsTabSkeleton,
@@ -298,13 +299,12 @@ export default function CompetitionOverview() {
           <p className="text-(--text-muted) mb-4">
             {error || "The competition could not be loaded."}
           </p>
-          <Link
+          <ButtonLink
             href="/cube-lab/competitions"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg"
+            iconLeft={<ArrowLeft className="w-4 h-4" />}
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Competitions
-          </Link>
+            Back to competitions
+          </ButtonLink>
         </div>
       </div>
     );
@@ -662,13 +662,12 @@ export default function CompetitionOverview() {
                   <p className="text-sm text-(--text-muted) mb-4">
                     Start a simulation to practice for this competition.
                   </p>
-                  <button
+                  <Button
                     onClick={handleSimulate}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
+                    iconLeft={<Play className="w-4 h-4" />}
                   >
-                    <Play className="w-4 h-4" />
-                    Start Simulation
-                  </button>
+                    Start simulation
+                  </Button>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -841,13 +840,14 @@ export default function CompetitionOverview() {
                   pressure, noise, and more.
                 </p>
               </div>
-              <button
+              <Button
+                size="lg"
                 onClick={handleSimulate}
-                className="flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto px-6 py-3 sm:py-4 bg-(--primary) text-white text-sm sm:text-lg font-bold rounded-lg sm:rounded-xl hover:bg-(--primary-hover) transition-colors"
+                className="w-full sm:w-auto"
+                iconLeft={<Play className="w-5 h-5" />}
               >
-                <Play className="w-5 h-5 sm:w-6 sm:h-6" />
-                Simulate Competition
-              </button>
+                Simulate competition
+              </Button>
             </div>
           </div>
         )}

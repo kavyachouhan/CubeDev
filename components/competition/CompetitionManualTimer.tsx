@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Field";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 
 interface CompetitionManualTimerProps {
   onSolveComplete: (
@@ -510,12 +513,13 @@ export default function CompetitionManualTimer({
           <div className="text-sm text-(--text-muted)">
             Inspection time remaining
           </div>
-          <button
+          <Button
+            variant="danger"
+            className="mt-4"
             onClick={handleStopInspection}
-            className="mt-4 px-4 py-2 bg-(--error) hover:opacity-90 text-white rounded-lg font-medium transition-opacity"
           >
-            Stop Inspection
-          </button>
+            Stop inspection
+          </Button>
         </div>
       )}
 
@@ -527,14 +531,15 @@ export default function CompetitionManualTimer({
             <label className="block text-sm font-medium text-(--text-secondary) mb-2">
               Enter Time
             </label>
-            <input
+            <Input
               ref={inputRef}
-              type="text"
+              size="lg"
               value={timeInput}
               onChange={(e) => handleInputChange(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="e.g., 12.34 or 1:23.45 or DNF"
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-mono bg-(--background) border-2 border-(--border) rounded-lg focus:outline-none focus:border-(--primary) text-(--text-primary) transition-colors"
+              placeholder="e.g. 12.34 or 1:23.45 or DNF"
+              className="type-time text-base sm:text-lg"
+              invalid={!!error}
               autoFocus
             />
 
@@ -602,61 +607,35 @@ export default function CompetitionManualTimer({
 
           {/* Penalty Buttons */}
           <div>
-            <label className="block text-sm font-medium text-(--text-secondary) mb-2">
-              Penalty
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                onClick={() => setPenalty("none")}
-                className={`px-3 sm:px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
-                  penalty === "none"
-                    ? "bg-(--primary) text-white"
-                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
-                }`}
-              >
-                OK
-              </button>
-              <button
-                onClick={() => setPenalty("+2")}
-                className={`px-3 sm:px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
-                  penalty === "+2"
-                    ? "bg-(--warning) text-white"
-                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
-                }`}
-              >
-                +2
-              </button>
-              <button
-                onClick={() => setPenalty("DNF")}
-                className={`px-3 sm:px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
-                  penalty === "DNF"
-                    ? "bg-(--error) text-white"
-                    : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
-                }`}
-              >
-                DNF
-              </button>
-            </div>
+            <span className="type-label block mb-2">Penalty</span>
+            <SegmentedControl<"none" | "+2" | "DNF">
+              value={penalty}
+              onChange={setPenalty}
+              aria-label="Penalty"
+              fullWidth
+              options={[
+                { value: "none", label: "OK" },
+                { value: "+2", label: "+2", tone: "warning" },
+                { value: "DNF", label: "DNF", tone: "error" },
+              ]}
+            />
           </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             {inspectionEnabled && (
-              <button
-                onClick={handleStartInspection}
-                className="flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) rounded-lg font-medium transition-colors border border-(--border)"
-              >
-                <span className="text-sm sm:text-base">Start Inspection</span>
-              </button>
+              <Button variant="secondary" onClick={handleStartInspection}>
+                Start inspection
+              </Button>
             )}
-            <button
+            <Button
+              className="flex-1"
               onClick={handleSubmit}
               disabled={!!error || !timeInput.trim()}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-(--primary) hover:opacity-90 text-white rounded-lg font-medium transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              iconLeft={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" />
-              <span className="text-sm sm:text-base">Add Solve</span>
-            </button>
+              Add solve
+            </Button>
           </div>
         </div>
       )}

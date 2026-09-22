@@ -716,6 +716,8 @@
   .btn-secondary,
   .btn-ghost,
   .btn-danger,
+  .btn-success,
+  .btn-warning,
   .btn-subtle {
     display: inline-flex;
     align-items: center;
@@ -795,6 +797,28 @@
 
   .btn-danger:not(:disabled):not([aria-disabled="true"]):hover {
     background: color-mix(in srgb, var(--error) 88%, black);
+  }
+
+  /* Only for confirming an outcome that *is* the status, e.g. the OK / +2 /
+     DNF row after a solve. Never for a generic call to action. */
+  .btn-success {
+    background: var(--success);
+    color: #ffffff;
+    box-shadow: var(--shadow-control);
+  }
+
+  .btn-success:not(:disabled):not([aria-disabled="true"]):hover {
+    background: color-mix(in srgb, var(--success) 88%, black);
+  }
+
+  .btn-warning {
+    background: var(--warning);
+    color: #ffffff;
+    box-shadow: var(--shadow-control);
+  }
+
+  .btn-warning:not(:disabled):not([aria-disabled="true"]):hover {
+    background: color-mix(in srgb, var(--warning) 88%, black);
   }
 
   .btn-sm {

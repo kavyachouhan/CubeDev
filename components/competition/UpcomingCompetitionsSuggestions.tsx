@@ -13,6 +13,8 @@ import {
   Trophy,
   RefreshCw,
 } from "lucide-react";
+import { buttonClasses } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 import { useUser } from "@/components/UserProvider";
 import { WCA_EVENTS } from "./CompetitionBrowser";
 import {
@@ -208,8 +210,7 @@ export default function UpcomingCompetitionsSuggestions() {
   };
 
   const isDarkTheme = effectiveTheme === "dark";
-  const actionButtonClasses =
-    "inline-flex items-center gap-2 rounded-lg bg-(--primary) px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-(--primary-hover) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--primary) focus-visible:ring-offset-2 focus-visible:ring-offset-(--surface)";
+  const actionButtonClasses = buttonClasses({ size: "sm" });
 
   // Loading state
   if (isLoading) {
@@ -302,17 +303,15 @@ export default function UpcomingCompetitionsSuggestions() {
               {competitions.length} competition
               {competitions.length !== 1 ? "s" : ""}
             </span>
-            <button
+            <IconButton
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-(--border) bg-(--surface-elevated) text-(--text-secondary) transition-colors hover:border-(--primary) hover:text-(--primary) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--primary) focus-visible:ring-offset-2 focus-visible:ring-offset-(--surface) disabled:cursor-not-allowed disabled:opacity-50"
-              title="Refresh registered competitions"
+              variant="subtle"
               aria-label="Refresh registered competitions"
-            >
-              <RefreshCw
-                className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
-              />
-            </button>
+              icon={
+                <RefreshCw className={isRefreshing ? "animate-spin" : ""} />
+              }
+            />
           </div>
         </div>
       </div>
@@ -348,7 +347,7 @@ export default function UpcomingCompetitionsSuggestions() {
                     </div>
                   </div>
 
-                  <span className="inline-flex min-h-9 min-w-10 items-center justify-center gap-1.5 rounded-lg bg-(--primary) px-3 py-2 text-xs font-semibold text-white transition-colors group-hover:bg-(--primary-hover) sm:min-w-28 sm:px-4 sm:text-sm">
+                  <span className="inline-flex min-h-9 min-w-10 items-center justify-center gap-1.5 rounded-(--radius-control) bg-(--primary) px-3 py-2 text-xs font-semibold text-(--on-primary) transition-colors group-hover:bg-(--primary-hover) sm:min-w-28 sm:px-4 sm:text-sm">
                     <Play className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
                     <span className="hidden sm:inline">Simulate</span>
                   </span>

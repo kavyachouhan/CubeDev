@@ -15,6 +15,7 @@ import {
   Volume2,
   Flame,
 } from "lucide-react";
+import { SwitchRow } from "@/components/ui/Switch";
 
 interface InspectionStats {
   totalAttempts: number;
@@ -30,28 +31,6 @@ interface InspectionViolationTrainerProps {
 }
 
 const STORAGE_KEY = "cubedev_inspection_stats";
-
-// Simple toggle switch component
-function Toggle({
-  enabled,
-  onChange,
-}: {
-  enabled: boolean;
-  onChange: (value: boolean) => void;
-}) {
-  return (
-    <button
-      onClick={() => onChange(!enabled)}
-      className={`w-11 h-6 rounded-full transition-colors flex items-center shrink-0 ${
-        enabled
-          ? "bg-(--primary) justify-end"
-          : "bg-(--border) justify-start"
-      }`}
-    >
-      <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
-    </button>
-  );
-}
 
 export default function InspectionViolationTrainer({
   onComplete,
@@ -566,59 +545,27 @@ export default function InspectionViolationTrainer({
 
             {showSettings && (
               <div className="mt-4 space-y-3">
-                {/* Hide Timer Toggle */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center shrink-0">
-                      <Eye className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-sm font-medium text-(--text-primary)">
-                        Hide Timer
-                      </span>
-                      <p className="text-xs text-(--text-muted)">
-                        Hide time while running
-                      </p>
-                    </div>
-                  </div>
-                  <Toggle enabled={hideTimer} onChange={setHideTimer} />
-                </div>
-
-                {/* Random Start Toggle */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center shrink-0">
-                      <Timer className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-sm font-medium text-(--text-primary)">
-                        Random Delay
-                      </span>
-                      <p className="text-xs text-(--text-muted)">
-                        0-2s delay before start
-                      </p>
-                    </div>
-                  </div>
-                  <Toggle enabled={randomStart} onChange={setRandomStart} />
-                </div>
-
-                {/* Show Warnings Toggle */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center shrink-0">
-                      <Volume2 className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-sm font-medium text-(--text-primary)">
-                        Audio Warnings
-                      </span>
-                      <p className="text-xs text-(--text-muted)">
-                        Play 8s and 12s alerts
-                      </p>
-                    </div>
-                  </div>
-                  <Toggle enabled={showWarnings} onChange={setShowWarnings} />
-                </div>
+                <SwitchRow
+                  icon={<Eye />}
+                  label="Hide timer"
+                  description="Hide time while running"
+                  checked={hideTimer}
+                  onChange={setHideTimer}
+                />
+                <SwitchRow
+                  icon={<Timer />}
+                  label="Random delay"
+                  description="0–2s delay before start"
+                  checked={randomStart}
+                  onChange={setRandomStart}
+                />
+                <SwitchRow
+                  icon={<Volume2 />}
+                  label="Audio warnings"
+                  description="Play 8s and 12s alerts"
+                  checked={showWarnings}
+                  onChange={setShowWarnings}
+                />
               </div>
             )}
           </div>

@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Trophy, Check, BarChart3, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -321,7 +322,7 @@ export default function SimulationRunner() {
                 >
                   {isCompleted && (
                     <div className="absolute top-2 right-2 w-6 h-6 bg-(--success) rounded-full flex items-center justify-center">
-                      <Check className="w-4 h-4 text-white" />
+                      <Check className="w-4 h-4 text-(--on-primary)" />
                     </div>
                   )}
                   <Image
@@ -355,12 +356,9 @@ export default function SimulationRunner() {
               <p className="text-(--text-muted) mb-4">
                 You've completed all events in this competition simulation.
               </p>
-              <button
-                onClick={handleCompleteSimulation}
-                className="px-6 py-3 bg-(--primary) text-white font-medium rounded-lg"
-              >
-                View Full Results & Analytics
-              </button>
+              <Button size="lg" onClick={handleCompleteSimulation}>
+                View full results &amp; analytics
+              </Button>
             </div>
           )}
 
@@ -423,13 +421,13 @@ export default function SimulationRunner() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {currentRound < maxRounds && (
-              <button
+              <Button
+                size="lg"
                 onClick={handleNextRound}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-(--primary) text-white font-medium rounded-lg"
+                iconRight={<ArrowRight className="w-5 h-5" />}
               >
-                Continue to Round {currentRound + 1}
-                <ArrowRight className="w-5 h-5" />
-              </button>
+                Continue to round {currentRound + 1}
+              </Button>
             )}
             <button
               onClick={handleBackToEvents}
@@ -468,13 +466,13 @@ export default function SimulationRunner() {
           />
 
           <div className="flex justify-center">
-            <button
+            <Button
+              size="lg"
               onClick={handleBackToEvents}
-              className="flex items-center gap-2 px-6 py-3 bg-(--primary) text-white font-medium rounded-lg"
+              iconRight={<ArrowRight className="w-5 h-5" />}
             >
-              Continue to Next Event
-              <ArrowRight className="w-5 h-5" />
-            </button>
+              Continue to next event
+            </Button>
           </div>
         </div>
       </div>

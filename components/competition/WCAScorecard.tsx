@@ -1,10 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Download, Loader2 } from "lucide-react";
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import { WCACompetition } from "./CompetitionBrowser";
 import { RoundResult } from "./CompetitionDetail";
 import { useUser } from "@/components/UserProvider";
+import { useToast } from "@/components/ui/Toast";
 import ShareMenu from "./ShareMenu";
 
 interface WCAEvent {
@@ -37,6 +39,7 @@ export default function WCAScorecard({
   const cardRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const { user } = useUser();
+  const toast = useToast();
 
   // Get user's name and ID from context if not provided
   const displayName = competitorName || user?.name || "Competitor";
@@ -101,10 +104,16 @@ export default function WCAScorecard({
       // Use modern-screenshot which handles modern CSS features like oklab
       const { domToPng } = await import("modern-screenshot");
 
+      // The PNG has no page behind it, so paint the card's own resolved
+      // surface color rather than a hardcoded one (themes and schemes vary).
+      const backgroundColor = getComputedStyle(cardRef.current)
+        .getPropertyValue("--surface")
+        .trim();
+
       const dataUrl = await domToPng(cardRef.current, {
         scale: 2,
         quality: 1,
-        backgroundColor: "#1a1a2e",
+        backgroundColor: backgroundColor || undefined,
       });
 
       // Create download link
@@ -116,10 +125,18 @@ export default function WCAScorecard({
       document.body.removeChild(link);
     } catch (error) {
       console.error("Failed to generate image:", error);
-      // Fallback: copy results as text
+      // Fallback: copy the results as text so the download isn't a dead end.
       const text = `${competition.name} - ${event.name}\nRound ${roundNumber}\n${displayName}\nBest: ${formatTime(result.best)}\nAverage: ${result.average === Infinity ? "DNF" : formatTime(result.average)}`;
-      await navigator.clipboard.writeText(text);
-      alert("Image download failed. Results copied to clipboard!");
+      try {
+        await navigator.clipboard.writeText(text);
+        toast.warning("Couldn't create the image", {
+          description: "Your results were copied to the clipboard instead.",
+        });
+      } catch {
+        toast.error("Couldn't create the image", {
+          description: "Try again, or take a screenshot of the scorecard.",
+        });
+      }
     } finally {
       setIsDownloading(false);
     }
@@ -208,7 +225,7 @@ export default function WCAScorecard({
                 </span>
               </div>
             </div>
-            <div className="min-w-0 flex-1 max-w-[180px] sm:max-w-[200px]">
+            <div className="min-w-0 flex-1 max-w-45 sm:max-w-50">
               <div className="text-xs text-(--text-muted) mb-1">Name</div>
               <div className="border border-(--border) px-3 py-1 bg-(--surface-elevated) rounded-lg overflow-hidden">
                 <span className="text-sm font-medium text-(--text-primary) block truncate">
@@ -357,19 +374,15 @@ export default function WCAScorecard({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-wrap items-center justify-center gap-3 mt-4 p-3 bg-(--surface) rounded-lg border border-(--border)">
-        <button
+      <div className="flex flex-wrap items-center justify-center gap-3 mt-4 p-3 bg-(--surface) rounded-(--radius-panel) border border-(--border)">
+        <Button
+          variant="subtle"
           onClick={handleDownload}
-          disabled={isDownloading}
-          className="flex items-center gap-2 px-4 py-2 text-sm border border-(--border) bg-(--surface-elevated) text-(--text-secondary) rounded-lg hover:bg-(--surface) transition-colors disabled:opacity-50"
+          loading={isDownloading}
+          iconLeft={<Download className="w-4 h-4" />}
         >
-          {isDownloading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Download className="w-4 h-4" />
-          )}
           Download
-        </button>
+        </Button>
         <ShareMenu shareData={shareData} />
       </div>
     </div>

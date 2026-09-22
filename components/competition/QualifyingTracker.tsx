@@ -1,20 +1,89 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Target,
-  Clock,
-  Plus,
-  X,
-  Check,
-  Edit2,
-  Trash2,
-} from "lucide-react";
+import { Target, Clock, Plus, Check, Edit2, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { WCA_EVENTS } from "./CompetitionSimulator";
 import { formatTime } from "@/lib/stats-utils";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Field, Input, Select, Textarea } from "@/components/ui/Field";
+import { IconButton } from "@/components/ui/IconButton";
+import { Modal } from "@/components/ui/Modal";
 import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
+
+/** Minutes : seconds . hundredths entry. `ms` is omitted for cutoffs. */
+function TimeFields({
+  label,
+  hint,
+  minutes,
+  seconds,
+  ms,
+  onMinutes,
+  onSeconds,
+  onMs,
+}: {
+  label: string;
+  hint?: string;
+  minutes: string;
+  seconds: string;
+  ms?: string;
+  onMinutes: (value: string) => void;
+  onSeconds: (value: string) => void;
+  onMs?: (value: string) => void;
+}) {
+  return (
+    <Field label={label} hint={hint}>
+      <div className="flex items-center gap-2">
+        <Input
+          type="number"
+          min="0"
+          max="59"
+          inputMode="numeric"
+          value={minutes}
+          onChange={(e) => onMinutes(e.target.value)}
+          placeholder="min"
+          aria-label={`${label} minutes`}
+          className="w-20 text-center"
+        />
+        <span aria-hidden className="text-(--text-muted)">
+          :
+        </span>
+        <Input
+          type="number"
+          min="0"
+          max="59"
+          inputMode="numeric"
+          value={seconds}
+          onChange={(e) => onSeconds(e.target.value)}
+          placeholder="sec"
+          aria-label={`${label} seconds`}
+          className="w-20 text-center"
+        />
+        {onMs && (
+          <>
+            <span aria-hidden className="text-(--text-muted)">
+              .
+            </span>
+            <Input
+              type="number"
+              min="0"
+              max="99"
+              inputMode="numeric"
+              value={ms ?? ""}
+              onChange={(e) => onMs(e.target.value)}
+              placeholder="ms"
+              aria-label={`${label} hundredths`}
+              className="w-20 text-center"
+            />
+          </>
+        )}
+      </div>
+    </Field>
+  );
+}
 
 interface QualifyingGoal {
   id: string;
@@ -265,28 +334,25 @@ export default function QualifyingTracker() {
       <div className="timer-card">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-(--text-primary)">
-              Qualifying Time Tracker
-            </h2>
-            <p className="text-sm text-(--text-muted) mt-1">
+            <h2 className="type-card-title">Qualifying Time Tracker</h2>
+            <p className="type-caption mt-1">
               Set goals for competition cutoffs and track your progress.
             </p>
           </div>
           <div className="flex gap-2">
-            <button
+            <Button
+              variant="secondary"
               onClick={() => setShowPBForm(true)}
-              className="px-4 py-2 text-sm font-medium border border-(--border) text-(--text-primary) rounded-lg hover:bg-(--surface-elevated) transition-colors flex items-center gap-2"
+              iconLeft={<Clock className="w-4 h-4" />}
             >
-              <Clock className="w-4 h-4" />
               Set PBs
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setShowAddForm(true)}
-              className="px-4 py-2 text-sm font-medium bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors flex items-center gap-2"
+              iconLeft={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" />
               Add Goal
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -303,7 +369,7 @@ export default function QualifyingTracker() {
               return (
                 <div
                   key={pb.eventId}
-                  className="flex items-center gap-3 p-3 bg-(--surface-elevated) rounded-lg"
+                  className="flex items-center gap-3 p-3 bg-(--surface-elevated) rounded-(--radius-panel)"
                 >
                   {event && (
                     <Image
@@ -333,20 +399,18 @@ export default function QualifyingTracker() {
 
       {/* Goals List */}
       {goals.length === 0 ? (
-        <div className="timer-card text-center py-12">
-          <Target className="w-16 h-16 text-(--text-muted) mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-(--text-primary) mb-2">
-            No Goals Set
-          </h3>
-          <p className="text-(--text-muted) mb-6">
-            Add a qualifying time goal to start tracking your progress.
-          </p>
-          <button
-            onClick={() => setShowAddForm(true)}
-            className="px-6 py-3 bg-(--primary) text-white font-medium rounded-lg hover:bg-(--primary-hover) transition-colors"
-          >
-            Add Your First Goal
-          </button>
+        <div className="timer-card">
+          <EmptyState
+            size="page"
+            icon={<Target />}
+            title="No goals set"
+            description="Add a qualifying time goal to start tracking your progress."
+            action={
+              <Button onClick={() => setShowAddForm(true)}>
+                Add your first goal
+              </Button>
+            }
+          />
         </div>
       ) : (
         <div className="space-y-4">
@@ -366,10 +430,8 @@ export default function QualifyingTracker() {
                   {/* Event Icon */}
                   <div className="flex items-center gap-4">
                     <div
-                      className={`p-3 rounded-lg ${
-                        achieved
-                          ? "bg-(--success)/10"
-                          : "bg-(--surface-elevated)"
+                      className={`p-3 rounded-(--radius-panel) ${
+                        achieved ? "bg-(--success)/10" : "bg-(--surface-elevated)"
                       }`}
                     >
                       {event && (
@@ -389,10 +451,9 @@ export default function QualifyingTracker() {
                           {goal.competitionName}
                         </h3>
                         {achieved && (
-                          <span className="flex items-center gap-1 px-2 py-0.5 text-xs bg-(--success)/10 text-(--success) rounded">
-                            <Check className="w-3 h-3" />
+                          <Badge tone="success" icon={<Check />}>
                             Achieved
-                          </span>
+                          </Badge>
                         )}
                       </div>
                       <div className="text-sm text-(--text-muted) mt-1">
@@ -439,20 +500,17 @@ export default function QualifyingTracker() {
 
                   {/* Actions */}
                   <div className="flex items-center gap-2">
-                    <button
+                    <IconButton
                       onClick={() => startEditGoal(goal)}
-                      className="p-2 text-(--text-muted) hover:text-(--text-primary) transition-colors"
-                      title="Edit goal"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
+                      aria-label="Edit goal"
+                      icon={<Edit2 />}
+                    />
+                    <IconButton
                       onClick={() => goalDelete.request(goal)}
-                      className="p-2 text-(--text-muted) hover:text-(--error) transition-colors"
-                      title="Delete goal"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                      aria-label="Delete goal"
+                      variant="danger"
+                      icon={<Trash2 />}
+                    />
                   </div>
                 </div>
 
@@ -468,307 +526,129 @@ export default function QualifyingTracker() {
       )}
 
       {/* Add/Edit Goal Modal */}
-      {showAddForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-(--surface) border border-(--border) rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-(--surface) border-b border-(--border) p-4 flex items-center justify-between">
-              <h3 className="font-bold text-(--text-primary)">
-                {editingGoal ? "Edit Goal" : "Add Qualifying Goal"}
-              </h3>
-              <button
-                onClick={resetForm}
-                className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-4 space-y-4">
-              {/* Event Select */}
-              <div>
-                <label className="text-sm text-(--text-secondary) block mb-2">
-                  Event
-                </label>
-                <select
-                  value={formEvent}
-                  onChange={(e) => setFormEvent(e.target.value)}
-                  className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                >
-                  {WCA_EVENTS.map((event) => (
-                    <option key={event.id} value={event.id}>
-                      {event.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+      <Modal open={showAddForm} onClose={resetForm} size="md" mobile="sheet">
+        <Modal.Header
+          title={editingGoal ? "Edit Goal" : "Add Qualifying Goal"}
+        />
+        <Modal.Body className="space-y-4">
+          <Field label="Event">
+            <Select
+              value={formEvent}
+              onChange={(e) => setFormEvent(e.target.value)}
+              data-autofocus
+            >
+              {WCA_EVENTS.map((event) => (
+                <option key={event.id} value={event.id}>
+                  {event.name}
+                </option>
+              ))}
+            </Select>
+          </Field>
 
-              {/* Target Time */}
-              <div>
-                <label className="text-sm text-(--text-secondary) block mb-2">
-                  Target Time
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    max="59"
-                    value={formTargetMinutes}
-                    onChange={(e) => setFormTargetMinutes(e.target.value)}
-                    placeholder="min"
-                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                  />
-                  <span className="flex items-center text-(--text-muted)">
-                    :
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    max="59"
-                    value={formTargetSeconds}
-                    onChange={(e) => setFormTargetSeconds(e.target.value)}
-                    placeholder="sec"
-                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                  />
-                  <span className="flex items-center text-(--text-muted)">
-                    .
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    max="99"
-                    value={formTargetMs}
-                    onChange={(e) => setFormTargetMs(e.target.value)}
-                    placeholder="ms"
-                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                  />
-                </div>
-              </div>
+          <TimeFields
+            label="Target Time"
+            minutes={formTargetMinutes}
+            seconds={formTargetSeconds}
+            ms={formTargetMs}
+            onMinutes={setFormTargetMinutes}
+            onSeconds={setFormTargetSeconds}
+            onMs={setFormTargetMs}
+          />
 
-              {/* Competition Name */}
-              <div>
-                <label className="text-sm text-(--text-secondary) block mb-2">
-                  Competition Name
-                </label>
-                <input
-                  type="text"
-                  value={formCompetitionName}
-                  onChange={(e) => setFormCompetitionName(e.target.value)}
-                  placeholder="e.g., World Championship 2025"
-                  className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                />
-              </div>
+          <Field label="Competition Name">
+            <Input
+              value={formCompetitionName}
+              onChange={(e) => setFormCompetitionName(e.target.value)}
+              placeholder="e.g. World Championship 2025"
+            />
+          </Field>
 
-              {/* Competition Date */}
-              <div>
-                <label className="text-sm text-(--text-secondary) block mb-2">
-                  Competition Date
-                </label>
-                <input
-                  type="date"
-                  value={formCompetitionDate}
-                  onChange={(e) => setFormCompetitionDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                />
-              </div>
+          <Field label="Competition Date">
+            <Input
+              type="date"
+              value={formCompetitionDate}
+              onChange={(e) => setFormCompetitionDate(e.target.value)}
+            />
+          </Field>
 
-              {/* Cutoff */}
-              <div>
-                <label className="text-sm text-(--text-secondary) block mb-2">
-                  Cutoff Time (optional)
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    max="59"
-                    value={formCutoffMinutes}
-                    onChange={(e) => setFormCutoffMinutes(e.target.value)}
-                    placeholder="min"
-                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                  />
-                  <span className="flex items-center text-(--text-muted)">
-                    :
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    max="59"
-                    value={formCutoffSeconds}
-                    onChange={(e) => setFormCutoffSeconds(e.target.value)}
-                    placeholder="sec"
-                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                  />
-                </div>
-              </div>
+          <TimeFields
+            label="Cutoff Time"
+            hint="Optional"
+            minutes={formCutoffMinutes}
+            seconds={formCutoffSeconds}
+            onMinutes={setFormCutoffMinutes}
+            onSeconds={setFormCutoffSeconds}
+          />
 
-              {/* Notes */}
-              <div>
-                <label className="text-sm text-(--text-secondary) block mb-2">
-                  Notes (optional)
-                </label>
-                <textarea
-                  value={formNotes}
-                  onChange={(e) => setFormNotes(e.target.value)}
-                  placeholder="Any additional notes..."
-                  rows={2}
-                  className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) resize-none"
-                />
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-3 pt-2">
-                <button
-                  onClick={resetForm}
-                  className="flex-1 px-4 py-2 border border-(--border) text-(--text-primary) rounded-lg hover:bg-(--surface-elevated) transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={saveGoal}
-                  className="flex-1 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
-                >
-                  {editingGoal ? "Update Goal" : "Add Goal"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+          <Field label="Notes" hint="Optional">
+            <Textarea
+              value={formNotes}
+              onChange={(e) => setFormNotes(e.target.value)}
+              placeholder="Any additional notes…"
+              rows={2}
+            />
+          </Field>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={resetForm}>
+            Cancel
+          </Button>
+          <Button onClick={saveGoal}>
+            {editingGoal ? "Update Goal" : "Add Goal"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       {/* PB Form Modal */}
-      {showPBForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-(--surface) border border-(--border) rounded-xl max-w-md w-full">
-            <div className="border-b border-(--border) p-4 flex items-center justify-between">
-              <h3 className="font-bold text-(--text-primary)">
-                Set Personal Best
-              </h3>
-              <button
-                onClick={() => setShowPBForm(false)}
-                className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-4 space-y-4">
-              {/* Event */}
-              <div>
-                <label className="text-sm text-(--text-secondary) block mb-2">
-                  Event
-                </label>
-                <select
-                  value={pbEvent}
-                  onChange={(e) => setPbEvent(e.target.value)}
-                  className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                >
-                  {WCA_EVENTS.map((event) => (
-                    <option key={event.id} value={event.id}>
-                      {event.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+      <Modal
+        open={showPBForm}
+        onClose={() => setShowPBForm(false)}
+        size="md"
+        mobile="sheet"
+      >
+        <Modal.Header title="Set Personal Best" />
+        <Modal.Body className="space-y-4">
+          <Field label="Event">
+            <Select
+              value={pbEvent}
+              onChange={(e) => setPbEvent(e.target.value)}
+              data-autofocus
+            >
+              {WCA_EVENTS.map((event) => (
+                <option key={event.id} value={event.id}>
+                  {event.name}
+                </option>
+              ))}
+            </Select>
+          </Field>
 
-              {/* Single PB */}
-              <div>
-                <label className="text-sm text-(--text-secondary) block mb-2">
-                  Single PB
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    value={pbSingleMinutes}
-                    onChange={(e) => setPbSingleMinutes(e.target.value)}
-                    placeholder="min"
-                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                  />
-                  <span className="flex items-center text-(--text-muted)">
-                    :
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    max="59"
-                    value={pbSingleSeconds}
-                    onChange={(e) => setPbSingleSeconds(e.target.value)}
-                    placeholder="sec"
-                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                  />
-                  <span className="flex items-center text-(--text-muted)">
-                    .
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    max="99"
-                    value={pbSingleMs}
-                    onChange={(e) => setPbSingleMs(e.target.value)}
-                    placeholder="ms"
-                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                  />
-                </div>
-              </div>
+          <TimeFields
+            label="Single PB"
+            minutes={pbSingleMinutes}
+            seconds={pbSingleSeconds}
+            ms={pbSingleMs}
+            onMinutes={setPbSingleMinutes}
+            onSeconds={setPbSingleSeconds}
+            onMs={setPbSingleMs}
+          />
 
-              {/* Average PB */}
-              <div>
-                <label className="text-sm text-(--text-secondary) block mb-2">
-                  Average PB
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    value={pbAvgMinutes}
-                    onChange={(e) => setPbAvgMinutes(e.target.value)}
-                    placeholder="min"
-                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                  />
-                  <span className="flex items-center text-(--text-muted)">
-                    :
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    max="59"
-                    value={pbAvgSeconds}
-                    onChange={(e) => setPbAvgSeconds(e.target.value)}
-                    placeholder="sec"
-                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                  />
-                  <span className="flex items-center text-(--text-muted)">
-                    .
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    max="99"
-                    value={pbAvgMs}
-                    onChange={(e) => setPbAvgMs(e.target.value)}
-                    placeholder="ms"
-                    className="w-20 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-center focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                  />
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-3 pt-2">
-                <button
-                  onClick={() => setShowPBForm(false)}
-                  className="flex-1 px-4 py-2 border border-(--border) text-(--text-primary) rounded-lg hover:bg-(--surface-elevated) transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={savePB}
-                  className="flex-1 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
-                >
-                  Save PB
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+          <TimeFields
+            label="Average PB"
+            minutes={pbAvgMinutes}
+            seconds={pbAvgSeconds}
+            ms={pbAvgMs}
+            onMinutes={setPbAvgMinutes}
+            onSeconds={setPbAvgSeconds}
+            onMs={setPbAvgMs}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowPBForm(false)}>
+            Cancel
+          </Button>
+          <Button onClick={savePB}>Save PB</Button>
+        </Modal.Footer>
+      </Modal>
       <ConfirmDeleteModal
         isOpen={goalDelete.isOpen}
         onClose={goalDelete.cancel}

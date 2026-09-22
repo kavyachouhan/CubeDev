@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import dynamic from "next/dynamic";
+import { LoadingState, Spinner } from "@/components/ui/Spinner";
 
 // Dynamically import ScramblePreview for 3D visualization
 const ScramblePreview = dynamic(
@@ -10,7 +11,7 @@ const ScramblePreview = dynamic(
   {
     loading: () => (
       <div className="h-40 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-(--text-muted) animate-spin" />
+        <Spinner size="lg" />
       </div>
     ),
     ssr: false,
@@ -50,12 +51,7 @@ export default function CompetitionScramblePanel({
       {/* Scramble Text */}
       <div className="min-h-12">
         {isLoading ? (
-          <div className="flex items-center justify-center py-4">
-            <Loader2 className="w-5 h-5 text-(--text-muted) animate-spin" />
-            <span className="ml-2 text-sm text-(--text-muted)">
-              Generating scramble...
-            </span>
-          </div>
+          <LoadingState label="Generating scramble…" className="py-4" />
         ) : (
           <div className="font-mono text-base sm:text-lg text-(--text-primary) wrap-break-word text-center leading-relaxed">
             {scramble}

@@ -89,6 +89,8 @@ export interface ShareMenuProps {
   /** Extra actions above the targets (e.g. "Download image"). */
   children?: ReactNode | ((close: () => void) => ReactNode);
   placement?: Placement;
+  /** Called after the payload is copied to the clipboard. */
+  onCopy?: () => void;
 }
 
 /** The one share UI: copy, native share sheet, then brand targets. */
@@ -98,6 +100,7 @@ export function ShareMenu({
   trigger,
   children,
   placement = "bottom-end",
+  onCopy,
 }: ShareMenuProps) {
   const toast = useToast();
   const [copied, setCopied] = useState(false);
@@ -120,6 +123,7 @@ export function ShareMenu({
     try {
       await navigator.clipboard.writeText(url ? `${text}\n${url}` : text);
       setCopied(true);
+      onCopy?.();
       toast.success("Copied to clipboard");
     } catch {
       toast.error("Couldn't copy", {

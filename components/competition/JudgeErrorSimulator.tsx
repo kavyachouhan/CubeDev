@@ -11,6 +11,7 @@ import {
   Info,
   Target,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface JudgeError {
   id: string;
@@ -338,12 +339,9 @@ export default function JudgeErrorSimulator({
                 Practice identifying whether situations require a +2 penalty
                 according to WCA regulations.
               </p>
-              <button
-                onClick={startPractice}
-                className="px-6 py-3 bg-(--primary) text-white font-medium rounded-lg hover:bg-(--primary-hover) transition-colors"
-              >
-                Start Practice
-              </button>
+              <Button size="lg" onClick={startPractice}>
+                Start practice
+              </Button>
             </div>
           ) : (
             <div
@@ -445,12 +443,9 @@ export default function JudgeErrorSimulator({
                   </div>
 
                   {/* Next Button */}
-                  <button
-                    onClick={startPractice}
-                    className="w-full py-3 bg-(--primary) text-white font-medium rounded-lg hover:bg-(--primary-hover) transition-colors"
-                  >
-                    Next Scenario
-                  </button>
+                  <Button fullWidth onClick={startPractice}>
+                    Next scenario
+                  </Button>
                 </div>
               )}
             </div>
