@@ -39,8 +39,8 @@ export default function StatCard({
           <div
             className={`text-xs font-semibold flex items-center gap-1 ${
               trend.isPositive
-                ? "text-green-500 dark:text-green-400"
-                : "text-red-500 dark:text-red-400"
+                ? "text-(--success)"
+                : "text-(--error)"
             }`}
           >
             {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value).toFixed(1)}%

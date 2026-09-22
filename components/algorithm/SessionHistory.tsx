@@ -35,23 +35,23 @@ function getSessionTypeConfig(type: string) {
     {
       recognition: {
         icon: Eye,
-        bg: "bg-purple-500/10",
-        text: "text-purple-500 dark:text-purple-400",
+        bg: "bg-(--accent)/10",
+        text: "text-(--accent)",
       },
       execution: {
         icon: Zap,
-        bg: "bg-green-500/10",
-        text: "text-green-500 dark:text-green-400",
+        bg: "bg-(--success)/10",
+        text: "text-(--success)",
       },
       drill: {
         icon: Target,
-        bg: "bg-orange-500/10",
-        text: "text-orange-500 dark:text-orange-400",
+        bg: "bg-(--warning)/10",
+        text: "text-(--warning)",
       },
       mixed: {
         icon: Shuffle,
-        bg: "bg-blue-500/10",
-        text: "text-blue-500 dark:text-blue-400",
+        bg: "bg-(--primary)/10",
+        text: "text-(--primary)",
       },
     };
   return config[type] || config.mixed;

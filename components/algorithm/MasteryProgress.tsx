@@ -20,22 +20,22 @@ export default function MasteryProgress({
   const stages = [
     {
       icon: Award,
-      bg: "bg-yellow-500/10",
-      text: "text-yellow-500 dark:text-yellow-400",
+      bg: "bg-(--warning)/10",
+      text: "text-(--warning)",
       value: mastered,
       label: "Mastered",
     },
     {
       icon: BookOpen,
-      bg: "bg-blue-500/10",
-      text: "text-blue-500 dark:text-blue-400",
+      bg: "bg-(--primary)/10",
+      text: "text-(--primary)",
       value: learning,
       label: "Learning",
     },
     {
       icon: RefreshCw,
-      bg: "bg-purple-500/10",
-      text: "text-purple-500 dark:text-purple-400",
+      bg: "bg-(--accent)/10",
+      text: "text-(--accent)",
       value: reviewing,
       label: "Reviewing",
     },

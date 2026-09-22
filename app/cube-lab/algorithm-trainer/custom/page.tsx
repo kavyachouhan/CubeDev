@@ -8,7 +8,6 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import CubeLabLayout from "@/components/CubeLabLayout";
 import { CustomSetsSkeleton } from "@/components/SkeletonLoaders";
 import {
-  ArrowLeft,
   Plus,
   Trash2,
   Edit2,
@@ -25,11 +24,19 @@ import {
   Code2,
   Clock,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
+import { Button } from "@/components/ui/Button";
+import { Card, CardIcon } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Field, Input, SearchInput, Textarea } from "@/components/ui/Field";
+import { IconButton } from "@/components/ui/IconButton";
+import { Menu } from "@/components/ui/Menu";
+import { Modal } from "@/components/ui/Modal";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { StatTile } from "@/components/ui/StatTile";
 
 export default function CustomSetsPage() {
   const { user } = useUser();
@@ -206,122 +213,101 @@ export default function CustomSetsPage() {
   return (
     <ProtectedRoute>
       <CubeLabLayout activeSection="algorithm-trainer">
-        <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-5xl mx-auto space-y-6">
-            {/* Header */}
-            <div>
-              <Link
-                href="/cube-lab/algorithm-trainer"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors w-fit mb-4"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Algorithm Trainer
-              </Link>
-
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-(--text-primary) font-statement mb-1">
-                    Custom Algorithm Sets
-                  </h1>
-                  <p className="text-sm text-(--text-muted)">
-                    Build your own algorithm collections for focused practice
-                  </p>
-                </div>
-
-                <div className="flex gap-2">
-                  <button
+        <div className="container-responsive py-4 md:py-8">
+          <div className="space-y-4 md:space-y-6">
+            <PageHeader
+              back={{
+                href: "/cube-lab/algorithm-trainer",
+                label: "Algorithm Trainer",
+              }}
+              title="Custom Algorithm Sets"
+              description="Build your own algorithm collections for focused practice"
+              actions={
+                <>
+                  <Button
+                    variant="secondary"
                     onClick={() => setShowImportModal(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors"
+                    iconLeft={<Upload className="w-4 h-4" />}
                   >
-                    <Upload className="w-4 h-4" />
-                    <span className="sm:inline">Import</span>
-                  </button>
-                  <button
+                    Import
+                  </Button>
+                  <Button
                     onClick={() => setShowCreateModal(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors"
+                    iconLeft={<Plus className="w-4 h-4" />}
                   >
-                    <Plus className="w-4 h-4" />
                     New Set
-                  </button>
-                </div>
-              </div>
-            </div>
+                  </Button>
+                </>
+              }
+            />
 
             {/* Stats Summary */}
             {customSets.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div className="timer-card text-center">
-                  <p className="text-2xl font-bold text-(--primary) font-statement">
-                    {customSets.length}
-                  </p>
-                  <p className="text-xs text-(--text-muted)">Total Sets</p>
-                </div>
-                <div className="timer-card text-center">
-                  <p className="text-2xl font-bold text-(--text-primary) font-statement">
-                    {customSets.reduce(
-                      (acc: number, s: any) => acc + getTotalAlgorithmCount(s),
-                      0,
-                    )}
-                  </p>
-                  <p className="text-xs text-(--text-muted)">
-                    Total Algorithms
-                  </p>
-                </div>
-                <div className="timer-card text-center col-span-2 sm:col-span-1">
-                  <p className="text-2xl font-bold text-(--text-primary) font-statement">
-                    {customSets.reduce(
-                      (acc: number, s: any) =>
-                        acc + (s.customAlgorithms?.length || 0),
-                      0,
-                    )}
-                  </p>
-                  <p className="text-xs text-(--text-muted)">
-                    Custom Algorithms
-                  </p>
-                </div>
+                <StatTile
+                  label="Total sets"
+                  mono={false}
+                  size="lg"
+                  tone="primary"
+                  value={customSets.length}
+                />
+                <StatTile
+                  label="Total algorithms"
+                  mono={false}
+                  size="lg"
+                  value={customSets.reduce(
+                    (acc: number, s: any) => acc + getTotalAlgorithmCount(s),
+                    0,
+                  )}
+                />
+                <StatTile
+                  className="col-span-2 sm:col-span-1"
+                  label="Custom algorithms"
+                  mono={false}
+                  size="lg"
+                  value={customSets.reduce(
+                    (acc: number, s: any) => acc + (s.customAlgorithms?.length || 0),
+                    0,
+                  )}
+                />
               </div>
             )}
 
             {/* Search */}
             {customSets.length > 0 && (
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search your sets..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-sm transition-all"
-                />
-              </div>
+              <SearchInput
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search your sets…"
+                aria-label="Search your sets"
+              />
             )}
 
             {/* Custom Sets List */}
             {customSets.length === 0 ? (
-              <div className="timer-card text-center py-12">
-                <FolderOpen className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
-                <h3 className="text-lg font-bold text-(--text-primary) font-statement mb-2">
-                  No Custom Sets Yet
-                </h3>
-                <p className="text-sm text-(--text-muted) mb-6 max-w-sm mx-auto">
-                  Create a custom set to organize algorithms your way. Add
-                  predefined cases or write your own algorithms from scratch.
-                </p>
-                <button
-                  onClick={() => setShowCreateModal(true)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors text-sm"
-                >
-                  <Plus className="w-4 h-4" />
-                  Create Your First Set
-                </button>
-              </div>
+              <Card variant="static">
+                <EmptyState
+                  size="page"
+                  icon={<FolderOpen />}
+                  title="No custom sets yet"
+                  description="Create a custom set to organize algorithms your way. Add predefined cases or write your own algorithms from scratch."
+                  action={
+                    <Button
+                      onClick={() => setShowCreateModal(true)}
+                      iconLeft={<Plus className="w-4 h-4" />}
+                    >
+                      Create your first set
+                    </Button>
+                  }
+                />
+              </Card>
             ) : filteredSets && filteredSets.length === 0 ? (
-              <div className="timer-card text-center py-8">
-                <Search className="w-10 h-10 text-(--text-muted) mx-auto mb-3" />
-                <p className="text-sm text-(--text-muted)">
-                  No sets match &quot;{searchQuery}&quot;
-                </p>
-              </div>
+              <Card variant="static">
+                <EmptyState
+                  icon={<Search />}
+                  title={`No sets match "${searchQuery}"`}
+                />
+              </Card>
             ) : (
               <div className="grid gap-3">
                 {filteredSets?.map((set: any) => {
@@ -345,75 +331,44 @@ export default function CustomSetsPage() {
                         onClick={(e) => e.stopPropagation()}
                       >
                         {totalAlgs > 0 && (
-                          <button
+                          <Button
+                            size="sm"
                             onClick={() =>
                               router.push(
                                 `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${set._id}&type=rec`,
                               )
                             }
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors text-xs sm:text-sm"
+                            iconLeft={<Play className="w-3.5 h-3.5" />}
                           >
-                            <Play className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">Practice</span>
-                          </button>
+                          </Button>
                         )}
 
-                        {/* More menu */}
-                        <div className="relative">
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setOpenMenuId(
-                                openMenuId === set._id ? null : set._id,
-                              );
-                            }}
-                            className="p-1.5 hover:bg-(--surface-elevated) text-(--text-muted) rounded-lg transition-colors"
-                          >
-                            <MoreVertical className="w-4 h-4" />
-                          </button>
-
-                          {openMenuId === set._id && (
-                            <>
-                              <div
-                                className="fixed inset-0 z-40"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  setOpenMenuId(null);
-                                }}
-                              />
-                              <div className="absolute right-0 top-full mt-1 w-44 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-50 py-1 overflow-hidden">
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleExportSet(set);
-                                    setOpenMenuId(null);
-                                  }}
-                                  className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-(--text-primary) hover:bg-(--surface-elevated) transition-colors"
-                                >
-                                  <Download className="w-4 h-4" />
-                                  Export JSON
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setDelete.request({
-                                      _id: set._id,
-                                      name: set.name,
-                                    });
-                                  }}
-                                  className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                  Delete Set
-                                </button>
-                              </div>
-                            </>
+                        <Menu
+                          title={`${set.name} actions`}
+                          items={[
+                            {
+                              label: "Export JSON",
+                              icon: <Download />,
+                              onSelect: () => handleExportSet(set),
+                            },
+                            {
+                              label: "Delete set",
+                              icon: <Trash2 />,
+                              tone: "danger",
+                              onSelect: () =>
+                                setDelete.request({ _id: set._id, name: set.name }),
+                            },
+                          ]}
+                          trigger={(props) => (
+                            <IconButton
+                              {...props}
+                              size="sm"
+                              aria-label={`Actions for ${set.name}`}
+                              icon={<MoreVertical />}
+                            />
                           )}
-                        </div>
+                        />
                       </div>
 
                       {/* Set Info */}
@@ -423,7 +378,7 @@ export default function CustomSetsPage() {
                             {set.name}
                           </h3>
                           {set.isPublic ? (
-                            <Globe className="w-3.5 h-3.5 text-green-500 shrink-0" />
+                            <Globe className="w-3.5 h-3.5 text-(--success) shrink-0" />
                           ) : (
                             <Lock className="w-3.5 h-3.5 text-(--text-muted) shrink-0" />
                           )}
@@ -486,172 +441,131 @@ export default function CustomSetsPage() {
             )}
 
             {/* Create Modal */}
-            {showCreateModal && (
-              <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-                onClick={() => setShowCreateModal(false)}
-              >
-                <div
-                  className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <h2 className="text-xl font-bold text-(--text-primary) font-statement mb-4">
-                    Create Custom Set
-                  </h2>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-(--text-secondary) mb-1 font-inter">
-                        Set Name
-                      </label>
-                      <input
-                        type="text"
-                        value={newSetName}
-                        onChange={(e) => setNewSetName(e.target.value)}
-                        placeholder="e.g., My Weak OLLs, Speed PLLs"
-                        className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-sm font-inter transition-all"
-                        autoFocus
-                        maxLength={100}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && newSetName.trim()) {
-                            handleCreateSet();
-                          }
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-(--text-secondary) mb-1 font-inter">
-                        Description{" "}
-                        <span className="text-(--text-muted) font-normal">
-                          (optional)
-                        </span>
-                      </label>
-                      <textarea
-                        value={newSetDescription}
-                        onChange={(e) => setNewSetDescription(e.target.value)}
-                        placeholder="What algorithms will this set contain?"
-                        rows={2}
-                        className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none text-sm font-inter transition-all"
-                        maxLength={500}
-                      />
-                    </div>
-                    <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
-                      <button
-                        onClick={() => setShowCreateModal(false)}
-                        className="flex-1 btn-secondary"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleCreateSet}
-                        disabled={!newSetName.trim()}
-                        className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Create Set
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            <Modal
+              open={showCreateModal}
+              onClose={() => setShowCreateModal(false)}
+              size="md"
+              mobile="sheet"
+            >
+              <Modal.Header title="Create Custom Set" />
+              <Modal.Body className="space-y-4">
+                <Field label="Set Name" required>
+                  <Input
+                    value={newSetName}
+                    onChange={(e) => setNewSetName(e.target.value)}
+                    placeholder="e.g. My Weak OLLs, Speed PLLs"
+                    maxLength={100}
+                    data-autofocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && newSetName.trim()) {
+                        handleCreateSet();
+                      }
+                    }}
+                  />
+                </Field>
+                <Field label="Description" hint="Optional">
+                  <Textarea
+                    value={newSetDescription}
+                    onChange={(e) => setNewSetDescription(e.target.value)}
+                    placeholder="What algorithms will this set contain?"
+                    rows={2}
+                    maxLength={500}
+                  />
+                </Field>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowCreateModal(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleCreateSet} disabled={!newSetName.trim()}>
+                  Create Set
+                </Button>
+              </Modal.Footer>
+            </Modal>
 
             {/* Import Modal */}
-            {showImportModal && (
-              <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-                onClick={() => {
-                  setShowImportModal(false);
-                  setImportData("");
-                  setImportError(null);
-                }}
-              >
+            <Modal
+              open={showImportModal}
+              onClose={() => {
+                setShowImportModal(false);
+                setImportData("");
+                setImportError(null);
+              }}
+              size="md"
+              mobile="sheet"
+            >
+              <Modal.Header
+                title="Import Algorithm Set"
+                description="Import an algorithm set exported from CubeDev."
+              />
+              <Modal.Body className="space-y-4">
                 <div
-                  className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto"
-                  onClick={(e) => e.stopPropagation()}
+                  className={`border-2 border-dashed rounded-(--radius-panel) p-6 text-center transition-colors cursor-pointer ${
+                    isDragOver
+                      ? "border-(--primary) bg-(--primary)/5"
+                      : "border-(--border) hover:border-(--text-muted)"
+                  }`}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDragOver(true);
+                  }}
+                  onDragLeave={() => setIsDragOver(false)}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
                 >
-                  <h2 className="text-xl font-bold text-(--text-primary) font-statement mb-4">
-                    Import Algorithm Set
-                  </h2>
-                  <div className="space-y-4">
-                    {/* File Drop Zone */}
-                    <div
-                      className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
-                        isDragOver
-                          ? "border-(--primary) bg-(--primary)/5"
-                          : "border-(--border) hover:border-(--text-muted)"
-                      }`}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        setIsDragOver(true);
-                      }}
-                      onDragLeave={() => setIsDragOver(false)}
-                      onDrop={handleDrop}
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".json"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleFileSelect(file);
-                        }}
-                      />
-                      <File className="w-8 h-8 text-(--text-muted) mx-auto mb-2" />
-                      <p className="text-sm text-(--text-secondary)">
-                        Drop a JSON file here or click to browse
-                      </p>
-                      <p className="text-xs text-(--text-muted) mt-1">
-                        Supports .json files
-                      </p>
-                    </div>
-
-                    <div className="relative flex items-center gap-4">
-                      <div className="flex-1 border-t border-(--border)" />
-                      <span className="text-xs text-(--text-muted)">
-                        or paste JSON
-                      </span>
-                      <div className="flex-1 border-t border-(--border)" />
-                    </div>
-
-                    <textarea
-                      value={importData}
-                      onChange={(e) => processImportData(e.target.value)}
-                      placeholder='{"name": "My Set", "caseIds": [...], ...}'
-                      rows={4}
-                      className="w-full px-4 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) font-mono text-sm focus:outline-none focus:ring-2 focus:ring-(--primary) resize-none"
-                    />
-
-                    {importError && (
-                      <p className="text-sm text-red-500">{importError}</p>
-                    )}
-
-                    <p className="text-xs text-(--text-muted)">
-                      Import an algorithm set exported from CubeDev.
-                    </p>
-                    <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
-                      <button
-                        onClick={() => {
-                          setShowImportModal(false);
-                          setImportData("");
-                          setImportError(null);
-                        }}
-                        className="flex-1 btn-secondary"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleImportSet}
-                        disabled={!importData.trim() || !!importError}
-                        className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Import
-                      </button>
-                    </div>
-                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".json"
+                    className="hidden"
+                    aria-label="Choose an algorithm set file"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileSelect(file);
+                    }}
+                  />
+                  <CardIcon className="mx-auto w-12 h-12 [&_svg]:w-6 [&_svg]:h-6 mb-2">
+                    <File />
+                  </CardIcon>
+                  <p className="type-label">Drop a JSON file here or click to browse</p>
+                  <p className="type-caption mt-1">Supports .json files</p>
                 </div>
-              </div>
-            )}
+
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 border-t border-(--border)" />
+                  <span className="type-caption">or paste JSON</span>
+                  <div className="flex-1 border-t border-(--border)" />
+                </div>
+
+                <Field label="Set JSON" hideLabel error={importError || undefined}>
+                  <Textarea
+                    value={importData}
+                    onChange={(e) => processImportData(e.target.value)}
+                    placeholder='{"name": "My Set", "caseIds": [...], ...}'
+                    rows={4}
+                    className="type-time text-sm! resize-none"
+                  />
+                </Field>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setShowImportModal(false);
+                    setImportData("");
+                    setImportError(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleImportSet}
+                  disabled={!importData.trim() || !!importError}
+                >
+                  Import
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </div>
         </div>
         <ConfirmDeleteModal

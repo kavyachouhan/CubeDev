@@ -169,9 +169,9 @@ export default function CustomAlgorithmCard({
             maxLength={500}
           />
           {hasEditInvalidMoves && (
-            <div className="flex items-start gap-2 mt-1.5 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-              <AlertTriangle className="w-3.5 h-3.5 text-yellow-500 shrink-0 mt-0.5" />
-              <p className="text-xs text-yellow-500/80 font-inter">
+            <div className="flex items-start gap-2 mt-1.5 p-2 bg-(--warning)/10 border border-(--warning)/25 rounded-lg">
+              <AlertTriangle className="w-3.5 h-3.5 text-(--warning) shrink-0 mt-0.5" />
+              <p className="text-xs text-(--warning)/80 font-inter">
                 Non-standard notation:{" "}
                 {editInvalidMoves.map((m) => `"${m}"`).join(", ")}
               </p>
@@ -266,7 +266,7 @@ export default function CustomAlgorithmCard({
           </button>
           <button
             onClick={handleRemove}
-            className="p-2 hover:bg-red-500/10 text-(--text-muted) hover:text-red-500 rounded-lg transition-colors"
+            className="p-2 hover:bg-(--error)/10 text-(--text-muted) hover:text-(--error) rounded-lg transition-colors"
             title="Remove from set"
           >
             <Trash2 className="w-3.5 h-3.5" />

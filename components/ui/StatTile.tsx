@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 import { cx } from "@/lib/cx";
 
@@ -32,6 +32,8 @@ export interface StatTileProps {
   mono?: boolean;
   size?: "sm" | "md" | "lg";
   className?: string;
+  /** Extra attributes for the root element, e.g. `data-tour`. */
+  rootProps?: ComponentProps<"div"> & Record<`data-${string}`, string>;
 }
 
 /** A single metric: label, big value, optional trend. Sits inside a card. */
@@ -45,6 +47,7 @@ export function StatTile({
   mono = true,
   size = "md",
   className,
+  rootProps,
 }: StatTileProps) {
   const TrendIcon =
     trend?.direction === "up"
@@ -55,6 +58,7 @@ export function StatTile({
 
   return (
     <div
+      {...rootProps}
       className={cx(
         "min-w-0 rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated)",
         size === "sm" ? "p-3" : "p-3 sm:p-4",

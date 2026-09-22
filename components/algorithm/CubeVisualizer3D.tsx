@@ -232,7 +232,7 @@ export default function CubeVisualizer3D({
             style={{ height }}
           >
             <div className="text-center">
-              <AlertTriangle className="w-6 h-6 text-yellow-500 mx-auto mb-2" />
+              <AlertTriangle className="w-6 h-6 text-(--warning) mx-auto mb-2" />
               <div className="text-sm text-(--text-secondary) mb-1">
                 Couldn&apos;t render this case
               </div>

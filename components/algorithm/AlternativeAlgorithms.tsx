@@ -122,8 +122,8 @@ export default function AlternativeAlgorithms({
                   {/* Current Selection Indicator */}
                   {currentAlgId === alg._id && (
                     <div className="shrink-0">
-                      <div className="p-1 bg-green-500/10 border border-green-500/20 rounded">
-                        <CheckCircle2 className="w-4 h-4 text-green-500" />
+                      <div className="p-1 bg-(--success)/10 border border-(--success)/25 rounded">
+                        <CheckCircle2 className="w-4 h-4 text-(--success)" />
                       </div>
                     </div>
                   )}

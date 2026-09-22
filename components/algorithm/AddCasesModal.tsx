@@ -1,12 +1,9 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { createPortal } from "react-dom";
 import {
   Search,
-  X,
   Filter,
-  ChevronDown,
   ChevronRight,
   Plus,
   Check,
@@ -14,6 +11,12 @@ import {
   Zap,
 } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
+import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { SearchInput } from "@/components/ui/Field";
+import { SelectMenu } from "@/components/ui/Menu";
+import { Modal } from "@/components/ui/Modal";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface AlgorithmCase {
   _id: Id<"algorithmCases">;
@@ -45,7 +48,6 @@ export default function AddCasesModal({
 }: AddCasesModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSet, setSelectedSet] = useState<string>("all");
-  const [showSetDropdown, setShowSetDropdown] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [expandedCase, setExpandedCase] = useState<string | null>(null);
   const [pendingAdds, setPendingAdds] = useState<Set<string>>(new Set());
@@ -56,7 +58,6 @@ export default function AddCasesModal({
     if (isOpen) {
       setSearchQuery("");
       setSelectedSet("all");
-      setShowSetDropdown(false);
       setExpandedGroups(new Set());
       setExpandedCase(null);
       setPendingAdds(new Set());
@@ -104,11 +105,6 @@ export default function AddCasesModal({
     return groups;
   }, [filteredCases]);
 
-  const selectedSetName =
-    selectedSet === "all"
-      ? "All Sets"
-      : availableSets.find((s) => s.id === selectedSet)?.name || "All Sets";
-
   const isCaseAdded = useCallback(
     (caseId: Id<"algorithmCases">) => {
       return (
@@ -147,119 +143,47 @@ export default function AddCasesModal({
   const availableCount = filteredCases.length - addedCount;
 
   // Delay mounting of the modal content until after the first render to avoid hydration issues with server-side rendering. This ensures that the portal is only created on the client side and prevents mismatches between server-rendered and client-rendered content.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
-
-  if (!isOpen || !mounted) return null;
-
-  return createPortal(
-    <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      onClick={onClose}
-    >
-      <div
-        className="timer-card max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4 shrink-0">
-          <div>
-            <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-              Add Predefined Cases
-            </h2>
-            <p className="text-xs text-(--text-muted) mt-1 font-inter">
-              Browse algorithm sets and add cases to your custom set
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
+  return (
+    <Modal open={isOpen} onClose={onClose} size="xl" mobile="fullscreen">
+      <Modal.Header
+        title="Add Predefined Cases"
+        description="Browse algorithm sets and add cases to your custom set"
+      />
+      <Modal.Body className="flex flex-col gap-3">
         {/* Search + Filter */}
-        <div className="space-y-3 mb-4 shrink-0">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by case name or algorithm..."
-              className="w-full pl-10 pr-4 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-sm transition-all font-inter"
-              autoFocus
-            />
-          </div>
+        <div className="space-y-3 shrink-0">
+          <SearchInput
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search by case name or algorithm…"
+            aria-label="Search cases"
+            data-autofocus
+          />
 
-          {/* Set Filter */}
-          <div className="relative">
-            <button
-              onClick={() => setShowSetDropdown(!showSetDropdown)}
-              className="w-full flex items-center justify-between px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg hover:border-(--primary)/50 transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-(--primary)" />
-                <span className="text-sm font-medium text-(--text-primary) font-inter">
-                  {selectedSetName}
-                </span>
-              </div>
-              <ChevronDown
-                className={`w-4 h-4 text-(--text-muted) transition-transform ${
-                  showSetDropdown ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-
-            {showSetDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-10 max-h-48 overflow-y-auto">
-                <button
-                  onClick={() => {
-                    setSelectedSet("all");
-                    setShowSetDropdown(false);
-                  }}
-                  className={`w-full text-left px-4 py-2.5 text-sm hover:bg-(--surface-elevated) transition-colors font-inter ${
-                    selectedSet === "all"
-                      ? "text-(--primary) font-medium"
-                      : "text-(--text-primary)"
-                  }`}
-                >
-                  All Sets
-                </button>
-                {availableSets.map((set) => (
-                  <button
-                    key={set.id}
-                    onClick={() => {
-                      setSelectedSet(set.id);
-                      setShowSetDropdown(false);
-                    }}
-                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-(--surface-elevated) transition-colors border-t border-(--border)/50 font-inter ${
-                      selectedSet === set.id
-                        ? "text-(--primary) font-medium"
-                        : "text-(--text-primary)"
-                    }`}
-                  >
-                    {set.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <SelectMenu
+            label="Algorithm set"
+            value={selectedSet}
+            onChange={setSelectedSet}
+            searchable={availableSets.length > 8}
+            options={[
+              { value: "all", label: "All Sets", icon: <Filter /> },
+              ...availableSets.map((set) => ({
+                value: set.id,
+                label: set.name,
+                icon: <Filter />,
+              })),
+            ]}
+          />
         </div>
 
         {/* Stats Bar */}
-        <div className="flex items-center gap-4 text-xs text-(--text-muted) mb-3 shrink-0 font-inter">
+        <div className="flex items-center gap-4 text-xs text-(--text-muted) shrink-0 font-inter">
           <span className="inline-flex items-center gap-1">
             <BookOpen className="w-3 h-3" />
             {filteredCases.length} total
           </span>
           {addedCount > 0 && (
-            <span className="inline-flex items-center gap-1 text-green-500">
+            <span className="inline-flex items-center gap-1 text-(--success)">
               <Check className="w-3 h-3" />
               {addedCount} added
             </span>
@@ -273,19 +197,17 @@ export default function AddCasesModal({
         </div>
 
         {/* Cases List */}
-        <div className="flex-1 overflow-y-auto -mx-4 sm:-mx-6 px-4 sm:px-6 min-h-0">
+        <div className="flex-1 min-h-0">
           {filteredCases.length === 0 ? (
-            <div className="text-center py-12">
-              <Search className="w-8 h-8 text-(--text-muted) mx-auto mb-3" />
-              <p className="text-sm font-medium text-(--text-primary) font-inter">
-                No cases found
-              </p>
-              <p className="text-xs text-(--text-muted) mt-1 font-inter">
-                {searchQuery
+            <EmptyState
+              icon={<Search />}
+              title="No cases found"
+              description={
+                searchQuery
                   ? `No results for "${searchQuery}"`
-                  : "No cases available in this set"}
-              </p>
-            </div>
+                  : "No cases available in this set"
+              }
+            />
           ) : selectedSet !== "all" ? (
             /* Flat list when a set is selected */
             <div className="space-y-2 pb-4">
@@ -338,7 +260,7 @@ export default function AddCasesModal({
                         </span>
                       </div>
                       {addedInGroup > 0 && (
-                        <span className="text-xs text-green-500 font-inter">
+                        <span className="text-xs text-(--success) font-inter">
                           {addedInGroup} added
                         </span>
                       )}
@@ -381,18 +303,17 @@ export default function AddCasesModal({
           )}
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-4 mt-2 border-t border-(--border) shrink-0">
-          <p className="text-xs text-(--text-muted) font-inter">
+      </Modal.Body>
+      <Modal.Footer
+        start={
+          <p className="type-caption">
             {addedCount} case{addedCount !== 1 ? "s" : ""} in your set
           </p>
-          <button onClick={onClose} className="btn-primary text-sm px-6">
-            Done
-          </button>
-        </div>
-      </div>
-    </div>,
-    document.body,
+        }
+      >
+        <Button onClick={onClose}>Done</Button>
+      </Modal.Footer>
+    </Modal>
   );
 }
 
@@ -419,7 +340,7 @@ function CaseItem({
     <div
       className={`rounded-lg border transition-all ${
         isAdded
-          ? "border-green-500/30 bg-green-500/5"
+          ? "border-(--success)/25 bg-(--success)/5"
           : "border-(--border) bg-(--surface-elevated)"
       }`}
     >
@@ -455,7 +376,7 @@ function CaseItem({
 
         {/* Add / Added button */}
         {isAdded ? (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-green-500 bg-green-500/10 rounded-lg shrink-0 font-inter">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-(--success) bg-(--success)/10 rounded-lg shrink-0 font-inter">
             <Check className="w-3.5 h-3.5" />
             Added
           </span>
@@ -465,11 +386,7 @@ function CaseItem({
             disabled={isAdding}
             className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-(--primary) bg-(--primary)/10 hover:bg-(--primary)/20 rounded-lg transition-colors shrink-0 disabled:opacity-50 font-inter"
           >
-            {isAdding ? (
-              <span className="w-3.5 h-3.5 border-2 border-(--primary)/30 border-t-(--primary) rounded-full animate-spin" />
-            ) : (
-              <Plus className="w-3.5 h-3.5" />
-            )}
+            {isAdding ? <Spinner size="xs" /> : <Plus className="w-3.5 h-3.5" />}
             Add
           </button>
         )}

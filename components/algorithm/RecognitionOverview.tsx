@@ -60,8 +60,8 @@ function StatCard({
           <div
             className={`text-xs font-semibold flex items-center gap-1 ${
               trend.isPositive
-                ? "text-green-500 dark:text-green-400"
-                : "text-red-500 dark:text-red-400"
+                ? "text-(--success)"
+                : "text-(--error)"
             }`}
           >
             {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value).toFixed(1)}%
@@ -123,8 +123,8 @@ export default function RecognitionOverview({
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard
         icon={Eye}
-        iconBg="bg-blue-500/10"
-        iconColor="text-blue-500 dark:text-blue-400"
+        iconBg="bg-(--primary)/10"
+        iconColor="text-(--primary)"
         label="Avg Recognition"
         value={formatTime(metrics.averageRecognitionTime)}
         trend={
@@ -139,16 +139,16 @@ export default function RecognitionOverview({
 
       <StatCard
         icon={Zap}
-        iconBg="bg-green-500/10"
-        iconColor="text-green-500 dark:text-green-400"
+        iconBg="bg-(--success)/10"
+        iconColor="text-(--success)"
         label="Best Time"
         value={formatTime(metrics.fastestRecognition)}
       />
 
       <StatCard
         icon={Target}
-        iconBg="bg-purple-500/10"
-        iconColor="text-purple-500 dark:text-purple-400"
+        iconBg="bg-(--accent)/10"
+        iconColor="text-(--accent)"
         label="Accuracy"
         value={`${metrics.accuracyRate.toFixed(0)}%`}
         trend={
@@ -163,8 +163,8 @@ export default function RecognitionOverview({
 
       <StatCard
         icon={TrendingUp}
-        iconBg="bg-cyan-500/10"
-        iconColor="text-cyan-500 dark:text-cyan-400"
+        iconBg="bg-(--accent)/10"
+        iconColor="text-(--accent)"
         label="Avg Execution"
         value={formatTime(metrics.averageExecutionTime)}
       />

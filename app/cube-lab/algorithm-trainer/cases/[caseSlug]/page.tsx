@@ -13,16 +13,21 @@ import {
 } from "@/components/algorithm";
 import { AlgorithmCaseDetailSkeleton } from "@/components/SkeletonLoaders";
 import {
-  ArrowLeft,
   Brain,
   Star,
   PlayCircle,
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
+  Search,
 } from "lucide-react";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
+import { Badge } from "@/components/ui/Badge";
+import { ButtonLink } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export default function AlgorithmCasePage() {
   const params = useParams();
@@ -164,10 +169,19 @@ export default function AlgorithmCasePage() {
   if (!algorithmCase || !set) {
     return (
       <CubeLabLayout activeSection="algorithm-trainer">
-        <div className="h-full flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-(--text-muted)">Case not found</p>
-          </div>
+        <div className="container-responsive py-4 md:py-8">
+          <Card variant="static">
+            <EmptyState
+              size="page"
+              icon={<Search />}
+              title="Case not found"
+              action={
+                <ButtonLink href="/cube-lab/algorithm-trainer">
+                  Back to Algorithm Trainer
+                </ButtonLink>
+              }
+            />
+          </Card>
         </div>
       </CubeLabLayout>
     );
@@ -181,37 +195,25 @@ export default function AlgorithmCasePage() {
         <div className="h-full overflow-y-auto overflow-x-hidden">
           <div className="container-responsive py-4 md:py-8">
             <div className="max-w-5xl mx-auto space-y-4 md:space-y-6">
-              {/* Header */}
-              <div>
-                <Link
-                  href={`/cube-lab/algorithm-trainer/sets/${set.slug || set.name.toLowerCase()}`}
-                  className="inline-flex items-center gap-2 text-(--text-muted) hover:text-(--primary) transition-colors mb-4"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Back to {set.name}
-                </Link>
-
-                <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-                  <div className="w-full sm:w-auto">
-                    <div className="flex flex-wrap items-center gap-3 mb-2">
-                      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-(--text-primary) font-statement wrap-break-word">
-                        {algorithmCase.caseName}
-                      </h1>
-                      {userProgress?.learningStage === "mastered" && (
-                        <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full flex items-center gap-1 shrink-0">
-                          <Star className="w-4 h-4 text-green-500" />
-                          <span className="text-sm font-medium text-green-500">
-                            Mastered
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-(--text-muted)">
-                      {set.name} Algorithm
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <PageHeader
+                breadcrumbs={[
+                  { label: "Algorithm Trainer", href: "/cube-lab/algorithm-trainer" },
+                  {
+                    label: set.name,
+                    href: `/cube-lab/algorithm-trainer/sets/${set.slug || set.name.toLowerCase()}`,
+                  },
+                  { label: algorithmCase.caseName },
+                ]}
+                title={algorithmCase.caseName}
+                description={`${set.name} Algorithm`}
+                eyebrow={
+                  userProgress?.learningStage === "mastered" ? (
+                    <Badge tone="success" shape="pill" size="md" icon={<Star />}>
+                      Mastered
+                    </Badge>
+                  ) : undefined
+                }
+              />
 
               {/* Progress Stats (if learning) */}
               {userProgress && userProgress.learningStage !== "new" && (
@@ -242,10 +244,10 @@ export default function AlgorithmCasePage() {
                           userProgress.reviewCount === 0
                             ? "text-(--text-muted)"
                             : userProgress.accuracyRate >= 90
-                              ? "text-green-500"
+                              ? "text-(--success)"
                               : userProgress.accuracyRate >= 70
-                                ? "text-yellow-500"
-                                : "text-red-500"
+                                ? "text-(--warning)"
+                                : "text-(--error)"
                         }`}
                       >
                         {userProgress.reviewCount === 0
@@ -339,7 +341,7 @@ export default function AlgorithmCasePage() {
                               key={i}
                               className={`w-4 h-4 ${
                                 i < difficultyStars
-                                  ? "fill-yellow-500 text-yellow-500"
+                                  ? "fill-yellow-500 text-(--warning)"
                                   : "text-(--border)"
                               }`}
                             />

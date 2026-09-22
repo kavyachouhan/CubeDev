@@ -161,8 +161,8 @@ export default function BlindRecognitionCard({
                 <div className="w-full max-w-md">
                   <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-6 min-h-62.5 flex flex-col items-center justify-center">
                     <div className="flex items-center gap-2 mb-4">
-                      <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                      <span className="text-xs text-yellow-500/80">
+                      <AlertTriangle className="w-4 h-4 text-(--warning)" />
+                      <span className="text-xs text-(--warning)/80">
                         Non-standard notation
                       </span>
                     </div>
@@ -277,22 +277,22 @@ export default function BlindRecognitionCard({
                 <div
                   className={`text-center p-4 rounded-lg border ${
                     wasCorrect
-                      ? "bg-green-500/10 border-green-500/20"
-                      : "bg-red-500/10 border-red-500/20"
+                      ? "bg-(--success)/10 border-(--success)/25"
+                      : "bg-(--error)/10 border-(--error)/25"
                   }`}
                 >
                   {wasCorrect ? (
                     <div className="flex items-center justify-center gap-2">
-                      <Check className="w-6 h-6 text-green-500" />
-                      <span className="text-xl font-bold text-green-500 font-statement">
+                      <Check className="w-6 h-6 text-(--success)" />
+                      <span className="text-xl font-bold text-(--success) font-statement">
                         Correct!
                       </span>
                     </div>
                   ) : (
                     <div>
                       <div className="flex items-center justify-center gap-2 mb-2">
-                        <X className="w-6 h-6 text-red-500" />
-                        <span className="text-xl font-bold text-red-500 font-statement">
+                        <X className="w-6 h-6 text-(--error)" />
+                        <span className="text-xl font-bold text-(--error) font-statement">
                           Incorrect
                         </span>
                       </div>
@@ -371,28 +371,28 @@ export default function BlindRecognitionCard({
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     <button
                       onClick={() => handleRating("again")}
-                      className="py-3 px-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 rounded-lg transition-colors font-medium text-sm"
+                      className="py-3 px-2 bg-(--error)/10 hover:bg-(--error)/10 border border-(--error)/25 text-(--error) rounded-lg transition-colors font-medium text-sm"
                     >
                       <div className="font-bold">Again</div>
                       <div className="text-xs opacity-75 mt-1">Didn't know</div>
                     </button>
                     <button
                       onClick={() => handleRating("hard")}
-                      className="py-3 px-2 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 text-orange-500 rounded-lg transition-colors font-medium text-sm"
+                      className="py-3 px-2 bg-(--warning)/10 hover:bg-(--warning)/10 border border-(--warning)/25 text-(--warning) rounded-lg transition-colors font-medium text-sm"
                     >
                       <div className="font-bold">Hard</div>
                       <div className="text-xs opacity-75 mt-1">Struggled</div>
                     </button>
                     <button
                       onClick={() => handleRating("good")}
-                      className="py-3 px-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-500 rounded-lg transition-colors font-medium text-sm"
+                      className="py-3 px-2 bg-(--primary)/10 hover:bg-(--primary)/10 border border-(--primary)/25 text-(--primary) rounded-lg transition-colors font-medium text-sm"
                     >
                       <div className="font-bold">Good</div>
                       <div className="text-xs opacity-75 mt-1">Normal</div>
                     </button>
                     <button
                       onClick={() => handleRating("easy")}
-                      className="py-3 px-2 bg-green-500/10 hover:bg-green-500/20 border border-green-500/20 text-green-500 rounded-lg transition-colors font-medium text-sm"
+                      className="py-3 px-2 bg-(--success)/10 hover:bg-(--success)/10 border border-(--success)/25 text-(--success) rounded-lg transition-colors font-medium text-sm"
                     >
                       <div className="font-bold">Easy</div>
                       <div className="text-xs opacity-75 mt-1">Instantly</div>

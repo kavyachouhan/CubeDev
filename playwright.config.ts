@@ -25,11 +25,14 @@ export default defineConfig({
   ],
   webServer: {
     command: "npx next dev --turbopack -p 3000",
-      url: "http://127.0.0.1:3000",
+    url: "http://127.0.0.1:3000",
     reuseExistingServer: true,
     timeout: 180_000,
-    env: {
-      ...process.env,
-    },
+    // Playwright's env only accepts defined values, so drop unset vars.
+    env: Object.fromEntries(
+      Object.entries(process.env).filter(
+        (entry): entry is [string, string] => entry[1] !== undefined,
+      ),
+    ),
   },
 });

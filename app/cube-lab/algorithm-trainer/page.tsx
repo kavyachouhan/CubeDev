@@ -20,6 +20,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
+import { ButtonLink } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { StatTile } from "@/components/ui/StatTile";
 
 // Wrapper component to fetch user progress for an algorithm set
 function AlgorithmSetCardWrapper({
@@ -96,8 +99,8 @@ export default function AlgorithmTrainerPage() {
   return (
     <ProtectedRoute>
       <CubeLabLayout activeSection="algorithm-trainer">
-        <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto space-y-8">
+        <div className="container-responsive py-4 md:py-8">
+          <div className="space-y-6 md:space-y-8">
             {/* Product Tour */}
             <AlgorithmTrainerTour
               hasProgress={(userStats?.dueToday || 0) > 0}
@@ -107,85 +110,61 @@ export default function AlgorithmTrainerPage() {
 
             {/* User Stats Dashboard */}
             <div data-tour="progress-section">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                <h2 className="text-2xl font-bold text-(--text-primary) font-statement">
-                  Your Progress
-                </h2>
-                {(userStats?.totalLearned || 0) > 0 && (
-                  <Link
-                    href="/cube-lab/algorithm-trainer/stats"
-                    data-tour="analytics-button"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-(--primary) hover:bg-(--primary-hover) rounded-lg transition-colors w-full sm:w-auto"
-                  >
-                    <TrendingUp className="w-4 h-4" />
-                    <span className="hidden sm:inline">
-                      View Detailed Analytics
-                    </span>
-                    <span className="sm:hidden">View Analytics</span>
-                  </Link>
-                )}
-              </div>
+              <PageHeader
+                title="Algorithm Trainer"
+                description="Learn cases, drill recognition and keep reviews on schedule."
+                hideTitleOnMobile
+                actions={
+                  (userStats?.totalLearned || 0) > 0 ? (
+                    <ButtonLink
+                      href="/cube-lab/algorithm-trainer/stats"
+                      data-tour="analytics-button"
+                      iconLeft={<TrendingUp className="w-4 h-4" />}
+                      className="w-full sm:w-auto"
+                    >
+                      <span className="hidden sm:inline">View Detailed Analytics</span>
+                      <span className="sm:hidden">View Analytics</span>
+                    </ButtonLink>
+                  ) : undefined
+                }
+              />
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {/* Total Learned */}
-                <div className="timer-card" data-tour="total-learned">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-(--primary)/10 rounded-lg">
-                      <Brain className="w-5 h-5 text-(--primary)" />
-                    </div>
-                  </div>
-                  <div className="text-2xl font-bold text-(--text-primary) font-statement">
-                    {userStats?.totalLearned || 0}
-                  </div>
-                  <div className="text-sm text-(--text-muted)">
-                    Total Learning
-                  </div>
-                </div>
-
-                {/* Mastered */}
-                <div className="timer-card" data-tour="mastered">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-green-500/10 rounded-lg">
-                      <Target className="w-5 h-5 text-green-500" />
-                    </div>
-                  </div>
-                  <div className="text-2xl font-bold text-green-500 font-statement">
-                    {userStats?.mastered || 0}
-                  </div>
-                  <div className="text-sm text-(--text-muted)">
-                    Mastered
-                  </div>
-                </div>
-
-                {/* Due Today */}
-                <div className="timer-card" data-tour="due-today">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-red-500/10 rounded-lg">
-                      <Calendar className="w-5 h-5 text-red-500" />
-                    </div>
-                  </div>
-                  <div className="text-2xl font-bold text-red-500 font-statement">
-                    {userStats?.dueToday || 0}
-                  </div>
-                  <div className="text-sm text-(--text-muted)">
-                    Due Today
-                  </div>
-                </div>
-
-                {/* Reviewed Today */}
-                <div className="timer-card" data-tour="reviewed-today">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-blue-500/10 rounded-lg">
-                      <Flame className="w-5 h-5 text-blue-500" />
-                    </div>
-                  </div>
-                  <div className="text-2xl font-bold text-blue-500 font-statement">
-                    {userStats?.reviewedToday || 0}
-                  </div>
-                  <div className="text-sm text-(--text-muted)">
-                    Reviewed Today
-                  </div>
-                </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+                <StatTile
+                  rootProps={{ "data-tour": "total-learned" }}
+                  label="Total Learning"
+                  icon={<Brain />}
+                  mono={false}
+                  size="lg"
+                  value={userStats?.totalLearned || 0}
+                />
+                <StatTile
+                  rootProps={{ "data-tour": "mastered" }}
+                  label="Mastered"
+                  icon={<Target />}
+                  mono={false}
+                  size="lg"
+                  tone="success"
+                  value={userStats?.mastered || 0}
+                />
+                <StatTile
+                  rootProps={{ "data-tour": "due-today" }}
+                  label="Due Today"
+                  icon={<Calendar />}
+                  mono={false}
+                  size="lg"
+                  tone={userStats?.dueToday ? "error" : "default"}
+                  value={userStats?.dueToday || 0}
+                />
+                <StatTile
+                  rootProps={{ "data-tour": "reviewed-today" }}
+                  label="Reviewed Today"
+                  icon={<Flame />}
+                  mono={false}
+                  size="lg"
+                  tone="primary"
+                  value={userStats?.reviewedToday || 0}
+                />
               </div>
             </div>
 
@@ -269,8 +248,8 @@ export default function AlgorithmTrainerPage() {
                     className="timer-card hover:scale-[1.02] transition-all cursor-pointer border-2 border-transparent hover:border-(--primary)"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-purple-500/10 rounded-lg">
-                        <EyeOff className="w-8 h-8 text-purple-500" />
+                      <div className="p-3 bg-(--accent)/10 rounded-lg">
+                        <EyeOff className="w-8 h-8 text-(--accent)" />
                       </div>
                       <div>
                         <h3 className="text-lg font-bold text-(--text-primary) font-statement">

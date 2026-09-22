@@ -8,8 +8,8 @@ import { api } from "@/convex/_generated/api";
 import CubeLabLayout from "@/components/CubeLabLayout";
 import { AlgorithmCaseCard } from "@/components/algorithm";
 import { AlgorithmSetDetailSkeleton } from "@/components/SkeletonLoaders";
-import { ArrowLeft, Filter, Search, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
+import { Filter, Search, CheckCircle2 } from "lucide-react";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Id } from "@/convex/_generated/dataModel";
 
 export default function AlgorithmSetPage() {
@@ -90,40 +90,26 @@ export default function AlgorithmSetPage() {
 
   return (
     <CubeLabLayout activeSection="algorithm-trainer">
-      <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Header */}
-          <div>
-            <Link
-              href="/cube-lab/algorithm-trainer"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors w-fit mb-4"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Algorithm Trainer
-            </Link>
-
-            <div className="flex items-start justify-between">
-              <div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-(--text-primary) font-statement">
-                  {set.name}
-                </h1>
-                <p className="text-(--text-muted) mt-2">
-                  {set.description}
-                </p>
-              </div>
-
-              {user && userProgress && (
+      <div className="container-responsive py-4 md:py-8">
+        <div className="space-y-4 md:space-y-6">
+          <PageHeader
+            breadcrumbs={[
+              { label: "Algorithm Trainer", href: "/cube-lab/algorithm-trainer" },
+              { label: set.name },
+            ]}
+            title={set.name}
+            description={set.description}
+            actions={
+              user && userProgress ? (
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-(--primary) font-statement">
+                  <div className="type-time text-2xl font-bold text-(--primary)">
                     {userProgress.learned}/{userProgress.total}
                   </div>
-                  <div className="text-sm text-(--text-muted)">
-                    Learned
-                  </div>
+                  <div className="type-caption">Learned</div>
                 </div>
-              )}
-            </div>
-          </div>
+              ) : undefined
+            }
+          />
 
           {/* Progress Bar */}
           {user && userProgress && (
@@ -150,7 +136,7 @@ export default function AlgorithmSetPage() {
 
               <div className="grid grid-cols-3 gap-4 mt-4">
                 <div className="text-center">
-                  <div className="text-xl font-bold text-yellow-500 font-statement">
+                  <div className="text-xl font-bold text-(--warning) font-statement">
                     {userProgress.learned - userProgress.mastered}
                   </div>
                   <div className="text-xs text-(--text-muted)">
@@ -158,7 +144,7 @@ export default function AlgorithmSetPage() {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-bold text-green-500 font-statement">
+                  <div className="text-xl font-bold text-(--success) font-statement">
                     {userProgress.mastered}
                   </div>
                   <div className="text-xs text-(--text-muted)">

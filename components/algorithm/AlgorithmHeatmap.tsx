@@ -347,11 +347,11 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
   const getIntensityColor = (level: number, isHovered: boolean = false) => {
     const baseColors = {
       0: "bg-(--surface) border-(--border)",
-      1: "bg-purple-100 dark:bg-purple-900/30 border-purple-200 dark:border-purple-800",
-      2: "bg-purple-300 dark:bg-purple-700/50 border-purple-400 dark:border-purple-600",
-      3: "bg-purple-500 dark:bg-purple-600/70 border-purple-600 dark:border-purple-500",
-      4: "bg-purple-600 dark:bg-purple-500/80 border-purple-700 dark:border-purple-400",
-      5: "bg-purple-700 dark:bg-purple-400 border-purple-800 dark:border-purple-300",
+      1: "bg-(--accent)/20 border-(--accent)/25",
+      2: "bg-(--accent)/40 border-(--accent)/45",
+      3: "bg-(--accent)/60 border-(--accent)/65",
+      4: "bg-(--accent)/80 border-(--accent)/85",
+      5: "bg-(--accent) border-(--accent)",
     };
 
     const hoverEffects = isHovered
@@ -454,8 +454,8 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
-                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -470,8 +470,8 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
 
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-purple-500/10 rounded-lg">
-                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
+                <div className="p-1.5 sm:p-2 bg-(--accent)/10 rounded-lg">
+                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--accent)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -489,8 +489,8 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
 
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-orange-500/10 rounded-lg">
-                  <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
+                <div className="p-1.5 sm:p-2 bg-(--warning)/10 rounded-lg">
+                  <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-(--warning)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -508,8 +508,8 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
 
             <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-green-500/10 rounded-lg">
-                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                <div className="p-1.5 sm:p-2 bg-(--success)/10 rounded-lg">
+                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-(--success)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">

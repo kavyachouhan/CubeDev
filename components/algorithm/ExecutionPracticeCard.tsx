@@ -255,17 +255,17 @@ export default function ExecutionPracticeCard({
   const getTimerColor = () => {
     switch (timerState) {
       case "holding":
-        return "text-yellow-500";
+        return "text-(--warning)";
       case "inspection":
-        if (inspectionTime <= 3) return "text-red-500";
-        if (inspectionTime <= 8) return "text-yellow-500";
-        return "text-green-500";
+        if (inspectionTime <= 3) return "text-(--error)";
+        if (inspectionTime <= 8) return "text-(--warning)";
+        return "text-(--success)";
       case "ready":
-        return "text-green-500";
+        return "text-(--success)";
       case "running":
         return "text-(--primary)";
       case "finished":
-        return "text-green-500";
+        return "text-(--success)";
       default:
         return "text-(--text-muted)";
     }
@@ -342,8 +342,8 @@ export default function ExecutionPracticeCard({
               ) : (
                 <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-6 min-h-62.5 flex flex-col items-center justify-center">
                   <div className="flex items-center gap-2 mb-4">
-                    <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                    <span className="text-xs text-yellow-500/80">
+                    <AlertTriangle className="w-4 h-4 text-(--warning)" />
+                    <span className="text-xs text-(--warning)/80">
                       Non-standard notation
                     </span>
                   </div>
