@@ -6,7 +6,10 @@ import { privateProfile, userAProfile } from "../fixtures/users";
 describe("security: identity and IDOR", () => {
   it("rejects unauthenticated upsertUser without the server secret", async () => {
     const t = makeConvex();
-    await expect(t.mutation(api.users.upsertUser, userAProfile)).rejects.toThrow();
+    // Deliberately missing `serverSecret`, to prove the call is rejected.
+    await expect(
+      t.mutation(api.users.upsertUser, userAProfile as never),
+    ).rejects.toThrow();
     const id = await t.mutation(
       api.users.upsertUser,
       withServerSecret(userAProfile),
@@ -15,7 +18,7 @@ describe("security: identity and IDOR", () => {
       t.mutation(api.users.upsertUser, {
         ...userAProfile,
         name: "Hijacked",
-      }),
+      } as never),
     ).rejects.toThrow();
     const user = await t.query(api.users.getUserById, { id });
     expect(user?.name).toBe(userAProfile.name);
@@ -29,7 +32,7 @@ describe("security: identity and IDOR", () => {
       hideProfile: true,
     });
     const listed = await t.query(api.users.getAllUsers, {});
-    expect(listed.users.some((u) => u.wcaId === privateProfile.wcaId)).toBe(
+    expect(listed.users.some((u) => u?.wcaId === privateProfile.wcaId)).toBe(
       false,
     );
   });

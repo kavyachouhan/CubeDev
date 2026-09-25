@@ -1,7 +1,8 @@
 import { ExternalLink, Github, Globe, Linkedin } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { ButtonLink, buttonClasses } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/Button";
+import { buttonClasses } from "@/components/ui/button-styles";
 
 export default function AboutPage() {
   return (

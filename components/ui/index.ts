@@ -2,8 +2,10 @@
  * CubeDev UI primitives. Build features from these before writing new
  * markup; see docs/Design.md for when to use which.
  */
-export { Button, ButtonLink, buttonClasses } from "./Button";
-export type { ButtonProps, ButtonVariant, ButtonSize } from "./Button";
+export { Button, ButtonLink } from "./Button";
+export type { ButtonProps } from "./Button";
+export { buttonClasses } from "./button-styles";
+export type { ButtonVariant, ButtonSize } from "./button-styles";
 export { IconButton } from "./IconButton";
 export { Spinner, LoadingState } from "./Spinner";
 export { Switch, SwitchRow } from "./Switch";

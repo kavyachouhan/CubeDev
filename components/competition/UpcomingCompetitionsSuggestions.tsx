@@ -13,7 +13,7 @@ import {
   Trophy,
   RefreshCw,
 } from "lucide-react";
-import { buttonClasses } from "@/components/ui/Button";
+import { buttonClasses } from "@/components/ui/button-styles";
 import { IconButton } from "@/components/ui/IconButton";
 import { useUser } from "@/components/UserProvider";
 import { WCA_EVENTS } from "./CompetitionBrowser";

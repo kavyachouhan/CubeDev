@@ -6,7 +6,8 @@ import { wcaSignInHref } from "@/lib/wca-config";
 import { isCubeDevIdentifier } from "@/lib/identifier-utils";
 import { getAvatarUrl } from "@/lib/avatar";
 import { Alert } from "@/components/ui/Alert";
-import { Button, buttonClasses } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
+import { buttonClasses } from "@/components/ui/button-styles";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Field, Input } from "@/components/ui/Field";
 

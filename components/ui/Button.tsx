@@ -3,19 +3,9 @@
 import Link from "next/link";
 import { forwardRef } from "react";
 import type { ComponentProps, ReactNode } from "react";
-import { cx } from "@/lib/cx";
+import { buttonClasses } from "./button-styles";
+import type { ButtonSize, ButtonVariant } from "./button-styles";
 import { Spinner } from "./Spinner";
-
-export type ButtonVariant =
-  | "primary"
-  | "secondary"
-  | "subtle"
-  | "ghost"
-  | "danger"
-  /* Status fills: only for actions that *are* the status (OK / +2 / DNF). */
-  | "success"
-  | "warning";
-export type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonStyleProps {
   variant?: ButtonVariant;
@@ -23,26 +13,6 @@ interface ButtonStyleProps {
   fullWidth?: boolean;
   iconLeft?: ReactNode;
   iconRight?: ReactNode;
-}
-
-export function buttonClasses({
-  variant = "primary",
-  size = "md",
-  fullWidth,
-  className,
-}: {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  fullWidth?: boolean;
-  className?: string;
-}) {
-  return cx(
-    "btn",
-    `btn-${variant}`,
-    `btn-${size}`,
-    fullWidth && "w-full",
-    className,
-  );
 }
 
 export interface ButtonProps
@@ -120,3 +90,6 @@ export function ButtonLink({
     </Link>
   );
 }
+
+export { buttonClasses };
+export type { ButtonVariant, ButtonSize };

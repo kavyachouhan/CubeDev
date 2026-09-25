@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, buttonClasses } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
+import { buttonClasses } from "@/components/ui/button-styles";
 
 export default function Error({
   error,

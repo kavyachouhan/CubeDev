@@ -40,7 +40,9 @@ export function applyTestEnv() {
       process.env[key] = value;
     }
   }
-  process.env.NODE_ENV = "test";
+  // NODE_ENV is readonly in the Next.js types; the assignment is what the
+  // test environment needs, so widen the object rather than the value.
+  (process.env as Record<string, string>).NODE_ENV = "test";
 }
 
 applyTestEnv();

@@ -24,7 +24,8 @@ import {
 } from "lucide-react";
 import { WCA_CONFIG } from "@/lib/wca-config";
 import { Alert } from "@/components/ui/Alert";
-import { Button, buttonClasses } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
+import { buttonClasses } from "@/components/ui/button-styles";
 import { Input } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import WCAScorecard from "./WCAScorecard";
