@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -30,7 +29,11 @@ import {
   Play,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { IconButton } from "@/components/ui/IconButton";
+import { Lightbox } from "@/components/ui/Lightbox";
+import { Modal } from "@/components/ui/Modal";
 import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 import {
   isVideoFile,
@@ -143,7 +146,7 @@ function MediaGalleryItem({
   return (
     <div
       onClick={onClick}
-      className="relative cursor-pointer group rounded-lg overflow-hidden border border-(--border) hover:border-(--primary) transition-colors"
+      className="relative cursor-pointer group rounded-(--radius-control) overflow-hidden border border-(--border) hover:border-(--primary) transition-colors"
     >
       {isVideo ? (
         <div className="aspect-video bg-(--surface) flex items-center justify-center relative">
@@ -158,7 +161,7 @@ function MediaGalleryItem({
               />
               <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                 <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <Play className="w-6 h-6 text-white ml-1" />
+                  <Play className="w-6 h-6 text-(--on-media) ml-1" />
                 </div>
               </div>
             </>
@@ -179,7 +182,7 @@ function MediaGalleryItem({
         />
       )}
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-        {!isVideo && <ExternalLink className="w-5 h-5 text-white" />}
+        {!isVideo && <ExternalLink className="w-5 h-5 text-(--on-media)" />}
       </div>
     </div>
   );
@@ -221,16 +224,6 @@ export default function JournalEntryViewModal({
     onDeleted();
     onClose();
   });
-
-  // Lock body scroll when lightbox is open
-  useEffect(() => {
-    if (selectedMediaIndex !== null) {
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = "";
-      };
-    }
-  }, [selectedMediaIndex]);
 
   // Reset lightbox when modal closes
   useEffect(() => {
@@ -290,61 +283,53 @@ export default function JournalEntryViewModal({
   // Check if there's any reflection content
   const hasReflection = entry.wentWell || entry.challenges || entry.notes;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      {/* Modal */}
-      <div className="relative timer-card max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-(--primary)/10 flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-(--primary)" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-                Journal Entry
-              </h2>
-              <p className="text-sm text-(--text-muted)">
-                {formatDate(entry.entryDate)}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => onEdit(entry)}
-              className="p-2 rounded-lg hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--primary) transition-colors"
-              aria-label="Edit entry"
-              title="Edit Entry"
-            >
-              <Pencil className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => entryDelete.request()}
-              className="p-2 rounded-lg hover:bg-(--error)/10 text-(--text-muted) hover:text-(--error) transition-colors"
-              aria-label="Delete entry"
-              title="Delete Entry"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={onClose}
-              className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
-              aria-label="Close modal"
-              title="Close"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
+  // The lightbox needs a resolved url: videos stream better from the download
+  // endpoint, and the type isn't always recorded on older entries.
+  const lightboxMedia = (() => {
+    if (selectedMediaIndex === null || !entry?.mediaUrls) return null;
+    const url = entry.mediaUrls[selectedMediaIndex];
+    if (!url) return null;
+    const mediaType = entry.mediaTypes?.[selectedMediaIndex];
+    const fileId = entry.mediaFileIds?.[selectedMediaIndex];
+    const isVideo = mediaType
+      ? mediaType.startsWith("video/")
+      : isVideoUrl(url) ||
+        url.includes("video") ||
+        url.endsWith(".mp4") ||
+        url.endsWith(".webm");
+    return {
+      url: isVideo && fileId ? getFileDownloadUrl(fileId) : url,
+      isVideo,
+      alt: "Journal attachment",
+    };
+  })();
 
+  return (
+    <Modal open onClose={onClose} size="lg" mobile="fullscreen">
+      <Modal.Header
+        icon={<BookOpen />}
+        title="Journal entry"
+        description={formatDate(entry.entryDate)}
+        actions={
+          <>
+            <IconButton
+              onClick={() => onEdit(entry)}
+              aria-label="Edit entry"
+              icon={<Pencil />}
+            />
+            <IconButton
+              onClick={() => entryDelete.request()}
+              aria-label="Delete entry"
+              variant="danger"
+              icon={<Trash2 />}
+            />
+          </>
+        }
+      />
+      <Modal.Body>
         <div className="space-y-5">
           {/* Mood Section */}
-          <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+          <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
             <div className="flex items-center gap-3">
               <div
                 className={`w-12 h-12 rounded-full flex items-center justify-center ${moodBgColors[entry.mood]}`}
@@ -364,7 +349,7 @@ export default function JournalEntryViewModal({
           {hasSessionData && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {entry.practiceMinutes && (
-                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                   <div className="flex items-center gap-1.5 mb-1">
                     <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                     <span className="text-[10px] sm:text-xs text-(--text-muted)">
@@ -377,7 +362,7 @@ export default function JournalEntryViewModal({
                 </div>
               )}
               {displaySolveCount && (
-                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                   <div className="flex items-center gap-1.5 mb-1">
                     <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                     <span className="text-[10px] sm:text-xs text-(--text-muted)">
@@ -390,7 +375,7 @@ export default function JournalEntryViewModal({
                 </div>
               )}
               {displayAverage && (
-                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                   <div className="flex items-center gap-1.5 mb-1">
                     <Timer className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                     <span className="text-[10px] sm:text-xs text-(--text-muted) truncate">
@@ -403,7 +388,7 @@ export default function JournalEntryViewModal({
                 </div>
               )}
               {entry.bestSingle && (
-                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                   <div className="flex items-center gap-1.5 mb-1">
                     <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-(--success)" />
                     <span className="text-[10px] sm:text-xs text-(--text-muted)">
@@ -421,7 +406,7 @@ export default function JournalEntryViewModal({
           {/* Media Gallery */}
           {entry.mediaUrls && entry.mediaUrls.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+              <label className="type-label block mb-2">
                 Attachments
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -450,69 +435,15 @@ export default function JournalEntryViewModal({
             </div>
           )}
 
-          {/* Media Lightbox - Rendered via portal to ensure full-screen coverage */}
-          {selectedMediaIndex !== null &&
-            entry.mediaUrls &&
-            typeof document !== "undefined" &&
-            createPortal(
-              <div
-                className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4"
-                style={{
-                  position: "fixed",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                }}
-                onClick={() => setSelectedMediaIndex(null)}
-              >
-                <button
-                  className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
-                  onClick={() => setSelectedMediaIndex(null)}
-                >
-                  <X className="w-8 h-8" />
-                </button>
-                {(() => {
-                  const url = entry.mediaUrls[selectedMediaIndex];
-                  const mediaType = entry.mediaTypes?.[selectedMediaIndex];
-                  const fileId = entry.mediaFileIds?.[selectedMediaIndex];
-                  const isVideo = mediaType
-                    ? mediaType.startsWith("video/")
-                    : isVideoUrl(url) ||
-                      url.includes("video") ||
-                      url.endsWith(".mp4") ||
-                      url.endsWith(".webm");
-
-                  if (isVideo) {
-                    // Use download URL for better video streaming compatibility
-                    const videoUrl = fileId ? getFileDownloadUrl(fileId) : url;
-                    return (
-                      <video
-                        src={videoUrl}
-                        controls
-                        autoPlay
-                        className="max-w-full max-h-[90vh] rounded-lg"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    );
-                  }
-                  return (
-                    <img
-                      src={url}
-                      alt="Full size"
-                      className="max-w-full max-h-[90vh] object-contain rounded-lg"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  );
-                })()}
-              </div>,
-              document.body,
-            )}
+          <Lightbox
+            media={lightboxMedia}
+            onClose={() => setSelectedMediaIndex(null)}
+          />
 
           {/* Focus Areas */}
           {entry.focusAreas && entry.focusAreas.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+              <label className="type-label block mb-2">
                 Focus Areas
               </label>
               <div className="flex flex-wrap gap-2">
@@ -532,7 +463,7 @@ export default function JournalEntryViewModal({
           {dateTasks &&
             !dateTasks.plan.isRestDay &&
             dateTasks.plan.activities.length > 0 && (
-              <div className="bg-(--surface-elevated) rounded-lg border border-(--border) overflow-hidden">
+              <div className="bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) overflow-hidden">
                 <button
                   onClick={() => setShowTasks(!showTasks)}
                   className="w-full flex items-center justify-between p-4 text-left"
@@ -587,7 +518,7 @@ export default function JournalEntryViewModal({
                         return (
                           <div
                             key={activityIndex}
-                            className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
+                            className={`flex items-start gap-3 p-3 rounded-(--radius-control) transition-colors ${
                               isCompleted
                                 ? "bg-(--success)/10"
                                 : "bg-(--surface)"
@@ -596,7 +527,7 @@ export default function JournalEntryViewModal({
                             <div
                               className={`mt-0.5 shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center ${
                                 isCompleted
-                                  ? "bg-(--success) border-(--success) text-white"
+                                  ? "bg-(--success) border-(--success) text-(--on-media)"
                                   : "border-(--border)"
                               }`}
                             >
@@ -645,10 +576,10 @@ export default function JournalEntryViewModal({
             <div className="space-y-4">
               {entry.wentWell && (
                 <div>
-                  <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+                  <label className="type-label block mb-2">
                     What went well
                   </label>
-                  <p className="text-sm text-(--text-secondary) bg-(--surface-elevated) p-3 rounded-lg border border-(--border)">
+                  <p className="text-sm text-(--text-secondary) bg-(--surface-elevated) p-3 rounded-(--radius-control) border border-(--border)">
                     {entry.wentWell}
                   </p>
                 </div>
@@ -656,10 +587,10 @@ export default function JournalEntryViewModal({
 
               {entry.challenges && (
                 <div>
-                  <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+                  <label className="type-label block mb-2">
                     Challenges
                   </label>
-                  <p className="text-sm text-(--text-secondary) bg-(--surface-elevated) p-3 rounded-lg border border-(--border)">
+                  <p className="text-sm text-(--text-secondary) bg-(--surface-elevated) p-3 rounded-(--radius-control) border border-(--border)">
                     {entry.challenges}
                   </p>
                 </div>
@@ -667,10 +598,10 @@ export default function JournalEntryViewModal({
 
               {entry.notes && (
                 <div>
-                  <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+                  <label className="type-label block mb-2">
                     Notes
                   </label>
-                  <p className="text-sm text-(--text-secondary) bg-(--surface-elevated) p-3 rounded-lg border border-(--border)">
+                  <p className="text-sm text-(--text-secondary) bg-(--surface-elevated) p-3 rounded-(--radius-control) border border-(--border)">
                     {entry.notes}
                   </p>
                 </div>
@@ -678,37 +609,31 @@ export default function JournalEntryViewModal({
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t border-(--border)">
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-full sm:flex-1 px-4 py-3 bg-transparent border border-(--border) text-(--text-primary) font-semibold rounded-lg hover:border-(--primary) hover:bg-(--primary) hover:text-white transition-all order-2 sm:order-1"
-            >
-              Close
-            </button>
-            <button
-              onClick={() => onEdit(entry)}
-              className="w-full sm:flex-1 px-4 py-3 bg-(--primary) text-white font-semibold rounded-lg hover:bg-(--primary-hover) transition-all flex items-center justify-center gap-2 order-1 sm:order-2"
-            >
-              <Pencil className="w-4 h-4" />
-              <span>Edit Entry</span>
-            </button>
-          </div>
         </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
+        <Button
+          onClick={() => onEdit(entry)}
+          iconLeft={<Pencil className="w-4 h-4" />}
+        >
+          Edit entry
+        </Button>
+      </Modal.Footer>
 
-        <ConfirmDeleteModal
-          isOpen={entryDelete.isOpen}
-          onClose={entryDelete.cancel}
-          onConfirm={entryDelete.confirm}
-          isDeleting={entryDelete.isDeleting}
-          title="Delete Entry?"
-          description="Are you sure you want to delete this journal entry?"
-          itemName={entry ? formatDate(entry.entryDate) : undefined}
-          warning="The journal entry and any attached media will be permanently deleted."
-          confirmLabel="Delete Entry"
-        />
-      </div>
-    </div>
+      <ConfirmDeleteModal
+        isOpen={entryDelete.isOpen}
+        onClose={entryDelete.cancel}
+        onConfirm={entryDelete.confirm}
+        isDeleting={entryDelete.isDeleting}
+        title="Delete Entry?"
+        description="Are you sure you want to delete this journal entry?"
+        itemName={entry ? formatDate(entry.entryDate) : undefined}
+        warning="The journal entry and any attached media will be permanently deleted."
+        confirmLabel="Delete Entry"
+      />
+    </Modal>
   );
 }

@@ -440,7 +440,7 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                     );
                     setContributeBannerDismissed(true);
                   }}
-                  className="hidden sm:flex absolute top-3 right-3 p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
+                  className="hidden sm:flex absolute top-3 right-3 p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-control) transition-colors"
                   aria-label="Dismiss banner"
                   title="Dismiss banner"
                 >
@@ -462,7 +462,7 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:shrink-0">
                     <Link
                       href="/cube-lab/coach/contribute"
-                      className="block w-full sm:w-auto text-center px-4 py-2 text-sm font-medium bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
+                      className="block w-full sm:w-auto text-center px-4 py-2 text-sm font-medium bg-(--primary) text-(--on-primary) rounded-(--radius-control) hover:bg-(--primary-hover) transition-colors"
                     >
                       Learn More
                     </Link>
@@ -475,7 +475,7 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                         );
                         setContributeBannerDismissed(true);
                       }}
-                      className="sm:hidden w-full px-4 py-2 text-sm font-medium text-(--text-secondary) bg-(--surface) border border-(--border) rounded-lg hover:bg-(--surface-elevated) transition-colors"
+                      className="sm:hidden w-full px-4 py-2 text-sm font-medium text-(--text-secondary) bg-(--surface) border border-(--border) rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
                     >
                       Dismiss
                     </button>
@@ -486,7 +486,7 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
 
           {/* Tabs */}
           <div
-            className="flex gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border)"
+            className="flex gap-1 p-1 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)"
             data-tour="coach-tabs"
           >
             {TABS.map((tab) => {
@@ -506,7 +506,7 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                   data-tour={tourId}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium transition-all ${
                     isActive
-                      ? "bg-(--primary) text-white shadow-sm"
+                      ? "bg-(--primary) text-(--on-primary) shadow-sm"
                       : "text-(--text-secondary) hover:bg-(--surface)"
                   }`}
                 >
@@ -546,7 +546,7 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                       <button
                         onClick={handleGenerateNewWeek}
                         disabled={isGeneratingPlan}
-                        className="px-6 py-2.5 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors disabled:opacity-50"
+                        className="px-6 py-2.5 bg-(--primary) text-(--on-primary) rounded-(--radius-control) font-medium hover:bg-(--primary-hover) transition-colors disabled:opacity-50"
                       >
                         {isGeneratingPlan ? "Generating..." : "Generate Plan"}
                       </button>

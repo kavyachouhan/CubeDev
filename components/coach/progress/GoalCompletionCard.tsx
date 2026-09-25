@@ -155,7 +155,7 @@ export default function GoalCompletionCard({
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => setShowGoalSetup(true)}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-(--primary) text-(--on-primary) rounded-(--radius-control) font-medium hover:bg-(--primary-hover) transition-colors"
               >
                 <Target className="w-4 h-4" />
                 Set New Goal
@@ -220,7 +220,7 @@ export default function GoalCompletionCard({
             </div>
 
             {currentAverage > targetTime && (
-              <div className="mt-3 p-2 bg-(--surface-elevated) rounded-lg">
+              <div className="mt-3 p-2 bg-(--surface-elevated) rounded-(--radius-control)">
                 <div className="flex items-center justify-between text-xs mb-1">
                   <span className="text-(--text-muted)">
                     Gap to target:
@@ -253,7 +253,7 @@ export default function GoalCompletionCard({
                   key={days}
                   onClick={() => handleExtendDeadline(days)}
                   disabled={isSubmitting}
-                  className="px-3 sm:px-4 py-2 border border-(--border) rounded-lg text-sm font-medium text-(--text-secondary) hover:border-(--primary) hover:text-(--primary) transition-colors disabled:opacity-50"
+                  className="px-3 sm:px-4 py-2 border border-(--border) rounded-(--radius-control) text-sm font-medium text-(--text-secondary) hover:border-(--primary) hover:text-(--primary) transition-colors disabled:opacity-50"
                 >
                   +{days} days
                 </button>
@@ -269,7 +269,7 @@ export default function GoalCompletionCard({
 
           <button
             onClick={() => setShowGoalSetup(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-(--primary) text-(--on-primary) rounded-(--radius-control) font-medium hover:bg-(--primary-hover) transition-colors"
           >
             <Target className="w-4 h-4" />
             Set a Different Goal

@@ -1,21 +1,26 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useId, useState } from "react";
+import type { ReactNode } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@/components/UserProvider";
 import {
-  X,
   CheckCircle2,
   Youtube,
   Instagram,
   ExternalLink,
   Plus,
   Trash2,
-  ChevronDown,
-  Check,
 } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { CardIcon } from "@/components/ui/Card";
+import { Field, Input, Textarea } from "@/components/ui/Field";
+import { IconButton } from "@/components/ui/IconButton";
+import { SelectMenu } from "@/components/ui/Menu";
+import { Modal } from "@/components/ui/Modal";
 
 interface CoachVolunteerModalProps {
   isOpen: boolean;
@@ -74,134 +79,25 @@ const SKILL_LEVELS = [
   { value: "worldclass", label: "World Class (sub-8)" },
 ];
 
-// Custom Dropdown Component (styled like FeedbackDropdown)
-interface DropdownProps {
-  options: { value: string; label: string }[];
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  disabledOptions?: string[];
-}
-
-function Dropdown({
-  options,
-  value,
-  onChange,
-  placeholder = "Select an option...",
-  disabled = false,
-  disabledOptions = [],
-}: DropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const selectedOption = options.find((o) => o.value === value);
-  const displayText = selectedOption?.label || placeholder;
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-      return () => document.removeEventListener("keydown", handleEscape);
-    }
-  }, [isOpen]);
-
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        type="button"
-        onClick={() => !disabled && setIsOpen(!isOpen)}
-        disabled={disabled}
-        className={`w-full flex items-center justify-between px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg hover:border-(--primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all ${
-          disabled ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-      >
-        <span
-          className={`text-sm font-medium truncate font-inter ${
-            value ? "text-(--text-primary)" : "text-(--text-muted)"
-          }`}
-        >
-          {displayText}
-        </span>
-        <ChevronDown
-          className={`w-4 h-4 text-(--text-muted) shrink-0 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-
-      {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto">
-          <button
-            type="button"
-            onClick={() => {
-              onChange("");
-              setIsOpen(false);
-            }}
-            className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors font-inter ${
-              !value
-                ? "text-(--primary) bg-(--primary)/10"
-                : "text-(--text-muted) hover:bg-(--surface-elevated)"
-            }`}
-          >
-            <span className="truncate">{placeholder}</span>
-            {!value && (
-              <Check className="w-4 h-4 text-(--primary) shrink-0" />
-            )}
-          </button>
-
-          {options.map((option) => {
-            const isDisabled = disabledOptions.includes(option.value);
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => {
-                  if (!isDisabled) {
-                    onChange(option.value);
-                    setIsOpen(false);
-                  }
-                }}
-                disabled={isDisabled}
-                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors font-inter border-t border-(--border)/50 ${
-                  value === option.value
-                    ? "text-(--primary) bg-(--primary)/10"
-                    : isDisabled
-                      ? "text-(--text-muted) opacity-50 cursor-not-allowed"
-                      : "text-(--text-primary) hover:bg-(--surface-elevated)"
-                }`}
-              >
-                <span className="truncate">{option.label}</span>
-                {value === option.value && (
-                  <Check className="w-4 h-4 text-(--primary) shrink-0" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
+const SOCIAL_FIELDS: {
+  key: keyof SocialLinks;
+  icon: ReactNode;
+  placeholder: string;
+}[] = [
+  { key: "youtube", icon: <Youtube />, placeholder: "YouTube channel URL" },
+  { key: "instagram", icon: <Instagram />, placeholder: "Instagram @username" },
+  {
+    key: "twitter",
+    // lucide has no brand marks; 𝕏 is the mark itself, not an emoji.
+    icon: <span className="text-sm font-medium">𝕏</span>,
+    placeholder: "Twitter/X @handle",
+  },
+  {
+    key: "other",
+    icon: <ExternalLink />,
+    placeholder: "Other link (website, etc.)",
+  },
+];
 
 export default function CoachVolunteerModal({
   isOpen,
@@ -227,6 +123,8 @@ export default function CoachVolunteerModal({
     },
   });
 
+  // The submit button lives in the modal footer, outside the <form>.
+  const formId = useId();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -388,53 +286,33 @@ We'll review your application and get back to you soon!`,
   // Success state
   if (submitted) {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="timer-card max-w-md w-full text-center relative">
-          <button
-            onClick={handleClose}
-            className="absolute top-4 right-4 text-(--text-muted) hover:text-(--text-primary) transition-colors p-1.5 rounded-lg hover:bg-(--surface-elevated)"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5" />
-          </button>
-          <div className="p-4 bg-(--success)/10 rounded-full w-fit mx-auto mb-4 mt-2">
-            <CheckCircle2 className="w-10 h-10 text-(--success)" />
-          </div>
-          <h2 className="text-xl font-bold text-(--text-primary) font-statement mb-2">
-            Application Received
-          </h2>
-          <p className="text-(--text-secondary) mb-6">
+      <Modal open onClose={handleClose} size="sm" mobile="sheet">
+        <Modal.Header title="Application received" />
+        <Modal.Body className="text-center">
+          <CardIcon tone="success" className="mx-auto mb-4 w-12 h-12 [&_svg]:w-6 [&_svg]:h-6">
+            <CheckCircle2 />
+          </CardIcon>
+          <p className="type-body">
             Thank you for your interest! We&apos;ve sent a confirmation email to{" "}
             {formData.email}. We&apos;ll review your application and get back to
             you soon.
           </p>
-          <button onClick={handleClose} className="btn-primary w-full">
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={handleClose} fullWidth>
             Close
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Modal.Footer>
+      </Modal>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto relative">
-        {/* Header with close button in top right */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-            Become a Contributor
-          </h2>
-          <button
-            onClick={handleClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1.5 rounded-lg hover:bg-(--surface-elevated)"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
+    <Modal open onClose={handleClose} size="lg" mobile="fullscreen">
+      <Modal.Header title="Become a contributor" />
+      <Modal.Body>
         {/* Perks Section */}
-        <div className="mb-6 p-4 bg-(--primary)/5 border border-(--primary)/20 rounded-lg">
+        <div className="mb-6 p-4 bg-(--primary)/5 border border-(--primary)/20 rounded-(--radius-panel)">
           <h3 className="text-sm font-semibold text-(--text-primary) mb-3 font-statement">
             Contributor Perks
           </h3>
@@ -460,59 +338,43 @@ We'll review your application and get back to you soon!`,
 
         {/* Error Message */}
         {error && (
-          <div className="mb-4 p-3 bg-(--error)/10 border border-(--error)/20 rounded-lg">
-            <p className="text-sm text-(--error)">{error}</p>
-          </div>
+          <Alert tone="error" className="mb-4">
+            {error}
+          </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form id={formId} onSubmit={handleSubmit} className="space-y-6">
           {/* Personal Information */}
-          <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Name <span className="text-(--error)">*</span>
-            </label>
-            <input
-              type="text"
+          <Field label="Name" required>
+            <Input
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
               placeholder="Your name"
-              required
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              WCA ID
-            </label>
-            <input
-              type="text"
+          <Field label="WCA ID">
+            <Input
               value={formData.wcaId}
               onChange={(e) =>
                 setFormData({ ...formData, wcaId: e.target.value })
               }
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
               placeholder="e.g. 2023XXXX01"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Email <span className="text-(--error)">*</span>
-            </label>
-            <input
+          <Field label="Email" required>
+            <Input
               type="email"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
               placeholder="your@email.com"
-              required
             />
-          </div>
+          </Field>
 
           {/* Event Averages Section */}
           <div>
@@ -529,7 +391,7 @@ We'll review your application and get back to you soon!`,
                 {formData.eventAverages.map((ea, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-2 p-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg"
+                    className="flex items-center gap-2 p-2.5 bg-(--surface-elevated) border border-(--border) rounded-(--radius-panel)"
                   >
                     <span className="flex-1 text-sm text-(--text-primary) font-inter">
                       {getEventLabel(ea.event)}
@@ -537,14 +399,13 @@ We'll review your application and get back to you soon!`,
                     <span className="text-sm text-(--text-secondary) font-mono">
                       {ea.average}
                     </span>
-                    <button
-                      type="button"
+                    <IconButton
+                      size="sm"
+                      variant="danger"
                       onClick={() => removeEventAverage(index)}
-                      className="p-1 text-(--text-muted) hover:text-(--error) transition-colors rounded"
                       aria-label="Remove event"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                      icon={<Trash2 />}
+                    />
                   </div>
                 ))}
               </div>
@@ -553,38 +414,40 @@ We'll review your application and get back to you soon!`,
             {/* Add New Event Average */}
             <div className="space-y-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <Dropdown
-                  options={EVENTS}
+                <SelectMenu
+                  label="Event"
                   value={newEvent}
                   onChange={setNewEvent}
-                  placeholder="Select event..."
-                  disabledOptions={addedEvents}
+                  placeholder="Select event"
+                  options={EVENTS.map((event) => ({
+                    value: event.value,
+                    label: event.label,
+                    disabled: addedEvents.includes(event.value),
+                  }))}
                 />
-                <input
-                  type="text"
+                <Input
                   value={newAverage}
                   onChange={(e) => setNewAverage(e.target.value)}
-                  className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
                   placeholder="e.g. 12.50"
+                  aria-label="Average time"
                 />
               </div>
-              <button
+              <Button
                 type="button"
+                variant="secondary"
+                fullWidth
                 onClick={addEventAverage}
                 disabled={!newEvent || !newAverage.trim()}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-secondary) hover:bg-(--surface-elevated) hover:text-(--text-primary) transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-inter text-sm"
+                iconLeft={<Plus className="w-4 h-4" />}
               >
-                <Plus className="w-4 h-4" />
-                Add Event
-              </button>
+                Add event
+              </Button>
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Skill Level <span className="text-(--error)">*</span>
-            </label>
-            <Dropdown
+          <Field label="Skill level" required>
+            <SelectMenu
+              label="Skill level"
               options={SKILL_LEVELS}
               value={formData.skillLevel}
               onChange={(value) =>
@@ -592,166 +455,88 @@ We'll review your application and get back to you soon!`,
               }
               placeholder="Select your level"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Notable Achievements
-            </label>
-            <textarea
+          <Field label="Notable achievements">
+            <Textarea
               value={formData.achievements}
               onChange={(e) =>
                 setFormData({ ...formData, achievements: e.target.value })
               }
               rows={2}
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
-              placeholder="Competition results, personal bests, teaching experience..."
+              placeholder="Competition results, personal bests, teaching experience"
             />
-          </div>
+          </Field>
 
-          <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Weekly Availability
-            </label>
-            <input
-              type="text"
+          <Field label="Weekly availability">
+            <Input
               value={formData.availability}
               onChange={(e) =>
                 setFormData({ ...formData, availability: e.target.value })
               }
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
               placeholder="e.g. 2-4 hours per week"
             />
-          </div>
+          </Field>
 
           {/* Social Accounts */}
-          <div className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg">
+          <div className="p-4 bg-(--surface-elevated) border border-(--border) rounded-(--radius-panel)">
             <h3 className="text-sm font-medium text-(--text-primary) mb-3">
               Social Accounts (Optional)
             </h3>
             <div className="space-y-3">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Youtube className="w-4 h-4 text-(--text-muted)" />
-                </div>
-                <input
-                  type="text"
-                  value={formData.socialLinks.youtube}
+              {SOCIAL_FIELDS.map(({ key, icon, placeholder }) => (
+                <Input
+                  key={key}
+                  size="sm"
+                  leading={icon}
+                  value={formData.socialLinks[key]}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
                       socialLinks: {
                         ...formData.socialLinks,
-                        youtube: e.target.value,
+                        [key]: e.target.value,
                       },
                     })
                   }
-                  className="w-full pl-10 pr-3 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all text-sm font-inter"
-                  placeholder="YouTube channel URL"
+                  placeholder={placeholder}
+                  aria-label={placeholder}
                 />
-              </div>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Instagram className="w-4 h-4 text-(--text-muted)" />
-                </div>
-                <input
-                  type="text"
-                  value={formData.socialLinks.instagram}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      socialLinks: {
-                        ...formData.socialLinks,
-                        instagram: e.target.value,
-                      },
-                    })
-                  }
-                  className="w-full pl-10 pr-3 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all text-sm font-inter"
-                  placeholder="Instagram @username"
-                />
-              </div>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-(--text-muted) text-sm font-medium">
-                    𝕏
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  value={formData.socialLinks.twitter}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      socialLinks: {
-                        ...formData.socialLinks,
-                        twitter: e.target.value,
-                      },
-                    })
-                  }
-                  className="w-full pl-10 pr-3 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all text-sm font-inter"
-                  placeholder="Twitter/X @handle"
-                />
-              </div>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <ExternalLink className="w-4 h-4 text-(--text-muted)" />
-                </div>
-                <input
-                  type="text"
-                  value={formData.socialLinks.other}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      socialLinks: {
-                        ...formData.socialLinks,
-                        other: e.target.value,
-                      },
-                    })
-                  }
-                  className="w-full pl-10 pr-3 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all text-sm font-inter"
-                  placeholder="Other link (website, etc.)"
-                />
-              </div>
+              ))}
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Why do you want to contribute?{" "}
-              <span className="text-(--error)">*</span>
-            </label>
-            <textarea
+          <Field label="Why do you want to contribute?" required>
+            <Textarea
               value={formData.whyInterested}
               onChange={(e) =>
                 setFormData({ ...formData, whyInterested: e.target.value })
               }
               rows={3}
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
-              placeholder="Tell us about your cubing journey and why you want to help improve the coach..."
-              required
+              placeholder="Tell us about your cubing journey and why you want to help improve the coach"
             />
-          </div>
+          </Field>
 
-          {/* Action Buttons - Full width on mobile */}
-          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="w-full sm:flex-1 px-4 py-2.5 bg-(--surface) hover:bg-(--surface-elevated) border border-(--border) text-(--text-primary) rounded-lg transition-colors font-button text-sm disabled:opacity-50"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full sm:flex-1 px-4 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-button text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? "Submitting..." : "Submit Application"}
-            </button>
-          </div>
         </form>
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={handleClose}
+          disabled={isSubmitting}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          form={formId}
+          loading={isSubmitting}
+          loadingText="Submitting…"
+        >
+          Submit application
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }

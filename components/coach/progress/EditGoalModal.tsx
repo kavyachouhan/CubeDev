@@ -1,9 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { X, Calendar, Target } from "lucide-react";
+import { Calendar, Target } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Button } from "@/components/ui/Button";
+import { Field, Input } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { CoachProfile, GOAL_TIMES } from "./types";
 import { formatTime } from "./utils";
 
@@ -121,23 +125,11 @@ export default function EditGoalModal({
     profile.customGoalTime || GOAL_TIMES[profile.goalType] || 20000;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
-            Edit Goal
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
+    <Modal open onClose={onClose} size="md" mobile="sheet">
+      <Modal.Header title="Edit goal" />
+      <Modal.Body>
         {/* Current Goal Info */}
-        <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border) mb-4">
+        <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border) mb-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-(--text-muted)">Current Goal:</span>
             <span className="font-medium text-(--primary)">
@@ -159,30 +151,21 @@ export default function EditGoalModal({
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border) mb-4">
-          <button
-            onClick={() => setActiveTab("deadline")}
-            className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-md transition-all ${
-              activeTab === "deadline"
-                ? "bg-(--primary) text-white shadow-sm"
-                : "text-(--text-secondary) hover:bg-(--surface)"
-            }`}
-          >
-            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span>Extend Deadline</span>
-          </button>
-          <button
-            onClick={() => setActiveTab("goal")}
-            className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-md transition-all ${
-              activeTab === "goal"
-                ? "bg-(--primary) text-white shadow-sm"
-                : "text-(--text-secondary) hover:bg-(--surface)"
-            }`}
-          >
-            <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span>Change Goal</span>
-          </button>
-        </div>
+        <SegmentedControl<"deadline" | "goal">
+          className="mb-4"
+          value={activeTab}
+          onChange={setActiveTab}
+          aria-label="What to edit"
+          fullWidth
+          options={[
+            {
+              value: "deadline",
+              label: "Extend deadline",
+              icon: <Calendar />,
+            },
+            { value: "goal", label: "Change goal", icon: <Target /> },
+          ]}
+        />
 
         {/* Content */}
         <div className="space-y-4">
@@ -198,9 +181,9 @@ export default function EditGoalModal({
                     <button
                       key={days}
                       onClick={() => setTargetDays(days)}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      className={`px-3 py-2 rounded-(--radius-panel) text-sm font-medium transition-colors ${
                         targetDays === days
-                          ? "bg-(--primary) text-white"
+                          ? "bg-(--primary) text-(--on-primary)"
                           : "border border-(--border) text-(--text-secondary) hover:border-(--primary) hover:text-(--primary)"
                       }`}
                     >
@@ -217,45 +200,23 @@ export default function EditGoalModal({
               </div>
 
               {/* Custom date picker */}
-              <div>
-                <label className="block text-sm font-medium text-(--text-primary) mb-2">
-                  Set specific date:
-                </label>
-                <input
+              <Field label="Set specific date">
+                <Input
                   type="date"
                   value={customDate}
                   onChange={(e) => setCustomDate(e.target.value)}
                   min={new Date().toISOString().split("T")[0]}
-                  className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all"
                 />
-              </div>
+              </Field>
 
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <button
-                  onClick={onClose}
-                  disabled={isSubmitting}
-                  className="flex-1 btn-secondary order-2 sm:order-1"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleExtendDeadline}
-                  disabled={isSubmitting}
-                  className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-2"
-                >
-                  {isSubmitting ? "Saving..." : `Extend +${targetDays} days`}
-                </button>
-              </div>
-
-              {/* Or use custom date */}
-              <button
+              <Button
+                variant="ghost"
+                fullWidth
                 onClick={handleSetCustomDate}
                 disabled={isSubmitting}
-                className="w-full text-sm text-(--primary) hover:text-(--primary-hover) transition-colors disabled:opacity-50 py-2"
               >
                 Use selected date instead
-              </button>
+              </Button>
             </>
           )}
 
@@ -267,7 +228,7 @@ export default function EditGoalModal({
                   <button
                     key={goal.id}
                     onClick={() => setSelectedGoal(goal.id)}
-                    className={`p-3 rounded-lg border text-left transition-all ${
+                    className={`p-3 rounded-(--radius-panel) border text-left transition-all ${
                       selectedGoal === goal.id
                         ? "border-(--primary) bg-(--primary)/10"
                         : "border-(--border) hover:border-(--primary)"
@@ -293,43 +254,43 @@ export default function EditGoalModal({
 
               {/* Custom time input */}
               {selectedGoal === "custom" && (
-                <div>
-                  <label className="block text-sm font-medium text-(--text-primary) mb-2">
-                    Target time (seconds):
-                  </label>
-                  <input
+                <Field label="Target time" hint="Seconds">
+                  <Input
                     type="number"
                     value={customTime}
                     onChange={(e) => setCustomTime(e.target.value)}
-                    placeholder="e.g., 25"
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all"
+                    placeholder="e.g. 25"
                     min={1}
                     max={300}
                   />
-                </div>
+                </Field>
               )}
-
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <button
-                  onClick={onClose}
-                  disabled={isSubmitting}
-                  className="flex-1 btn-secondary order-2 sm:order-1"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleUpdateGoal}
-                  disabled={isSubmitting}
-                  className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-2"
-                >
-                  {isSubmitting ? "Saving..." : "Update Goal"}
-                </button>
-              </div>
             </>
           )}
         </div>
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+          Cancel
+        </Button>
+        {activeTab === "deadline" ? (
+          <Button
+            onClick={handleExtendDeadline}
+            loading={isSubmitting}
+            loadingText="Saving…"
+          >
+            Extend +{targetDays} days
+          </Button>
+        ) : (
+          <Button
+            onClick={handleUpdateGoal}
+            loading={isSubmitting}
+            loadingText="Saving…"
+          >
+            Update goal
+          </Button>
+        )}
+      </Modal.Footer>
+    </Modal>
   );
 }

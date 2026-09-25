@@ -181,7 +181,7 @@ export default function TimerHistory({
             <IconButton
               size="sm"
               variant="danger"
-              aria-label="Clear all times"
+              aria-label="Delete all times"
               icon={<Trash2 />}
               onClick={() => historyDelete.request()}
             />
@@ -307,10 +307,10 @@ export default function TimerHistory({
         onClose={historyDelete.cancel}
         onConfirm={historyDelete.confirm}
         isDeleting={historyDelete.isDeleting}
-        title="Clear All Times?"
+        title="Delete All Times?"
         description={`This will remove every solve in the current session for ${getEventName(selectedEvent)}.`}
         warning="All times in this session will be permanently deleted."
-        confirmLabel="Clear All"
+        confirmLabel="Delete All"
       />
     </>
   );

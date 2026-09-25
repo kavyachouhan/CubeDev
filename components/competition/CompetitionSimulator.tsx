@@ -130,7 +130,7 @@ export default function CompetitionSimulator() {
         </div>
 
         {/* Tab Content */}
-        <div className="min-h-[500px]">
+        <div className="min-h-125">
           {activeTab === "competitions" && (
             <CompetitionList onStartSimulation={handleStartSimulation} />
           )}

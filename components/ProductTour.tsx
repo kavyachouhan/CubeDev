@@ -265,7 +265,7 @@ export default function ProductTour({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] pointer-events-none"
+      className="fixed inset-0 z-(--z-tour) pointer-events-none"
       role="dialog"
       aria-modal="true"
     >
@@ -277,7 +277,7 @@ export default function ProductTour({
         {/* */}
         {highlightRect && !isCenterPlacement && (
           <div
-            className="absolute border-2 border-(--primary) rounded-lg transition-all duration-300 pointer-events-auto cursor-pointer"
+            className="absolute border-2 border-(--primary) rounded-(--radius-control) transition-all duration-300 pointer-events-auto cursor-pointer"
             style={{
               top: highlightRect.top - 8,
               left: highlightRect.left - 8,
@@ -337,7 +337,7 @@ export default function ProductTour({
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
                 {step.icon && (
-                  <div className="p-2 bg-(--primary)/10 rounded-lg shrink-0">
+                  <div className="p-2 bg-(--primary)/10 rounded-(--radius-control) shrink-0">
                     <span className="text-(--primary)">{step.icon}</span>
                   </div>
                 )}
@@ -347,7 +347,7 @@ export default function ProductTour({
               </div>
               <button
                 onClick={handleSkip}
-                className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors rounded-lg hover:bg-(--surface-elevated)"
+                className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors rounded-(--radius-control) hover:bg-(--surface-elevated)"
                 aria-label="Close tour"
               >
                 <X className="w-5 h-5" />
@@ -394,7 +394,7 @@ export default function ProductTour({
                 {!isFirstStep && (
                   <button
                     onClick={handlePrev}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-(--border) rounded-lg hover:bg-(--surface-elevated) text-(--text-primary) transition-colors"
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-(--border) rounded-(--radius-control) hover:bg-(--surface-elevated) text-(--text-primary) transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     Back
@@ -402,7 +402,7 @@ export default function ProductTour({
                 )}
                 <button
                   onClick={handleNext}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors"
                 >
                   {isLastStep ? (
                     <>

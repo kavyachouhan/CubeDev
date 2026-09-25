@@ -148,7 +148,7 @@ export default function GoalProgressCard({
                 e.stopPropagation();
                 setShowEditModal(true);
               }}
-              className="p-1.5 rounded-lg hover:bg-(--surface-elevated) transition-colors"
+              className="p-1.5 rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
               title="Edit goal"
             >
               <Pencil className="w-4 h-4 text-(--text-muted) hover:text-(--primary)" />
@@ -158,7 +158,7 @@ export default function GoalProgressCard({
                 e.stopPropagation();
                 setShowNewGoalModal(true);
               }}
-              className="p-1.5 rounded-lg hover:bg-(--surface-elevated) transition-colors"
+              className="p-1.5 rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
               title="Set new goal"
             >
               <Plus className="w-4 h-4 text-(--text-muted) hover:text-(--primary)" />

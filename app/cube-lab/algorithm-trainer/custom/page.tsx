@@ -421,7 +421,7 @@ export default function CustomSetsPage() {
                               .map((alg: any) => (
                                 <span
                                   key={alg.id}
-                                  className="inline-block px-2 py-0.5 text-xs font-mono bg-(--surface-elevated) border border-(--border) rounded text-(--text-secondary) truncate max-w-[160px] sm:max-w-[200px]"
+                                  className="inline-block px-2 py-0.5 text-xs font-mono bg-(--surface-elevated) border border-(--border) rounded text-(--text-secondary) truncate max-w-40 sm:max-w-50"
                                 >
                                   {alg.notation}
                                 </span>

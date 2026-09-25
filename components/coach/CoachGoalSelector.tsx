@@ -1,6 +1,7 @@
 "use client";
 
 import { Target, Trophy, Timer } from "lucide-react";
+import { Input } from "@/components/ui/Field";
 import { OnboardingData } from "./CoachOnboarding";
 
 interface CoachGoalSelectorProps {
@@ -148,7 +149,7 @@ export default function CoachGoalSelector({
             <button
               key={goal.id}
               onClick={() => handleGoalSelect(goal.id)}
-              className={`w-full flex items-center justify-between p-4 rounded-lg border transition-all ${
+              className={`w-full flex items-center justify-between p-4 rounded-(--radius-control) border transition-all ${
                 data.goalType === goal.id
                   ? "bg-(--primary)/10 border-(--primary)"
                   : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
@@ -158,7 +159,7 @@ export default function CoachGoalSelector({
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center ${
                     data.goalType === goal.id
-                      ? "bg-(--primary) text-white"
+                      ? "bg-(--primary) text-(--on-primary)"
                       : "bg-(--surface) text-(--text-muted)"
                   }`}
                 >
@@ -204,7 +205,7 @@ export default function CoachGoalSelector({
             <button
               key={goal.id}
               onClick={() => handleGoalSelect(goal.id)}
-              className={`p-3 rounded-lg border text-center transition-all ${
+              className={`p-3 rounded-(--radius-control) border text-center transition-all ${
                 data.goalType === goal.id
                   ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
                   : "bg-(--surface-elevated) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
@@ -228,7 +229,7 @@ export default function CoachGoalSelector({
         {/* Custom Goal */}
         <button
           onClick={() => handleGoalSelect("custom")}
-          className={`w-full p-4 rounded-lg border text-left transition-all ${
+          className={`w-full p-4 rounded-(--radius-control) border text-left transition-all ${
             data.goalType === "custom"
               ? "bg-(--primary)/10 border-(--primary)"
               : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
@@ -249,18 +250,19 @@ export default function CoachGoalSelector({
         </button>
 
         {data.goalType === "custom" && (
-          <div className="flex items-center gap-3 p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+          <div className="flex items-center gap-3 p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
             <label className="text-sm text-(--text-secondary)">
               Target time (seconds):
             </label>
-            <input
+            <Input
+              className="flex-1"
               type="number"
               value={data.customGoalTime ? data.customGoalTime / 1000 : ""}
               onChange={(e) =>
                 onUpdate({ customGoalTime: parseFloat(e.target.value) * 1000 })
               }
-              placeholder="e.g., 25"
-              className="flex-1 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:border-(--primary)"
+              placeholder="e.g. 25"
+              aria-label="Custom goal time in seconds"
               min={1}
               max={300}
             />

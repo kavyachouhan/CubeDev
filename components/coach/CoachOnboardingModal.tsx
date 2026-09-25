@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import {
   ChevronRight,
   ChevronLeft,
@@ -10,7 +9,6 @@ import {
   Calendar,
   Clock,
   CheckCircle2,
-  X,
   FolderOpen,
   BarChart3,
   AlertCircle,
@@ -21,6 +19,11 @@ import {
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { Spinner } from "@/components/ui/Spinner";
+import { Stepper } from "@/components/ui/Stepper";
 
 interface CoachOnboardingModalProps {
   isOpen: boolean;
@@ -195,7 +198,6 @@ export default function CoachOnboardingModal({
   userId,
   onComplete,
 }: CoachOnboardingModalProps) {
-  const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -219,21 +221,6 @@ export default function CoachOnboardingModal({
 
   const filteredSessions =
     sessions?.filter((session) => session.event === "333") || [];
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
 
   useEffect(() => {
     if (selectedSessionStats?.average && data.selectedSessionId) {
@@ -322,88 +309,37 @@ export default function CoachOnboardingModal({
     }
   };
 
-  if (!mounted || !isOpen) return null;
+  if (!isOpen) return null;
 
   const recommendedGoals = getRecommendedGoals(
     data.skillLevel || "intermediate",
   );
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
+  return (
+    // First-run setup: no backdrop or Escape dismissal, the wizard must finish.
+    <Modal
+      open
+      onClose={() => {}}
+      dismissible={false}
+      size="2xl"
+      mobile="fullscreen"
     >
-      {/* Backdrop - no onClick to prevent closing */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-
-      {/* Modal */}
-      <div className="relative w-full max-w-2xl timer-card border-(--border) animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="shrink-0 pb-4 border-b border-(--border)">
-          <h2 className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement">
-            Training Setup
-          </h2>
-          <p className="text-sm text-(--text-muted) mt-1">
-            Let's create your personalized training plan
-          </p>
-        </div>
-
-        {/* Progress Steps */}
-        <div className="shrink-0 py-4 border-b border-(--border)">
-          <div className="flex items-center justify-between">
-            {STEPS.map((step, index) => {
-              const Icon = step.icon;
-              const isActive = currentStep === step.id;
-              const isCompleted = currentStep > step.id;
-
-              return (
-                <div key={step.id} className="flex items-center">
-                  <div className="flex flex-col items-center">
-                    <button
-                      onClick={() => isCompleted && setCurrentStep(step.id)}
-                      disabled={!isCompleted}
-                      className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors ${
-                        isActive
-                          ? "bg-(--primary) text-white"
-                          : isCompleted
-                            ? "bg-(--success) text-white cursor-pointer"
-                            : "bg-(--surface-elevated) text-(--text-muted)"
-                      }`}
-                    >
-                      {isCompleted ? (
-                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                      ) : (
-                        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
-                      )}
-                    </button>
-                    <span
-                      className={`mt-1 text-[10px] sm:text-xs font-medium hidden sm:block ${
-                        isActive
-                          ? "text-(--primary)"
-                          : "text-(--text-muted)"
-                      }`}
-                    >
-                      {step.title}
-                    </span>
-                  </div>
-                  {index < STEPS.length - 1 && (
-                    <div
-                      className={`w-6 sm:w-10 lg:w-14 h-0.5 mx-1 sm:mx-2 rounded ${
-                        isCompleted
-                          ? "bg-(--success)"
-                          : "bg-(--border)"
-                      }`}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto py-4 min-h-0">
+      <Modal.Header
+        title="Training setup"
+        description="Let's create your personalized training plan"
+      />
+      <div className="shrink-0 px-(--dialog-pad) py-4 border-b border-(--border)">
+        <Stepper
+          steps={STEPS.map((step) => ({
+            id: step.id,
+            title: step.title,
+            icon: <step.icon />,
+          }))}
+          current={currentStep}
+          onStepClick={setCurrentStep}
+        />
+      </div>
+      <Modal.Body>
           {/* Step 1: Current Level */}
           {currentStep === 1 && (
             <div className="space-y-4">
@@ -421,7 +357,7 @@ export default function CoachOnboardingModal({
               </div>
 
               {/* Session Selection */}
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-medium text-(--text-primary)">
                     Select a 3x3 Session
@@ -431,7 +367,7 @@ export default function CoachOnboardingModal({
                   </span>
                 </div>
 
-                <div className="flex items-start gap-2 p-2 bg-(--info)/10 border border-(--info)/20 rounded-lg mb-3">
+                <div className="flex items-start gap-2 p-2 bg-(--info)/10 border border-(--info)/20 rounded-(--radius-panel) mb-3">
                   <Info className="w-4 h-4 text-(--info) shrink-0 mt-0.5" />
                   <p className="text-xs text-(--text-secondary)">
                     For best accuracy, select a session with at least{" "}
@@ -444,10 +380,10 @@ export default function CoachOnboardingModal({
 
                 {!sessions ? (
                   <div className="flex items-center justify-center py-6">
-                    <div className="animate-spin w-5 h-5 border-2 border-(--primary) border-t-transparent rounded-full" />
+                    <Spinner className="text-(--primary)" />
                   </div>
                 ) : filteredSessions.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-6 bg-(--surface) rounded-lg border border-(--border)">
+                  <div className="flex flex-col items-center justify-center py-6 bg-(--surface) rounded-(--radius-panel) border border-(--border)">
                     <AlertCircle className="w-6 h-6 text-(--text-muted) mb-2" />
                     <p className="text-(--text-muted) text-xs text-center px-2">
                       No 3x3 sessions found. Select your skill level manually
@@ -469,7 +405,7 @@ export default function CoachOnboardingModal({
                               primaryEvent: "333",
                             })
                           }
-                          className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-all text-left ${
+                          className={`w-full flex items-center justify-between p-2.5 rounded-(--radius-panel) border transition-all text-left ${
                             isSelected
                               ? "bg-(--primary)/10 border-(--primary)"
                               : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
@@ -513,7 +449,7 @@ export default function CoachOnboardingModal({
 
               {/* Session Stats */}
               {data.selectedSessionId && selectedSessionStats && (
-                <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                   <div className="flex items-center gap-2 mb-3">
                     <BarChart3 className="w-4 h-4 text-(--primary)" />
                     <h4 className="text-sm font-medium text-(--text-primary)">
@@ -521,7 +457,7 @@ export default function CoachOnboardingModal({
                     </h4>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="text-center p-2 bg-(--surface) rounded-lg">
+                    <div className="text-center p-2 bg-(--surface) rounded-(--radius-panel)">
                       <span className="text-[10px] text-(--text-muted) block">
                         Solves
                       </span>
@@ -529,7 +465,7 @@ export default function CoachOnboardingModal({
                         {selectedSessionStats.solveCount}
                       </span>
                     </div>
-                    <div className="text-center p-2 bg-(--surface) rounded-lg">
+                    <div className="text-center p-2 bg-(--surface) rounded-(--radius-panel)">
                       <span className="text-[10px] text-(--text-muted) block">
                         Average
                       </span>
@@ -537,7 +473,7 @@ export default function CoachOnboardingModal({
                         {formatTime(selectedSessionStats.average)}
                       </span>
                     </div>
-                    <div className="text-center p-2 bg-(--surface) rounded-lg">
+                    <div className="text-center p-2 bg-(--surface) rounded-(--radius-panel)">
                       <span className="text-[10px] text-(--text-muted) block">
                         Best
                       </span>
@@ -550,7 +486,7 @@ export default function CoachOnboardingModal({
               )}
 
               {/* Skill Level Selection */}
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   {data.selectedSessionId
                     ? "Detected Skill Level"
@@ -561,7 +497,7 @@ export default function CoachOnboardingModal({
                     <button
                       key={level.id}
                       onClick={() => updateData({ skillLevel: level.id })}
-                      className={`p-3 rounded-lg border text-left transition-all ${
+                      className={`p-3 rounded-(--radius-panel) border text-left transition-all ${
                         data.skillLevel === level.id
                           ? "bg-(--primary)/10 border-(--primary)"
                           : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
@@ -600,7 +536,7 @@ export default function CoachOnboardingModal({
 
               {/* Current Average */}
               {data.currentAverage && (
-                <div className="flex items-center justify-center gap-3 p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="flex items-center justify-center gap-3 p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                   <Timer className="w-4 h-4 text-(--primary)" />
                   <span className="text-sm text-(--text-secondary)">
                     Your current average:
@@ -612,7 +548,7 @@ export default function CoachOnboardingModal({
               )}
 
               {/* Recommended Goals */}
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <div className="flex items-center gap-2 mb-3">
                   <Trophy className="w-4 h-4 text-(--primary)" />
                   <h4 className="text-sm font-medium text-(--text-primary)">
@@ -630,7 +566,7 @@ export default function CoachOnboardingModal({
                             customGoalTime: goal.time,
                           })
                         }
-                        className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
+                        className={`w-full flex items-center justify-between p-3 rounded-(--radius-panel) border transition-all ${
                           data.goalType === goal.id
                             ? "bg-(--primary)/10 border-(--primary)"
                             : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
@@ -675,7 +611,7 @@ export default function CoachOnboardingModal({
               </div>
 
               {/* Other Goals */}
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Other goals
                 </h4>
@@ -690,7 +626,7 @@ export default function CoachOnboardingModal({
                             customGoalTime: goal.time,
                           })
                         }
-                        className={`p-2 rounded-lg border text-center transition-all ${
+                        className={`p-2 rounded-(--radius-panel) border text-center transition-all ${
                           data.goalType === goal.id
                             ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
                             : "bg-(--surface) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
@@ -722,7 +658,7 @@ export default function CoachOnboardingModal({
                 </p>
               </div>
 
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Target Date
                 </h4>
@@ -743,7 +679,7 @@ export default function CoachOnboardingModal({
                       <button
                         key={option.days}
                         onClick={() => updateData({ targetDate: targetTime })}
-                        className={`p-3 rounded-lg border text-center transition-all ${
+                        className={`p-3 rounded-(--radius-panel) border text-center transition-all ${
                           isSelected
                             ? "bg-(--primary)/10 border-(--primary)"
                             : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
@@ -764,12 +700,13 @@ export default function CoachOnboardingModal({
                 </div>
               </div>
 
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Or pick a specific date
                 </h4>
-                <input
+                <Input
                   type="date"
+                  aria-label="Target date"
                   value={
                     data.targetDate
                       ? new Date(data.targetDate).toISOString().split("T")[0]
@@ -781,12 +718,11 @@ export default function CoachOnboardingModal({
                       targetDate: new Date(e.target.value).getTime(),
                     })
                   }
-                  className="w-full px-4 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all"
                 />
               </div>
 
               {data.targetDate && (
-                <div className="p-3 bg-(--info)/10 border border-(--info)/20 rounded-lg text-center">
+                <div className="p-3 bg-(--info)/10 border border-(--info)/20 rounded-(--radius-panel) text-center">
                   <span className="text-sm text-(--text-secondary)">
                     Target:{" "}
                     <span className="font-medium text-(--info)">
@@ -816,7 +752,7 @@ export default function CoachOnboardingModal({
               </div>
 
               {/* Daily Practice Time */}
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Daily Practice Time
                 </h4>
@@ -827,7 +763,7 @@ export default function CoachOnboardingModal({
                       onClick={() =>
                         updateData({ dailyPracticeMinutes: time.value })
                       }
-                      className={`p-2.5 rounded-lg border text-center transition-all ${
+                      className={`p-2.5 rounded-(--radius-panel) border text-center transition-all ${
                         data.dailyPracticeMinutes === time.value
                           ? "bg-(--primary)/10 border-(--primary)"
                           : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
@@ -848,7 +784,7 @@ export default function CoachOnboardingModal({
               </div>
 
               {/* Practice Days */}
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Practice Days
                 </h4>
@@ -865,7 +801,7 @@ export default function CoachOnboardingModal({
                             : [...(data.practiceSchedule || []), day];
                           updateData({ practiceSchedule: newSchedule });
                         }}
-                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
+                        className={`px-3 py-2 rounded-(--radius-panel) border text-sm font-medium transition-all ${
                           isSelected
                             ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
                             : "bg-(--surface) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
@@ -882,7 +818,7 @@ export default function CoachOnboardingModal({
               </div>
 
               {/* Weekly Summary */}
-              <div className="p-3 bg-(--info)/10 border border-(--info)/20 rounded-lg text-center">
+              <div className="p-3 bg-(--info)/10 border border-(--info)/20 rounded-(--radius-panel) text-center">
                 <span className="text-sm text-(--text-secondary)">
                   Total weekly practice:{" "}
                   <span className="font-medium text-(--info)">
@@ -909,7 +845,7 @@ export default function CoachOnboardingModal({
 
               <div className="space-y-3">
                 {/* Current Level */}
-                <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                   <span className="text-sm text-(--text-muted)">
                     Current Level
                   </span>
@@ -924,7 +860,7 @@ export default function CoachOnboardingModal({
                 </div>
 
                 {/* Goal */}
-                <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                   <span className="text-sm text-(--text-muted)">Goal</span>
                   <span className="text-sm font-medium text-(--primary)">
                     {data.goalType === "custom"
@@ -934,7 +870,7 @@ export default function CoachOnboardingModal({
                 </div>
 
                 {/* Target Date */}
-                <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                   <span className="text-sm text-(--text-muted)">
                     Target Date
                   </span>
@@ -950,7 +886,7 @@ export default function CoachOnboardingModal({
                 </div>
 
                 {/* Practice Schedule */}
-                <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                   <span className="text-sm text-(--text-muted)">
                     Practice
                   </span>
@@ -961,7 +897,7 @@ export default function CoachOnboardingModal({
                 </div>
 
                 {/* Weekly Total */}
-                <div className="flex items-center justify-between p-3 bg-(--primary)/10 rounded-lg border border-(--primary)">
+                <div className="flex items-center justify-between p-3 bg-(--primary)/10 rounded-(--radius-panel) border border-(--primary)">
                   <span className="text-sm text-(--text-muted)">
                     Weekly Total
                   </span>
@@ -977,59 +913,43 @@ export default function CoachOnboardingModal({
               </div>
             </div>
           )}
-        </div>
-
-        {/* Footer */}
-        <div className="shrink-0 pt-4 border-t border-(--border)">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-(--text-muted)">
-                Step {currentStep} of {STEPS.length}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {currentStep > 1 && (
-                <button
-                  onClick={handleBack}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-(--border) rounded-lg hover:bg-(--surface-elevated) hover:border-(--border-hover) text-(--text-primary) transition-colors"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  <span className="hidden sm:inline">Back</span>
-                </button>
-              )}
-              {currentStep < STEPS.length ? (
-                <button
-                  onClick={handleNext}
-                  disabled={!canProceed()}
-                  className="flex items-center gap-1 px-4 py-1.5 text-sm font-medium bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span>Continue</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              ) : (
-                <button
-                  onClick={handleComplete}
-                  disabled={isSubmitting}
-                  className="flex items-center gap-1 px-4 py-1.5 text-sm font-medium bg-(--success) hover:opacity-90 text-white rounded-lg transition-opacity disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                      <span>Creating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>Start Training</span>
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>,
-    document.body,
+      </Modal.Body>
+      <Modal.Footer
+        start={
+          <span className="type-caption hidden sm:inline">
+            Step {currentStep} of {STEPS.length}
+          </span>
+        }
+      >
+        {currentStep > 1 && (
+          <Button
+            variant="secondary"
+            onClick={handleBack}
+            iconLeft={<ChevronLeft className="w-4 h-4" />}
+          >
+            Back
+          </Button>
+        )}
+        {currentStep < STEPS.length ? (
+          <Button
+            onClick={handleNext}
+            disabled={!canProceed()}
+            iconRight={<ChevronRight className="w-4 h-4" />}
+          >
+            Continue
+          </Button>
+        ) : (
+          <Button
+            variant="success"
+            onClick={handleComplete}
+            loading={isSubmitting}
+            loadingText="Creating…"
+            iconLeft={<CheckCircle2 className="w-4 h-4" />}
+          >
+            Start training
+          </Button>
+        )}
+      </Modal.Footer>
+    </Modal>
   );
 }

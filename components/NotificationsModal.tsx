@@ -23,6 +23,9 @@ import {
   markAllInAppAsRead,
   markAlgorithmNotificationsSeen,
 } from "@/lib/notification-utils";
+import { Alert } from "@/components/ui/Alert";
+import { Button, ButtonLink } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
 import type { Id } from "@/convex/_generated/dataModel";
 
 interface NotificationsModalProps {
@@ -220,74 +223,52 @@ export default function NotificationsModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-2xl w-full max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-              Notifications
-            </h2>
-            <p className="text-sm text-(--text-muted) mt-1 font-inter">
-              {totalNotifications} New Notification
-              {totalNotifications !== 1 ? "s" : ""}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
+    <Modal open onClose={onClose} size="2xl" mobile="fullscreen">
+      <Modal.Header
+        title="Notifications"
+        description={`${totalNotifications} new notification${
+          totalNotifications !== 1 ? "s" : ""
+        }`}
+      />
+      <Modal.Body>
         {/* Permission Banner */}
         {showPermissionBanner && (
-          <div className="mb-4 timer-card bg-(--primary)/10 border border-(--primary)/30 p-3 sm:p-4">
-            <div className="flex items-start gap-2 sm:gap-3">
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-semibold text-(--text-primary) mb-1 font-statement">
-                  Enable Desktop Notifications
-                </h3>
-                <p className="text-xs text-(--text-muted) mb-3 font-inter">
-                  Get notified even when you're not on CubeDev. Stay on track
-                  with your learning!
-                </p>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <button
-                    onClick={handleEnableNotifications}
-                    disabled={isRequestingPermission}
-                    className="w-full sm:w-auto px-4 py-2 bg-(--primary) text-white text-sm font-semibold rounded-lg hover:bg-(--primary-hover) transition-colors disabled:opacity-50 font-inter"
-                  >
-                    {isRequestingPermission
-                      ? "Requesting..."
-                      : "Enable Notifications"}
-                  </button>
-                  <button
-                    onClick={handleDismissPrompt}
-                    className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-(--text-muted) hover:text-(--text-primary) transition-colors font-inter"
-                  >
-                    Maybe Later
-                  </button>
-                </div>
+          <Alert
+            tone="info"
+            className="mb-4"
+            title="Enable desktop notifications"
+            onDismiss={handleDismissPrompt}
+            action={
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button
+                  size="sm"
+                  onClick={handleEnableNotifications}
+                  loading={isRequestingPermission}
+                  loadingText="Requesting…"
+                >
+                  Enable notifications
+                </Button>
+                <Button size="sm" variant="ghost" onClick={handleDismissPrompt}>
+                  Maybe later
+                </Button>
               </div>
-              <button
-                onClick={handleDismissPrompt}
-                className="hidden sm:block shrink-0 text-(--text-muted) hover:text-(--text-primary) transition-colors p-1"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+            }
+          >
+            Get notified even when you&apos;re not on CubeDev. Stay on track
+            with your learning!
+          </Alert>
         )}
 
         {/* Notifications List */}
-        <div className="flex-1 overflow-y-auto space-y-4">
+        <div className="space-y-4">
           {dueReviews === undefined ? (
             // Loading State
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="skeleton-box rounded-lg h-24" />
+                <div
+                  key={i}
+                  className="skeleton-box rounded-(--radius-panel) h-24"
+                />
               ))}
             </div>
           ) : totalNotifications === 0 ? (
@@ -555,43 +536,32 @@ export default function NotificationsModal({
           )}
         </div>
 
-        {/* Footer Actions */}
-        {totalNotifications > 0 && (
-          <div className="flex flex-col gap-3 pt-6 mt-6 border-t border-(--border)">
-            <div className="flex flex-col sm:flex-row gap-3">
-              {(dueReviews?.length || 0) > 0 ? (
-                <Link
-                  href="/cube-lab/algorithm-trainer/practice"
-                  onClick={onClose}
-                  className="flex-1 btn-primary text-center py-3 sm:py-3"
-                >
-                  Practice Algorithms
-                </Link>
-              ) : (
-                <Link
-                  href="/cube-lab/coach"
-                  onClick={onClose}
-                  className="flex-1 btn-primary text-center py-3 sm:py-3"
-                >
-                  Open Coach
-                </Link>
-              )}
-              <button
-                onClick={onClose}
-                className="flex-1 btn-secondary py-3 sm:py-3"
-              >
-                Close
-              </button>
-            </div>
-            <button
-              onClick={handleDismissAll}
-              className="w-full text-sm text-(--text-muted) hover:text-(--text-primary) transition-colors py-2 font-inter"
+      </Modal.Body>
+      {totalNotifications > 0 && (
+        <Modal.Footer
+          start={
+            <Button variant="ghost" size="sm" onClick={handleDismissAll}>
+              Dismiss all
+            </Button>
+          }
+        >
+          <Button variant="secondary" onClick={onClose}>
+            Close
+          </Button>
+          {(dueReviews?.length || 0) > 0 ? (
+            <ButtonLink
+              href="/cube-lab/algorithm-trainer/practice"
+              onClick={onClose}
             >
-              Dismiss All Notifications
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+              Practice algorithms
+            </ButtonLink>
+          ) : (
+            <ButtonLink href="/cube-lab/coach" onClick={onClose}>
+              Open coach
+            </ButtonLink>
+          )}
+        </Modal.Footer>
+      )}
+    </Modal>
   );
 }

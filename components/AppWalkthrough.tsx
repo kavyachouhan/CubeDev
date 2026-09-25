@@ -86,7 +86,7 @@ export default function AppWalkthrough({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      className="fixed inset-0 z-(--z-tour) flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
     >
@@ -101,7 +101,7 @@ export default function AppWalkthrough({
         {/* Close Button */}
         <button
           onClick={handleSkip}
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors z-10"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-control) transition-colors z-10"
           aria-label="Close walkthrough"
         >
           <X className="w-5 h-5" />
@@ -181,7 +181,7 @@ export default function AppWalkthrough({
             {!isFirstStep && (
               <button
                 onClick={handlePrev}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-(--border) rounded-lg hover:bg-(--surface-elevated) hover:border-(--border-hover) text-(--text-primary) transition-colors"
+                className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-(--border) rounded-(--radius-control) hover:bg-(--surface-elevated) hover:border-(--border-hover) text-(--text-primary) transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span className="hidden sm:inline">Back</span>
@@ -189,7 +189,7 @@ export default function AppWalkthrough({
             )}
             <button
               onClick={handleNext}
-              className="flex items-center gap-1 px-4 py-1.5 text-sm font-medium bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors"
+              className="flex items-center gap-1 px-4 py-1.5 text-sm font-medium bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors"
             >
               {isLastStep ? (
                 <>

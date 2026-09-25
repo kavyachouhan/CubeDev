@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { FolderOpen, BarChart3, AlertCircle, Info } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -94,7 +95,7 @@ export default function CoachSessionSelector({
         </div>
 
         {/* Info Note */}
-        <div className="flex items-start gap-2 p-3 bg-(--info)/10 border border-(--info)/20 rounded-lg mb-4">
+        <div className="flex items-start gap-2 p-3 bg-(--info)/10 border border-(--info)/20 rounded-(--radius-control) mb-4">
           <Info className="w-4 h-4 text-(--info) shrink-0 mt-0.5" />
           <p className="text-xs text-(--text-secondary)">
             For best accuracy, select a session with at least <span className="font-semibold text-(--info)">100 solves</span>. 
@@ -104,10 +105,10 @@ export default function CoachSessionSelector({
         
         {!sessions ? (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin w-6 h-6 border-2 border-(--primary) border-t-transparent rounded-full" />
+            <Spinner size="lg" className="text-(--primary)" />
           </div>
         ) : filteredSessions.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 bg-(--surface-elevated) rounded-lg border border-(--border)">
+          <div className="flex flex-col items-center justify-center py-8 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
             <AlertCircle className="w-8 h-8 text-(--text-muted) mb-2" />
             <p className="text-(--text-muted) text-sm text-center px-4">
               No 3x3 sessions found. Create some 3x3 solves in the Timer first, or select your skill level manually below.
@@ -123,7 +124,7 @@ export default function CoachSessionSelector({
                 <button
                   key={session._id}
                   onClick={() => handleSessionSelect(session._id)}
-                  className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all text-left ${
+                  className={`w-full flex items-center justify-between p-3 rounded-(--radius-control) border transition-all text-left ${
                     isSelected
                       ? "bg-(--primary)/10 border-(--primary)"
                       : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
@@ -162,19 +163,19 @@ export default function CoachSessionSelector({
             <h3 className="font-semibold text-(--text-primary)">Session Analysis</h3>
           </div>
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+            <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control)">
               <span className="text-xs text-(--text-muted) block mb-1">Solves</span>
               <span className="text-xl font-bold text-(--text-primary)">
                 {selectedSessionStats.solveCount}
               </span>
             </div>
-            <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+            <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control)">
               <span className="text-xs text-(--text-muted) block mb-1">Average</span>
               <span className="text-xl font-bold text-(--primary)">
                 {formatTime(selectedSessionStats.average)}
               </span>
             </div>
-            <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+            <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control)">
               <span className="text-xs text-(--text-muted) block mb-1">Best</span>
               <span className="text-xl font-bold text-(--success)">
                 {formatTime(selectedSessionStats.bestSingle)}
@@ -183,7 +184,7 @@ export default function CoachSessionSelector({
           </div>
           
           {selectedSessionStats.solveCount < 100 && (
-            <div className="mt-3 p-2 bg-(--warning)/10 border border-(--warning)/20 rounded-lg">
+            <div className="mt-3 p-2 bg-(--warning)/10 border border-(--warning)/20 rounded-(--radius-control)">
               <p className="text-xs text-(--warning) text-center">
                 This session has fewer than 100 solves. The average might not be fully accurate.
               </p>
@@ -208,7 +209,7 @@ export default function CoachSessionSelector({
             <button
               key={level.id}
               onClick={() => handleSkillLevelManual(level.id as any)}
-              className={`p-4 rounded-lg border text-left transition-all ${
+              className={`p-4 rounded-(--radius-control) border text-left transition-all ${
                 data.skillLevel === level.id
                   ? "bg-(--primary)/10 border-(--primary)"
                   : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"

@@ -150,7 +150,7 @@ export default function ProgressHistoryCard({
           {snapshots.slice(0, 5).map((snapshot) => (
             <div
               key={snapshot._id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border) gap-2"
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) gap-2"
             >
               <div className="flex items-center gap-3">
                 <span className="text-sm text-(--text-muted)">

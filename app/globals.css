@@ -26,7 +26,12 @@
   --secondary: #1e40af;
   --accent: #06b6d4;
   --accent-glow: #06b6d430;
+  /* Foreground on any saturated fill: --primary, and the semantic fills
+     (--success, --warning, --error) when used as a background. */
   --on-primary: #ffffff;
+  /* Foreground for content sitting on a photo, video or dark scrim, where the
+     theme's own text colors would be unreadable. Never for page chrome. */
+  --on-media: #ffffff;
 
   /* Timer states */
   --timer-inspection: #f59e0b;

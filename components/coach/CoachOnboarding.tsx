@@ -9,6 +9,7 @@ import {
   Clock,
   CheckCircle2,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -190,9 +191,9 @@ export default function CoachOnboarding({
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
                         isActive
-                          ? "bg-(--primary) text-white"
+                          ? "bg-(--primary) text-(--on-primary)"
                           : isCompleted
-                            ? "bg-(--success) text-white"
+                            ? "bg-(--success) text-(--on-primary)"
                             : "bg-(--surface-elevated) text-(--text-muted)"
                       }`}
                     >
@@ -256,50 +257,33 @@ export default function CoachOnboarding({
       {/* Navigation Buttons */}
       <div className="shrink-0 px-4 py-4 border-t border-(--border) bg-(--surface)">
         <div className="max-w-2xl mx-auto flex justify-between">
-          <button
+          <Button
+            variant="ghost"
             onClick={handleBack}
             disabled={currentStep === 1}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-              currentStep === 1
-                ? "text-(--text-muted) cursor-not-allowed"
-                : "text-(--text-secondary) hover:bg-(--surface-elevated)"
-            }`}
+            iconLeft={<ChevronLeft className="w-5 h-5" />}
           >
-            <ChevronLeft className="w-5 h-5" />
-            <span>Back</span>
-          </button>
+            Back
+          </Button>
 
           {currentStep < STEPS.length ? (
-            <button
+            <Button
               onClick={handleNext}
               disabled={!canProceed()}
-              className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-colors ${
-                canProceed()
-                  ? "bg-(--primary) text-white hover:bg-(--primary-hover)"
-                  : "bg-(--surface-elevated) text-(--text-muted) cursor-not-allowed"
-              }`}
+              iconRight={<ChevronRight className="w-5 h-5" />}
             >
-              <span>Continue</span>
-              <ChevronRight className="w-5 h-5" />
-            </button>
+              Continue
+            </Button>
           ) : (
-            <button
+            <Button
+              variant="success"
               onClick={handleComplete}
-              disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-2 rounded-lg font-medium bg-(--success) text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+              loading={isSubmitting}
+              loadingText="Creating plan…"
+              iconLeft={<CheckCircle2 className="w-5 h-5" />}
             >
-              {isSubmitting ? (
-                <>
-                  <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
-                  <span>Creating Plan...</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>Start Training</span>
-                </>
-              )}
-            </button>
+              Start training
+            </Button>
           )}
         </div>
       </div>

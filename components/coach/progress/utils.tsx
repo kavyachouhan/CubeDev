@@ -208,7 +208,7 @@ export function StatCard({
   subtitle,
 }: StatCardProps) {
   return (
-    <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+    <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
       <div className="flex items-center gap-2 mb-1">
         <div className={`p-1 ${iconColor} rounded`}>
           <Icon className="w-3 h-3" />

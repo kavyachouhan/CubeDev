@@ -250,7 +250,7 @@ export default function GoalCelebration({
   };
 
   return (
-    <div className="fixed inset-0 overflow-hidden z-50">
+    <div className="fixed inset-0 overflow-hidden z-(--z-tour)">
       {/* Blur backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto" />
       {/* Confetti pieces */}

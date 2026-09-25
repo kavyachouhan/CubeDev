@@ -97,7 +97,7 @@ export default function NotificationBell({
       {hasNotifications && (
         <span
           aria-hidden
-          className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-4.5 h-4.5 px-1 bg-(--error) text-white text-[0.625rem] font-bold rounded-full font-inter ring-2 ring-(--surface)"
+          className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-4.5 h-4.5 px-1 bg-(--error) text-(--on-primary) text-[0.625rem] font-bold rounded-full font-inter ring-2 ring-(--surface)"
         >
           {notificationCount > 99 ? "99+" : notificationCount}
         </span>

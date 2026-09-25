@@ -44,7 +44,7 @@ export default function LearningMetricsCard({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
           {/* Learning Velocity */}
           {hasLearningVelocity && (
-            <div className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 mb-2">
                 <div className="p-1.5 bg-(--primary)/10 rounded">
                   <Zap className="w-4 h-4 text-(--primary)" />
@@ -76,7 +76,7 @@ export default function LearningMetricsCard({
 
           {/* Consistency */}
           {hasConsistency && (
-            <div className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 mb-2">
                 <div className="p-1.5 bg-(--accent)/10 rounded">
                   <TrendingUp className="w-4 h-4 text-(--accent)" />
@@ -115,7 +115,7 @@ export default function LearningMetricsCard({
           </div>
 
           {hasMonthlyComparison && (
-            <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+            <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
               <span className="text-sm text-(--text-secondary)">
                 vs Last Month
               </span>
@@ -140,7 +140,7 @@ export default function LearningMetricsCard({
           )}
 
           {hasYearlyComparison && (
-            <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+            <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
               <span className="text-sm text-(--text-secondary)">
                 vs Last Year
               </span>

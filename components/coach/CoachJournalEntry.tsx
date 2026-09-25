@@ -16,6 +16,8 @@ import {
   Save,
   X,
 } from "lucide-react";
+import { Input } from "@/components/ui/Field";
+import { Button } from "@/components/ui/Button";
 import type { LucideIcon } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -177,7 +179,7 @@ export default function CoachJournalEntry({
         {onClose && (
           <button
             onClick={onClose}
-            className="p-2 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
+            className="p-2 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-control) transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -196,7 +198,7 @@ export default function CoachJournalEntry({
               <button
                 key={m.id}
                 onClick={() => setMood(m.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-(--radius-control) border transition-colors ${
                   mood === m.id
                     ? "bg-(--primary)/10 border-(--primary)"
                     : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
@@ -227,7 +229,7 @@ export default function CoachJournalEntry({
         </label>
 
         {selectedSessionId && sessionStats ? (
-          <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+          <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <FolderOpen className="w-4 h-4 text-(--primary)" />
@@ -275,7 +277,7 @@ export default function CoachJournalEntry({
         ) : (
           <button
             onClick={() => setShowSessionSelector(!showSessionSelector)}
-            className="w-full p-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-left hover:border-(--border-hover) transition-colors"
+            className="w-full p-3 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-left hover:border-(--border-hover) transition-colors"
           >
             <span className="text-sm text-(--text-muted)">
               Click to select a session from Timer...
@@ -286,7 +288,7 @@ export default function CoachJournalEntry({
         {showSessionSelector &&
           !selectedSessionId &&
           filteredSessions.length > 0 && (
-            <div className="max-h-40 overflow-y-auto space-y-1 p-2 bg-(--surface-elevated) border border-(--border) rounded-lg">
+            <div className="max-h-40 overflow-y-auto space-y-1 p-2 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)">
               {filteredSessions.slice(0, 5).map((session) => (
                 <button
                   key={session._id}
@@ -315,11 +317,12 @@ export default function CoachJournalEntry({
         </label>
         <div className="flex items-center gap-3">
           <Clock className="w-5 h-5 text-(--text-muted)" />
-          <input
+          <Input
+            className="w-24"
             type="number"
             value={practiceMinutes}
             onChange={(e) => setPracticeMinutes(parseInt(e.target.value) || 0)}
-            className="w-24 px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:border-(--primary)"
+            aria-label="Practice minutes"
             min={0}
             max={480}
           />
@@ -339,7 +342,7 @@ export default function CoachJournalEntry({
               onClick={() => toggleFocusArea(area.id)}
               className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
                 focusAreas.includes(area.id)
-                  ? "bg-(--primary) text-white"
+                  ? "bg-(--primary) text-(--on-primary)"
                   : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--surface)"
               }`}
             >
@@ -358,7 +361,7 @@ export default function CoachJournalEntry({
           value={wentWell}
           onChange={(e) => setWentWell(e.target.value)}
           placeholder="e.g., Cross planning was much better today..."
-          className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) resize-none"
+          className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) resize-none"
           rows={3}
         />
       </div>
@@ -372,7 +375,7 @@ export default function CoachJournalEntry({
           value={challenges}
           onChange={(e) => setChallenges(e.target.value)}
           placeholder="e.g., Struggled with F2L lookahead..."
-          className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) resize-none"
+          className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) resize-none"
           rows={3}
         />
       </div>
@@ -386,30 +389,21 @@ export default function CoachJournalEntry({
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Any other thoughts or observations..."
-          className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) resize-none"
+          className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) resize-none"
           rows={2}
         />
       </div>
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <button
+        <Button
           onClick={handleSave}
-          disabled={isSubmitting}
-          className="flex items-center gap-2 px-6 py-2 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors disabled:opacity-50"
+          loading={isSubmitting}
+          loadingText="Saving…"
+          iconLeft={<Save className="w-5 h-5" />}
         >
-          {isSubmitting ? (
-            <>
-              <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>Saving...</span>
-            </>
-          ) : (
-            <>
-              <Save className="w-5 h-5" />
-              <span>Save Entry</span>
-            </>
-          )}
-        </button>
+          Save entry
+        </Button>
       </div>
     </div>
   );

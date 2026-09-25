@@ -181,7 +181,7 @@ function TimelineItem({
       <button
         type="button"
         onClick={onClick}
-        className="flex-1 min-w-0 bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border) text-left hover:border-(--primary)/40 hover:bg-(--surface-elevated)/80 transition-all cursor-pointer group"
+        className="flex-1 min-w-0 bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border) text-left hover:border-(--primary)/40 hover:bg-(--surface-elevated)/80 transition-all cursor-pointer group"
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-2">
           <div className="min-w-0">
@@ -290,7 +290,7 @@ function GoalTimelineSkeleton() {
         {[1, 2].map((i) => (
           <div key={i} className="relative flex gap-3 sm:gap-4 pb-4">
             <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-(--surface-elevated)" />
-            <div className="flex-1 bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)">
+            <div className="flex-1 bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border)">
               <div className="h-4 w-24 bg-(--surface) rounded mb-2" />
               <div className="h-3 w-48 bg-(--surface) rounded" />
             </div>
@@ -414,7 +414,7 @@ export default function GoalTimelineCard({
 
           {/* Empty state for no history */}
           {!hasHistory && (
-            <div className="ml-10 sm:ml-12 mt-2 p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+            <div className="ml-10 sm:ml-12 mt-2 p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
               <div className="flex items-center gap-2 text-(--text-muted)">
                 <History className="w-4 h-4" />
                 <span className="text-xs sm:text-sm">

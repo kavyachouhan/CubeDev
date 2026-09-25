@@ -241,11 +241,11 @@ export default function CoachTrainingPlan({
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center ${
                       day.isCompleted
-                        ? "bg-(--success) text-white"
+                        ? "bg-(--success) text-(--on-primary)"
                         : day.isRestDay
                           ? "bg-(--surface) text-(--text-muted)"
                           : isTodayPlan
-                            ? "bg-(--primary) text-white"
+                            ? "bg-(--primary) text-(--on-primary)"
                             : isPastDay
                               ? "bg-(--warning)/20 text-(--warning)"
                               : "bg-(--surface) text-(--text-muted)"
@@ -265,7 +265,7 @@ export default function CoachTrainingPlan({
                         {DAYS_OF_WEEK[day.dayOfWeek]}
                       </span>
                       {isTodayPlan && (
-                        <span className="px-2 py-0.5 text-xs font-medium bg-(--primary) text-white rounded-full">
+                        <span className="px-2 py-0.5 text-xs font-medium bg-(--primary) text-(--on-primary) rounded-full">
                           Today
                         </span>
                       )}
@@ -280,7 +280,7 @@ export default function CoachTrainingPlan({
                   {!day.isRestDay && onOpenJournal && (
                     <button
                       onClick={() => onOpenJournal(day.date)}
-                      className="p-1.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-medium transition-colors bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--primary)/10 hover:text-(--primary) border border-(--border) flex items-center gap-1"
+                      className="p-1.5 sm:px-2.5 sm:py-1 rounded-(--radius-control) text-xs font-medium transition-colors bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--primary)/10 hover:text-(--primary) border border-(--border) flex items-center gap-1"
                       title="Add journal entry"
                     >
                       <Plus className="w-3.5 h-3.5" />
@@ -316,7 +316,7 @@ export default function CoachTrainingPlan({
                             ? "activity-item"
                             : undefined
                         }
-                        className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
+                        className={`flex items-start gap-3 p-3 rounded-(--radius-control) transition-colors ${
                           activity.completed
                             ? "bg-(--success)/10"
                             : "bg-(--surface)"
@@ -332,7 +332,7 @@ export default function CoachTrainingPlan({
                           }
                           className={`mt-0.5 shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                             activity.completed
-                              ? "bg-(--success) border-(--success) text-white"
+                              ? "bg-(--success) border-(--success) text-(--on-primary)"
                               : "border-(--border) hover:border-(--primary)"
                           }`}
                         >
@@ -385,7 +385,7 @@ export default function CoachTrainingPlan({
                     <div className="mt-3 pt-3 border-t border-(--border)">
                       <button
                         onClick={() => handleSkipDay(dayIndex, "Skipped")}
-                        className="w-full sm:w-auto flex items-center justify-center sm:justify-start gap-2 px-3 py-2 text-sm text-(--text-muted) hover:text-(--warning) hover:bg-(--surface) rounded-lg transition-colors"
+                        className="w-full sm:w-auto flex items-center justify-center sm:justify-start gap-2 px-3 py-2 text-sm text-(--text-muted) hover:text-(--warning) hover:bg-(--surface) rounded-(--radius-control) transition-colors"
                       >
                         <SkipForward className="w-4 h-4" />
                         Skip this day

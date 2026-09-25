@@ -135,7 +135,7 @@ export default function PerformanceIntelligenceCard({
           return (
             <div
               key={insight.key}
-              className={`bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border ${toneClasses.border}`}
+              className={`bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border ${toneClasses.border}`}
             >
               <div className="flex items-center gap-2 mb-2">
                 <div className={`p-1.5 rounded ${toneClasses.iconWrap}`}>

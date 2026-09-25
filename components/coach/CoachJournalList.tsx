@@ -111,7 +111,7 @@ export default function CoachJournalList({
         {onNewEntry && (
           <button
             onClick={onNewEntry}
-            className="px-6 py-2.5 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors"
+            className="px-6 py-2.5 bg-(--primary) text-(--on-primary) rounded-(--radius-control) font-medium hover:bg-(--primary-hover) transition-colors"
           >
             Add Entry
           </button>

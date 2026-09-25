@@ -186,14 +186,14 @@ export default function GoalSummaryCard({
               </div>
               <button
                 onClick={() => setShowEditModal(true)}
-                className="p-1.5 rounded-lg hover:bg-(--surface-elevated) transition-colors"
+                className="p-1.5 rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
                 title="Edit goal"
               >
                 <Pencil className="w-4 h-4 text-(--text-muted) hover:text-(--primary)" />
               </button>
               <button
                 onClick={() => setShowNewGoalModal(true)}
-                className="p-1.5 rounded-lg hover:bg-(--surface-elevated) transition-colors"
+                className="p-1.5 rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
                 title="Set new goal"
               >
                 <Plus className="w-4 h-4 text-(--text-muted) hover:text-(--primary)" />
