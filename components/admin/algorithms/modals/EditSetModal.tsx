@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { X, Plus, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Checkbox, Input, Select, Textarea } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
 import { AdminSelect } from "../../AdminDropdown";
 import {
   ALGORITHM_CATEGORIES,
@@ -61,6 +64,7 @@ export function EditSetModal({
     order: set?.order ?? 0,
     isPublished: set?.isPublished ?? false,
   });
+  const formId = useId();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCustomCategory, setShowCustomCategory] =
     useState(isCustomCategory);
@@ -139,57 +143,36 @@ export function EditSetModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="timer-card max-w-lg w-full my-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-            {isNew ? "New Algorithm Set" : "Edit Set"}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-(--surface-elevated) rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5 text-(--text-muted)" />
-          </button>
-        </div>
-
+    <Modal open onClose={onClose} size="lg" mobile="fullscreen">
+      <Modal.Header title={isNew ? "New Algorithm Set" : "Edit Set"} />
+      <Modal.Body>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-              Name *
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-1.5">Name *</label>
+            <Input
               value={formData.name}
               onChange={(e) => handleNameChange(e.target.value)}
               required
-              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               placeholder="e.g., OLL, PLL, F2L"
             />
           </div>
 
           {/* Slug */}
           <div>
-            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-              Slug
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-1.5">Slug</label>
+            <Input
               value={formData.slug}
               onChange={(e) =>
                 setFormData({ ...formData, slug: e.target.value })
               }
-              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               placeholder="auto-generated-from-name"
             />
           </div>
 
           {/* Category with Custom Option */}
           <div>
-            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-              Category *
-            </label>
+            <label className="type-label block mb-1.5">Category *</label>
             <div className="flex flex-col sm:flex-row gap-2">
               <AdminSelect
                 value={showCustomCategory ? "custom" : formData.category}
@@ -208,7 +191,7 @@ export function EditSetModal({
                 <button
                   type="button"
                   onClick={() => setShowCustomCategory(true)}
-                  className="px-3 py-2.5 bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter text-sm flex items-center gap-1.5"
+                  className="px-3 py-2.5 bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter text-sm flex items-center gap-1.5"
                 >
                   <Plus className="w-4 h-4" />
                   <span className="hidden sm:inline">Custom</span>
@@ -218,14 +201,13 @@ export function EditSetModal({
 
             {showCustomCategory && (
               <div className="flex gap-2 mt-2">
-                <input
-                  type="text"
+                <Input
                   value={formData.customCategory}
                   onChange={(e) =>
                     setFormData({ ...formData, customCategory: e.target.value })
                   }
                   placeholder="Enter custom category name"
-                  className="flex-1 px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
+                  className="flex-1 px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
                 />
                 <button
                   type="button"
@@ -237,7 +219,7 @@ export function EditSetModal({
                       customCategory: "",
                     });
                   }}
-                  className="p-2.5 hover:bg-red-500/10 text-(--text-muted) hover:text-red-500 rounded-lg transition-colors"
+                  className="p-2.5 hover:bg-(--error)/10 text-(--text-muted) hover:text-(--error) rounded-(--radius-control) transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -247,16 +229,13 @@ export function EditSetModal({
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-              Description
-            </label>
-            <textarea
+            <label className="type-label block mb-1.5">Description</label>
+            <Textarea
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
               rows={2}
-              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm resize-none"
               placeholder="Brief description of this algorithm set"
             />
           </div>
@@ -264,9 +243,7 @@ export function EditSetModal({
           {/* Difficulty & Puzzle Type Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-                Difficulty
-              </label>
+              <label className="type-label block mb-1.5">Difficulty</label>
               <AdminSelect
                 value={formData.difficulty}
                 onChange={(val) =>
@@ -283,9 +260,7 @@ export function EditSetModal({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-                Puzzle Type
-              </label>
+              <label className="type-label block mb-1.5">Puzzle Type</label>
               <AdminSelect
                 value={formData.puzzleType}
                 onChange={(val) =>
@@ -302,10 +277,8 @@ export function EditSetModal({
 
           {/* Order */}
           <div>
-            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-              Display Order
-            </label>
-            <input
+            <label className="type-label block mb-1.5">Display Order</label>
+            <Input
               type="number"
               value={formData.order}
               onChange={(e) =>
@@ -314,49 +287,37 @@ export function EditSetModal({
                   order: parseInt(e.target.value) || 0,
                 })
               }
-              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
             />
           </div>
 
           {/* Published Toggle */}
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.isPublished}
-              onChange={(e) =>
-                setFormData({ ...formData, isPublished: e.target.checked })
-              }
-              className="w-4 h-4 rounded border-(--border) bg-(--surface-elevated) text-(--primary) focus:ring-(--primary)"
-            />
-            <span className="text-sm text-(--text-primary) font-inter">
-              Published (visible to users)
-            </span>
-          </label>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2.5 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-lg transition-colors font-inter text-sm order-2 sm:order-1"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 px-4 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white font-medium rounded-lg transition-colors font-inter text-sm disabled:opacity-50 order-1 sm:order-2"
-            >
-              {isSubmitting
-                ? "Saving..."
-                : isNew
-                  ? "Create Set"
-                  : "Save Changes"}
-            </button>
-          </div>
+          <Checkbox
+            label="Published (visible to users)"
+            checked={formData.isPublished}
+            onChange={(e) =>
+              setFormData({ ...formData, isPublished: e.target.checked })
+            }
+          />
         </form>
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={onClose}
+          disabled={isSubmitting}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          form={formId}
+          loading={isSubmitting}
+          loadingText="Saving…"
+        >
+          {isNew ? "Create set" : "Save changes"}
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }

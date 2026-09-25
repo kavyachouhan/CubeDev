@@ -7,6 +7,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useCachedQuery } from "@/lib/hooks/useAdminCache";
 import { ADMIN_CACHE_KEYS, ADMIN_CACHE_TTLS } from "@/lib/admin-cache";
 import { Search, Plus, BookOpen, Upload } from "lucide-react";
+import { SearchInput } from "@/components/ui/Field";
 
 import { CollapsibleCard } from "./shared";
 import { AlgorithmAnalytics } from "./AlgorithmAnalytics";
@@ -89,14 +90,14 @@ export default function AdminAlgorithms() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowImportModal(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter"
             >
               <Upload className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Import</span>
             </button>
             <button
               onClick={() => setShowNewSetModal(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-inter"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-inter"
             >
               <Plus className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Add Set</span>
@@ -105,16 +106,14 @@ export default function AdminAlgorithms() {
         }
       >
         {/* Search */}
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-          <input
-            type="text"
-            placeholder="Search sets by name or category..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
-          />
-        </div>
+        <SearchInput
+          size="sm"
+          placeholder="Search sets by name or category..."
+          aria-label="Search sets by name or category"
+          value={searchQuery}
+          onChange={setSearchQuery}
+          className="mb-4"
+        />
 
         {/* Sets Grid */}
         {sets === undefined ? (
@@ -130,7 +129,9 @@ export default function AdminAlgorithms() {
                 key={set._id}
                 set={set}
                 onEdit={() => setEditingSet(set._id)}
-                onDelete={() => setDelete.request({ _id: set._id, name: set.name })}
+                onDelete={() =>
+                  setDelete.request({ _id: set._id, name: set.name })
+                }
                 onViewCases={() =>
                   setViewingCases({ setId: set._id, setName: set.name })
                 }

@@ -2,7 +2,8 @@
 
 import { useUser } from "@/components/UserProvider";
 import { useRouter } from "next/navigation";
-import { Loader2, ShieldOff } from "lucide-react";
+import { ShieldOff } from "lucide-react";
+import { LoadingState } from "@/components/ui/Spinner";
 import { useAdmin } from "./AdminContext";
 
 interface AdminProtectedRouteProps {
@@ -20,12 +21,7 @@ export default function AdminProtectedRoute({
   if (isVerifying) {
     return (
       <div className="min-h-screen bg-(--background) flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader2 className="w-8 h-8 text-(--primary) animate-spin mx-auto" />
-          <p className="text-(--text-secondary) font-inter">
-            Verifying admin access...
-          </p>
-        </div>
+        <LoadingState label="Verifying admin access…" />
       </div>
     );
   }
@@ -48,7 +44,7 @@ export default function AdminProtectedRoute({
           </div>
           <button
             onClick={() => router.push("/cube-lab/timers")}
-            className="px-6 py-3 bg-(--primary) text-white font-semibold rounded-lg hover:opacity-90 transition-opacity font-inter"
+            className="px-6 py-3 bg-(--primary) text-(--on-primary) font-semibold rounded-(--radius-control) hover:opacity-90 transition-opacity font-inter"
           >
             Go to Cube Lab
           </button>
@@ -83,7 +79,7 @@ export default function AdminProtectedRoute({
           </div>
           <button
             onClick={() => router.push("/cube-lab/timers")}
-            className="px-6 py-3 bg-(--primary) text-white font-semibold rounded-lg hover:opacity-90 transition-opacity font-inter"
+            className="px-6 py-3 bg-(--primary) text-(--on-primary) font-semibold rounded-(--radius-control) hover:opacity-90 transition-opacity font-inter"
           >
             Go to Cube Lab
           </button>

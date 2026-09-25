@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Plus, Pencil, Trash2, Save, X } from "lucide-react";
+import { Checkbox, Field, Input, Select } from "@/components/ui/Field";
 import FeatureBadge, { BadgeVariant } from "@/components/FeatureBadge";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
@@ -144,10 +145,9 @@ export default function AdminFeatureLabels() {
 
   return (
     <div className="min-h-full p-3 sm:p-4 md:p-6 lg:p-8 space-y-6">
-
       <form
         onSubmit={handleSubmit}
-        className="bg-(--surface-elevated) border border-(--border) rounded-xl p-4 sm:p-5 space-y-4"
+        className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-card) p-4 sm:p-5 space-y-4"
       >
         <div className="flex items-center justify-between gap-3">
           <div>
@@ -164,7 +164,7 @@ export default function AdminFeatureLabels() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-(--text-muted) border border-(--border) rounded-lg hover:text-(--text-primary) hover:border-(--primary)/40 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-(--text-muted) border border-(--border) rounded-(--radius-control) hover:text-(--text-primary) hover:border-(--primary)/40 transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
                 Cancel
@@ -173,7 +173,7 @@ export default function AdminFeatureLabels() {
             <button
               type="submit"
               disabled={!canSubmit || isSaving}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-(--primary) rounded-lg hover:bg-(--primary)/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-(--on-primary) bg-(--primary) rounded-(--radius-control) hover:bg-(--primary)/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {editingId ? (
                 <Save className="w-3.5 h-3.5" />
@@ -186,9 +186,8 @@ export default function AdminFeatureLabels() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <label className="flex flex-col gap-1 text-xs font-inter text-(--text-muted)">
-            Feature Key
-            <input
+          <Field label="Feature Key">
+            <Input
               value={formState.featureKey}
               onChange={(event) =>
                 setFormState((prev) => ({
@@ -197,13 +196,11 @@ export default function AdminFeatureLabels() {
                 }))
               }
               placeholder="algorithm-trainer"
-              className="px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) focus:outline-none focus:border-(--primary)"
             />
-          </label>
+          </Field>
 
-          <label className="flex flex-col gap-1 text-xs font-inter text-(--text-muted)">
-            Label Type
-            <select
+          <Field label="Label Type">
+            <Select
               value={formState.labelType}
               onChange={(event) =>
                 setFormState((prev) => ({
@@ -211,19 +208,17 @@ export default function AdminFeatureLabels() {
                   labelType: event.target.value as LabelType,
                 }))
               }
-              className="px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) focus:outline-none focus:border-(--primary)"
             >
               {LABEL_TYPES.map((type) => (
                 <option key={type.value} value={type.value}>
                   {type.label}
                 </option>
               ))}
-            </select>
-          </label>
+            </Select>
+          </Field>
 
-          <label className="flex flex-col gap-1 text-xs font-inter text-(--text-muted)">
-            Start Time
-            <input
+          <Field label="Start Time">
+            <Input
               type="datetime-local"
               value={formState.startAt}
               onChange={(event) =>
@@ -232,13 +227,11 @@ export default function AdminFeatureLabels() {
                   startAt: event.target.value,
                 }))
               }
-              className="px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) focus:outline-none focus:border-(--primary)"
             />
-          </label>
+          </Field>
 
-          <label className="flex flex-col gap-1 text-xs font-inter text-(--text-muted)">
-            End Time
-            <input
+          <Field label="End Time">
+            <Input
               type="datetime-local"
               value={formState.endAt}
               onChange={(event) =>
@@ -247,25 +240,20 @@ export default function AdminFeatureLabels() {
                   endAt: event.target.value,
                 }))
               }
-              className="px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) focus:outline-none focus:border-(--primary)"
             />
-          </label>
+          </Field>
         </div>
 
-        <label className="inline-flex items-center gap-2 text-xs font-inter text-(--text-muted)">
-          <input
-            type="checkbox"
-            checked={formState.enabled}
-            onChange={(event) =>
-              setFormState((prev) => ({
-                ...prev,
-                enabled: event.target.checked,
-              }))
-            }
-            className="w-4 h-4 accent-(--primary)"
-          />
-          Enabled
-        </label>
+        <Checkbox
+          checked={formState.enabled}
+          onChange={(event) =>
+            setFormState((prev) => ({
+              ...prev,
+              enabled: event.target.checked,
+            }))
+          }
+          label="Enabled"
+        />
 
         {!canSubmit && formState.featureKey.trim().length > 0 && (
           <p className="text-[11px] text-(--error) font-inter">
@@ -285,7 +273,7 @@ export default function AdminFeatureLabels() {
         </div>
 
         {sortedLabels.length === 0 ? (
-          <div className="bg-(--surface-elevated) border border-(--border) rounded-xl p-6 text-center text-sm text-(--text-muted) font-inter">
+          <div className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-card) p-6 text-center text-sm text-(--text-muted) font-inter">
             No labels configured yet.
           </div>
         ) : (
@@ -312,7 +300,7 @@ export default function AdminFeatureLabels() {
               return (
                 <div
                   key={label._id}
-                  className="bg-(--surface-elevated) border border-(--border) rounded-xl p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-card) p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -338,14 +326,14 @@ export default function AdminFeatureLabels() {
                     <button
                       type="button"
                       onClick={() => handleToggleEnabled(label)}
-                      className="px-3 py-1.5 text-[11px] font-semibold border border-(--border) rounded-lg text-(--text-muted) hover:text-(--text-primary) hover:border-(--primary)/40 transition-colors"
+                      className="px-3 py-1.5 text-[11px] font-semibold border border-(--border) rounded-(--radius-control) text-(--text-muted) hover:text-(--text-primary) hover:border-(--primary)/40 transition-colors"
                     >
                       {label.enabled ? "Disable" : "Enable"}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleEdit(label)}
-                      className="p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--surface) rounded-lg transition-colors"
+                      className="p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--surface) rounded-(--radius-control) transition-colors"
                       title="Edit"
                     >
                       <Pencil className="w-4 h-4" />
@@ -353,7 +341,7 @@ export default function AdminFeatureLabels() {
                     <button
                       type="button"
                       onClick={() => labelDelete.request(label)}
-                      className="p-2 text-(--text-muted) hover:text-(--error) hover:bg-(--surface) rounded-lg transition-colors"
+                      className="p-2 text-(--text-muted) hover:text-(--error) hover:bg-(--surface) rounded-(--radius-control) transition-colors"
                       title="Delete"
                     >
                       <Trash2 className="w-4 h-4" />

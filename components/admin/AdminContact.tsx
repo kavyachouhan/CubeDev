@@ -35,6 +35,11 @@ import {
   RefreshCw,
   FileText,
 } from "lucide-react";
+import { Input, Textarea } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { AdminStatCard } from "./AdminStatCard";
+import { AdminCollapsibleCard } from "./AdminCollapsibleCard";
+import { useEffectiveTheme, useThemeColors } from "@/lib/hooks/useThemeColors";
 import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import {
@@ -58,53 +63,6 @@ ChartJS.register(
   Tooltip,
   Legend,
 );
-
-// Theme detection hook
-function useEffectiveTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  useEffect(() => {
-    const updateTheme = () => {
-      const root = document.documentElement;
-      const dataTheme = root.getAttribute("data-theme");
-      setTheme(dataTheme === "light" ? "light" : "dark");
-    };
-
-    updateTheme();
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  return theme;
-}
-
-// Primary color hook
-function usePrimaryColor() {
-  const [primaryColor, setPrimaryColor] = useState("#FA6900");
-
-  useEffect(() => {
-    const updateColor = () => {
-      const color = getComputedStyle(document.documentElement)
-        .getPropertyValue("--primary")
-        .trim();
-      if (color) setPrimaryColor(color);
-    };
-
-    updateColor();
-    const observer = new MutationObserver(updateColor);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class", "style"],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  return primaryColor;
-}
 
 // Type definitions
 interface ContactMessage {
@@ -196,132 +154,6 @@ function exportToJSON(data: unknown, filename: string) {
   link.click();
 }
 
-// CollapsibleCard Component
-function CollapsibleCard({
-  title,
-  children,
-  defaultOpen = true,
-  storageKey,
-  headerExtra,
-  className = "",
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  storageKey?: string;
-  headerExtra?: React.ReactNode;
-  className?: string;
-}) {
-  const [isOpen, setIsOpen] = useState(() => {
-    if (typeof window !== "undefined" && storageKey) {
-      const saved = localStorage.getItem(storageKey);
-      return saved !== null ? saved === "true" : defaultOpen;
-    }
-    return defaultOpen;
-  });
-
-  const toggleOpen = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    if (typeof window !== "undefined" && storageKey) {
-      localStorage.setItem(storageKey, String(newState));
-    }
-  };
-
-  return (
-    <div className={`timer-card ${className}`}>
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={toggleOpen}
-          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
-        >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            {title}
-          </h3>
-          {isOpen ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          {headerExtra}
-          <button
-            onClick={toggleOpen}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={isOpen ? "Hide" : "Show"}
-          >
-            {isOpen ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-      {isOpen && children}
-    </div>
-  );
-}
-
-// StatCard Component
-function StatCard({
-  title,
-  value,
-  icon: Icon,
-  iconColor = "text-(--primary)",
-  iconBgColor = "bg-(--primary)/10",
-  subValue,
-  trend,
-}: {
-  title: string;
-  value: string | number;
-  icon: LucideIcon;
-  iconColor?: string;
-  iconBgColor?: string;
-  subValue?: string;
-  trend?: { value: number; label: string };
-}) {
-  return (
-    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
-          <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate font-inter">
-            {title}
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
-              {typeof value === "number" ? value.toLocaleString() : value}
-            </div>
-            {trend && (
-              <div
-                className={`flex items-center gap-0.5 text-xs ${
-                  trend.value >= 0 ? "text-green-500" : "text-red-500"
-                }`}
-              >
-                {trend.value >= 0 ? (
-                  <TrendingUp className="w-3 h-3" />
-                ) : (
-                  <TrendingDown className="w-3 h-3" />
-                )}
-                <span>{Math.abs(trend.value)}%</span>
-              </div>
-            )}
-          </div>
-          {subValue && (
-            <div className="text-xs text-(--text-muted) font-inter">
-              {subValue}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // Progress Bar Component
 function ProgressBar({
   label,
@@ -361,7 +193,7 @@ function BarChart({
   maxValue?: number;
 }) {
   const effectiveTheme = useEffectiveTheme();
-  const primaryColor = usePrimaryColor();
+  const primaryColor = useThemeColors()["--primary"];
   const isLight = effectiveTheme === "light";
   const textColor = isLight
     ? "rgba(17, 24, 39, 0.8)"
@@ -577,22 +409,22 @@ function ReplyModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="timer-card max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+    <Modal open onClose={onClose} size="2xl" mobile="fullscreen">
+      <Modal.Body>
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
             Reply to Message
           </h2>
           <button
             onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Original Message */}
-        <div className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 border border-(--border)">
+        <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 mb-4 sm:mb-6 border border-(--border)">
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
             <span className="text-xs text-(--text-muted) font-inter">
               Original message from:
@@ -616,34 +448,29 @@ function ReplyModal({
 
         <form onSubmit={handleSend} className="space-y-3 sm:space-y-4">
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Subject
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-2">Subject</label>
+            <Input
               value={replySubject}
               onChange={(e) => setReplySubject(e.target.value)}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm sm:text-base"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm sm:text-base"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Message
-            </label>
-            <textarea
+            <label className="type-label block mb-2">Message</label>
+            <Textarea
               value={replyMessage}
               onChange={(e) => setReplyMessage(e.target.value)}
               rows={6}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter text-sm sm:text-base"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter text-sm sm:text-base"
               placeholder="Type your reply..."
               required
             />
           </div>
 
           {error && (
-            <div className="bg-(--error)/10 text-(--error) px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-sm font-inter">
+            <div className="bg-(--error)/10 text-(--error) px-3 sm:px-4 py-2.5 sm:py-3 rounded-(--radius-control) text-sm font-inter">
               {error}
             </div>
           )}
@@ -676,8 +503,8 @@ function ReplyModal({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 }
 
@@ -725,23 +552,23 @@ function MessageDetailsModal({
 
   if (!details) {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
-        <div className="timer-card max-w-2xl w-full">
+      <Modal open onClose={onClose} size="2xl" mobile="fullscreen">
+        <Modal.Body>
           <div className="animate-pulse space-y-4">
             <div className="h-8 w-48 bg-(--surface-elevated) rounded" />
             <div className="h-4 w-32 bg-(--surface-elevated) rounded" />
-            <div className="h-32 bg-(--surface-elevated) rounded-lg" />
+            <div className="h-32 bg-(--surface-elevated) rounded-(--radius-control)" />
           </div>
-        </div>
-      </div>
+        </Modal.Body>
+      </Modal>
     );
   }
 
   const { message, userInfo, previousMessages } = details;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="timer-card max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+    <Modal open onClose={onClose} size="2xl" mobile="fullscreen">
+      <Modal.Body>
         {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-4 sm:mb-6">
           <div className="min-w-0 flex-1">
@@ -757,7 +584,7 @@ function MessageDetailsModal({
           </div>
           <button
             onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated) shrink-0"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated) shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -766,7 +593,7 @@ function MessageDetailsModal({
         <div className="space-y-6">
           {/* Sender Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-control) p-4 border border-(--border)">
               <div className="flex items-center gap-3">
                 {userInfo?.avatar ? (
                   <Image
@@ -803,7 +630,7 @@ function MessageDetailsModal({
             </div>
 
             {message.wcaId && (
-              <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-control) p-4 border border-(--border)">
                 <div className="flex items-center gap-2 text-(--text-muted) mb-1">
                   <ExternalLink className="w-3 h-3" />
                   <span className="text-xs font-inter">Identifier</span>
@@ -832,7 +659,7 @@ function MessageDetailsModal({
             <h4 className="text-sm font-medium text-(--text-muted) mb-2 font-inter uppercase tracking-wide">
               Message
             </h4>
-            <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-control) p-4 border border-(--border)">
               <p className="text-sm text-(--text-primary) font-inter whitespace-pre-wrap">
                 {message.message}
               </p>
@@ -859,11 +686,10 @@ function MessageDetailsModal({
             </div>
             {isEditingNotes ? (
               <div className="space-y-2">
-                <textarea
+                <Textarea
                   value={adminNotes}
                   onChange={(e) => setAdminNotes(e.target.value)}
                   placeholder="Add notes about this message..."
-                  className="w-full px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) font-inter focus:outline-none focus:border-(--primary) resize-none"
                   rows={3}
                 />
                 <div className="flex justify-end gap-2">
@@ -875,14 +701,14 @@ function MessageDetailsModal({
                   </button>
                   <button
                     onClick={handleSaveNotes}
-                    className="px-3 py-1.5 text-sm bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) font-inter transition-colors"
+                    className="px-3 py-1.5 text-sm bg-(--primary) text-(--on-primary) rounded-(--radius-control) hover:bg-(--primary-hover) font-inter transition-colors"
                   >
                     Save Notes
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border) min-h-[60px]">
+              <div className="bg-(--surface-elevated) rounded-(--radius-control) p-4 border border-(--border) min-h-[60px]">
                 <p className="text-sm text-(--text-primary) font-inter whitespace-pre-wrap">
                   {message.adminNotes || (
                     <span className="text-(--text-muted) italic">
@@ -904,7 +730,7 @@ function MessageDetailsModal({
                 {previousMessages.map((msg: ContactMessage) => (
                   <div
                     key={msg._id}
-                    className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
+                    className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)"
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-medium text-(--text-primary) font-inter">
@@ -933,7 +759,7 @@ function MessageDetailsModal({
                     key={status}
                     onClick={() => handleStatusChange(status)}
                     disabled={message.status === status}
-                    className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs rounded-lg font-inter transition-colors ${
+                    className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs rounded-(--radius-control) font-inter transition-colors ${
                       message.status === status
                         ? `bg-[var(--${status === "read" ? "warning" : status === "replied" ? "success" : "text-muted"})]/20 text-[var(--${status === "read" ? "warning" : status === "replied" ? "success" : "text-muted"})] cursor-not-allowed`
                         : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border)"
@@ -967,8 +793,8 @@ function MessageDetailsModal({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 }
 
@@ -1114,7 +940,7 @@ export default function AdminContactNew() {
   return (
     <div className="min-h-full p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Analytics Overview */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title="Contact Analytics"
         storageKey="admin-contact-analytics-open"
         defaultOpen={true}
@@ -1141,26 +967,26 @@ export default function AdminContactNew() {
           <div className="space-y-6">
             {/* Key Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              <StatCard
+              <AdminStatCard
                 title="Total Messages"
                 value={data.analytics.statusCounts.all}
                 icon={Inbox}
                 iconColor="text-(--primary)"
                 iconBgColor="bg-(--primary)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="New"
                 value={data.analytics.statusCounts.new}
                 icon={AlertCircle}
                 iconColor="text-(--info)"
                 iconBgColor="bg-(--info)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="This Week"
                 value={data.analytics.timeBasedCounts.lastWeek}
                 icon={TrendingUp}
-                iconColor="text-green-500"
-                iconBgColor="bg-green-500/10"
+                iconColor="text-(--success)"
+                iconBgColor="bg-(--success)/10"
                 trend={
                   data.analytics.timeBasedCounts.weekly !== 0
                     ? {
@@ -1170,26 +996,26 @@ export default function AdminContactNew() {
                     : undefined
                 }
               />
-              <StatCard
+              <AdminStatCard
                 title="Response Rate"
                 value={`${data.analytics.responseRate}%`}
                 icon={Percent}
-                iconColor="text-purple-500"
-                iconBgColor="bg-purple-500/10"
+                iconColor="text-(--accent)"
+                iconBgColor="bg-(--accent)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Unique Senders"
                 value={data.analytics.senderStats.unique}
                 icon={Users}
-                iconColor="text-blue-500"
-                iconBgColor="bg-blue-500/10"
+                iconColor="text-(--info)"
+                iconBgColor="bg-(--info)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Registered Users"
                 value={data.analytics.userBreakdown.registered}
                 icon={User}
-                iconColor="text-emerald-500"
-                iconBgColor="bg-emerald-500/10"
+                iconColor="text-(--success)"
+                iconBgColor="bg-(--success)/10"
                 subValue={`${data.analytics.userBreakdown.anonymous} anonymous`}
               />
             </div>
@@ -1197,7 +1023,7 @@ export default function AdminContactNew() {
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Daily Trend Chart */}
-              <div className="bg-(--surface-elevated) rounded-xl p-4 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-card) p-4 border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-4 font-statement">
                   Messages (Last 14 Days)
                 </h4>
@@ -1212,7 +1038,7 @@ export default function AdminContactNew() {
               </div>
 
               {/* Subject Categories */}
-              <div className="bg-(--surface-elevated) rounded-xl p-4 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-card) p-4 border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-4 font-statement">
                   Message Categories
                 </h4>
@@ -1229,13 +1055,13 @@ export default function AdminContactNew() {
                       total={data.analytics.statusCounts.all}
                       color={
                         category === "Bug Reports"
-                          ? "bg-red-500"
+                          ? "bg-(--error)"
                           : category === "Feature Requests"
-                            ? "bg-blue-500"
+                            ? "bg-(--info)"
                             : category === "Questions"
-                              ? "bg-yellow-500"
+                              ? "bg-(--warning)"
                               : category === "Feedback"
-                                ? "bg-green-500"
+                                ? "bg-(--success)"
                                 : "bg-(--text-muted)"
                       }
                     />
@@ -1245,7 +1071,7 @@ export default function AdminContactNew() {
             </div>
 
             {/* Status Distribution */}
-            <div className="bg-(--surface-elevated) rounded-xl p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-card) p-4 border border-(--border)">
               <h4 className="text-sm font-medium text-(--text-primary) mb-4 font-statement">
                 Status Distribution
               </h4>
@@ -1277,7 +1103,7 @@ export default function AdminContactNew() {
             </div>
 
             {/* Day of Week Distribution */}
-            <div className="bg-(--surface-elevated) rounded-xl p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-card) p-4 border border-(--border)">
               <h4 className="text-sm font-medium text-(--text-primary) mb-4 font-statement">
                 Messages by Day of Week
               </h4>
@@ -1287,7 +1113,7 @@ export default function AdminContactNew() {
                 ).map((day) => (
                   <div
                     key={day}
-                    className="text-center p-2 bg-(--surface) rounded-lg"
+                    className="text-center p-2 bg-(--surface) rounded-(--radius-control)"
                   >
                     <div className="text-xs text-(--text-muted) font-inter mb-1">
                       {day}
@@ -1305,15 +1131,15 @@ export default function AdminContactNew() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-20 bg-(--surface-elevated) rounded-xl animate-pulse"
+                className="h-20 bg-(--surface-elevated) rounded-(--radius-card) animate-pulse"
               />
             ))}
           </div>
         )}
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* Status Filter Pills */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title="Messages"
         storageKey="admin-contact-messages-open"
         defaultOpen={true}
@@ -1359,9 +1185,9 @@ export default function AdminContactNew() {
               <button
                 key={filter.key}
                 onClick={() => setStatusFilter(filter.key)}
-                className={`px-3 py-1.5 text-xs rounded-lg font-inter transition-colors flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 text-xs rounded-(--radius-control) font-inter transition-colors flex items-center gap-1.5 ${
                   statusFilter === filter.key
-                    ? "bg-(--primary) text-white"
+                    ? "bg-(--primary) text-(--on-primary)"
                     : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border)"
                 }`}
               >
@@ -1384,12 +1210,11 @@ export default function AdminContactNew() {
           {/* Search */}
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-            <input
-              type="text"
+            <Input
               placeholder="Search messages..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) font-inter focus:outline-none focus:border-(--primary)"
+              className="w-full pl-9 pr-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-sm text-(--text-primary) placeholder-(--text-muted) font-inter focus:outline-none focus:border-(--primary)"
             />
           </div>
         </div>
@@ -1438,7 +1263,7 @@ export default function AdminContactNew() {
             ))
           )}
         </div>
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* Message Details Modal */}
       {selectedMessageId && (

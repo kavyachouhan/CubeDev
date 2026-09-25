@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { X } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Checkbox, Input, Select, Textarea } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
 
 interface CaseFormData {
   caseName: string;
@@ -56,6 +59,7 @@ export function EditCaseModal({
     frequency: caseItem?.frequency ?? 3,
     order: caseItem?.order ?? caseCount,
   });
+  const formId = useId();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const createCase = useMutation(api.admin.createAlgorithmCase);
@@ -112,81 +116,54 @@ export function EditCaseModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="timer-card max-w-lg w-full my-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-            {isNew ? "New Case" : "Edit Case"}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-(--surface-elevated) rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5 text-(--text-muted)" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <Modal open onClose={onClose} size="lg" mobile="fullscreen">
+      <Modal.Header title={isNew ? "New Case" : "Edit Case"} />
+      <Modal.Body>
+        <form id={formId} onSubmit={handleSubmit} className="space-y-4">
           {/* Case Name */}
           <div>
-            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-              Case Name *
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-1.5">Case Name *</label>
+            <Input
               value={formData.caseName}
               onChange={(e) => handleNameChange(e.target.value)}
               required
-              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               placeholder="e.g., OLL 1, T Perm, etc."
             />
           </div>
 
           {/* Slug */}
           <div>
-            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-              Slug
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-1.5">Slug</label>
+            <Input
               value={formData.slug}
               onChange={(e) =>
                 setFormData({ ...formData, slug: e.target.value })
               }
-              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               placeholder="auto-generated-from-name"
             />
           </div>
 
           {/* Setup Moves */}
           <div>
-            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-              Setup Moves *
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-1.5">Setup Moves *</label>
+            <Input
               value={formData.setupMoves}
               onChange={(e) =>
                 setFormData({ ...formData, setupMoves: e.target.value })
               }
               required
-              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-mono text-sm"
               placeholder="R U R' U R U2 R'"
             />
           </div>
 
           {/* Recognition */}
           <div>
-            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-              Recognition Tips
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-1.5">Recognition Tips</label>
+            <Input
               value={formData.recognition}
               onChange={(e) =>
                 setFormData({ ...formData, recognition: e.target.value })
               }
-              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               placeholder="Comma-separated tips"
             />
             <p className="text-xs text-(--text-muted) font-inter mt-1">
@@ -197,10 +174,10 @@ export function EditCaseModal({
           {/* Difficulty, Frequency & Order Row */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
+              <label className="type-label block mb-1.5">
                 Difficulty (1-10)
               </label>
-              <input
+              <Input
                 type="number"
                 min={1}
                 max={10}
@@ -211,14 +188,11 @@ export function EditCaseModal({
                     difficulty: parseInt(e.target.value) || 5,
                   })
                 }
-                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-                Frequency (1-5)
-              </label>
-              <input
+              <label className="type-label block mb-1.5">Frequency (1-5)</label>
+              <Input
                 type="number"
                 min={1}
                 max={5}
@@ -229,14 +203,11 @@ export function EditCaseModal({
                     frequency: parseInt(e.target.value) || 3,
                   })
                 }
-                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-                Order
-              </label>
-              <input
+              <label className="type-label block mb-1.5">Order</label>
+              <Input
                 type="number"
                 min={0}
                 value={formData.order}
@@ -246,31 +217,29 @@ export function EditCaseModal({
                     order: parseInt(e.target.value) || 0,
                   })
                 }
-                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               />
             </div>
           </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2.5 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-lg transition-colors font-inter text-sm order-2 sm:order-1"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 px-4 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white font-medium rounded-lg transition-colors font-inter text-sm disabled:opacity-50 order-1 sm:order-2"
-            >
-              {isSubmitting ? "Saving..." : isNew ? "Add Case" : "Save Changes"}
-            </button>
-          </div>
         </form>
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={onClose}
+          disabled={isSubmitting}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          form={formId}
+          loading={isSubmitting}
+          loadingText="Saving…"
+        >
+          {isNew ? "Add Case" : "Save Changes"}
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }

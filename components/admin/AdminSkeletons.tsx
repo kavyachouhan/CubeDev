@@ -1,34 +1,33 @@
 "use client";
 
-import React from "react";
+import { cx } from "@/lib/cx";
+import { Skeleton, SkeletonCircle } from "@/components/ui/Skeleton";
 
-// Base skeleton with animation
+/**
+ * Loading placeholders shaped like the admin panels they stand in for. The
+ * pulse and color come from the shared `Skeleton`; these only set the layout.
+ */
+
+/** @deprecated Use `Skeleton` from components/ui directly. */
 export function SkeletonPulse({ className = "" }: { className?: string }) {
-  return (
-    <div
-      className={`bg-(--surface-elevated) rounded animate-pulse ${className}`}
-    />
-  );
+  return <Skeleton className={className} />;
 }
 
-// Stat card skeleton - matches the structure of the StatCard component
+/** Matches AdminStatCard. */
 export function StatCardSkeleton() {
   return (
-    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border) animate-pulse">
+    <div className="bg-(--surface-elevated) rounded-(--radius-card) p-3 sm:p-4 border border-(--border)">
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="p-1.5 sm:p-2 bg-(--surface) rounded-lg">
-          <div className="w-3 h-3 sm:w-4 sm:h-4" />
-        </div>
+        <Skeleton radius="control" className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />
         <div className="min-w-0 flex-1">
-          <div className="h-3 w-20 bg-(--surface) rounded mb-1.5" />
-          <div className="h-5 w-16 bg-(--surface) rounded" />
+          <Skeleton className="h-3 w-20 mb-1.5" />
+          <Skeleton className="h-5 w-16" />
         </div>
       </div>
     </div>
   );
 }
 
-// Row of stat cards - can specify how many cards to show
 export function StatCardsRowSkeleton({
   count = 4,
   className = "",
@@ -37,15 +36,15 @@ export function StatCardsRowSkeleton({
   className?: string;
 }) {
   return (
-    <div className={`grid grid-cols-2 lg:grid-cols-4 gap-3 ${className}`}>
-      {[...Array(count)].map((_, i) => (
+    <div className={cx("grid grid-cols-2 lg:grid-cols-4 gap-3", className)}>
+      {Array.from({ length: count }, (_, i) => (
         <StatCardSkeleton key={i} />
       ))}
     </div>
   );
 }
 
-// Collapsible card skeleton - matches the structure of the CollapsibleCard component
+/** Matches AdminCollapsibleCard. */
 export function CollapsibleCardSkeleton({
   height = "h-48",
   className = "",
@@ -54,17 +53,16 @@ export function CollapsibleCardSkeleton({
   className?: string;
 }) {
   return (
-    <div className={`timer-card animate-pulse ${className}`}>
+    <div className={cx("timer-card", className)}>
       <div className="flex items-center justify-between mb-4">
-        <div className="h-6 w-40 bg-(--surface-elevated) rounded" />
-        <div className="h-6 w-6 bg-(--surface-elevated) rounded" />
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-6 w-6" />
       </div>
-      <div className={`bg-(--surface-elevated) rounded-lg ${height}`} />
+      <Skeleton radius="control" className={height} />
     </div>
   );
 }
 
-// List item skeleton - matches the structure of list items in the admin panel, with optional avatar
 export function ListItemSkeleton({
   hasAvatar = false,
   className = "",
@@ -74,21 +72,21 @@ export function ListItemSkeleton({
 }) {
   return (
     <div
-      className={`flex items-center gap-4 animate-pulse py-3 border-b border-(--border) last:border-0 ${className}`}
-    >
-      {hasAvatar && (
-        <div className="w-10 h-10 bg-(--surface-elevated) rounded-full shrink-0" />
+      className={cx(
+        "flex items-center gap-4 py-3 border-b border-(--border) last:border-0",
+        className,
       )}
+    >
+      {hasAvatar && <SkeletonCircle className="w-10 h-10 shrink-0" />}
       <div className="flex-1 min-w-0">
-        <div className="h-4 w-32 bg-(--surface-elevated) rounded mb-2" />
-        <div className="h-3 w-48 bg-(--surface-elevated) rounded" />
+        <Skeleton className="h-4 w-32 mb-2" />
+        <Skeleton className="h-3 w-48" />
       </div>
-      <div className="h-4 w-16 bg-(--surface-elevated) rounded" />
+      <Skeleton className="h-4 w-16" />
     </div>
   );
 }
 
-// List skeleton - renders multiple list item skeletons, can specify count and whether items have avatars
 export function ListSkeleton({
   count = 5,
   hasAvatar = false,
@@ -100,30 +98,34 @@ export function ListSkeleton({
 }) {
   return (
     <div className={className}>
-      {[...Array(count)].map((_, i) => (
+      {Array.from({ length: count }, (_, i) => (
         <ListItemSkeleton key={i} hasAvatar={hasAvatar} />
       ))}
     </div>
   );
 }
 
-// Badge card skeleton - matches the structure of the BadgeCard component, with title, description, and badge placeholders
 export function BadgeCardSkeleton({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`bg-(--surface-elevated) rounded-xl p-4 border border-(--border) animate-pulse ${className}`}
+      className={cx(
+        "bg-(--surface-elevated) rounded-(--radius-card) p-4 border border-(--border)",
+        className,
+      )}
     >
       <div className="flex items-center gap-2 mb-2">
-        <div className="h-5 w-16 bg-(--surface) rounded-full" />
-        <div className="h-5 w-20 bg-(--surface) rounded-full" />
+        <Skeleton radius="full" className="h-5 w-16" />
+        <Skeleton radius="full" className="h-5 w-20" />
       </div>
-      <div className="h-4 w-48 bg-(--surface) rounded mb-1" />
-      <div className="h-3 w-64 bg-(--surface) rounded" />
+      <Skeleton className="h-4 w-48 mb-1" />
+      <Skeleton className="h-3 w-64" />
     </div>
   );
 }
 
-// Chart skeleton
+/** Bars of varied height, so a loading chart still reads as a chart. */
+const CHART_BAR_HEIGHTS = ["45%", "70%", "35%", "80%", "55%", "65%", "40%"];
+
 export function ChartSkeleton({
   height = "h-48",
   className = "",
@@ -133,14 +135,19 @@ export function ChartSkeleton({
 }) {
   return (
     <div
-      className={`bg-(--surface-elevated) rounded-lg animate-pulse ${height} ${className}`}
+      aria-hidden
+      className={cx(
+        "bg-(--surface-elevated) rounded-(--radius-control)",
+        height,
+        className,
+      )}
     >
       <div className="flex items-end justify-around h-full p-4 gap-2">
-        {[...Array(7)].map((_, i) => (
-          <div
+        {CHART_BAR_HEIGHTS.map((barHeight, i) => (
+          <Skeleton
             key={i}
-            className="bg-(--surface) rounded-t flex-1"
-            style={{ height: `${30 + Math.random() * 50}%` }}
+            className="flex-1 rounded-b-none"
+            style={{ height: barHeight }}
           />
         ))}
       </div>
@@ -148,22 +155,21 @@ export function ChartSkeleton({
   );
 }
 
-// Filter bar skeleton
 export function FilterBarSkeleton({ className = "" }: { className?: string }) {
   return (
-    <div className={`timer-card animate-pulse ${className}`}>
+    <div className={cx("timer-card", className)}>
       <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1 h-10 bg-(--surface-elevated) rounded-lg" />
+        <Skeleton radius="control" className="flex-1 h-10" />
         <div className="flex gap-2">
-          <div className="h-10 w-24 bg-(--surface-elevated) rounded-lg" />
-          <div className="h-10 w-24 bg-(--surface-elevated) rounded-lg" />
+          <Skeleton radius="control" className="h-10 w-24" />
+          <Skeleton radius="control" className="h-10 w-24" />
         </div>
       </div>
     </div>
   );
 }
 
-// Admin page skeleton - combines multiple skeleton components to create a full-page loading state for admin pages
+/** Whole-page placeholder for an admin screen. */
 export function AdminPageSkeleton({
   showStats = true,
   statsCount = 4,
@@ -178,15 +184,12 @@ export function AdminPageSkeleton({
   return (
     <div className="min-h-full p-4 sm:p-6 lg:p-8">
       <div className="space-y-4 sm:space-y-6">
-        {/* Header skeleton */}
         <div className="timer-card">
-          <div className="h-10 w-48 bg-(--surface-elevated) rounded animate-pulse" />
+          <Skeleton className="h-10 w-48" />
         </div>
 
-        {/* Stats grid */}
         {showStats && <StatCardsRowSkeleton count={statsCount} />}
 
-        {/* Charts row */}
         {showCharts && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <CollapsibleCardSkeleton height="h-56" />
@@ -194,43 +197,15 @@ export function AdminPageSkeleton({
           </div>
         )}
 
-        {/* List section */}
         {showList && (
           <div className="timer-card">
             <div className="flex items-center justify-between mb-4">
-              <div className="h-6 w-32 bg-(--surface-elevated) rounded animate-pulse" />
+              <Skeleton className="h-6 w-32" />
             </div>
             <ListSkeleton count={5} />
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-// Empty state component - consistent empty state design
-export function EmptyState({
-  icon: Icon,
-  title,
-  description,
-}: {
-  icon: React.ElementType<{ className?: string }>;
-  title: string;
-  description?: string;
-}) {
-  return (
-    <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-      <div className="w-12 h-12 rounded-full bg-(--surface-elevated) flex items-center justify-center mb-3">
-        <Icon className="w-6 h-6 text-(--text-muted)" />
-      </div>
-      <p className="text-sm font-medium text-(--text-secondary) font-inter">
-        {title}
-      </p>
-      {description && (
-        <p className="text-xs text-(--text-muted) font-inter mt-1">
-          {description}
-        </p>
-      )}
     </div>
   );
 }

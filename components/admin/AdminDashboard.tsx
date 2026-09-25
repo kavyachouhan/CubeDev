@@ -25,102 +25,10 @@ import {
   EyeOff,
   RefreshCw,
 } from "lucide-react";
+import { AdminStatCard } from "./AdminStatCard";
+import { AdminCollapsibleCard } from "./AdminCollapsibleCard";
 import type { LucideIcon } from "lucide-react";
 import { StatCardSkeleton, ListItemSkeleton } from "./AdminSkeletons";
-
-// Stat Card Component
-function StatCard({
-  title,
-  value,
-  icon: Icon,
-  iconColor = "text-(--primary)",
-  iconBgColor = "bg-(--primary)/10",
-}: {
-  title: string;
-  value: string | number;
-  icon: LucideIcon;
-  iconColor?: string;
-  iconBgColor?: string;
-}) {
-  return (
-    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
-          <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate font-inter">
-            {title}
-          </div>
-          <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
-            {typeof value === "number" ? value.toLocaleString() : value}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Collapsible Card Component with show/hide functionality
-function CollapsibleCard({
-  title,
-  children,
-  defaultOpen = true,
-  storageKey,
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  storageKey?: string;
-}) {
-  const [isOpen, setIsOpen] = useState(() => {
-    if (typeof window !== "undefined" && storageKey) {
-      const saved = localStorage.getItem(storageKey);
-      return saved !== null ? saved === "true" : defaultOpen;
-    }
-    return defaultOpen;
-  });
-
-  const toggleOpen = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    if (typeof window !== "undefined" && storageKey) {
-      localStorage.setItem(storageKey, String(newState));
-    }
-  };
-
-  return (
-    <div className="timer-card">
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={toggleOpen}
-          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
-        >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            {title}
-          </h3>
-          {isOpen ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <button
-          onClick={toggleOpen}
-          className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-          title={isOpen ? "Hide" : "Show"}
-        >
-          {isOpen ? (
-            <EyeOff className="w-4 h-4" />
-          ) : (
-            <Eye className="w-4 h-4" />
-          )}
-        </button>
-      </div>
-      {isOpen && children}
-    </div>
-  );
-}
 
 // Recent Activity Item Component
 function ActivityItem({
@@ -135,13 +43,13 @@ function ActivityItem({
   const getIcon = () => {
     switch (type) {
       case "user_registration":
-        return <UserPlus className="w-4 h-4 text-green-500" />;
+        return <UserPlus className="w-4 h-4 text-(--success)" />;
       case "feedback":
-        return <MessageSquare className="w-4 h-4 text-blue-500" />;
+        return <MessageSquare className="w-4 h-4 text-(--info)" />;
       case "contact":
-        return <Mail className="w-4 h-4 text-yellow-500" />;
+        return <Mail className="w-4 h-4 text-(--warning)" />;
       case "challenge_room":
-        return <Trophy className="w-4 h-4 text-purple-500" />;
+        return <Trophy className="w-4 h-4 text-(--accent)" />;
       default:
         return <Activity className="w-4 h-4 text-(--text-muted)" />;
     }
@@ -158,7 +66,7 @@ function ActivityItem({
 
   return (
     <div className="flex items-start gap-3 py-3 border-b border-(--border) last:border-0">
-      <div className="p-2 bg-(--surface-elevated) rounded-lg shrink-0">
+      <div className="p-2 bg-(--surface-elevated) rounded-(--radius-control) shrink-0">
         {getIcon()}
       </div>
       <div className="flex-1 min-w-0">
@@ -221,7 +129,7 @@ export default function AdminDashboard() {
         <button
           onClick={handleRefresh}
           disabled={isFetching}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-lg transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-3 py-1.5 text-sm text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-(--radius-control) transition-colors disabled:opacity-50"
           title={
             statsFromCache
               ? "Data loaded from cache - Click to refresh"
@@ -236,7 +144,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Primary Stats */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title="System Overview"
         defaultOpen={true}
         storageKey="admin-dashboard-overview"
@@ -251,42 +159,42 @@ export default function AdminDashboard() {
             </>
           ) : (
             <>
-              <StatCard
+              <AdminStatCard
                 title="Total Users"
                 value={systemStats.users.total}
                 icon={Users}
-                iconColor="text-blue-500"
-                iconBgColor="bg-blue-500/10"
+                iconColor="text-(--info)"
+                iconBgColor="bg-(--info)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Active Today"
                 value={systemStats.users.activeDay}
                 icon={TrendingUp}
-                iconColor="text-green-500"
-                iconBgColor="bg-green-500/10"
+                iconColor="text-(--success)"
+                iconBgColor="bg-(--success)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Total Solves"
                 value={systemStats.solves.total}
                 icon={Timer}
-                iconColor="text-yellow-500"
-                iconBgColor="bg-yellow-500/10"
+                iconColor="text-(--warning)"
+                iconBgColor="bg-(--warning)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Sessions"
                 value={systemStats.sessions.total}
                 icon={Clock}
-                iconColor="text-purple-500"
-                iconBgColor="bg-purple-500/10"
+                iconColor="text-(--accent)"
+                iconBgColor="bg-(--accent)/10"
               />
             </>
           )}
         </div>
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* Secondary Stats */}
       <div className="mt-4 sm:mt-6">
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Features Overview"
           defaultOpen={true}
           storageKey="admin-dashboard-features"
@@ -302,40 +210,40 @@ export default function AdminDashboard() {
               </>
             ) : (
               <>
-                <StatCard
+                <AdminStatCard
                   title="Challenge Rooms"
                   value={systemStats.challengeRooms.total}
                   icon={Trophy}
-                  iconColor="text-orange-500"
-                  iconBgColor="bg-orange-500/10"
+                  iconColor="text-(--warning)"
+                  iconBgColor="bg-(--warning)/10"
                 />
-                <StatCard
+                <AdminStatCard
                   title="Feedback"
                   value={systemStats.feedback.total}
                   icon={MessageSquare}
-                  iconColor="text-cyan-500"
-                  iconBgColor="bg-cyan-500/10"
+                  iconColor="text-(--primary)"
+                  iconBgColor="bg-(--primary)/10"
                 />
-                <StatCard
+                <AdminStatCard
                   title="Contact Messages"
                   value={systemStats.contact.total}
                   icon={Mail}
-                  iconColor="text-pink-500"
-                  iconBgColor="bg-pink-500/10"
+                  iconColor="text-(--accent)"
+                  iconBgColor="bg-(--accent)/10"
                 />
-                <StatCard
+                <AdminStatCard
                   title="Push Subs"
                   value={systemStats.pushSubscriptions.active}
                   icon={Bell}
-                  iconColor="text-indigo-500"
-                  iconBgColor="bg-indigo-500/10"
+                  iconColor="text-(--accent)"
+                  iconBgColor="bg-(--accent)/10"
                 />
-                <StatCard
+                <AdminStatCard
                   title="Coach Profiles"
                   value={systemStats.coach.totalProfiles}
                   icon={GraduationCap}
-                  iconColor="text-teal-500"
-                  iconBgColor="bg-teal-500/10"
+                  iconColor="text-(--primary)"
+                  iconBgColor="bg-(--primary)/10"
                 />
               </>
             )}
@@ -351,37 +259,37 @@ export default function AdminDashboard() {
               </>
             ) : (
               <>
-                <StatCard
+                <AdminStatCard
                   title="Algorithm Progress"
                   value={systemStats.algorithms.totalProgress}
                   icon={BookOpen}
-                  iconColor="text-rose-500"
-                  iconBgColor="bg-rose-500/10"
+                  iconColor="text-(--error)"
+                  iconBgColor="bg-(--error)/10"
                 />
-                <StatCard
+                <AdminStatCard
                   title="Competition Sims"
                   value={systemStats.competitions.total}
                   icon={Medal}
-                  iconColor="text-amber-500"
-                  iconBgColor="bg-amber-500/10"
+                  iconColor="text-(--warning)"
+                  iconBgColor="bg-(--warning)/10"
                 />
-                <StatCard
+                <AdminStatCard
                   title="Active This Week"
                   value={systemStats.users.activeWeek}
                   icon={Activity}
-                  iconColor="text-emerald-500"
-                  iconBgColor="bg-emerald-500/10"
+                  iconColor="text-(--success)"
+                  iconBgColor="bg-(--success)/10"
                 />
               </>
             )}
           </div>
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-6 items-start">
         {/* Recent Activity */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Recent Activity"
           defaultOpen={true}
           storageKey="admin-dashboard-activity"
@@ -394,7 +302,7 @@ export default function AdminDashboard() {
                     key={i}
                     className="flex items-start gap-3 py-3 animate-pulse"
                   >
-                    <div className="w-8 h-8 bg-(--surface-elevated) rounded-lg shrink-0" />
+                    <div className="w-8 h-8 bg-(--surface-elevated) rounded-(--radius-control) shrink-0" />
                     <div className="flex-1">
                       <div className="h-4 w-3/4 bg-(--surface-elevated) rounded" />
                       <div className="h-3 w-16 bg-(--surface-elevated) rounded mt-1" />
@@ -417,10 +325,10 @@ export default function AdminDashboard() {
               ))
             )}
           </div>
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* User Activity Breakdown */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="User Activity Breakdown"
           defaultOpen={true}
           storageKey="admin-dashboard-breakdown"
@@ -451,7 +359,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-blue-500 rounded-full transition-all"
+                    className="h-full bg-(--info) rounded-full transition-all"
                     style={{
                       width: `${systemStats.users.total > 0 ? Math.min((systemStats.users.activeDay / systemStats.users.total) * 100, 100) : 0}%`,
                     }}
@@ -471,7 +379,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-green-500 rounded-full transition-all"
+                    className="h-full bg-(--success) rounded-full transition-all"
                     style={{
                       width: `${systemStats.users.total > 0 ? Math.min((systemStats.users.activeWeek / systemStats.users.total) * 100, 100) : 0}%`,
                     }}
@@ -491,7 +399,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-yellow-500 rounded-full transition-all"
+                    className="h-full bg-(--warning) rounded-full transition-all"
                     style={{
                       width: `${systemStats.users.total > 0 ? Math.min((systemStats.users.activeMonth / systemStats.users.total) * 100, 100) : 0}%`,
                     }}
@@ -512,7 +420,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-purple-500 rounded-full transition-all"
+                    className="h-full bg-(--accent) rounded-full transition-all"
                     style={{
                       width: `${systemStats.challengeRooms.total > 0 ? Math.min((systemStats.challengeRooms.active / systemStats.challengeRooms.total) * 100, 100) : 0}%`,
                     }}
@@ -533,7 +441,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-cyan-500 rounded-full transition-all"
+                    className="h-full bg-(--primary) rounded-full transition-all"
                     style={{
                       width: `${systemStats.competitions.total > 0 ? Math.min((systemStats.competitions.completed / systemStats.competitions.total) * 100, 100) : 0}%`,
                     }}
@@ -542,11 +450,11 @@ export default function AdminDashboard() {
               </div>
             </div>
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       <div className="mt-4 sm:mt-6">
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Reminder Observability"
           defaultOpen={true}
           storageKey="admin-dashboard-reminder-observability"
@@ -556,7 +464,7 @@ export default function AdminDashboard() {
               {[...Array(4)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border) animate-pulse"
+                  className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border) animate-pulse"
                 >
                   <div className="h-4 w-32 bg-(--surface) rounded mb-2" />
                   <div className="h-3 w-56 bg-(--surface) rounded" />
@@ -572,7 +480,7 @@ export default function AdminDashboard() {
               {reminderRunLogs.map((run: any) => (
                 <div
                   key={run._id}
-                  className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
+                  className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs px-2 py-0.5 bg-(--surface) text-(--text-muted) rounded-full font-inter">
@@ -595,17 +503,17 @@ export default function AdminDashboard() {
                       </span>
                     </span>
                     <span>
-                      Sent: <span className="text-green-500">{run.sent}</span>
+                      Sent: <span className="text-(--success)">{run.sent}</span>
                     </span>
                     <span>
                       Dedup:{" "}
-                      <span className="text-yellow-500">
+                      <span className="text-(--warning)">
                         {run.skippedDedup}
                       </span>
                     </span>
                     <span>
                       Practiced:{" "}
-                      <span className="text-cyan-500">
+                      <span className="text-(--primary)">
                         {run.skippedPracticedToday}
                       </span>
                     </span>
@@ -614,7 +522,7 @@ export default function AdminDashboard() {
               ))}
             </div>
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
     </div>
   );

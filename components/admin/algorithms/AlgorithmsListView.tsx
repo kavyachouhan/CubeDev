@@ -44,7 +44,7 @@ export function AlgorithmsListView({
       <div className="flex items-center gap-2 sm:gap-3 mb-4">
         <button
           onClick={onBack}
-          className="p-2 hover:bg-(--surface-elevated) rounded-lg transition-colors shrink-0"
+          className="p-2 hover:bg-(--surface-elevated) rounded-(--radius-control) transition-colors shrink-0"
         >
           <ChevronLeft className="w-5 h-5 text-(--text-muted)" />
         </button>
@@ -58,7 +58,7 @@ export function AlgorithmsListView({
         </div>
         <button
           onClick={() => setShowNewAlgModal(true)}
-          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-inter text-sm shrink-0"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-inter text-sm shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Add Algorithm</span>
@@ -111,7 +111,7 @@ export function AlgorithmsListView({
                 <div className="flex items-center gap-1 shrink-0 self-end sm:self-start">
                   <button
                     onClick={() => setEditingAlgorithm(alg._id)}
-                    className="p-2 hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--primary) rounded-lg transition-colors"
+                    className="p-2 hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--primary) rounded-(--radius-control) transition-colors"
                     title="Edit algorithm"
                   >
                     <Edit2 className="w-4 h-4" />
@@ -123,7 +123,7 @@ export function AlgorithmsListView({
                         notation: alg.notation,
                       })
                     }
-                    className="p-2 hover:bg-red-500/10 text-(--text-muted) hover:text-red-500 rounded-lg transition-colors"
+                    className="p-2 hover:bg-(--error)/10 text-(--text-muted) hover:text-(--error) rounded-(--radius-control) transition-colors"
                     title="Delete algorithm"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -136,9 +136,7 @@ export function AlgorithmsListView({
       ) : (
         <div className="timer-card text-center py-8">
           <FileText className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
-          <p className="text-(--text-muted) font-inter">
-            No algorithms yet
-          </p>
+          <p className="text-(--text-muted) font-inter">No algorithms yet</p>
         </div>
       )}
 

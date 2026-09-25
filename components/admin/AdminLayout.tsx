@@ -32,21 +32,96 @@ interface AdminLayoutProps {
 }
 
 const SECTIONS: NavSection[] = [
-  { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, description: "System overview & analytics", href: "/admin" },
-  { id: "users", name: "Users", icon: Users, description: "User management", href: "/admin/users" },
-  { id: "feedback", name: "Feedback", icon: MessageSquare, description: "Feedback & surveys", href: "/admin/feedback" },
-  { id: "contact", name: "Contact", icon: Mail, description: "Contact messages", href: "/admin/contact" },
-  { id: "notifications", name: "Notifications", icon: Bell, description: "Push notification logs", href: "/admin/notifications" },
-  { id: "timer-analytics", name: "Timer Analytics", icon: Timer, description: "Timer usage statistics", href: "/admin/timer-analytics" },
-  { id: "algorithms", name: "Algorithms", icon: GraduationCap, description: "Algorithm sets & stats", href: "/admin/algorithms" },
-  { id: "coach", name: "Coach", icon: Compass, description: "Coaching activity", href: "/admin/coach" },
-  { id: "competitions", name: "Competitions", icon: Medal, description: "Competition simulations", href: "/admin/competitions" },
-  { id: "challenges", name: "Challenges", icon: Trophy, description: "Challenge room stats", href: "/admin/challenges" },
-  { id: "faq", name: "FAQ / Help", icon: HelpCircle, description: "Help center articles", href: "/admin/faq" },
-  { id: "labels", name: "Labels", icon: Tag, description: "Feature label management", href: "/admin/labels" },
+  {
+    id: "dashboard",
+    name: "Dashboard",
+    icon: LayoutDashboard,
+    description: "System overview & analytics",
+    href: "/admin",
+  },
+  {
+    id: "users",
+    name: "Users",
+    icon: Users,
+    description: "User management",
+    href: "/admin/users",
+  },
+  {
+    id: "feedback",
+    name: "Feedback",
+    icon: MessageSquare,
+    description: "Feedback & surveys",
+    href: "/admin/feedback",
+  },
+  {
+    id: "contact",
+    name: "Contact",
+    icon: Mail,
+    description: "Contact messages",
+    href: "/admin/contact",
+  },
+  {
+    id: "notifications",
+    name: "Notifications",
+    icon: Bell,
+    description: "Push notification logs",
+    href: "/admin/notifications",
+  },
+  {
+    id: "timer-analytics",
+    name: "Timer Analytics",
+    icon: Timer,
+    description: "Timer usage statistics",
+    href: "/admin/timer-analytics",
+  },
+  {
+    id: "algorithms",
+    name: "Algorithms",
+    icon: GraduationCap,
+    description: "Algorithm sets & stats",
+    href: "/admin/algorithms",
+  },
+  {
+    id: "coach",
+    name: "Coach",
+    icon: Compass,
+    description: "Coaching activity",
+    href: "/admin/coach",
+  },
+  {
+    id: "competitions",
+    name: "Competitions",
+    icon: Medal,
+    description: "Competition simulations",
+    href: "/admin/competitions",
+  },
+  {
+    id: "challenges",
+    name: "Challenges",
+    icon: Trophy,
+    description: "Challenge room stats",
+    href: "/admin/challenges",
+  },
+  {
+    id: "faq",
+    name: "FAQ / Help",
+    icon: HelpCircle,
+    description: "Help center articles",
+    href: "/admin/faq",
+  },
+  {
+    id: "labels",
+    name: "Labels",
+    icon: Tag,
+    description: "Feature label management",
+    href: "/admin/labels",
+  },
 ];
 
-export default function AdminLayout({ children, activeSection }: AdminLayoutProps) {
+export default function AdminLayout({
+  children,
+  activeSection,
+}: AdminLayoutProps) {
   const { user, signOut } = useUser();
   const avatarUrl = user ? getAvatarUrl(user.avatar) : undefined;
 
@@ -96,10 +171,16 @@ export default function AdminLayout({ children, activeSection }: AdminLayoutProp
             )}
           >
             <ChevronLeft className="w-4 h-4" aria-hidden />
-            <span className={collapsed ? "sr-only" : undefined}>Back to Cube Lab</span>
+            <span className={collapsed ? "sr-only" : undefined}>
+              Back to Cube Lab
+            </span>
           </Link>
           {user && (
-            <SidebarUserDropdown user={user} onSignOut={signOut} collapsed={collapsed} />
+            <SidebarUserDropdown
+              user={user}
+              onSignOut={signOut}
+              collapsed={collapsed}
+            />
           )}
         </>
       )}

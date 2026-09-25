@@ -46,6 +46,12 @@ import {
   Percent,
   Clock,
 } from "lucide-react";
+import { Table } from "@/components/ui/Table";
+import { Checkbox, SearchInput } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { AdminStatCard } from "./AdminStatCard";
+import { AdminCollapsibleCard } from "./AdminCollapsibleCard";
+import { useEffectiveTheme, useThemeColors } from "@/lib/hooks/useThemeColors";
 import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import { canOpenWcaProfile } from "@/lib/identifier-utils";
@@ -60,185 +66,6 @@ ChartJS.register(
   Tooltip,
   Legend,
 );
-
-// Hook to detect current theme
-function useEffectiveTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  useEffect(() => {
-    const checkTheme = () => {
-      const dataTheme = document.documentElement.getAttribute("data-theme");
-      setTheme((dataTheme as "light" | "dark") || "dark");
-    };
-
-    checkTheme();
-
-    const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return theme;
-}
-
-// Hook to get computed primary color for charts
-function usePrimaryColor() {
-  const [primaryColor, setPrimaryColor] = useState("rgba(168, 85, 247, 1)");
-
-  useEffect(() => {
-    const getColor = () => {
-      if (typeof window === "undefined") return;
-      const computed = getComputedStyle(document.documentElement)
-        .getPropertyValue("--primary")
-        .trim();
-      if (computed) {
-        setPrimaryColor(computed);
-      }
-    };
-
-    getColor();
-
-    const observer = new MutationObserver(getColor);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme", "data-color-scheme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return primaryColor;
-}
-
-// Collapsible Card Component
-function CollapsibleCard({
-  title,
-  children,
-  defaultOpen = true,
-  storageKey,
-  headerExtra,
-  className = "",
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  storageKey?: string;
-  headerExtra?: React.ReactNode;
-  className?: string;
-}) {
-  const [isOpen, setIsOpen] = useState(() => {
-    if (typeof window !== "undefined" && storageKey) {
-      const saved = localStorage.getItem(storageKey);
-      return saved !== null ? saved === "true" : defaultOpen;
-    }
-    return defaultOpen;
-  });
-
-  const toggleOpen = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    if (typeof window !== "undefined" && storageKey) {
-      localStorage.setItem(storageKey, String(newState));
-    }
-  };
-
-  return (
-    <div className={`timer-card ${className}`}>
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={toggleOpen}
-          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
-        >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            {title}
-          </h3>
-          {isOpen ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          {headerExtra}
-          <button
-            onClick={toggleOpen}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={isOpen ? "Hide" : "Show"}
-          >
-            {isOpen ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-      {isOpen && children}
-    </div>
-  );
-}
-
-// Stat Card Component
-function StatCard({
-  title,
-  value,
-  icon: Icon,
-  iconColor = "text-(--primary)",
-  iconBgColor = "bg-(--primary)/10",
-  subValue,
-  trend,
-}: {
-  title: string;
-  value: string | number;
-  icon: LucideIcon;
-  iconColor?: string;
-  iconBgColor?: string;
-  subValue?: string;
-  trend?: { value: number; label: string };
-}) {
-  return (
-    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
-          <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate font-inter">
-            {title}
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
-              {typeof value === "number" ? value.toLocaleString() : value}
-            </div>
-            {trend && (
-              <div
-                className={`flex items-center gap-0.5 text-xs ${
-                  trend.value >= 0 ? "text-green-500" : "text-red-500"
-                }`}
-              >
-                {trend.value >= 0 ? (
-                  <TrendingUp className="w-3 h-3" />
-                ) : (
-                  <TrendingDown className="w-3 h-3" />
-                )}
-                <span>{Math.abs(trend.value)}%</span>
-              </div>
-            )}
-          </div>
-          {subValue && (
-            <div className="text-xs text-(--text-muted) font-inter">
-              {subValue}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // Progress Bar for analytics
 function ProgressBar({
@@ -305,11 +132,11 @@ function ColorSchemeChart({
   distribution: Record<string, number>;
 }) {
   const colors: Record<string, string> = {
-    blue: "bg-blue-500",
-    purple: "bg-purple-500",
-    green: "bg-green-500",
-    orange: "bg-orange-500",
-    cyan: "bg-cyan-500",
+    blue: "bg-(--info)",
+    purple: "bg-(--accent)",
+    green: "bg-(--success)",
+    orange: "bg-(--warning)",
+    cyan: "bg-(--primary)",
   };
   const total = Object.values(distribution).reduce((a, b) => a + b, 0);
 
@@ -318,7 +145,7 @@ function ColorSchemeChart({
       {Object.entries(distribution).map(([scheme, count]) => (
         <div key={scheme} className="flex items-center gap-3">
           <div
-            className={`w-3 h-3 rounded-full ${colors[scheme] || "bg-gray-500"}`}
+            className={`w-3 h-3 rounded-full ${colors[scheme] || "bg-(--border)"}`}
           />
           <span className="text-sm text-(--text-secondary) font-inter capitalize flex-1">
             {scheme}
@@ -355,7 +182,7 @@ function ThemeDistributionChart({
         return (
           <div
             key={mode}
-            className="bg-(--surface) rounded-lg p-3 text-center border border-(--border)"
+            className="bg-(--surface) rounded-(--radius-control) p-3 text-center border border-(--border)"
           >
             <Icon className="w-5 h-5 mx-auto mb-1 text-(--text-secondary)" />
             <div className="text-lg font-bold text-(--text-primary) font-statement">
@@ -386,8 +213,8 @@ function UserDetailsModal({
 
   if (!userActivity) {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="timer-card max-w-lg w-full">
+      <Modal open onClose={onClose} size="lg" mobile="fullscreen">
+        <Modal.Body>
           <div className="animate-pulse space-y-4">
             <div className="h-8 w-48 bg-(--surface-elevated) rounded" />
             <div className="h-4 w-32 bg-(--surface-elevated) rounded" />
@@ -395,21 +222,21 @@ function UserDetailsModal({
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-16 bg-(--surface-elevated) rounded-lg"
+                  className="h-16 bg-(--surface-elevated) rounded-(--radius-control)"
                 />
               ))}
             </div>
           </div>
-        </div>
-      </div>
+        </Modal.Body>
+      </Modal>
     );
   }
 
   const { user, stats } = userActivity;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <Modal open onClose={onClose} size="2xl" mobile="fullscreen">
+      <Modal.Body>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -456,7 +283,7 @@ function UserDetailsModal({
           </div>
           <button
             onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -469,32 +296,32 @@ function UserDetailsModal({
               Account Information
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <StatCard
+              <AdminStatCard
                 title="Country"
                 value={user.countryIso2}
                 icon={Globe}
-                iconColor="text-blue-500"
-                iconBgColor="bg-blue-500/10"
+                iconColor="text-(--info)"
+                iconBgColor="bg-(--info)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Joined"
                 value={new Date(user.createdAt).toLocaleDateString()}
                 icon={Calendar}
-                iconColor="text-green-500"
-                iconBgColor="bg-green-500/10"
+                iconColor="text-(--success)"
+                iconBgColor="bg-(--success)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Last Active"
                 value={new Date(user.lastLoginAt).toLocaleDateString()}
                 icon={Calendar}
-                iconColor="text-yellow-500"
-                iconBgColor="bg-yellow-500/10"
+                iconColor="text-(--warning)"
+                iconBgColor="bg-(--warning)/10"
               />
             </div>
           </div>
 
           {/* Email */}
-          <div className="bg-(--surface-elevated) rounded-xl p-4 border border-(--border)">
+          <div className="bg-(--surface-elevated) rounded-(--radius-card) p-4 border border-(--border)">
             <div className="flex items-center gap-2 text-(--text-muted) mb-2">
               <Mail className="w-4 h-4" />
               <span className="text-sm font-inter">Email</span>
@@ -510,57 +337,61 @@ function UserDetailsModal({
               Activity Stats
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <StatCard
+              <AdminStatCard
                 title="Total Solves"
                 value={stats.totalSolves}
                 icon={Timer}
-                iconColor="text-blue-500"
-                iconBgColor="bg-blue-500/10"
+                iconColor="text-(--info)"
+                iconBgColor="bg-(--info)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Sessions"
                 value={stats.totalSessions}
                 icon={Timer}
-                iconColor="text-green-500"
-                iconBgColor="bg-green-500/10"
+                iconColor="text-(--success)"
+                iconBgColor="bg-(--success)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Challenges"
                 value={stats.challengeRoomsJoined}
                 icon={Trophy}
-                iconColor="text-yellow-500"
-                iconBgColor="bg-yellow-500/10"
+                iconColor="text-(--warning)"
+                iconBgColor="bg-(--warning)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Algs Mastered"
                 value={stats.algorithmsLearned}
                 icon={BookOpen}
-                iconColor="text-purple-500"
-                iconBgColor="bg-purple-500/10"
+                iconColor="text-(--accent)"
+                iconBgColor="bg-(--accent)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Algs Learning"
                 value={stats.algorithmsInProgress}
                 icon={BookOpen}
-                iconColor="text-pink-500"
-                iconBgColor="bg-pink-500/10"
+                iconColor="text-(--accent)"
+                iconBgColor="bg-(--accent)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Coach Profile"
                 value={stats.hasCoachProfile ? "Active" : "None"}
                 icon={User}
                 iconColor={
-                  stats.hasCoachProfile ? "text-emerald-500" : "text-gray-500"
+                  stats.hasCoachProfile
+                    ? "text-(--success)"
+                    : "text-(--text-muted)"
                 }
                 iconBgColor={
-                  stats.hasCoachProfile ? "bg-emerald-500/10" : "bg-gray-500/10"
+                  stats.hasCoachProfile
+                    ? "bg-(--success)/10"
+                    : "bg-(--border)/10"
                 }
               />
             </div>
           </div>
 
           {/* Settings */}
-          <div className="bg-(--surface-elevated) rounded-xl p-4 border border-(--border)">
+          <div className="bg-(--surface-elevated) rounded-(--radius-card) p-4 border border-(--border)">
             <h4 className="text-sm font-medium text-(--text-primary) mb-3 font-statement">
               User Settings
             </h4>
@@ -605,13 +436,13 @@ function UserDetailsModal({
         <div className="mt-6 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-lg transition-colors font-inter"
+            className="px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-(--radius-control) transition-colors font-inter"
           >
             Close
           </button>
         </div>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 }
 
@@ -713,7 +544,7 @@ function CompactStatRow({
       {items.map((item, idx) => (
         <div
           key={idx}
-          className="flex items-center gap-2 bg-(--surface-elevated) rounded-lg p-2.5 border border-(--border)"
+          className="flex items-center gap-2 bg-(--surface-elevated) rounded-(--radius-control) p-2.5 border border-(--border)"
         >
           {item.icon && (
             <item.icon className="w-3.5 h-3.5 text-(--text-muted)" />
@@ -748,7 +579,7 @@ function UserAnalyticsOverview() {
     },
   );
   const effectiveTheme = useEffectiveTheme();
-  const primaryColor = usePrimaryColor();
+  const primaryColor = useThemeColors()["--primary"];
   const isLight = effectiveTheme === "light";
   const textColor = isLight
     ? "rgba(17, 24, 39, 0.8)"
@@ -931,7 +762,7 @@ function UserAnalyticsOverview() {
           {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="h-20 bg-(--surface-elevated) rounded-xl animate-pulse"
+              className="h-20 bg-(--surface-elevated) rounded-(--radius-card) animate-pulse"
             />
           ))}
         </div>
@@ -945,7 +776,7 @@ function UserAnalyticsOverview() {
       <div className="flex justify-end">
         <button
           onClick={handleExportAnalytics}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter"
+          className="flex items-center gap-2 px-3 py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter"
         >
           <Download className="w-4 h-4" />
           Export Analytics
@@ -954,117 +785,117 @@ function UserAnalyticsOverview() {
 
       {/* Key Metrics - Row 1 */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatCard
+        <AdminStatCard
           title="Total Users"
           value={analytics.totalUsers}
           icon={Users}
-          iconColor="text-blue-500"
-          iconBgColor="bg-blue-500/10"
+          iconColor="text-(--info)"
+          iconBgColor="bg-(--info)/10"
         />
-        <StatCard
+        <AdminStatCard
           title="Active Today"
           value={analytics.activity.activeToday}
           icon={Activity}
-          iconColor="text-green-500"
-          iconBgColor="bg-green-500/10"
+          iconColor="text-(--success)"
+          iconBgColor="bg-(--success)/10"
           subValue={`${analytics.totalUsers > 0 ? ((analytics.activity.activeToday / analytics.totalUsers) * 100).toFixed(1) : 0}% of total`}
         />
-        <StatCard
+        <AdminStatCard
           title="Active This Week"
           value={analytics.activity.activeThisWeek}
           icon={Activity}
-          iconColor="text-yellow-500"
-          iconBgColor="bg-yellow-500/10"
+          iconColor="text-(--warning)"
+          iconBgColor="bg-(--warning)/10"
         />
-        <StatCard
+        <AdminStatCard
           title="Active This Month"
           value={analytics.activity.activeThisMonth}
           icon={Activity}
-          iconColor="text-purple-500"
-          iconBgColor="bg-purple-500/10"
+          iconColor="text-(--accent)"
+          iconBgColor="bg-(--accent)/10"
         />
       </div>
 
       {/* Growth & Retention Metrics - Row 2 */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatCard
+        <AdminStatCard
           title="New This Week"
           value={analytics.registration.newThisWeek}
           icon={TrendingUp}
-          iconColor="text-green-500"
-          iconBgColor="bg-green-500/10"
+          iconColor="text-(--success)"
+          iconBgColor="bg-(--success)/10"
           trend={{
             value: analytics.registration.weekOverWeekGrowth,
             label: "vs last week",
           }}
         />
-        <StatCard
+        <AdminStatCard
           title="New This Month"
           value={analytics.registration.newThisMonth}
           icon={TrendingUp}
-          iconColor="text-blue-500"
-          iconBgColor="bg-blue-500/10"
+          iconColor="text-(--info)"
+          iconBgColor="bg-(--info)/10"
           trend={{
             value: analytics.registration.monthOverMonthGrowth,
             label: "vs last month",
           }}
         />
-        <StatCard
+        <AdminStatCard
           title="Inactive (30d)"
           value={analytics.activity.inactiveUsers}
           icon={UserMinus}
-          iconColor="text-orange-500"
-          iconBgColor="bg-orange-500/10"
+          iconColor="text-(--warning)"
+          iconBgColor="bg-(--warning)/10"
           subValue={`${analytics.totalUsers > 0 ? ((analytics.activity.inactiveUsers / analytics.totalUsers) * 100).toFixed(1) : 0}% of total`}
         />
-        <StatCard
+        <AdminStatCard
           title="Weekly Retention"
           value={`${analytics.activity.weeklyRetentionRate || 0}%`}
           icon={UserCheck}
-          iconColor="text-cyan-500"
-          iconBgColor="bg-cyan-500/10"
+          iconColor="text-(--primary)"
+          iconBgColor="bg-(--primary)/10"
           subValue="Week-over-week"
         />
       </div>
 
       {/* Additional Metrics - Row 3 */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatCard
+        <AdminStatCard
           title="Countries"
           value={analytics.geography.totalCountries}
           icon={Globe}
-          iconColor="text-cyan-500"
-          iconBgColor="bg-cyan-500/10"
+          iconColor="text-(--primary)"
+          iconBgColor="bg-(--primary)/10"
         />
-        <StatCard
+        <AdminStatCard
           title="Churned Users"
           value={analytics.activity.churnedUsers}
           icon={UserMinus}
-          iconColor="text-red-500"
-          iconBgColor="bg-red-500/10"
+          iconColor="text-(--error)"
+          iconBgColor="bg-(--error)/10"
           subValue="Active 30-60d ago"
         />
-        <StatCard
+        <AdminStatCard
           title="Avg Days Idle"
           value={analytics.activity.avgDaysSinceLogin || 0}
           icon={Clock}
-          iconColor="text-amber-500"
-          iconBgColor="bg-amber-500/10"
+          iconColor="text-(--warning)"
+          iconBgColor="bg-(--warning)/10"
           subValue="Active users"
         />
-        <StatCard
+        <AdminStatCard
           title="Profile Hidden"
           value={analytics.demographics?.privacySettings?.profileHidden || 0}
           icon={Shield}
-          iconColor="text-gray-500"
-          iconBgColor="bg-gray-500/10"
+          iconColor="text-(--text-muted)"
+          iconBgColor="bg-(--border)/10"
         />
       </div>
 
       {/* Charts Grid - Row 4 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
         {/* Weekly Registration Trend */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Weekly Registrations"
           storageKey="admin-users-weekly-trend"
           defaultOpen={true}
@@ -1078,10 +909,10 @@ function UserAnalyticsOverview() {
               </div>
             )}
           </div>
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Monthly Registration Trend */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Monthly Registrations"
           storageKey="admin-users-monthly-trend"
           defaultOpen={true}
@@ -1095,11 +926,11 @@ function UserAnalyticsOverview() {
               </div>
             )}
           </div>
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Top Countries - Row 5 */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title="Top Countries"
         storageKey="admin-users-countries"
         defaultOpen={true}
@@ -1127,12 +958,12 @@ function UserAnalyticsOverview() {
             </div>
           ))}
         </div>
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* Demographics & Preferences - Row 6 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
         {/* Gender Distribution - Doughnut Chart */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Gender Distribution"
           storageKey="admin-users-gender"
           defaultOpen={true}
@@ -1146,11 +977,11 @@ function UserAnalyticsOverview() {
               </div>
             )}
           </div>
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Privacy Settings - Grid 3 */}
         {analytics.demographics?.privacySettings && (
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Privacy Settings"
             storageKey="admin-users-privacy"
             defaultOpen={true}
@@ -1176,7 +1007,7 @@ function UserAnalyticsOverview() {
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex flex-col items-center gap-2 bg-(--surface-elevated) rounded-lg p-3 border border-(--border) text-center"
+                  className="flex flex-col items-center gap-2 bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border) text-center"
                 >
                   {item.icon && (
                     <item.icon className="w-4 h-4 text-(--text-muted)" />
@@ -1192,14 +1023,14 @@ function UserAnalyticsOverview() {
                 </div>
               ))}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
         )}
       </div>
 
       {/* Preferences Grid - Row 7 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
         {/* Theme Distribution */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Theme Preferences"
           storageKey="admin-users-theme"
           defaultOpen={true}
@@ -1207,10 +1038,10 @@ function UserAnalyticsOverview() {
           <ThemeDistributionChart
             distribution={analytics.preferences.themeDistribution}
           />
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Color Scheme Distribution - Doughnut Chart */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Color Schemes"
           storageKey="admin-users-colors"
           defaultOpen={true}
@@ -1227,13 +1058,13 @@ function UserAnalyticsOverview() {
               </div>
             )}
           </div>
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Timer Settings - Row 7 */}
       {analytics.timerSettings && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Font Size"
             storageKey="admin-users-font-size"
             defaultOpen={true}
@@ -1246,9 +1077,9 @@ function UserAnalyticsOverview() {
                 value: count as number,
               }))}
             />
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
 
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Font Family"
             storageKey="admin-users-font-family"
             defaultOpen={true}
@@ -1262,9 +1093,9 @@ function UserAnalyticsOverview() {
                 value: count as number,
               }))}
             />
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
 
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Update Mode"
             storageKey="admin-users-update-mode"
             defaultOpen={true}
@@ -1278,13 +1109,13 @@ function UserAnalyticsOverview() {
                 value: count as number,
               }))}
             />
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
         </div>
       )}
 
       {/* Accessibility Settings - Row 8 */}
       {analytics.accessibility && (
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Accessibility Settings"
           storageKey="admin-users-accessibility"
           defaultOpen={true}
@@ -1306,7 +1137,7 @@ function UserAnalyticsOverview() {
               },
             ]}
           />
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       )}
     </div>
   );
@@ -1362,37 +1193,33 @@ export default function AdminUsers() {
   return (
     <div className="min-h-full p-4 sm:p-6 lg:p-8">
       {/* Analytics Overview */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title="User Analytics"
         defaultOpen={true}
         storageKey="admin-users-analytics"
         className="mb-4 sm:mb-6"
       >
         <UserAnalyticsOverview />
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* Filters */}
       <div className="timer-card mb-4 sm:mb-6">
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-            <input
-              type="text"
-              placeholder="Search by name, identifier, or email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm transition-all"
-            />
-          </div>
+          <SearchInput
+            size="sm"
+            placeholder="Search by name, identifier, or email..."
+            aria-label="Search by name, identifier, or email"
+            value={searchQuery}
+            onChange={setSearchQuery}
+            className="flex-1"
+          />
 
           {/* Include Deleted Toggle */}
           <label className="flex items-center gap-2 cursor-pointer shrink-0">
-            <input
-              type="checkbox"
+            <Checkbox
               checked={includeDeleted}
               onChange={(e) => setIncludeDeleted(e.target.checked)}
-              className="w-4 h-4 rounded border-(--border) bg-(--surface-elevated) text-(--primary) focus:ring-(--primary)"
             />
             <span className="text-sm text-(--text-secondary) font-inter">
               Include deleted
@@ -1402,7 +1229,7 @@ export default function AdminUsers() {
       </div>
 
       {/* Users List */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title={`User List${users ? ` (${users.length})` : ""}`}
         defaultOpen={true}
         storageKey="admin-users-list"
@@ -1441,37 +1268,25 @@ export default function AdminUsers() {
         ) : (
           <>
             {/* Desktop Table */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-(--surface-elevated) border-y border-(--border)">
-                  <tr>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      User
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      Identifier
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      Country
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      Joined
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      Last Active
-                    </th>
-                    <th className="text-right px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-(--border)">
+            <Table.Scroll className="hidden md:block">
+              <Table>
+                <Table.Head>
+                  <Table.Row>
+                    <Table.HeaderCell>User</Table.HeaderCell>
+                    <Table.HeaderCell>Identifier</Table.HeaderCell>
+                    <Table.HeaderCell>Country</Table.HeaderCell>
+                    <Table.HeaderCell>Joined</Table.HeaderCell>
+                    <Table.HeaderCell>Last Active</Table.HeaderCell>
+                    <Table.HeaderCell align="right">Actions</Table.HeaderCell>
+                  </Table.Row>
+                </Table.Head>
+                <Table.Body>
                   {users.map((user) => (
-                    <tr
+                    <Table.Row
                       key={user._id}
                       className={`hover:bg-(--surface-elevated) transition-colors ${user.isDeleted ? "opacity-50" : ""}`}
                     >
-                      <td className="px-4 py-3">
+                      <Table.Cell>
                         <div className="flex items-center gap-3">
                           {user.avatar ? (
                             <Image
@@ -1497,8 +1312,8 @@ export default function AdminUsers() {
                             </p>
                           </div>
                         </div>
-                      </td>
-                      <td className="px-4 py-3">
+                      </Table.Cell>
+                      <Table.Cell>
                         {canOpenWcaProfile(user.wcaId) ? (
                           <a
                             href={`https://www.worldcubeassociation.org/persons/${user.wcaId}`}
@@ -1513,43 +1328,43 @@ export default function AdminUsers() {
                             {user.wcaId}
                           </span>
                         )}
-                      </td>
-                      <td className="px-4 py-3">
+                      </Table.Cell>
+                      <Table.Cell>
                         <span className="text-sm text-(--text-secondary) font-inter">
                           {user.countryIso2}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
+                      </Table.Cell>
+                      <Table.Cell>
                         <span className="text-sm text-(--text-secondary) font-inter">
                           {formatDate(user.createdAt)}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
+                      </Table.Cell>
+                      <Table.Cell>
                         <span className="text-sm text-(--text-secondary) font-inter">
                           {getTimeAgo(user.lastLoginAt)}
                         </span>
-                      </td>
-                      <td className="px-4 py-3 text-right">
+                      </Table.Cell>
+                      <Table.Cell align="right">
                         <button
                           onClick={() => setSelectedUserId(user._id)}
-                          className="p-2 hover:bg-(--primary)/10 rounded-lg transition-colors"
+                          className="p-2 hover:bg-(--primary)/10 rounded-(--radius-control) transition-colors"
                           title="View details"
                         >
                           <Eye className="w-4 h-4 text-(--primary)" />
                         </button>
-                      </td>
-                    </tr>
+                      </Table.Cell>
+                    </Table.Row>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </Table.Body>
+              </Table>
+            </Table.Scroll>
 
             {/* Mobile Card List */}
             <div className="md:hidden space-y-3">
               {users.map((user) => (
                 <div
                   key={user._id}
-                  className={`bg-(--surface-elevated) rounded-lg p-3 border border-(--border) ${user.isDeleted ? "opacity-50" : ""}`}
+                  className={`bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border) ${user.isDeleted ? "opacity-50" : ""}`}
                 >
                   <div className="flex items-start gap-3">
                     {user.avatar ? (
@@ -1577,7 +1392,7 @@ export default function AdminUsers() {
                         </p>
                         <button
                           onClick={() => setSelectedUserId(user._id)}
-                          className="p-1.5 hover:bg-(--primary)/10 rounded-lg transition-colors shrink-0"
+                          className="p-1.5 hover:bg-(--primary)/10 rounded-(--radius-control) transition-colors shrink-0"
                           title="View details"
                         >
                           <Eye className="w-4 h-4 text-(--primary)" />
@@ -1618,7 +1433,7 @@ export default function AdminUsers() {
             </div>
           </>
         )}
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* User Details Modal */}
       {selectedUserId && (

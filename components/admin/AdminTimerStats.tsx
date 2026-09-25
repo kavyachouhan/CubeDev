@@ -39,6 +39,13 @@ import {
   LucideIcon,
   FileJson,
 } from "lucide-react";
+import { EventIcon } from "@/components/ui/EventIcon";
+import { SelectMenu } from "@/components/ui/Menu";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Modal } from "@/components/ui/Modal";
+import { AdminStatCard } from "./AdminStatCard";
+import { AdminCollapsibleCard } from "./AdminCollapsibleCard";
+import { useEffectiveTheme, useThemeColors } from "@/lib/hooks/useThemeColors";
 import Image from "next/image";
 import { canOpenWcaProfile } from "@/lib/identifier-utils";
 
@@ -76,59 +83,6 @@ const WCA_EVENTS: Record<string, string> = {
   minx: "Megaminx",
 };
 
-// Hook to detect current theme
-function useEffectiveTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  useEffect(() => {
-    const checkTheme = () => {
-      const dataTheme = document.documentElement.getAttribute("data-theme");
-      setTheme((dataTheme as "light" | "dark") || "dark");
-    };
-
-    checkTheme();
-
-    const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return theme;
-}
-
-// Hook to get computed primary color for charts
-function usePrimaryColor() {
-  const [primaryColor, setPrimaryColor] = useState("rgba(168, 85, 247, 1)");
-
-  useEffect(() => {
-    const getColor = () => {
-      if (typeof window === "undefined") return;
-      const computed = getComputedStyle(document.documentElement)
-        .getPropertyValue("--primary")
-        .trim();
-      if (computed) {
-        setPrimaryColor(computed);
-      }
-    };
-
-    getColor();
-
-    const observer = new MutationObserver(getColor);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme", "data-color-scheme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return primaryColor;
-}
-
 // Export utilities
 function exportToCSV(data: Record<string, unknown>[], filename: string) {
   if (data.length === 0) return;
@@ -157,159 +111,6 @@ function exportToJSON(data: unknown, filename: string) {
   link.click();
 }
 
-// Empty State Component
-function EmptyState({
-  icon: Icon = AlertCircle,
-  title,
-  description,
-}: {
-  icon?: LucideIcon;
-  title: string;
-  description?: string;
-}) {
-  return (
-    <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-      <div className="w-12 h-12 rounded-full bg-(--surface-elevated) flex items-center justify-center mb-3">
-        <Icon className="w-6 h-6 text-(--text-muted)" />
-      </div>
-      <p className="text-sm font-medium text-(--text-secondary) font-inter">
-        {title}
-      </p>
-      {description && (
-        <p className="text-xs text-(--text-muted) font-inter mt-1">
-          {description}
-        </p>
-      )}
-    </div>
-  );
-}
-
-// CollapsibleCard Component
-function CollapsibleCard({
-  title,
-  children,
-  defaultOpen = true,
-  storageKey,
-  headerExtra,
-  className = "",
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  storageKey?: string;
-  headerExtra?: React.ReactNode;
-  className?: string;
-}) {
-  const [isOpen, setIsOpen] = useState(() => {
-    if (typeof window !== "undefined" && storageKey) {
-      const saved = localStorage.getItem(storageKey);
-      return saved !== null ? saved === "true" : defaultOpen;
-    }
-    return defaultOpen;
-  });
-
-  const toggleOpen = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    if (typeof window !== "undefined" && storageKey) {
-      localStorage.setItem(storageKey, String(newState));
-    }
-  };
-
-  return (
-    <div className={`timer-card ${className}`}>
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={toggleOpen}
-          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
-        >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            {title}
-          </h3>
-          {isOpen ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          {headerExtra}
-          <button
-            onClick={toggleOpen}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={isOpen ? "Hide" : "Show"}
-          >
-            {isOpen ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-      {isOpen && children}
-    </div>
-  );
-}
-
-// StatCard Component
-function StatCard({
-  title,
-  value,
-  icon: Icon,
-  iconColor = "text-(--primary)",
-  iconBgColor = "bg-(--primary)/10",
-  subValue,
-  trend,
-}: {
-  title: string;
-  value: string | number;
-  icon: LucideIcon;
-  iconColor?: string;
-  iconBgColor?: string;
-  subValue?: string;
-  trend?: { value: number; label: string };
-}) {
-  return (
-    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
-          <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate font-inter">
-            {title}
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
-              {typeof value === "number" ? value.toLocaleString() : value}
-            </div>
-            {trend && (
-              <div
-                className={`flex items-center gap-0.5 text-xs ${
-                  trend.value >= 0 ? "text-green-500" : "text-red-500"
-                }`}
-              >
-                {trend.value >= 0 ? (
-                  <TrendingUp className="w-3 h-3" />
-                ) : (
-                  <TrendingDown className="w-3 h-3" />
-                )}
-                <span>{Math.abs(trend.value)}%</span>
-              </div>
-            )}
-          </div>
-          {subValue && (
-            <div className="text-xs text-(--text-muted) font-inter">
-              {subValue}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // Distribution Bar Component
 function DistributionBar({
   items,
@@ -319,7 +120,7 @@ function DistributionBar({
   total: number;
 }) {
   if (total === 0) {
-    return <EmptyState title="No data available" icon={BarChart3} />;
+    return <EmptyState title="No data available" icon={<BarChart3 />} />;
   }
 
   return (
@@ -369,16 +170,16 @@ function UserCard({
 }) {
   const rankColors =
     rank === 1
-      ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/30"
+      ? "bg-(--warning)/10 text-(--warning) border-(--warning)/30"
       : rank === 2
-        ? "bg-gray-400/10 text-gray-400 border-gray-400/30"
+        ? "bg-(--border)/10 text-(--text-muted) border-(--border)/30"
         : rank === 3
-          ? "bg-orange-600/10 text-orange-600 border-orange-600/30"
+          ? "bg-(--warning)/10 text-(--warning) border-(--warning)/30"
           : "bg-(--surface-elevated) text-(--text-muted) border-(--border)";
 
   return (
     <div
-      className={`flex items-center gap-3 p-2.5 rounded-lg border ${rankColors}`}
+      className={`flex items-center gap-3 p-2.5 rounded-(--radius-control) border ${rankColors}`}
     >
       <div
         className={`w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold ${
@@ -424,74 +225,23 @@ function EventFilterSelector({
   onEventChange: (event: string) => void;
   events: Array<{ event: string; eventName: string; count: number }>;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg hover:border-(--primary) transition-colors"
-      >
-        <Image
-          src={`/cube-icons/${selectedEvent}.svg`}
-          alt={WCA_EVENTS[selectedEvent] || selectedEvent}
-          width={20}
-          height={20}
-          className="w-5 h-5 object-contain brightness-0 invert"
-          onError={(e) => {
-            e.currentTarget.style.display = "none";
-          }}
-        />
-        <span className="text-sm font-medium text-(--text-primary) font-inter">
-          {WCA_EVENTS[selectedEvent] || selectedEvent}
-        </span>
-        <ChevronDown
-          className={`w-4 h-4 text-(--text-muted) transition-transform ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
-
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-          />
-          <div className="absolute top-full left-0 mt-1 w-56 bg-(--surface) border border-(--border) rounded-lg shadow-lg z-50 max-h-72 overflow-y-auto">
-            {events.map((event) => (
-              <button
-                key={event.event}
-                onClick={() => {
-                  onEventChange(event.event);
-                  setIsOpen(false);
-                }}
-                className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-(--surface-elevated) transition-colors ${
-                  event.event === selectedEvent
-                    ? "bg-(--primary)/10 text-(--primary)"
-                    : "text-(--text-primary)"
-                }`}
-              >
-                <Image
-                  src={`/cube-icons/${event.event}.svg`}
-                  alt={event.eventName}
-                  width={18}
-                  height={18}
-                  className="w-[18px] h-[18px] object-contain brightness-0 invert"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
-                <span className="text-sm font-inter flex-1">
-                  {event.eventName}
-                </span>
-                <span className="text-xs text-(--text-muted) font-inter">
-                  {event.count.toLocaleString()}
-                </span>
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+    <SelectMenu
+      label="Event"
+      value={selectedEvent}
+      onChange={onEventChange}
+      fullWidth={false}
+      searchable={events.length > 8}
+      options={events.map((event) => ({
+        value: event.event,
+        label: event.eventName,
+        textLabel: event.eventName,
+        icon: (
+          <EventIcon eventId={event.event} size="sm" alt={event.eventName} />
+        ),
+        description: `${event.count.toLocaleString()} solves`,
+      }))}
+    />
   );
 }
 
@@ -512,15 +262,15 @@ function EventCategoryModal({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <Modal open onClose={onClose} size="md" mobile="fullscreen">
+      <Modal.Body>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-(--text-primary) font-statement">
             {eventName} Categories
           </h2>
           <button
             onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -530,14 +280,14 @@ function EventCategoryModal({
           <EmptyState
             title="No category data"
             description="No users have recorded averages for this event yet."
-            icon={Users}
+            icon={<Users />}
           />
         ) : (
           <div className="space-y-3">
             {categories.map((cat) => (
               <div
                 key={cat.category}
-                className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
+                className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)"
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold text-(--text-primary) font-statement">
@@ -563,8 +313,8 @@ function EventCategoryModal({
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 }
 
@@ -605,7 +355,7 @@ export default function AdminTimerStats() {
   );
 
   const effectiveTheme = useEffectiveTheme();
-  const primaryColor = usePrimaryColor();
+  const primaryColor = useThemeColors()["--primary"];
   const isLight = effectiveTheme === "light";
   const textColor = isLight
     ? "rgba(17, 24, 39, 0.8)"
@@ -826,13 +576,13 @@ export default function AdminTimerStats() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center justify-center sm:justify-start gap-3 w-full sm:w-auto">
                 <div className="h-4 w-12 bg-(--surface-elevated) rounded animate-pulse" />
-                <div className="h-10 w-28 bg-(--surface-elevated) rounded-lg animate-pulse" />
+                <div className="h-10 w-28 bg-(--surface-elevated) rounded-(--radius-control) animate-pulse" />
               </div>
               <div className="grid grid-cols-4 sm:flex gap-2 w-full sm:w-auto">
                 {[...Array(4)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-10 w-full sm:w-20 bg-(--surface-elevated) rounded-lg animate-pulse"
+                    className="h-10 w-full sm:w-20 bg-(--surface-elevated) rounded-(--radius-control) animate-pulse"
                   />
                 ))}
               </div>
@@ -888,7 +638,7 @@ export default function AdminTimerStats() {
               <button
                 onClick={handleExportJSON}
                 disabled={!exportData}
-                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Export JSON"
               >
                 <FileJson className="w-4 h-4" />
@@ -897,7 +647,7 @@ export default function AdminTimerStats() {
               <button
                 onClick={handleExportSolvesCSV}
                 disabled={!exportData}
-                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Export Solves"
               >
                 <Clock className="w-4 h-4" />
@@ -906,7 +656,7 @@ export default function AdminTimerStats() {
               <button
                 onClick={handleExportSessionsCSV}
                 disabled={!exportData}
-                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Export Sessions"
               >
                 <Layers className="w-4 h-4" />
@@ -915,7 +665,7 @@ export default function AdminTimerStats() {
               <button
                 onClick={handleExportStatsCSV}
                 disabled={!exportData}
-                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Export Stats"
               >
                 <BarChart3 className="w-4 h-4" />
@@ -927,77 +677,77 @@ export default function AdminTimerStats() {
 
         {/* Key Metrics - Row 1: Global Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <StatCard
+          <AdminStatCard
             title="Total Solves"
             value={analytics.totalSolves}
             icon={Timer}
-            iconColor="text-blue-500"
-            iconBgColor="bg-blue-500/10"
+            iconColor="text-(--info)"
+            iconBgColor="bg-(--info)/10"
             subValue={`${analytics.todaySolves} today`}
           />
-          <StatCard
+          <AdminStatCard
             title="Total Sessions"
             value={analytics.totalSessions}
             icon={Layers}
-            iconColor="text-purple-500"
-            iconBgColor="bg-purple-500/10"
+            iconColor="text-(--accent)"
+            iconBgColor="bg-(--accent)/10"
             subValue={`${analytics.activeSessions} active`}
           />
-          <StatCard
+          <AdminStatCard
             title="Active Users"
             value={analytics.totalUsers}
             icon={Users}
-            iconColor="text-green-500"
-            iconBgColor="bg-green-500/10"
+            iconColor="text-(--success)"
+            iconBgColor="bg-(--success)/10"
             subValue={`${analytics.totalActiveUsers} this month`}
           />
-          <StatCard
+          <AdminStatCard
             title="Avg/Session"
             value={analytics.avgSolvesPerSession}
             icon={BarChart3}
-            iconColor="text-yellow-500"
-            iconBgColor="bg-yellow-500/10"
+            iconColor="text-(--warning)"
+            iconBgColor="bg-(--warning)/10"
             subValue="solves per session"
           />
         </div>
 
         {/* Key Metrics - Row 2: Event-Filtered Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <StatCard
+          <AdminStatCard
             title={`Best Single (${filteredAnalytics?.eventName || selectedFilterEvent})`}
             value={filteredAnalytics?.bestOverallSingle || "N/A"}
             icon={Trophy}
-            iconColor="text-amber-500"
-            iconBgColor="bg-amber-500/10"
+            iconColor="text-(--warning)"
+            iconBgColor="bg-(--warning)/10"
           />
-          <StatCard
+          <AdminStatCard
             title={`Best Ao5 (${filteredAnalytics?.eventName || selectedFilterEvent})`}
             value={filteredAnalytics?.bestOverallAo5 || "N/A"}
             icon={Award}
-            iconColor="text-cyan-500"
-            iconBgColor="bg-cyan-500/10"
+            iconColor="text-(--primary)"
+            iconBgColor="bg-(--primary)/10"
           />
-          <StatCard
+          <AdminStatCard
             title="Median Single"
             value={filteredAnalytics?.medianSingle || "N/A"}
             icon={Target}
-            iconColor="text-pink-500"
-            iconBgColor="bg-pink-500/10"
+            iconColor="text-(--accent)"
+            iconBgColor="bg-(--accent)/10"
             subValue={`${filteredAnalytics?.eventName || selectedFilterEvent} across users`}
           />
-          <StatCard
+          <AdminStatCard
             title="Split Usage"
             value={`${analytics.splitUsageRate}%`}
             icon={Activity}
-            iconColor="text-indigo-500"
-            iconBgColor="bg-indigo-500/10"
+            iconColor="text-(--accent)"
+            iconBgColor="bg-(--accent)/10"
             subValue="solves with splits"
           />
         </div>
 
         {/* Charts Row 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Daily Solve Activity"
             storageKey="admin-timer-daily"
             defaultOpen={true}
@@ -1009,13 +759,13 @@ export default function AdminTimerStats() {
                 <EmptyState
                   title="No activity data"
                   description="No solves recorded in the last 14 days"
-                  icon={BarChart3}
+                  icon={<BarChart3 />}
                 />
               )}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
 
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Weekly Trend"
             storageKey="admin-timer-weekly"
             defaultOpen={true}
@@ -1027,16 +777,16 @@ export default function AdminTimerStats() {
                 <EmptyState
                   title="No activity data"
                   description="No solves recorded in the last 8 weeks"
-                  icon={TrendingUp}
+                  icon={<TrendingUp />}
                 />
               )}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
         </div>
 
         {/* Charts Row 2 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Event Distribution"
             storageKey="admin-timer-events"
             defaultOpen={true}
@@ -1048,13 +798,13 @@ export default function AdminTimerStats() {
                 <EmptyState
                   title="No event data"
                   description="No solves recorded yet"
-                  icon={Layers}
+                  icon={<Layers />}
                 />
               )}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
 
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title={`${filteredAnalytics?.eventName || selectedFilterEvent} User Distribution`}
             storageKey="admin-timer-categories"
             defaultOpen={true}
@@ -1077,16 +827,16 @@ export default function AdminTimerStats() {
                 <EmptyState
                   title="No category data"
                   description={`No users have recorded averages for ${filteredAnalytics?.eventName || selectedFilterEvent} yet`}
-                  icon={Users}
+                  icon={<Users />}
                 />
               )}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
         </div>
 
         {/* Penalty & Timer Mode Stats */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Penalty Distribution"
             storageKey="admin-timer-penalties"
             defaultOpen={true}
@@ -1114,24 +864,24 @@ export default function AdminTimerStats() {
               />
               {analytics.totalSolves > 0 && (
                 <div className="grid grid-cols-3 gap-2 mt-4">
-                  <div className="text-center bg-(--surface-elevated) rounded-lg py-2 px-1 border border-(--border)">
-                    <div className="text-sm sm:text-lg font-bold text-green-500 font-statement">
+                  <div className="text-center bg-(--surface-elevated) rounded-(--radius-control) py-2 px-1 border border-(--border)">
+                    <div className="text-sm sm:text-lg font-bold text-(--success) font-statement">
                       {100 - analytics.dnfRate - analytics.plusTwoRate}%
                     </div>
                     <div className="text-[10px] text-(--text-muted) font-inter">
                       Clean Rate
                     </div>
                   </div>
-                  <div className="text-center bg-(--surface-elevated) rounded-lg py-2 px-1 border border-(--border)">
-                    <div className="text-sm sm:text-lg font-bold text-amber-500 font-statement">
+                  <div className="text-center bg-(--surface-elevated) rounded-(--radius-control) py-2 px-1 border border-(--border)">
+                    <div className="text-sm sm:text-lg font-bold text-(--warning) font-statement">
                       {analytics.plusTwoRate}%
                     </div>
                     <div className="text-[10px] text-(--text-muted) font-inter">
                       +2 Rate
                     </div>
                   </div>
-                  <div className="text-center bg-(--surface-elevated) rounded-lg py-2 px-1 border border-(--border)">
-                    <div className="text-sm sm:text-lg font-bold text-red-500 font-statement">
+                  <div className="text-center bg-(--surface-elevated) rounded-(--radius-control) py-2 px-1 border border-(--border)">
+                    <div className="text-sm sm:text-lg font-bold text-(--error) font-statement">
                       {analytics.dnfRate}%
                     </div>
                     <div className="text-[10px] text-(--text-muted) font-inter">
@@ -1141,9 +891,9 @@ export default function AdminTimerStats() {
                 </div>
               )}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
 
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Timer Mode Usage"
             storageKey="admin-timer-modes"
             defaultOpen={true}
@@ -1171,24 +921,24 @@ export default function AdminTimerStats() {
               />
               {analytics.totalSolves > 0 && (
                 <div className="grid grid-cols-3 gap-2 mt-4">
-                  <div className="text-center bg-(--surface-elevated) rounded-lg py-2 px-1 border border-(--border)">
-                    <div className="text-sm sm:text-lg font-bold text-blue-500 font-statement">
+                  <div className="text-center bg-(--surface-elevated) rounded-(--radius-control) py-2 px-1 border border-(--border)">
+                    <div className="text-sm sm:text-lg font-bold text-(--info) font-statement">
                       {analytics.timerModeDistribution.normal.toLocaleString()}
                     </div>
                     <div className="text-[10px] text-(--text-muted) font-inter">
                       Normal
                     </div>
                   </div>
-                  <div className="text-center bg-(--surface-elevated) rounded-lg py-2 px-1 border border-(--border)">
-                    <div className="text-sm sm:text-lg font-bold text-purple-500 font-statement">
+                  <div className="text-center bg-(--surface-elevated) rounded-(--radius-control) py-2 px-1 border border-(--border)">
+                    <div className="text-sm sm:text-lg font-bold text-(--accent) font-statement">
                       {analytics.timerModeDistribution.manual.toLocaleString()}
                     </div>
                     <div className="text-[10px] text-(--text-muted) font-inter">
                       Manual
                     </div>
                   </div>
-                  <div className="text-center bg-(--surface-elevated) rounded-lg py-2 px-1 border border-(--border)">
-                    <div className="text-sm sm:text-lg font-bold text-green-500 font-statement">
+                  <div className="text-center bg-(--surface-elevated) rounded-(--radius-control) py-2 px-1 border border-(--border)">
+                    <div className="text-sm sm:text-lg font-bold text-(--success) font-statement">
                       {analytics.timerModeDistribution.stackmat.toLocaleString()}
                     </div>
                     <div className="text-[10px] text-(--text-muted) font-inter">
@@ -1198,11 +948,11 @@ export default function AdminTimerStats() {
                 </div>
               )}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
         </div>
 
         {/* Session Statistics */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Session Statistics"
           storageKey="admin-timer-sessions"
           defaultOpen={true}
@@ -1212,7 +962,7 @@ export default function AdminTimerStats() {
               {Object.entries(analytics.sessionSizes).map(([range, count]) => (
                 <div
                   key={range}
-                  className="text-center bg-(--surface-elevated) rounded-lg py-3 px-2 border border-(--border)"
+                  className="text-center bg-(--surface-elevated) rounded-(--radius-control) py-3 px-2 border border-(--border)"
                 >
                   <div className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
                     {count}
@@ -1227,14 +977,14 @@ export default function AdminTimerStats() {
             <EmptyState
               title="No sessions yet"
               description="Sessions will appear here once users start practicing"
-              icon={Layers}
+              icon={<Layers />}
             />
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Leaderboards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title={`Top Performers (${filteredAnalytics?.eventName || selectedFilterEvent})`}
             storageKey="admin-timer-top"
             defaultOpen={true}
@@ -1255,13 +1005,13 @@ export default function AdminTimerStats() {
                 <EmptyState
                   title="No performance data"
                   description={`No users have recorded averages for ${filteredAnalytics?.eventName || selectedFilterEvent} yet`}
-                  icon={Trophy}
+                  icon={<Trophy />}
                 />
               )}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
 
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Most Active Users"
             storageKey="admin-timer-active"
             defaultOpen={true}
@@ -1282,15 +1032,15 @@ export default function AdminTimerStats() {
                 <EmptyState
                   title="No activity data"
                   description="No users have recorded solves yet"
-                  icon={Activity}
+                  icon={<Activity />}
                 />
               )}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
         </div>
 
         {/* Event Best Times */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Event Best Times"
           storageKey="admin-timer-event-bests"
           defaultOpen={false}
@@ -1304,7 +1054,7 @@ export default function AdminTimerStats() {
                     setSelectedFilterEvent(event.event);
                     setShowCategoryModal(true);
                   }}
-                  className="text-left bg-(--surface-elevated) rounded-lg p-3 border border-(--border) hover:border-(--primary) transition-colors"
+                  className="text-left bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border) hover:border-(--primary) transition-colors"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-semibold text-(--text-primary) font-statement">
@@ -1343,19 +1093,19 @@ export default function AdminTimerStats() {
             <EmptyState
               title="No event data"
               description="No best times recorded yet"
-              icon={Clock}
+              icon={<Clock />}
             />
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Time Period Summary */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Time Period Summary"
           storageKey="admin-timer-periods"
           defaultOpen={false}
         >
           <div className="grid grid-cols-3 gap-3 mt-4">
-            <div className="text-center bg-(--surface-elevated) rounded-lg py-4 px-2 border border-(--border)">
+            <div className="text-center bg-(--surface-elevated) rounded-(--radius-control) py-4 px-2 border border-(--border)">
               <div className="text-xl sm:text-2xl font-bold text-(--primary) font-statement">
                 {analytics.todaySolves.toLocaleString()}
               </div>
@@ -1363,7 +1113,7 @@ export default function AdminTimerStats() {
                 Today
               </div>
             </div>
-            <div className="text-center bg-(--surface-elevated) rounded-lg py-4 px-2 border border-(--border)">
+            <div className="text-center bg-(--surface-elevated) rounded-(--radius-control) py-4 px-2 border border-(--border)">
               <div className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement">
                 {analytics.thisWeekSolves.toLocaleString()}
               </div>
@@ -1371,7 +1121,7 @@ export default function AdminTimerStats() {
                 This Week
               </div>
             </div>
-            <div className="text-center bg-(--surface-elevated) rounded-lg py-4 px-2 border border-(--border)">
+            <div className="text-center bg-(--surface-elevated) rounded-(--radius-control) py-4 px-2 border border-(--border)">
               <div className="text-xl sm:text-2xl font-bold text-(--text-secondary) font-statement">
                 {analytics.thisMonthSolves.toLocaleString()}
               </div>
@@ -1380,7 +1130,7 @@ export default function AdminTimerStats() {
               </div>
             </div>
           </div>
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Event Category Modal */}
         {showCategoryModal && eventCategories && (

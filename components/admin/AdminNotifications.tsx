@@ -37,6 +37,12 @@ import {
   Monitor,
   Globe,
 } from "lucide-react";
+import { Input, Textarea } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { Spinner } from "@/components/ui/Spinner";
+import { AdminStatCard } from "./AdminStatCard";
+import { AdminCollapsibleCard } from "./AdminCollapsibleCard";
+import { useEffectiveTheme, useThemeColors } from "@/lib/hooks/useThemeColors";
 import type { LucideIcon } from "lucide-react";
 import { AdminSelect } from "./AdminDropdown";
 
@@ -50,59 +56,6 @@ ChartJS.register(
   Tooltip,
   Legend,
 );
-
-// Hook to detect current theme
-function useEffectiveTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  useEffect(() => {
-    const checkTheme = () => {
-      const dataTheme = document.documentElement.getAttribute("data-theme");
-      setTheme((dataTheme as "light" | "dark") || "dark");
-    };
-
-    checkTheme();
-
-    const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return theme;
-}
-
-// Hook to get computed primary color for charts
-function usePrimaryColor() {
-  const [primaryColor, setPrimaryColor] = useState("rgba(59, 130, 246, 1)");
-
-  useEffect(() => {
-    const getColor = () => {
-      if (typeof window === "undefined") return;
-      const computed = getComputedStyle(document.documentElement)
-        .getPropertyValue("--primary")
-        .trim();
-      if (computed) {
-        setPrimaryColor(computed);
-      }
-    };
-
-    getColor();
-
-    const observer = new MutationObserver(getColor);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme", "data-color-scheme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return primaryColor;
-}
 
 // Export helper function
 function exportToCSV(data: Record<string, unknown>[], filename: string) {
@@ -132,111 +85,6 @@ function exportToCSV(data: Record<string, unknown>[], filename: string) {
   link.href = URL.createObjectURL(blob);
   link.download = `${filename}_${new Date().toISOString().split("T")[0]}.csv`;
   link.click();
-}
-
-// CollapsibleCard Component
-function CollapsibleCard({
-  title,
-  children,
-  defaultOpen = true,
-  storageKey,
-  headerExtra,
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  storageKey?: string;
-  headerExtra?: React.ReactNode;
-}) {
-  const [isOpen, setIsOpen] = useState(() => {
-    if (typeof window !== "undefined" && storageKey) {
-      const saved = localStorage.getItem(storageKey);
-      return saved !== null ? saved === "true" : defaultOpen;
-    }
-    return defaultOpen;
-  });
-
-  const toggleOpen = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    if (typeof window !== "undefined" && storageKey) {
-      localStorage.setItem(storageKey, String(newState));
-    }
-  };
-
-  return (
-    <div className="timer-card">
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={toggleOpen}
-          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
-        >
-          <h3 className="text-base sm:text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            {title}
-          </h3>
-          {isOpen ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          {headerExtra}
-          <button
-            onClick={toggleOpen}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-          >
-            {isOpen ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-      {isOpen && children}
-    </div>
-  );
-}
-
-// StatCard Component
-function StatCard({
-  title,
-  value,
-  icon: Icon,
-  iconColor = "text-(--primary)",
-  iconBgColor = "bg-(--primary)/10",
-  subValue,
-}: {
-  title: string;
-  value: string | number;
-  icon: LucideIcon;
-  iconColor?: string;
-  iconBgColor?: string;
-  subValue?: string;
-}) {
-  return (
-    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] sm:text-xs text-(--text-muted) uppercase tracking-wide font-inter truncate">
-            {title}
-          </p>
-          <p className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement mt-0.5">
-            {typeof value === "number" ? value.toLocaleString() : value}
-          </p>
-          {subValue && (
-            <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter mt-0.5 truncate">
-              {subValue}
-            </p>
-          )}
-        </div>
-        <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
-          <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${iconColor}`} />
-        </div>
-      </div>
-    </div>
-  );
 }
 
 // Status Badge Component
@@ -295,7 +143,7 @@ function NotificationLogItem({ log }: { log: any }) {
   };
 
   return (
-    <div className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border) hover:border-(--border-hover) transition-colors">
+    <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border) hover:border-(--border-hover) transition-colors">
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
@@ -419,15 +267,15 @@ function SendNotificationModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
-      <div className="timer-card max-w-lg w-full max-h-[90vh] overflow-y-auto">
+    <Modal open onClose={onClose} size="lg" mobile="fullscreen">
+      <Modal.Body>
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
             Send Notification
           </h2>
           <button
             onClick={handleClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -436,15 +284,13 @@ function SendNotificationModal({
         <div className="space-y-4">
           {/* Notification Type Selection */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Send To
-            </label>
+            <label className="type-label block mb-2">Send To</label>
             <div className="flex gap-2">
               <button
                 onClick={() => setNotificationType("single")}
-                className={`flex-1 px-3 sm:px-4 py-2 rounded-lg font-inter text-sm transition-colors ${
+                className={`flex-1 px-3 sm:px-4 py-2 rounded-(--radius-control) font-inter text-sm transition-colors ${
                   notificationType === "single"
-                    ? "bg-(--primary) text-white"
+                    ? "bg-(--primary) text-(--on-primary)"
                     : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary)"
                 }`}
               >
@@ -452,9 +298,9 @@ function SendNotificationModal({
               </button>
               <button
                 onClick={() => setNotificationType("broadcast")}
-                className={`flex-1 px-3 sm:px-4 py-2 rounded-lg font-inter text-sm transition-colors ${
+                className={`flex-1 px-3 sm:px-4 py-2 rounded-(--radius-control) font-inter text-sm transition-colors ${
                   notificationType === "broadcast"
-                    ? "bg-(--primary) text-white"
+                    ? "bg-(--primary) text-(--on-primary)"
                     : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary)"
                 }`}
               >
@@ -466,21 +312,18 @@ function SendNotificationModal({
           {/* User Selection (for single user) */}
           {notificationType === "single" && (
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-                Select User
-              </label>
+              <label className="type-label block mb-2">Select User</label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-                <input
-                  type="text"
+                <Input
                   value={userSearch}
                   onChange={(e) => setUserSearch(e.target.value)}
                   placeholder="Search by name or identifier..."
-                  className="w-full pl-10 pr-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
+                  className="w-full pl-10 pr-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
                 />
               </div>
               {userSearch && (
-                <div className="mt-2 max-h-32 overflow-y-auto bg-(--surface-elevated) border border-(--border) rounded-lg">
+                <div className="mt-2 max-h-32 overflow-y-auto bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)">
                   {filteredUsers.slice(0, 10).map((user: any) => (
                     <button
                       key={user._id}
@@ -499,7 +342,7 @@ function SendNotificationModal({
                 </div>
               )}
               {selectedUserId && (
-                <div className="mt-2 flex items-center gap-2 p-2 bg-(--primary)/10 rounded-lg">
+                <div className="mt-2 flex items-center gap-2 p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <CheckCircle className="w-4 h-4 text-(--primary)" />
                   <span className="text-sm font-inter text-(--text-primary)">
                     {users?.find((u: any) => u._id === selectedUserId)?.name}
@@ -517,7 +360,7 @@ function SendNotificationModal({
 
           {/* Broadcast Warning */}
           {notificationType === "broadcast" && (
-            <div className="p-3 bg-(--warning)/10 border border-(--warning)/20 rounded-lg">
+            <div className="p-3 bg-(--warning)/10 border border-(--warning)/20 rounded-(--radius-control)">
               <p className="text-sm text-(--warning) font-inter">
                 This will send to all users with push notifications enabled.
               </p>
@@ -526,52 +369,43 @@ function SendNotificationModal({
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Title
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-2">Title</label>
+            <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Notification title..."
-              className="w-full px-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
               maxLength={100}
             />
           </div>
 
           {/* Body */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Message
-            </label>
-            <textarea
+            <label className="type-label block mb-2">Message</label>
+            <Textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
               placeholder="Notification message..."
               rows={3}
-              className="w-full px-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter text-sm"
               maxLength={300}
             />
           </div>
 
           {/* URL (optional) */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+            <label className="type-label block mb-2">
               Link URL <span className="text-(--text-muted)">(optional)</span>
             </label>
-            <input
-              type="text"
+            <Input
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="/cube-lab/timer"
-              className="w-full px-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
             />
           </div>
 
           {/* Result */}
           {result && (
             <div
-              className={`p-3 rounded-lg ${
+              className={`p-3 rounded-(--radius-control) ${
                 result.success
                   ? "bg-(--success)/10 border border-(--success)/20"
                   : "bg-(--error)/10 border border-(--error)/20"
@@ -609,7 +443,7 @@ function SendNotificationModal({
             >
               {isSending ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <Spinner size="sm" />
                   <span className="hidden sm:inline">Sending...</span>
                 </>
               ) : (
@@ -621,8 +455,8 @@ function SendNotificationModal({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 }
 
@@ -634,7 +468,7 @@ export default function AdminNotifications() {
   const [showSendModal, setShowSendModal] = useState(false);
 
   const effectiveTheme = useEffectiveTheme();
-  const primaryColor = usePrimaryColor();
+  const primaryColor = useThemeColors()["--primary"];
   const isLight = effectiveTheme === "light";
   const textColor = isLight
     ? "rgba(17, 24, 39, 0.8)"
@@ -879,7 +713,7 @@ export default function AdminNotifications() {
       </div>
 
       {/* Analytics Overview */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title="Analytics Overview"
         storageKey="admin-notifications-analytics-open"
         defaultOpen={true}
@@ -895,42 +729,42 @@ export default function AdminNotifications() {
           <div className="space-y-4 sm:space-y-6">
             {/* Summary Stats - 2x3 grid on mobile, 6 columns on desktop */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
-              <StatCard
+              <AdminStatCard
                 title="Total Sent"
                 value={analytics.summary.total}
                 icon={Bell}
                 iconColor="text-(--primary)"
                 iconBgColor="bg-(--primary)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Delivered"
                 value={analytics.summary.sent}
                 icon={CheckCircle}
                 iconColor="text-(--success)"
                 iconBgColor="bg-(--success)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Failed"
                 value={analytics.summary.failed}
                 icon={XCircle}
                 iconColor="text-(--error)"
                 iconBgColor="bg-(--error)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Clicked"
                 value={analytics.summary.clicked}
                 icon={MousePointer}
                 iconColor="text-(--accent)"
                 iconBgColor="bg-(--accent)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Delivery Rate"
                 value={`${analytics.summary.deliveryRate}%`}
                 icon={Percent}
                 iconColor="text-(--success)"
                 iconBgColor="bg-(--success)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Click Rate"
                 value={`${analytics.summary.clickThroughRate}%`}
                 icon={Activity}
@@ -942,7 +776,7 @@ export default function AdminNotifications() {
             {/* Charts Row - Stack on mobile */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
               {/* 7-Day Trend Bar Chart */}
-              <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-card) p-3 sm:p-4 border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) font-statement mb-3">
                   7-Day Trend
                 </h4>
@@ -958,12 +792,12 @@ export default function AdminNotifications() {
               </div>
 
               {/* Subscriptions Stats */}
-              <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-card) p-3 sm:p-4 border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) font-statement mb-3">
                   Subscriptions
                 </h4>
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4">
-                  <div className="text-center p-2 bg-(--surface) rounded-lg">
+                  <div className="text-center p-2 bg-(--surface) rounded-(--radius-control)">
                     <div className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
                       {analytics.subscriptions.total}
                     </div>
@@ -971,7 +805,7 @@ export default function AdminNotifications() {
                       Total
                     </div>
                   </div>
-                  <div className="text-center p-2 bg-(--success)/10 rounded-lg">
+                  <div className="text-center p-2 bg-(--success)/10 rounded-(--radius-control)">
                     <div className="text-lg sm:text-xl font-bold text-(--success) font-statement">
                       {analytics.subscriptions.active}
                     </div>
@@ -979,7 +813,7 @@ export default function AdminNotifications() {
                       Active
                     </div>
                   </div>
-                  <div className="text-center p-2 bg-(--error)/10 rounded-lg">
+                  <div className="text-center p-2 bg-(--error)/10 rounded-(--radius-control)">
                     <div className="text-lg sm:text-xl font-bold text-(--error) font-statement">
                       {analytics.subscriptions.inactive}
                     </div>
@@ -1005,7 +839,7 @@ export default function AdminNotifications() {
             </div>
 
             {/* Notification Types Doughnut Chart */}
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-card) p-3 sm:p-4 border border-(--border)">
               <h4 className="text-sm font-medium text-(--text-primary) font-statement mb-3">
                 Notification Types
               </h4>
@@ -1022,7 +856,7 @@ export default function AdminNotifications() {
 
             {/* Recent Errors */}
             {analytics.recentErrors.length > 0 && (
-              <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-card) p-3 sm:p-4 border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) font-statement mb-3">
                   Recent Errors
                 </h4>
@@ -1045,7 +879,7 @@ export default function AdminNotifications() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border) animate-pulse"
+                className="bg-(--surface-elevated) rounded-(--radius-card) p-3 sm:p-4 border border-(--border) animate-pulse"
               >
                 <div className="h-3 w-12 sm:w-16 bg-(--surface) rounded mb-2" />
                 <div className="h-5 sm:h-6 w-8 sm:w-12 bg-(--surface) rounded" />
@@ -1053,11 +887,11 @@ export default function AdminNotifications() {
             ))}
           </div>
         )}
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* Reminder Job Observability */}
       <div className="mt-4 sm:mt-6">
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Reminder Job Observability"
           storageKey="admin-notifications-reminder-observability-open"
           defaultOpen={true}
@@ -1087,28 +921,28 @@ export default function AdminNotifications() {
 
             {reminderRunSummary && (
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-                <StatCard
+                <AdminStatCard
                   title="Runs"
                   value={reminderRunSummary.runs}
                   icon={Activity}
                   iconColor="text-(--primary)"
                   iconBgColor="bg-(--primary)/10"
                 />
-                <StatCard
+                <AdminStatCard
                   title="Sent"
                   value={reminderRunSummary.sent}
                   icon={CheckCircle}
                   iconColor="text-(--success)"
                   iconBgColor="bg-(--success)/10"
                 />
-                <StatCard
+                <AdminStatCard
                   title="Skipped Dedup"
                   value={reminderRunSummary.skippedDedup}
                   icon={Clock}
                   iconColor="text-(--warning)"
                   iconBgColor="bg-(--warning)/10"
                 />
-                <StatCard
+                <AdminStatCard
                   title="Skipped Practiced"
                   value={reminderRunSummary.skippedPracticedToday}
                   icon={Activity}
@@ -1123,7 +957,7 @@ export default function AdminNotifications() {
                 {[...Array(4)].map((_, i) => (
                   <div
                     key={i}
-                    className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border) animate-pulse"
+                    className="bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border) animate-pulse"
                   >
                     <div className="h-4 w-40 bg-(--surface) rounded mb-2" />
                     <div className="h-3 w-64 bg-(--surface) rounded" />
@@ -1154,7 +988,7 @@ export default function AdminNotifications() {
                   return (
                     <div
                       key={run._id}
-                      className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)"
+                      className="bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border)"
                     >
                       <div className="flex items-center justify-between gap-2 mb-2">
                         <span className="text-xs px-2 py-0.5 bg-(--surface) text-(--text-muted) rounded-full font-inter">
@@ -1216,7 +1050,7 @@ export default function AdminNotifications() {
               </div>
             )}
           </div>
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Filters */}
@@ -1225,12 +1059,11 @@ export default function AdminNotifications() {
           {/* Search */}
           <div className="flex-1 min-w-0 sm:min-w-50 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-            <input
-              type="text"
+            <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search..."
-              className="w-full pl-9 pr-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
+              className="w-full pl-9 pr-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
             />
           </div>
 
@@ -1270,7 +1103,7 @@ export default function AdminNotifications() {
             <button
               onClick={handleExportLogs}
               disabled={!logs || logs.length === 0}
-              className="px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border-hover) transition-colors font-inter text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border-hover) transition-colors font-inter text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="w-4 h-4" />
               <span className="hidden sm:inline">Export</span>
@@ -1281,7 +1114,7 @@ export default function AdminNotifications() {
 
       {/* Notification Logs */}
       <div className="mt-4 sm:mt-6">
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Notification Logs"
           storageKey="admin-notifications-logs-open"
           defaultOpen={true}
@@ -1298,7 +1131,7 @@ export default function AdminNotifications() {
               {[...Array(5)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border) animate-pulse"
+                  className="bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border) animate-pulse"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <div className="h-5 w-14 sm:w-16 bg-(--surface) rounded-full" />
@@ -1325,7 +1158,7 @@ export default function AdminNotifications() {
               ))}
             </div>
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Send Notification Modal */}

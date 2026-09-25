@@ -99,6 +99,35 @@ export function CardIcon({
   );
 }
 
+/**
+ * Collapsed/expanded state that remembers itself per viewer.
+ * Browser storage can be unavailable (private windows, blocked site data), so
+ * every access is guarded and falls back to `defaultOpen`.
+ */
+export function useCollapsed(storageKey: string | undefined, defaultOpen = true) {
+  const [open, setOpen] = useState(() => {
+    if (typeof window === "undefined" || !storageKey) return defaultOpen;
+    try {
+      const saved = window.localStorage.getItem(storageKey);
+      return saved === null ? defaultOpen : saved === "true";
+    } catch {
+      return defaultOpen;
+    }
+  });
+
+  const onOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (!storageKey) return;
+    try {
+      window.localStorage.setItem(storageKey, String(next));
+    } catch {
+      // Remembering the panel state is a convenience, not a requirement.
+    }
+  };
+
+  return { open, onOpenChange };
+}
+
 interface CollapsibleCardProps {
   title: ReactNode;
   /** Controlled open state. */
