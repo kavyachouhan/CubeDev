@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { Box, LogOut, Menu, Settings, User, X } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 import { wcaSignInHref } from "@/lib/wca-config";
 import { useUser } from "@/components/UserProvider";
 import { getAvatarUrl } from "@/lib/avatar";
@@ -10,7 +14,7 @@ import UserDropdown from "@/components/UserDropdown";
 import { useLogo } from "@/lib/use-logo";
 
 export default function Header() {
-  const [activeTab, setActiveTab] = useState("Timer");
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -58,6 +62,10 @@ export default function Header() {
     { name: "Contact", href: "/contact" },
   ];
 
+  /** The URL decides what's active, so it survives reloads and back/forward. */
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
   return (
     <header
       className={`sticky top-0 z-50 bg-(--surface) border-b border-(--border) backdrop-blur-sm transition-all duration-500 ease-in-out ${
@@ -69,11 +77,7 @@ export default function Header() {
       <nav className="container-responsive">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center space-x-2 group"
-            onClick={() => setActiveTab("Timer")}
-          >
+          <Link href="/" className="flex items-center space-x-2 group">
             <Image
               src={logoSrc}
               alt="CubeDev Logo"
@@ -92,9 +96,9 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                onClick={() => setActiveTab(item.name)}
+                aria-current={isActive(item.href) ? "page" : undefined}
                 className={`text-base font-medium transition-all duration-200 font-button ${
-                  activeTab === item.name
+                  isActive(item.href)
                     ? "text-(--primary) underline decoration-(--primary) underline-offset-4"
                     : "text-(--text-secondary) hover:text-(--primary) hover:underline decoration-(--primary) underline-offset-4"
                 }`}
@@ -108,48 +112,32 @@ export default function Header() {
               <UserDropdown user={user} onSignOut={signOut} />
             ) : (
               /* WCA Sign In Button */
-              <button
+              <Button
+                size="sm"
                 onClick={handleWCASignIn}
-                className="flex items-center gap-2 px-4 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white font-semibold rounded-lg transition-all duration-200 font-button text-sm hover:scale-105"
+                iconLeft={
+                  <Image
+                    src="/wca_logo.png"
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="w-4 h-4 object-contain"
+                  />
+                }
               >
-                <Image
-                  src="/wca_logo.png"
-                  alt="WCA Logo"
-                  width={16}
-                  height={16}
-                  className="w-4 h-4 object-contain"
-                />
                 Sign in with WCA
-              </button>
+              </Button>
             )}
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <button
-              type="button"
+            <IconButton
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-(--text-secondary) hover:text-(--text-primary) p-2 rounded-lg hover:bg-(--surface-elevated) transition-colors"
-              aria-label="Toggle menu"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d={
-                    mobileMenuOpen
-                      ? "M6 18L18 6M6 6l12 12"
-                      : "M4 6h16M4 12h16M4 18h16"
-                  }
-                />
-              </svg>
-            </button>
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
+              icon={mobileMenuOpen ? <X /> : <Menu />}
+            />
           </div>
         </div>
 
@@ -161,12 +149,10 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  onClick={() => {
-                    setActiveTab(item.name);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`px-4 py-2 text-lg font-medium transition-all duration-200 font-button ${
-                    activeTab === item.name
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-current={isActive(item.href) ? "page" : undefined}
+                  className={`px-4 py-2 min-h-11 flex items-center text-lg font-medium transition-all duration-200 font-button ${
+                    isActive(item.href)
                       ? "text-(--primary) underline decoration-(--primary) underline-offset-4"
                       : "text-(--text-secondary) hover:text-(--primary) hover:underline decoration-(--primary) underline-offset-4"
                   }`}
@@ -179,7 +165,7 @@ export default function Header() {
               {user ? (
                 <div className="mx-4 space-y-4">
                   {/* User Info */}
-                  <div className="flex items-center gap-3 px-4 py-3 bg-(--surface-elevated) rounded-lg">
+                  <div className="flex items-center gap-3 px-4 py-3 bg-(--surface-elevated) rounded-(--radius-control)">
                     {user.avatar && (
                       <Image
                         src={getAvatarUrl(user.avatar) ?? ""}
@@ -206,21 +192,9 @@ export default function Header() {
                     <Link
                       href="/cube-lab/timer"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors font-inter"
+                      className="flex items-center gap-3 px-4 py-3 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-control) transition-colors font-inter"
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                        />
-                      </svg>
+                      <Box className="w-4 h-4" aria-hidden />
                       Cube Lab
                     </Link>
 
@@ -228,21 +202,9 @@ export default function Header() {
                       <Link
                         href={`/cuber/${user.wcaId}`}
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors font-inter"
+                        className="flex items-center gap-3 px-4 py-3 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-control) transition-colors font-inter"
                       >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
+                        <User className="w-4 h-4" aria-hidden />
                         Public Profile
                       </Link>
                     )}
@@ -250,73 +212,47 @@ export default function Header() {
                     <Link
                       href="/me"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors font-inter"
+                      className="flex items-center gap-3 px-4 py-3 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-control) transition-colors font-inter"
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
+                      <Settings className="w-4 h-4" aria-hidden />
                       Settings
                     </Link>
                   </div>
 
                   {/* Mobile Sign Out Button */}
-                  <button
+                  <Button
+                    variant="secondary"
+                    fullWidth
                     onClick={() => {
                       signOut();
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full flex items-center justify-center gap-3 px-4 py-3 text-(--error) hover:text-(--error) hover:bg-(--error)/10 border border-(--error)/30 rounded-lg transition-all duration-200 font-button text-base"
+                    className="text-(--error)! border-(--error)/30! hover:bg-(--error)/10!"
+                    iconLeft={<LogOut className="w-4 h-4" />}
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                      />
-                    </svg>
-                    Sign Out
-                  </button>
+                    Sign out
+                  </Button>
                 </div>
               ) : (
                 /* Mobile WCA Sign In Button */
-                <button
+                <Button
+                  className="mx-4"
                   onClick={() => {
                     handleWCASignIn();
                     setMobileMenuOpen(false);
                   }}
-                  className="mx-4 flex items-center justify-center gap-2 px-4 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white font-semibold rounded-lg transition-all duration-200 font-button text-base"
+                  iconLeft={
+                    <Image
+                      src="/wca_logo.png"
+                      alt=""
+                      width={20}
+                      height={20}
+                      className="w-5 h-5 object-contain"
+                    />
+                  }
                 >
-                  <Image
-                    src="/wca_logo.png"
-                    alt="WCA Logo"
-                    width={20}
-                    height={20}
-                    className="w-5 h-5 object-contain"
-                  />
                   Sign in with WCA
-                </button>
+                </Button>
               )}
             </div>
           </div>

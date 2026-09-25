@@ -4,9 +4,13 @@ import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@/components/UserProvider";
-import { Send, CircleCheck, AlertCircle } from "lucide-react";
+import { Send, CircleCheck } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { CardIcon } from "@/components/ui/Card";
+import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 
 export default function ContactPage() {
   const { user } = useUser();
@@ -101,9 +105,12 @@ export default function ContactPage() {
       <div className="min-h-screen bg-(--background) flex items-center justify-center">
         <div className="container-responsive py-8 max-w-2xl">
           <div className="timer-card text-center">
-            <div className="w-16 h-16 bg-(--success)/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CircleCheck className="w-8 h-8 text-(--success)" />
-            </div>
+            <CardIcon
+              tone="success"
+              className="mx-auto mb-6 w-14 h-14 [&_svg]:w-7 [&_svg]:h-7"
+            >
+              <CircleCheck />
+            </CardIcon>
             <h1 className="text-3xl font-bold text-(--text-primary) mb-4 font-statement">
               Message Sent Successfully!
             </h1>
@@ -112,12 +119,9 @@ export default function ContactPage() {
               will get back to you as soon as possible. You should also receive
               a confirmation email shortly.
             </p>
-            <button
-              onClick={() => setSubmitted(false)}
-              className="px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-all duration-200 font-button"
-            >
-              Send Another Message
-            </button>
+            <Button size="lg" onClick={() => setSubmitted(false)}>
+              Send another message
+            </Button>
           </div>
         </div>
       </div>
@@ -148,86 +152,51 @@ export default function ContactPage() {
               </h2>
 
               {error && (
-                <div className="mb-6 p-4 bg-(--error)/10 border border-(--error)/20 rounded-lg flex items-center gap-3">
-                  <AlertCircle className="w-5 h-5 text-(--error) shrink-0" />
-                  <p className="text-(--error) font-inter">{error}</p>
-                </div>
+                <Alert tone="error" className="mb-6">
+                  {error}
+                </Alert>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium text-(--text-primary) mb-2 font-inter"
-                    >
-                      Name <span className="text-(--error)">*</span>
-                    </label>
-                    <input
-                      type="text"
+                  <Field label="Name" required>
+                    <Input
                       id="name"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-(--text-primary) font-inter"
                       placeholder="Your full name"
                     />
-                  </div>
+                  </Field>
 
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-(--text-primary) mb-2 font-inter"
-                    >
-                      Email <span className="text-(--error)">*</span>
-                    </label>
-                    <input
+                  <Field label="Email" required>
+                    <Input
                       type="email"
                       id="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-(--text-primary) font-inter"
                       placeholder="your.email@example.com"
                     />
-                  </div>
+                  </Field>
                 </div>
 
-                <div>
-                  <label
-                    htmlFor="wcaId"
-                    className="block text-sm font-medium text-(--text-primary) mb-2 font-inter"
-                  >
-                    WCA ID or CubeDev ID{" "}
-                    <span className="text-(--text-muted)">(Optional)</span>
-                  </label>
-                  <input
-                    type="text"
+                <Field label="WCA ID or CubeDev ID" hint="Optional">
+                  <Input
                     id="wcaId"
                     name="wcaId"
                     value={formData.wcaId}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-(--text-primary) font-inter"
                     placeholder="e.g. 2015XXXX01 or CD15XXX01"
                   />
-                </div>
+                </Field>
 
-                <div>
-                  <label
-                    htmlFor="subject"
-                    className="block text-sm font-medium text-(--text-primary) mb-2 font-inter"
-                  >
-                    Subject <span className="text-(--error)">*</span>
-                  </label>
-                  <select
+                <Field label="Subject" required>
+                  <Select
                     id="subject"
                     name="subject"
                     value={formData.subject}
                     onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-(--text-primary) font-inter"
                   >
                     <option value="">Select a subject</option>
                     <option value="Bug Report">Bug Report</option>
@@ -238,53 +207,35 @@ export default function ContactPage() {
                       Partnership/Collaboration
                     </option>
                     <option value="Other">Other</option>
-                  </select>
-                </div>
+                  </Select>
+                </Field>
 
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium text-(--text-primary) mb-2 font-inter"
-                  >
-                    Message <span className="text-(--error)">*</span>
-                  </label>
-                  <textarea
+                <Field
+                  label="Message"
+                  required
+                  hint={`${formData.message.length}/2000 characters`}
+                >
+                  <Textarea
                     id="message"
                     name="message"
                     value={formData.message}
                     onChange={handleInputChange}
-                    required
                     rows={6}
                     maxLength={2000}
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-(--text-primary) font-inter resize-vertical"
-                    placeholder="Tell me about your question, feedback, or suggestion..."
+                    placeholder="Tell me about your question, feedback, or suggestion…"
                   />
-                  <div className="mt-2 text-right text-sm text-(--text-muted) font-inter">
-                    {formData.message.length}/2000 characters
-                  </div>
-                </div>
+                </Field>
 
-                <button
+                <Button
                   type="submit"
-                  disabled={isSubmitting}
-                  className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-lg font-button text-lg transition-all duration-200 ${
-                    isSubmitting
-                      ? "bg-(--surface-elevated) text-(--text-muted) cursor-not-allowed"
-                      : "bg-(--primary) hover:bg-(--primary-hover) text-white hover:scale-105"
-                  }`}
+                  size="lg"
+                  fullWidth
+                  loading={isSubmitting}
+                  loadingText="Sending message…"
+                  iconLeft={<Send className="w-5 h-5" />}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-(--text-muted) border-t-transparent rounded-full animate-spin" />
-                      Sending Message...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-5 h-5" />
-                      Send Message
-                    </>
-                  )}
-                </button>
+                  Send message
+                </Button>
               </form>
             </div>
           </div>

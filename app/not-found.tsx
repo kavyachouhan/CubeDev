@@ -3,10 +3,8 @@
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import {
-  ArrowLeft,
-  Timer,
-} from "lucide-react";
+import { ArrowLeft, Timer } from "lucide-react";
+import { Button, ButtonLink } from "@/components/ui/Button";
 
 export default function NotFound() {
   return (
@@ -32,21 +30,22 @@ export default function NotFound() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <Link
-              href="/cube-lab/timer"
-              className="inline-flex items-center gap-3 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-all duration-200 font-statement font-semibold"
-            >
-              <Timer className="w-5 h-5" />
-              Time Your Solves
-            </Link>
-
-            <button
+            <Button
+              size="lg"
+              variant="secondary"
               onClick={() => window.history.back()}
-              className="inline-flex items-center gap-3 px-6 py-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) hover:text-(--primary) rounded-lg transition-all duration-200 font-statement font-semibold"
+              iconLeft={<ArrowLeft className="w-5 h-5" />}
             >
-              <ArrowLeft className="w-5 h-5" />
-              Go Back
-            </button>
+              Go back
+            </Button>
+
+            <ButtonLink
+              href="/cube-lab/timer"
+              size="lg"
+              iconLeft={<Timer className="w-5 h-5" />}
+            >
+              Time your solves
+            </ButtonLink>
           </div>
         </div>
 

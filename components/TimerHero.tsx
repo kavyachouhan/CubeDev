@@ -10,6 +10,9 @@ import {
 } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import { wcaSignInHref } from "@/lib/wca-config";
+import { Button, ButtonLink } from "@/components/ui/Button";
+import { SwitchRow } from "@/components/ui/Switch";
+import { TimeValue } from "@/components/ui/TimeValue";
 
 interface TimerRecord {
   id: string;
@@ -360,20 +363,20 @@ export default function TimerHero() {
 
             <div className="flex justify-center sm:justify-start">
               {user ? (
-                <a
-                  href="/cube-lab/timer"
-                  className="px-8 py-4 bg-(--primary) hover:bg-(--primary-hover) text-white font-semibold rounded-lg transition-all duration-200 font-button text-lg text-center"
-                >
-                  Go to Timer
-                </a>
+                <ButtonLink href="/cube-lab/timer" size="lg">
+                  Go to timer
+                </ButtonLink>
               ) : (
-                <button
+                <Button
+                  size="lg"
                   onClick={handleWCASignIn}
-                  className="px-8 py-4 bg-(--primary) hover:bg-(--primary-hover) text-white font-semibold rounded-lg transition-all duration-200 font-button text-lg flex items-center justify-center gap-2"
+                  iconLeft={
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src="/wca_logo.png" alt="" className="w-5 h-5" />
+                  }
                 >
-                  <img src="/wca_logo.png" alt="WCA" className="w-5 h-5" />
                   Sign in with WCA
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -405,31 +408,14 @@ export default function TimerHero() {
 
                 {/* Settings Panel */}
                 {showSettings && (
-                  <div className="mb-6 p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                  <div className="mb-6 p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-(--text-secondary) font-inter">
-                          Inspection
-                        </span>
-                        <button
-                          onClick={() =>
-                            setInspectionEnabled(!inspectionEnabled)
-                          }
-                          className={`w-10 h-6 rounded-full transition-colors ${
-                            inspectionEnabled
-                              ? "bg-(--primary)"
-                              : "bg-(--border)"
-                          }`}
-                        >
-                          <div
-                            className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                              inspectionEnabled
-                                ? "translate-x-5"
-                                : "translate-x-1"
-                            }`}
-                          />
-                        </button>
-                      </div>
+                      <SwitchRow
+                        variant="plain"
+                        label="Inspection"
+                        checked={inspectionEnabled}
+                        onChange={setInspectionEnabled}
+                      />
                     </div>
                   </div>
                 )}
@@ -462,24 +448,21 @@ export default function TimerHero() {
                 {/* Penalty Buttons */}
                 {state === "stopped" && lastSolveId && showPenaltyButtons && (
                   <div className="mt-6 flex justify-center gap-3">
-                    <button
+                    <Button
+                      variant="warning"
                       onClick={() => applyPenalty("+2")}
-                      className="px-6 py-2 bg-(--penalty-plus2) hover:bg-(--penalty-plus2-hover) text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105"
                     >
                       +2
-                    </button>
-                    <button
-                      onClick={() => applyPenalty("DNF")}
-                      className="px-6 py-2 bg-(--penalty-dnf) hover:bg-(--penalty-dnf-hover) text-white text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105"
-                    >
+                    </Button>
+                    <Button variant="danger" onClick={() => applyPenalty("DNF")}>
                       DNF
-                    </button>
+                    </Button>
                   </div>
                 )}
 
                 {/* Stats */}
                 {showStats && (
-                  <div className="mt-6 grid grid-cols-3 gap-4 p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                  <div className="mt-6 grid grid-cols-3 gap-4 p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                     <div className="text-center">
                       <div className="text-sm text-(--text-muted) uppercase tracking-wide font-inter">
                         Best
@@ -544,18 +527,10 @@ export default function TimerHero() {
                           <span className="text-sm text-(--text-muted) font-inter">
                             #{index + 1}
                           </span>
-                          <span
-                            className={`font-mono text-(--text-primary) ${
-                              record.penalty === "+2"
-                                ? "text-yellow-400"
-                                : record.penalty === "DNF"
-                                  ? "text-red-400"
-                                  : ""
-                            }`}
-                          >
+                          <TimeValue penalty={record.penalty}>
                             {formatTime(record.finalTime)}
                             {record.penalty === "+2" && "+"}
-                          </span>
+                          </TimeValue>
                           <span className="text-xs text-(--text-muted) font-inter">
                             {record.timestamp.toLocaleTimeString()}
                           </span>

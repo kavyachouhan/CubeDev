@@ -2,7 +2,10 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Check, X } from "lucide-react";
 import { isSafeReturnPath } from "@/lib/safe-return-path";
+import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 
 function WCACallbackContent() {
   const router = useRouter();
@@ -163,7 +166,7 @@ function WCACallbackContent() {
             {status === "loading" && (
               <>
                 <div className="flex justify-center mb-6">
-                  <div className="w-12 h-12 border-4 border-(--primary) border-t-transparent rounded-full animate-spin"></div>
+                  <Spinner size="xl" className="text-(--primary)" />
                 </div>
                 <h1 className="text-2xl font-bold text-(--text-primary) mb-4 font-statement">
                   Authenticating with{" "}
@@ -179,19 +182,7 @@ function WCACallbackContent() {
               <>
                 <div className="flex justify-center mb-6">
                   <div className="w-12 h-12 bg-(--success) rounded-full flex items-center justify-center">
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
+                    <Check className="w-6 h-6 text-(--on-primary)" aria-hidden />
                   </div>
                 </div>
                 <h1 className="text-2xl font-bold text-(--success) mb-4 font-statement">
@@ -208,19 +199,7 @@ function WCACallbackContent() {
               <>
                 <div className="flex justify-center mb-6">
                   <div className="w-12 h-12 bg-(--error) rounded-full flex items-center justify-center">
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
+                    <X className="w-6 h-6 text-(--on-primary)" aria-hidden />
                   </div>
                 </div>
                 <h1 className="text-2xl font-bold text-(--error) mb-4 font-statement">
@@ -229,12 +208,9 @@ function WCACallbackContent() {
                 <p className="text-(--text-secondary) mb-6 font-inter">
                   {message}
                 </p>
-                <button
-                  onClick={() => router.push("/")}
-                  className="px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white font-semibold rounded-lg transition-all duration-200 font-button"
-                >
-                  Return to Home
-                </button>
+                <Button size="lg" onClick={() => router.push("/")}>
+                  Return to home
+                </Button>
               </>
             )}
           </div>
@@ -251,7 +227,7 @@ function LoadingFallback() {
         <div className="max-w-md mx-auto text-center">
           <div className="timer-card">
             <div className="flex justify-center mb-6">
-              <div className="w-12 h-12 border-4 border-(--primary) border-t-transparent rounded-full animate-spin"></div>
+              <Spinner size="xl" className="text-(--primary)" />
             </div>
             <h1 className="text-2xl font-bold text-(--text-primary) mb-4 font-statement">
               Loading...

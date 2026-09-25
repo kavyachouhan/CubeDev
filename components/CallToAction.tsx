@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { useUser } from "@/components/UserProvider";
 import { wcaSignInHref } from "@/lib/wca-config";
 
@@ -76,21 +77,24 @@ export default function CallToAction() {
             }`}
           >
             {user ? (
-              <a
+              <ButtonLink
                 href="/cube-lab/timer"
-                className="group px-10 py-5 bg-(--primary) text-white font-bold rounded-xl hover:bg-(--primary-hover) transition-all duration-300 font-button text-lg flex items-center gap-3 hover:gap-4 shadow-lg hover:shadow-xl hover:scale-105"
+                size="lg"
+                iconRight={<ArrowRight className="w-5 h-5" />}
               >
-                Start Training Now
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-              </a>
+                Start training now
+              </ButtonLink>
             ) : (
-              <button
+              <Button
+                size="lg"
                 onClick={handleWCASignIn}
-                className="px-10 py-5 bg-(--primary) text-white font-bold rounded-xl hover:bg-(--primary-hover) transition-all duration-300 font-button text-lg shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-3"
+                iconLeft={
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src="/wca_logo.png" alt="" className="w-5 h-5" />
+                }
               >
-                <img src="/wca_logo.png" alt="WCA" className="w-5 h-5" />
                 Sign in with WCA
-              </button>
+              </Button>
             )}
           </div>
         </div>

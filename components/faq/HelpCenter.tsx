@@ -22,6 +22,8 @@ import {
   Play,
   ThumbsUp,
 } from "lucide-react";
+import { ButtonLink } from "@/components/ui/Button";
+import { SearchInput } from "@/components/ui/Field";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import FAQSearchResults from "./FAQSearchResults";
@@ -82,24 +84,13 @@ export default function HelpCenter() {
 
       {/* Search */}
       <div className="max-w-2xl mx-auto">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-(--text-muted)" />
-          <input
-            type="text"
-            placeholder="Search for help articles..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3.5 bg-(--surface) border border-(--border) rounded-xl text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--primary) focus:ring-2 focus:ring-(--primary)/20 transition-all font-inter text-base"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-muted) hover:text-(--text-primary) transition-colors"
-            >
-              &times;
-            </button>
-          )}
-        </div>
+        <SearchInput
+          size="lg"
+          placeholder="Search for help articles…"
+          aria-label="Search help articles"
+          value={searchQuery}
+          onChange={setSearchQuery}
+        />
       </div>
 
       {/* Search Results */}
@@ -130,7 +121,7 @@ export default function HelpCenter() {
                       className="timer-card block text-left group cursor-pointer"
                     >
                       <div className="flex items-start gap-3">
-                        <div className="p-2 bg-(--primary)/10 rounded-lg shrink-0">
+                        <div className="p-2 bg-(--primary)/10 rounded-(--radius-control) shrink-0">
                           <IconComp className="w-4 h-4 text-(--primary)" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -167,7 +158,7 @@ export default function HelpCenter() {
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="timer-card animate-pulse">
                     <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 skeleton-box rounded-lg" />
+                      <div className="w-10 h-10 skeleton-box rounded-(--radius-control)" />
                       <div className="flex-1 space-y-2">
                         <div className="h-4 skeleton-box rounded w-2/3" />
                         <div className="h-3 skeleton-box rounded w-full" />
@@ -195,7 +186,7 @@ export default function HelpCenter() {
                       className="timer-card block text-left group cursor-pointer"
                     >
                       <div className="flex items-start gap-4">
-                        <div className="p-2.5 bg-(--primary)/10 rounded-lg shrink-0">
+                        <div className="p-2.5 bg-(--primary)/10 rounded-(--radius-control) shrink-0">
                           <IconComp className="w-5 h-5 text-(--primary)" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -230,13 +221,12 @@ export default function HelpCenter() {
             <p className="text-sm text-(--text-secondary) font-inter max-w-md mx-auto">
               Reach out to us and we&apos;ll help you get back on track.
             </p>
-            <Link
+            <ButtonLink
               href="/contact"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-button text-sm"
+              iconRight={<ChevronRight className="w-4 h-4" />}
             >
-              Contact Us
-              <ChevronRight className="w-4 h-4" />
-            </Link>
+              Contact us
+            </ButtonLink>
           </div>
         </>
       )}

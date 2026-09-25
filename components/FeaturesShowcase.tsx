@@ -17,6 +17,7 @@ import {
   Target,
   Calendar,
   BookMarked,
+  Check,
 } from "lucide-react";
 
 interface Feature {
@@ -41,9 +42,9 @@ export default function FeaturesShowcase() {
         "Professional speedcubing timer with multiple input modes including manual entry, Stackmat integration, and keyboard timing. Features inspection periods, penalty options, phase-specific drills and precision timing.",
       icon: <Timer className="w-6 h-6" />,
       preview: (
-        <div className="bg-(--surface) border border-(--border) rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
+        <div className="bg-(--surface) border border-(--border) rounded-(--radius-card) p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-lg border border-(--border)">
+            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-(--radius-control) border border-(--border)">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-semibold text-(--text-primary) font-button">
                   Timer
@@ -66,15 +67,15 @@ export default function FeaturesShowcase() {
               </div>
 
               <div className="mt-4 mb-4 flex gap-2 justify-center">
-                <button className="px-3 py-1.5 bg-(--primary) text-white text-xs rounded font-button">
+                <span className="px-3 py-1.5 bg-(--primary) text-(--on-primary) text-xs rounded-(--radius-badge) font-button" aria-hidden>
                   Normal
-                </button>
-                <button className="px-3 py-1.5 border border-(--border) text-(--text-secondary) text-xs rounded font-button hover:border-(--primary) transition-all">
+                </span>
+                <span aria-hidden className="px-3 py-1.5 border border-(--border) text-(--text-secondary) text-xs rounded font-button hover:border-(--primary) transition-all">
                   Manual
-                </button>
-                <button className="px-3 py-1.5 border border-(--border) text-(--text-secondary) text-xs rounded font-button hover:border-(--primary) transition-all">
+                </span>
+                <span aria-hidden className="px-3 py-1.5 border border-(--border) text-(--text-secondary) text-xs rounded font-button hover:border-(--primary) transition-all">
                   Stackmat
-                </button>
+                </span>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
@@ -106,15 +107,15 @@ export default function FeaturesShowcase() {
             </div>
 
             <div className="flex gap-2">
-              <button className="flex-1 px-4 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white text-base rounded-lg font-button transition-all">
+              <span className="flex-1 text-center px-4 py-3 bg-(--primary) text-(--on-primary) text-base rounded-(--radius-control) font-button" aria-hidden>
                 Start Session
-              </button>
-              <button className="px-4 py-3 border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--primary) rounded-lg transition-all">
+              </span>
+              <span aria-hidden className="px-4 py-3 border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--primary) rounded-(--radius-control) transition-all">
                 +2
-              </button>
-              <button className="px-4 py-3 border border-(--border) hover:border-(--error) text-(--text-secondary) hover:text-(--error) rounded-lg transition-all">
+              </span>
+              <span aria-hidden className="px-4 py-3 border border-(--border) hover:border-(--error) text-(--text-secondary) hover:text-(--error) rounded-(--radius-control) transition-all">
                 DNF
-              </button>
+              </span>
             </div>
           </div>
         </div>
@@ -127,9 +128,9 @@ export default function FeaturesShowcase() {
         "Advanced analytics with solve heatmaps, time progression charts, phase breakdowns, personal bests tracking, and detailed performance insights.",
       icon: <BarChart3 className="w-6 h-6" />,
       preview: (
-        <div className="bg-(--surface) border border-(--border) rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
+        <div className="bg-(--surface) border border-(--border) rounded-(--radius-card) p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-lg border border-(--border)">
+            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-(--radius-control) border border-(--border)">
               <h4 className="font-semibold text-(--text-primary) font-button mb-4">
                 Performance Analytics
               </h4>
@@ -219,9 +220,9 @@ export default function FeaturesShowcase() {
         "Cuber Profiles with WCA integration, competition history, personal records, CubeDev statistics, and community features.",
       icon: <Users className="w-6 h-6" />,
       preview: (
-        <div className="bg-(--surface) border border-(--border) rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
+        <div className="bg-(--surface) border border-(--border) rounded-(--radius-card) p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-lg border border-(--border)">
+            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-(--radius-control) border border-(--border)">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-16 h-16 bg-(--primary)/20 rounded-full flex items-center justify-center">
                   <User className="w-8 h-8 text-(--primary)" />
@@ -281,9 +282,9 @@ export default function FeaturesShowcase() {
               </div>
             </div>
 
-            <button className="w-full px-6 py-3 border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--primary) text-base rounded-lg font-button transition-all">
+            <span aria-hidden className="w-full px-6 py-3 border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--primary) text-base rounded-(--radius-control) font-button transition-all">
               View Full Profile
-            </button>
+            </span>
           </div>
         </div>
       ),
@@ -295,9 +296,9 @@ export default function FeaturesShowcase() {
         "Your dedicated cubing coach with personalized training plans, progress tracking, and structured practice sessions. Set goals, log your practice journal, and get actionable insights to break through plateaus.",
       icon: <Target className="w-6 h-6" />,
       preview: (
-        <div className="bg-(--surface) border border-(--border) rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
+        <div className="bg-(--surface) border border-(--border) rounded-(--radius-card) p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-lg border border-(--border)">
+            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-(--radius-control) border border-(--border)">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-semibold text-(--text-primary) font-button">
                   Your Training Plan
@@ -378,7 +379,10 @@ export default function FeaturesShowcase() {
                       </span>
                     </div>
                     {item.status === "completed" && (
-                      <span className="text-xs text-(--success)">✓</span>
+                      <Check
+                        className="w-3.5 h-3.5 text-(--success)"
+                        aria-label="Completed"
+                      />
                     )}
                     {item.status === "current" && (
                       <span className="text-xs text-(--primary) font-button">
@@ -396,12 +400,12 @@ export default function FeaturesShowcase() {
             </div>
 
             <div className="flex gap-2">
-              <button className="flex-1 px-4 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white text-base rounded-lg font-button transition-all">
+              <span className="flex-1 text-center px-4 py-3 bg-(--primary) text-(--on-primary) text-base rounded-(--radius-control) font-button" aria-hidden>
                 Start Training
-              </button>
-              <button className="px-4 py-3 border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--primary) rounded-lg transition-all">
+              </span>
+              <span aria-hidden className="px-4 py-3 border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--primary) rounded-(--radius-control) transition-all">
                 Journal
-              </button>
+              </span>
             </div>
           </div>
         </div>
@@ -414,9 +418,9 @@ export default function FeaturesShowcase() {
         "Master OLL, PLL, F2L, and more with our intelligent spaced repetition system. Track your progress, get personalized practice sessions, and never forget an algorithm again.",
       icon: <GraduationCap className="w-6 h-6" />,
       preview: (
-        <div className="bg-(--surface) border border-(--border) rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
+        <div className="bg-(--surface) border border-(--border) rounded-(--radius-card) p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-lg border border-(--border)">
+            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-(--radius-control) border border-(--border)">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-semibold text-(--text-primary) font-button">
                   Algorithm Progress
@@ -501,12 +505,12 @@ export default function FeaturesShowcase() {
             </div>
 
             <div className="flex gap-2">
-              <button className="flex-1 px-4 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white text-base rounded-lg font-button transition-all">
+              <span className="flex-1 text-center px-4 py-3 bg-(--primary) text-(--on-primary) text-base rounded-(--radius-control) font-button" aria-hidden>
                 Practice Now
-              </button>
-              <button className="px-4 py-3 border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--primary) rounded-lg transition-all">
+              </span>
+              <span aria-hidden className="px-4 py-3 border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--primary) rounded-(--radius-control) transition-all">
                 Browse
-              </button>
+              </span>
             </div>
           </div>
         </div>
@@ -519,9 +523,9 @@ export default function FeaturesShowcase() {
         "Experience the thrill of competition with realistic simulation. Practice under competition conditions with averages, cutoffs, time limits, and proper WCA-style rounds.",
       icon: <Trophy className="w-6 h-6" />,
       preview: (
-        <div className="bg-(--surface) border border-(--border) rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
+        <div className="bg-(--surface) border border-(--border) rounded-(--radius-card) p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-lg border border-(--border)">
+            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-(--radius-control) border border-(--border)">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-semibold text-(--text-primary) font-button">
                   Competition Round
@@ -531,7 +535,7 @@ export default function FeaturesShowcase() {
                 </span>
               </div>
 
-              <div className="text-center p-4 bg-(--background) rounded-lg mb-4">
+              <div className="text-center p-4 bg-(--background) rounded-(--radius-control) mb-4">
                 <div className="text-xs text-(--text-muted) font-inter mb-1">
                   Current Solve
                 </div>
@@ -597,12 +601,12 @@ export default function FeaturesShowcase() {
             </div>
 
             <div className="flex gap-2">
-              <button className="flex-1 px-4 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white text-base rounded-lg font-button transition-all">
+              <span className="flex-1 text-center px-4 py-3 bg-(--primary) text-(--on-primary) text-base rounded-(--radius-control) font-button" aria-hidden>
                 Next Solve
-              </button>
-              <button className="px-4 py-3 border border-(--border) hover:border-(--error) text-(--text-secondary) hover:text-(--error) rounded-lg transition-all">
+              </span>
+              <span aria-hidden className="px-4 py-3 border border-(--border) hover:border-(--error) text-(--text-secondary) hover:text-(--error) rounded-(--radius-control) transition-all">
                 DNF
-              </button>
+              </span>
             </div>
           </div>
         </div>
@@ -615,9 +619,9 @@ export default function FeaturesShowcase() {
         "Create and join timed challenge rooms with friends, compete on same scrambles, track leaderboards, and enjoy real-time competition.",
       icon: <Trophy className="w-6 h-6" />,
       preview: (
-        <div className="bg-(--surface) border border-(--border) rounded-xl p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
+        <div className="bg-(--surface) border border-(--border) rounded-(--radius-card) p-4 sm:p-6 md:p-8 shadow-xl w-full max-w-lg mx-auto">
           <div className="space-y-6">
-            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-lg border border-(--border)">
+            <div className="bg-(--surface-elevated) p-4 sm:p-6 rounded-(--radius-control) border border-(--border)">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-semibold text-(--text-primary) font-button">
                   Friday Night Challenge
@@ -688,12 +692,12 @@ export default function FeaturesShowcase() {
             </div>
 
             <div className="flex gap-2">
-              <button className="flex-1 px-4 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white text-base rounded-lg font-button transition-all">
+              <span className="flex-1 text-center px-4 py-3 bg-(--primary) text-(--on-primary) text-base rounded-(--radius-control) font-button" aria-hidden>
                 Join Room
-              </button>
-              <button className="px-4 py-3 border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--primary) rounded-lg transition-all">
+              </span>
+              <span aria-hidden className="px-4 py-3 border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--primary) rounded-(--radius-control) transition-all">
                 Create
-              </button>
+              </span>
             </div>
           </div>
         </div>

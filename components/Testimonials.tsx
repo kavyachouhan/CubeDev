@@ -103,10 +103,10 @@ function TestimonialAvatar({
 // Card component for individual testimonials
 function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
   return (
-    <div className="group bg-(--background) border border-(--border) rounded-xl p-4 sm:p-6 hover:border-(--primary) transition-all duration-300 h-full flex flex-col min-h-[280px] sm:min-h-[320px]">
+    <div className="group bg-(--background) border border-(--border) rounded-(--radius-card) p-4 sm:p-6 hover:border-(--primary) transition-all duration-300 h-full flex flex-col min-h-[280px] sm:min-h-[320px]">
       {/* Quote Icon */}
       <div className="mb-3 sm:mb-4">
-        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-(--primary)/10 rounded-lg flex items-center justify-center group-hover:bg-(--primary)/20 transition-colors duration-300">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-(--primary)/10 rounded-(--radius-control) flex items-center justify-center group-hover:bg-(--primary)/20 transition-colors duration-300">
           <Quote className="w-4 h-4 sm:w-5 sm:h-5 text-(--primary)" />
         </div>
       </div>
