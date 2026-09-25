@@ -330,7 +330,7 @@ export default function CompetitionList({
                     key={event.id}
                     onClick={() => toggleEvent(event.id)}
                     title={event.name}
-                    className={`p-2 rounded-lg border transition-colors ${
+                    className={`p-2 rounded-(--radius-control) border transition-colors ${
                       selectedEvents.includes(event.id)
                         ? "border-(--primary) bg-(--primary)/10"
                         : "border-(--border) hover:border-(--border-hover) bg-(--surface)"

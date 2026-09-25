@@ -431,14 +431,14 @@ export default function StackmatTimerCore({
                 <button
                   type="button"
                   onClick={() => handlePenalty("+2")}
-                  className="btn btn-lg text-white bg-(--penalty-plus2) hover:bg-(--penalty-plus2-hover)"
+                  className="btn btn-lg text-(--on-primary) bg-(--penalty-plus2) hover:bg-(--penalty-plus2-hover)"
                 >
                   +2
                 </button>
                 <button
                   type="button"
                   onClick={() => handlePenalty("DNF")}
-                  className="btn btn-lg text-white bg-(--penalty-dnf) hover:bg-(--penalty-dnf-hover)"
+                  className="btn btn-lg text-(--on-primary) bg-(--penalty-dnf) hover:bg-(--penalty-dnf-hover)"
                 >
                   DNF
                 </button>

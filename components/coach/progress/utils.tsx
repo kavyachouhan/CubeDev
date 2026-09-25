@@ -173,7 +173,7 @@ export function CollapsibleSection({
           {headerAction}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-badge) transition-colors"
             title={isExpanded ? `Hide ${title}` : `Show ${title}`}
           >
             {isExpanded ? (

@@ -191,7 +191,7 @@ export default function ProfileSidebar({
 
         {/* CubeDev Membership Info */}
         {cubeDevUser && (
-          <div className="space-y-2 p-4 bg-(--surface-elevated) rounded-lg border border-(--border) mb-6">
+          <div className="space-y-2 p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) mb-6">
             {joinDate && (
               <div className="flex items-center justify-center gap-2 text-xs text-(--text-muted)">
                 <Calendar className="w-3 h-3" />
@@ -214,7 +214,7 @@ export default function ProfileSidebar({
               href={`https://www.worldcubeassociation.org/persons/${wcaId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary)/90 transition-colors font-inter font-medium text-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-(--on-primary) rounded-(--radius-control) hover:bg-(--primary)/90 transition-colors font-inter font-medium text-sm"
             >
               <ExternalLink className="w-4 h-4" />
               View WCA Profile
@@ -269,7 +269,7 @@ export default function ProfileSidebar({
                 return (
                   <div
                     key={record.event_id}
-                    className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)"
+                    className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="text-sm font-medium text-(--text-primary) font-inter">

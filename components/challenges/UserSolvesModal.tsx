@@ -138,7 +138,7 @@ export default function UserSolvesModal({
             <div className="flex flex-col sm:flex-row sm:items-center gap-6">
               {/* User Info */}
               <div className="flex items-center gap-4 flex-1">
-                <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-white font-bold text-lg">
+                <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-(--on-primary) font-bold text-lg">
                   {participant.user?.avatar &&
                   !(
                     participant.user?.isDeleted ||
@@ -212,7 +212,7 @@ export default function UserSolvesModal({
           {participant.isCompleted && (
             <div className="p-6 border-b border-(--border)">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
+                <div className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Target className="w-4 h-4 text-(--primary)" />
                     <span className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
@@ -226,7 +226,7 @@ export default function UserSolvesModal({
                   </div>
                 </div>
 
-                <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
+                <div className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Activity className="w-4 h-4 text-(--success)" />
                     <span className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
@@ -241,7 +241,7 @@ export default function UserSolvesModal({
                   </div>
                 </div>
 
-                <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
+                <div className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Timer className="w-4 h-4 text-(--primary)" />
                     <span className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
@@ -253,7 +253,7 @@ export default function UserSolvesModal({
                   </div>
                 </div>
 
-                <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
+                <div className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Calendar className="w-4 h-4 text-(--accent)" />
                     <span className="text-xs text-(--text-muted) uppercase tracking-wide font-inter">
@@ -270,7 +270,7 @@ export default function UserSolvesModal({
 
           {/* Individual Solves */}
           <div className="p-6">
-            <div className="bg-(--surface) border border-(--border) rounded-lg">
+            <div className="bg-(--surface) border border-(--border) rounded-(--radius-control)">
               <div className="flex items-center justify-between p-4 border-b border-(--border)">
                 <h4 className="text-lg font-semibold text-(--text-primary) font-statement">
                   Individual Solves
@@ -336,7 +336,7 @@ export default function UserSolvesModal({
                         {/* Expanded Details */}
                         {selectedSolve?._id === solve._id && (
                           <div className="mt-3 pt-3 border-t border-(--border)">
-                            <div className="bg-(--surface) border border-(--border) rounded-lg p-3">
+                            <div className="bg-(--surface) border border-(--border) rounded-(--radius-control) p-3">
                               <h5 className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-3">
                                 Time Breakdown
                               </h5>
@@ -380,7 +380,7 @@ export default function UserSolvesModal({
 
                             {/* Comment */}
                             {solve.comment && (
-                              <div className="mt-3 bg-(--surface) border border-(--border) rounded-lg p-3">
+                              <div className="mt-3 bg-(--surface) border border-(--border) rounded-(--radius-control) p-3">
                                 <h5 className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-2">
                                   Comment
                                 </h5>

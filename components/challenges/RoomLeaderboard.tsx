@@ -86,13 +86,13 @@ export default function RoomLeaderboard({
                 >
                   {/* Rank Badge */}
                   <div
-                    className="w-8 h-8 rounded-(--radius-control) flex items-center justify-center text-sm font-bold text-white shrink-0"
+                    className="w-8 h-8 rounded-(--radius-control) flex items-center justify-center text-sm font-bold text-(--on-primary) shrink-0"
                     style={medalBadgeStyle(participant.finalRank)}
                   >
                     {participant.finalRank}
                   </div>
                   {/* User Avatar */}
-                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-(--on-primary) font-bold text-sm">
                     {participant.user?.avatar &&
                     !participant.user?.isDeleted &&
                     !participant.wasDeletedWhenJoined ? (
@@ -173,10 +173,10 @@ export default function RoomLeaderboard({
                 <button
                   key={participant._id}
                   onClick={() => setSelectedParticipant(participant)}
-                  className="w-full flex items-center gap-3 p-4 rounded-xl border transition-all duration-200 cursor-pointer bg-(--surface-elevated) border-(--border)/50 hover:border-(--primary)/30"
+                  className="w-full flex items-center gap-3 p-4 rounded-(--radius-panel) border transition-all duration-200 cursor-pointer bg-(--surface-elevated) border-(--border)/50 hover:border-(--primary)/30"
                 >
                   {/* User Avatar */}
-                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-(--on-primary) font-bold text-sm">
                     {participant.user?.avatar &&
                     !participant.user?.isDeleted &&
                     !participant.wasDeletedWhenJoined ? (

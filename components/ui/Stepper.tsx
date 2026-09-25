@@ -61,7 +61,7 @@ export function Stepper({
                   isActive
                     ? "bg-(--primary) text-(--on-primary)"
                     : isCompleted
-                      ? "bg-(--success) text-white cursor-pointer"
+                      ? "bg-(--success) text-(--on-primary) cursor-pointer"
                       : "bg-(--surface-elevated) text-(--text-muted)",
                 )}
               >

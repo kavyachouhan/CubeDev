@@ -21,7 +21,6 @@ export { default as SolveEditModal } from "./SolveEditModal";
 export { default as SolveDetailsModal } from "./SolveDetailsModal";
 export { default as SessionList } from "./SessionList";
 export { default as StatsVisibilitySettings } from "./StatsVisibilitySettings";
-export { Tooltip } from "./Tooltip";
 
 export type { TimerMode } from "./TimerSettings";
 export type { ExtendedStatsVisibility } from "./StatsVisibilitySettings";

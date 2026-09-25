@@ -122,7 +122,7 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
       {/* Mini chart area */}
       <div className="relative">
         {/* Chart container */}
-        <div className="h-48 bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
+        <div className="h-48 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) p-4">
           <div className="relative h-full">
             {/* Y-axis labels */}
             <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-(--text-muted) pr-2">
@@ -241,7 +241,7 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
 
         {/* Recent improvement indicator */}
         {trendData.length >= 5 && (
-          <div className="mt-3 p-3 bg-(--surface-elevated) border border-(--border) rounded-lg">
+          <div className="mt-3 p-3 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)">
             <div className="flex items-center gap-2 text-sm">
               <BarChart3 className="w-4 h-4 text-(--text-muted)" />
               <span className="text-(--text-secondary)">

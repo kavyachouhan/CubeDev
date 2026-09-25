@@ -121,7 +121,7 @@ export default function RecentRoomsModal({
                     <span className="inline-flex items-center gap-1.5">
                       <span
                         aria-hidden
-                        className="w-4 h-4 rounded-full flex items-center justify-center text-[0.625rem] text-white font-bold"
+                        className="w-4 h-4 rounded-full flex items-center justify-center text-[0.625rem] text-(--on-primary) font-bold"
                         style={{ background: "var(--medal-gold)" }}
                       >
                         1
@@ -136,7 +136,7 @@ export default function RecentRoomsModal({
                     <span className="inline-flex items-center gap-1.5">
                       <span
                         aria-hidden
-                        className="w-4 h-4 rounded-full flex items-center justify-center text-[0.625rem] text-white font-bold"
+                        className="w-4 h-4 rounded-full flex items-center justify-center text-[0.625rem] text-(--on-primary) font-bold"
                         style={{ background: "var(--medal-silver)" }}
                       >
                         {participation.finalRank}

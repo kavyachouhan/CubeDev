@@ -32,7 +32,7 @@ export default function StatCard({
   return (
     <div className="timer-card">
       <div className="flex items-start justify-between mb-3">
-        <div className={`p-2 rounded-lg ${bgColor}`}>
+        <div className={`p-2 rounded-(--radius-control) ${bgColor}`}>
           <Icon className={`w-5 h-5 ${textColor}`} />
         </div>
         {trend && (

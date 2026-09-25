@@ -93,7 +93,7 @@ export default function AlgorithmCaseCard({
   return (
     <Link href={`/cube-lab/algorithm-trainer/cases/${caseSlug}`}>
       <div
-        className={`p-4 bg-(--surface) border-2 ${stageColors[learningStage]} rounded-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer`}
+        className={`p-4 bg-(--surface) border-2 ${stageColors[learningStage]} rounded-(--radius-control) hover:scale-[1.02] transition-all duration-200 cursor-pointer`}
       >
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
@@ -124,7 +124,7 @@ export default function AlgorithmCaseCard({
                   key={i}
                   className={`w-3 h-3 ${
                     i < difficultyStars
-                      ? "fill-yellow-500 text-(--warning)"
+                      ? "fill-(--warning) text-(--warning)"
                       : "text-(--border)"
                   }`}
                 />
@@ -174,7 +174,7 @@ export default function AlgorithmCaseCard({
             <button
               onClick={handleMarkAsLearned}
               disabled={isMarking}
-              className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium text-(--primary) bg-(--primary)/10 hover:bg-(--primary)/20 border border-(--primary)/20 rounded-lg transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium text-(--primary) bg-(--primary)/10 hover:bg-(--primary)/20 border border-(--primary)/20 rounded-(--radius-control) transition-colors disabled:opacity-50"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               {isMarking ? "Marking..." : "Already Know This"}

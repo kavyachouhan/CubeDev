@@ -2,8 +2,8 @@ export function ImportExportSkeleton() {
   return (
     <div className="timer-card animate-pulse">
       <div className="flex items-center justify-between gap-3">
-        <div className="h-10 skeleton-box rounded-lg w-32" />
-        <div className="h-10 skeleton-box rounded-lg w-32" />
+        <div className="h-10 skeleton-box rounded-(--radius-control) w-32" />
+        <div className="h-10 skeleton-box rounded-(--radius-control) w-32" />
       </div>
     </div>
   );
@@ -17,12 +17,12 @@ export function SessionManagerSkeleton() {
         <div className="flex items-center gap-1">
           <div className="h-6 skeleton-box rounded w-24" />
         </div>
-        <div className="h-7 w-7 skeleton-box rounded-md" />
+        <div className="h-7 w-7 skeleton-box rounded-(--radius-badge)" />
       </div>
 
       {/* Dropdown skeleton */}
       <div className="pb-4">
-        <div className="h-14 skeleton-box rounded-lg w-full" />
+        <div className="h-14 skeleton-box rounded-(--radius-control) w-full" />
       </div>
     </div>
   );
@@ -36,12 +36,12 @@ export function EventSelectorSkeleton() {
         <div className="flex items-center gap-1">
           <div className="h-6 skeleton-box rounded w-20" />
         </div>
-        <div className="h-7 w-7 skeleton-box rounded-md" />
+        <div className="h-7 w-7 skeleton-box rounded-(--radius-badge)" />
       </div>
 
       {/* Dropdown skeleton */}
       <div className="pb-4">
-        <div className="h-14 skeleton-box rounded-lg w-full" />
+        <div className="h-14 skeleton-box rounded-(--radius-control) w-full" />
       </div>
     </div>
   );
@@ -52,9 +52,9 @@ export function ScrambleDisplaySkeleton() {
     <div className="timer-card animate-pulse">
       <div className="flex items-center justify-between mb-4">
         <div className="h-6 skeleton-box rounded w-32" />
-        <div className="h-9 skeleton-box rounded-lg w-24" />
+        <div className="h-9 skeleton-box rounded-(--radius-control) w-24" />
       </div>
-      <div className="skeleton-box-subtle rounded-lg p-4 min-h-[80px] flex items-center justify-center">
+      <div className="skeleton-box-subtle rounded-(--radius-control) p-4 min-h-[80px] flex items-center justify-center">
         <div className="h-6 skeleton-box rounded w-3/4" />
       </div>
     </div>
@@ -66,11 +66,11 @@ export function TimerDisplaySkeleton() {
     <div className="timer-card animate-pulse">
       <div className="flex items-center justify-between mb-4">
         <div className="h-6 skeleton-box rounded w-24" />
-        <div className="h-8 skeleton-box rounded-lg w-20" />
+        <div className="h-8 skeleton-box rounded-(--radius-control) w-20" />
       </div>
       <div className="text-center space-y-6 min-h-[280px] sm:min-h-[320px] md:min-h-[360px] flex flex-col justify-center">
         {/* Timer Display */}
-        <div className="h-24 sm:h-32 md:h-40 skeleton-box rounded-lg mx-auto w-3/4" />
+        <div className="h-24 sm:h-32 md:h-40 skeleton-box rounded-(--radius-control) mx-auto w-3/4" />
         {/* Status Text */}
         <div className="h-4 skeleton-box rounded w-2/3 mx-auto" />
       </div>
@@ -84,8 +84,8 @@ export function ScramblePreviewSkeleton() {
       <div className="flex items-center justify-between mb-4">
         <div className="h-6 skeleton-box rounded w-40" />
       </div>
-      <div className="w-full min-h-[180px] sm:min-h-[200px] skeleton-box-subtle rounded-lg flex items-center justify-center border border-(--border)">
-        <div className="h-10 skeleton-box rounded-md w-40" />
+      <div className="w-full min-h-[180px] sm:min-h-[200px] skeleton-box-subtle rounded-(--radius-control) flex items-center justify-center border border-(--border)">
+        <div className="h-10 skeleton-box rounded-(--radius-badge) w-40" />
       </div>
     </div>
   );
@@ -96,7 +96,7 @@ export function StatsDisplaySkeleton() {
     <div className="timer-card animate-pulse">
       <div className="flex items-center justify-between mb-4">
         <div className="h-6 skeleton-box rounded w-32" />
-        <div className="h-8 skeleton-box rounded-lg w-20" />
+        <div className="h-8 skeleton-box rounded-(--radius-control) w-20" />
       </div>
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -129,13 +129,13 @@ export function TimerHistorySkeleton() {
     <div className="timer-card animate-pulse">
       <div className="flex items-center justify-between mb-4">
         <div className="h-6 skeleton-box rounded w-32" />
-        <div className="h-8 skeleton-box rounded-lg w-20" />
+        <div className="h-8 skeleton-box rounded-(--radius-control) w-20" />
       </div>
       <div className="space-y-2">
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="p-3 skeleton-box-subtle rounded-lg border border-(--border)"
+            className="p-3 skeleton-box-subtle rounded-(--radius-control) border border-(--border)"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 flex-1">

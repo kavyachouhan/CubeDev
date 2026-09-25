@@ -16,7 +16,7 @@ import {
   Save,
   X,
 } from "lucide-react";
-import { Input } from "@/components/ui/Field";
+import { Input, Textarea } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import type { LucideIcon } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
@@ -357,11 +357,10 @@ export default function CoachJournalEntry({
         <label className="block text-sm font-medium text-(--text-secondary)">
           What went well?
         </label>
-        <textarea
+        <Textarea
           value={wentWell}
           onChange={(e) => setWentWell(e.target.value)}
           placeholder="e.g., Cross planning was much better today..."
-          className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) resize-none"
           rows={3}
         />
       </div>
@@ -371,11 +370,10 @@ export default function CoachJournalEntry({
         <label className="block text-sm font-medium text-(--text-secondary)">
           What was challenging?
         </label>
-        <textarea
+        <Textarea
           value={challenges}
           onChange={(e) => setChallenges(e.target.value)}
           placeholder="e.g., Struggled with F2L lookahead..."
-          className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) resize-none"
           rows={3}
         />
       </div>
@@ -385,11 +383,10 @@ export default function CoachJournalEntry({
         <label className="block text-sm font-medium text-(--text-secondary)">
           Additional Notes
         </label>
-        <textarea
+        <Textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Any other thoughts or observations..."
-          className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) resize-none"
           rows={2}
         />
       </div>

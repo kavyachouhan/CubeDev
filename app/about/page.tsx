@@ -54,7 +54,7 @@ export default function AboutPage() {
                   href="https://github.com/kavyachouhan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-inter"
+                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-(--radius-control) transition-all duration-200 font-inter"
                 >
                   <Github className="w-5 h-5" />
                   GitHub
@@ -65,7 +65,7 @@ export default function AboutPage() {
                   href="https://kavyachouhan.xyz"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-inter"
+                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-(--radius-control) transition-all duration-200 font-inter"
                 >
                   <Globe className="w-5 h-5" />
                   Website
@@ -76,7 +76,7 @@ export default function AboutPage() {
                   href="https://linkedin.com/in/kavya-chouhan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-inter"
+                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-(--radius-control) transition-all duration-200 font-inter"
                 >
                   <Linkedin className="w-5 h-5" />
                   LinkedIn

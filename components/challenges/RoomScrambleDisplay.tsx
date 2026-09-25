@@ -34,7 +34,7 @@ export default function RoomScrambleDisplay({
           )}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-badge) transition-colors"
             title={isExpanded ? "Hide scramble" : "Show scramble"}
           >
             {isExpanded ? (
@@ -47,7 +47,7 @@ export default function RoomScrambleDisplay({
       </div>
 
       {isExpanded && (
-        <div className="p-4 bg-(--surface-elevated) rounded-lg">
+        <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
           <p className="text-lg font-mono text-(--text-primary) text-center leading-relaxed">
             {scramble}
           </p>

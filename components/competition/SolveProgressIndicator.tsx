@@ -147,7 +147,7 @@ export default function SolveProgressIndicator({
         return (
           <div
             key={idx}
-            className={`${getCardSize()} rounded-lg border ${cardStyles} text-center transition-all duration-200`}
+            className={`${getCardSize()} rounded-(--radius-control) border ${cardStyles} text-center transition-all duration-200`}
           >
             <div className="text-xs text-(--text-muted) mb-0.5">
               #{idx + 1}
@@ -204,7 +204,7 @@ export default function SolveProgressIndicator({
         return (
           <div
             key={idx}
-            className={`w-10 h-10 rounded-lg border ${bgColor} flex items-center justify-center transition-all duration-200`}
+            className={`w-10 h-10 rounded-(--radius-control) border ${bgColor} flex items-center justify-center transition-all duration-200`}
             title={
               isCompleted
                 ? `Solve ${idx + 1}: ${getDisplayTime(solve!)}`

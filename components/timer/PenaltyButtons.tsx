@@ -48,7 +48,7 @@ export default function PenaltyButtons({
             onMouseDown={stop}
             onMouseUp={stop}
             className={cx(
-              "inline-flex items-center justify-center gap-1.5 min-w-24 min-h-11 px-5 rounded-(--radius-control) text-white font-statement text-base transition-colors",
+              "inline-flex items-center justify-center gap-1.5 min-w-24 min-h-11 px-5 rounded-(--radius-control) text-(--on-primary) font-statement text-base transition-colors",
               tone === "plus2"
                 ? active
                   ? "bg-(--penalty-plus2-hover) ring-2 ring-offset-2 ring-offset-(--surface) ring-(--penalty-plus2)"

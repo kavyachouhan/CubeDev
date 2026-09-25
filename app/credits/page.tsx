@@ -121,7 +121,7 @@ export default function CreditsPage() {
                       {credit.description}
                     </p>
 
-                    <div className="bg-(--surface-elevated) p-3 rounded-lg border border-(--border)">
+                    <div className="bg-(--surface-elevated) p-3 rounded-(--radius-control) border border-(--border)">
                       <div className="text-sm font-medium text-(--text-primary) mb-1 font-inter">
                         Used for:
                       </div>

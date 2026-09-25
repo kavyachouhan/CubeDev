@@ -517,7 +517,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
                             return (
                               <div
                                 key={`empty-${week.weekNumber}-${dayIndex}`}
-                                className="w-3 h-3 rounded-sm bg-transparent"
+                                className="w-3 h-3 rounded-(--radius-badge) bg-transparent"
                               />
                             );
                           }
@@ -532,7 +532,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
                             <div
                               key={`${week.weekNumber}-${dayIndex}`}
                               data-heatmap-cell
-                              className={`w-3 h-3 rounded-sm border transition-all duration-200 cursor-pointer relative ${getIntensityColor(dayData.level, isActive)}`}
+                              className={`w-3 h-3 rounded-(--radius-badge) border transition-all duration-200 cursor-pointer relative ${getIntensityColor(dayData.level, isActive)}`}
                               onMouseEnter={(e) => {
                                 setHoveredDay(dayData);
                                 const heatmapContainer =
@@ -609,7 +609,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
                               {dayData.isToday && (
                                 <div
                                   aria-label="Today"
-                                  className="absolute -inset-0.5 rounded-sm border-2 border-(--text-primary)"
+                                  className="absolute -inset-0.5 rounded-(--radius-badge) border-2 border-(--text-primary)"
                                 />
                               )}
                             </div>
@@ -628,7 +628,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
                       {[0, 1, 2, 3, 4, 5].map((level) => (
                         <div
                           key={level}
-                          className={`w-3 h-3 rounded-sm border ${getIntensityColor(level)}`}
+                          className={`w-3 h-3 rounded-(--radius-badge) border ${getIntensityColor(level)}`}
                         />
                       ))}
                     </div>

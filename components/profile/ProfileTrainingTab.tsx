@@ -276,7 +276,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
         </div>
 
         {/* Goal Target Display */}
-        <div className="bg-(--surface-elevated) rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 border border-(--border)">
+        <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-4 sm:p-6 mb-4 sm:mb-6 border border-(--border)">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             {/* Target Info */}
             <div className="text-center lg:text-left">
@@ -456,7 +456,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
 
           {/* Weekly Activity */}
           {progressStats.weekly && (
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <h4 className="text-xs sm:text-sm font-medium text-(--text-primary) mb-3">
                 This Week
               </h4>
@@ -589,7 +589,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
 
           {/* Empty state */}
           {(!goalHistory || goalHistory.length === 0) && (
-            <div className="ml-10 sm:ml-12 mt-2 p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+            <div className="ml-10 sm:ml-12 mt-2 p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
               <div className="flex items-center gap-2 text-(--text-muted)">
                 <History className="w-4 h-4" />
                 <span className="text-xs sm:text-sm">
@@ -646,9 +646,9 @@ function StatCard({
   valueColor,
 }: StatCardProps) {
   return (
-    <div className="bg-(--surface-elevated) rounded-xl p-2.5 sm:p-3 md:p-4 border border-(--border)">
+    <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-2.5 sm:p-3 md:p-4 border border-(--border)">
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className={`p-1.5 sm:p-2 ${bgColor} rounded-lg shrink-0`}>
+        <div className={`p-1.5 sm:p-2 ${bgColor} rounded-(--radius-control) shrink-0`}>
           <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
         </div>
         <div className="min-w-0 flex-1">
@@ -737,7 +737,7 @@ function TimelineItem({
       <button
         type="button"
         onClick={onClick}
-        className="flex-1 min-w-0 bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border) text-left hover:border-(--primary)/40 hover:bg-(--surface-elevated)/80 transition-all cursor-pointer group"
+        className="flex-1 min-w-0 bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border) text-left hover:border-(--primary)/40 hover:bg-(--surface-elevated)/80 transition-all cursor-pointer group"
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-2">
           <div className="min-w-0">
@@ -817,12 +817,12 @@ function ProfileTrainingTabSkeleton() {
           </div>
           <div className="flex items-center gap-2">
             <div className="h-6 sm:h-7 skeleton-box rounded-full w-16 sm:w-20" />
-            <div className="h-6 sm:h-7 skeleton-box rounded-lg w-8 sm:w-16" />
+            <div className="h-6 sm:h-7 skeleton-box rounded-(--radius-control) w-8 sm:w-16" />
           </div>
         </div>
 
         {/* Target & Progress Section */}
-        <div className="skeleton-box-subtle rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 border border-(--border)">
+        <div className="skeleton-box-subtle rounded-(--radius-panel) p-4 sm:p-6 mb-4 sm:mb-6 border border-(--border)">
           <div className="flex items-center justify-center flex-wrap gap-4 sm:gap-8 mb-4">
             <div className="text-center">
               <div className="h-3 skeleton-box rounded w-12 mx-auto mb-2" />
@@ -853,10 +853,10 @@ function ProfileTrainingTabSkeleton() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="skeleton-box-subtle rounded-xl p-2.5 sm:p-3 md:p-4 border border-(--border)"
+              className="skeleton-box-subtle rounded-(--radius-panel) p-2.5 sm:p-3 md:p-4 border border-(--border)"
             >
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 skeleton-box rounded-lg shrink-0" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 skeleton-box rounded-(--radius-control) shrink-0" />
                 <div className="min-w-0 flex-1">
                   <div className="h-2.5 sm:h-3 skeleton-box rounded w-14 sm:w-16 mb-1.5" />
                   <div className="h-4 sm:h-5 skeleton-box rounded w-10 sm:w-12" />
@@ -870,7 +870,7 @@ function ProfileTrainingTabSkeleton() {
       {/* This Week Stats Skeleton */}
       <div className="timer-card">
         <div className="h-5 sm:h-6 skeleton-box rounded w-28 sm:w-32 mb-4" />
-        <div className="skeleton-box-subtle rounded-xl p-3 sm:p-4 border border-(--border)">
+        <div className="skeleton-box-subtle rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
           <div className="flex items-center justify-center gap-4 sm:gap-8">
             <div className="text-center">
               <div className="h-6 sm:h-8 skeleton-box rounded w-8 sm:w-10 mb-1" />
@@ -897,7 +897,7 @@ function ProfileTrainingTabSkeleton() {
           <div className="absolute left-3 sm:left-4 top-0 bottom-0 w-0.5 bg-(--border)" />
           <div className="relative flex gap-3 sm:gap-4 pb-4">
             <div className="w-6 h-6 sm:w-8 sm:h-8 skeleton-box rounded-full shrink-0" />
-            <div className="flex-1 skeleton-box-subtle rounded-lg p-3 sm:p-4 border border-(--border)">
+            <div className="flex-1 skeleton-box-subtle rounded-(--radius-control) p-3 sm:p-4 border border-(--border)">
               <div className="h-4 sm:h-5 skeleton-box rounded w-24 sm:w-32 mb-2" />
               <div className="flex items-center gap-2 mb-2">
                 <div className="h-3 skeleton-box rounded w-10" />

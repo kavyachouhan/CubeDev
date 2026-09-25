@@ -89,7 +89,7 @@ export default function RecognitionMetricsDashboard({
         {/* Average Recognition Time */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-(--primary)/10 rounded-lg">
+            <div className="p-2 bg-(--primary)/10 rounded-(--radius-control)">
               <Eye className="w-4 h-4 text-(--primary)" />
             </div>
           </div>
@@ -114,7 +114,7 @@ export default function RecognitionMetricsDashboard({
         {/* Fastest Recognition */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-(--success)/10 rounded-lg">
+            <div className="p-2 bg-(--success)/10 rounded-(--radius-control)">
               <Zap className="w-4 h-4 text-(--success)" />
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function RecognitionMetricsDashboard({
         {/* Slowest Recognition */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-(--warning)/10 rounded-lg">
+            <div className="p-2 bg-(--warning)/10 rounded-(--radius-control)">
               <Clock className="w-4 h-4 text-(--warning)" />
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function RecognitionMetricsDashboard({
         {/* Accuracy Rate */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-(--accent)/10 rounded-lg">
+            <div className="p-2 bg-(--accent)/10 rounded-(--radius-control)">
               <Target className="w-4 h-4 text-(--accent)" />
             </div>
           </div>
@@ -163,7 +163,7 @@ export default function RecognitionMetricsDashboard({
         {/* Execution Speed */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-(--accent)/10 rounded-lg">
+            <div className="p-2 bg-(--accent)/10 rounded-(--radius-control)">
               <TrendingUp className="w-4 h-4 text-(--accent)" />
             </div>
           </div>
@@ -178,7 +178,7 @@ export default function RecognitionMetricsDashboard({
         {/* Mastery Progress */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-(--warning)/10 rounded-lg">
+            <div className="p-2 bg-(--warning)/10 rounded-(--radius-control)">
               <Award className="w-4 h-4 text-(--warning)" />
             </div>
           </div>

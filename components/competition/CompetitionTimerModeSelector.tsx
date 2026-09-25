@@ -75,7 +75,7 @@ export default function CompetitionTimerModeSelector({
       <button
         onClick={() => !disabled && setShowDropdown(!showDropdown)}
         disabled={disabled}
-        className={`flex items-center gap-2 px-3 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors ${
+        className={`flex items-center gap-2 px-3 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-(--radius-control) border border-(--border) transition-colors ${
           disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
         }`}
       >
@@ -91,7 +91,7 @@ export default function CompetitionTimerModeSelector({
       </button>
 
       {showDropdown && (
-        <div className="absolute top-full right-0 mt-2 w-56 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-50 overflow-hidden">
+        <div className="absolute top-full right-0 mt-2 w-56 bg-(--surface) border border-(--border) rounded-(--radius-control) shadow-xl z-(--z-dropdown) overflow-hidden">
           {timerModeOptions.map((option) => {
             const OptionIcon = option.icon;
             return (

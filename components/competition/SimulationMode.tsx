@@ -394,7 +394,7 @@ export default function SimulationMode({
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {event && (
-              <div className="p-3 bg-(--surface-elevated) rounded-lg">
+              <div className="p-3 bg-(--surface-elevated) rounded-(--radius-control)">
                 <Image
                   src={event.icon}
                   alt={event.name}
@@ -415,7 +415,7 @@ export default function SimulationMode({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
-              className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
+              className="p-2 rounded-(--radius-control) border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
               title={soundEnabled ? "Mute sounds" : "Enable sounds"}
             >
               {soundEnabled ? (
@@ -426,13 +426,13 @@ export default function SimulationMode({
             </button>
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
+              className="p-2 rounded-(--radius-control) border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
             >
               <Settings className="w-4 h-4" />
             </button>
             <button
               onClick={resetSimulation}
-              className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
+              className="p-2 rounded-(--radius-control) border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
               title="Reset simulation"
             >
               <RotateCcw className="w-4 h-4" />
@@ -719,7 +719,7 @@ export default function SimulationMode({
           </Button>
           <button
             onClick={onSelectCompetition}
-            className="px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-lg hover:bg-(--surface-elevated) transition-colors"
+            className="px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
           >
             Choose Different Competition
           </button>

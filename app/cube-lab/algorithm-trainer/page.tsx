@@ -186,7 +186,7 @@ export default function AlgorithmTrainerPage() {
                   </div>
                   <Link
                     href="/cube-lab/algorithm-trainer/practice?mode=srs"
-                    className="px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors flex items-center justify-center gap-2 font-medium whitespace-nowrap"
+                    className="px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors flex items-center justify-center gap-2 font-medium whitespace-nowrap"
                   >
                     <Play className="w-5 h-5" />
                     Start SRS Review
@@ -208,7 +208,7 @@ export default function AlgorithmTrainerPage() {
                     className="timer-card hover:scale-[1.02] transition-all cursor-pointer border-2 border-transparent hover:border-(--primary)"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-(--primary)/10 rounded-lg">
+                      <div className="p-3 bg-(--primary)/10 rounded-(--radius-control)">
                         <Brain className="w-8 h-8 text-(--primary)" />
                       </div>
                       <div>
@@ -228,7 +228,7 @@ export default function AlgorithmTrainerPage() {
                     className="timer-card hover:scale-[1.02] transition-all cursor-pointer border-2 border-transparent hover:border-(--primary)"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-(--primary)/10 rounded-lg">
+                      <div className="p-3 bg-(--primary)/10 rounded-(--radius-control)">
                         <Flame className="w-8 h-8 text-(--primary)" />
                       </div>
                       <div>
@@ -248,7 +248,7 @@ export default function AlgorithmTrainerPage() {
                     className="timer-card hover:scale-[1.02] transition-all cursor-pointer border-2 border-transparent hover:border-(--primary)"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-(--accent)/10 rounded-lg">
+                      <div className="p-3 bg-(--accent)/10 rounded-(--radius-control)">
                         <EyeOff className="w-8 h-8 text-(--accent)" />
                       </div>
                       <div>
@@ -278,7 +278,7 @@ export default function AlgorithmTrainerPage() {
                 <Link
                   href="/cube-lab/algorithm-trainer/custom"
                   data-tour="custom-sets-button"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-lg transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-(--radius-control) transition-colors"
                 >
                   <FolderPlus className="w-4 h-4" />
                   Custom Sets

@@ -293,7 +293,7 @@ export default function KeyboardShortcutsSettings() {
                             <div
                               key={shortcut.action}
                               className={`
-                                p-2 sm:p-3 rounded-lg border transition-colors
+                                p-2 sm:p-3 rounded-(--radius-control) border transition-colors
                                 ${
                                   isEditing
                                     ? "border-(--primary) bg-(--primary)/5"

@@ -75,7 +75,7 @@ function CrumbLink({
   children: ReactNode;
 }) {
   const classes = cx(
-    "text-(--text-secondary) hover:text-(--primary) transition-colors rounded-sm",
+    "text-(--text-secondary) hover:text-(--primary) transition-colors rounded-(--radius-badge)",
     className,
   );
   if (crumb.href) {
@@ -105,7 +105,7 @@ export function BackLink({
   className?: string;
 }) {
   const classes = cx(
-    "inline-flex items-center gap-1.5 text-sm font-medium font-inter text-(--text-secondary) hover:text-(--primary) transition-colors rounded-sm -ml-0.5",
+    "inline-flex items-center gap-1.5 text-sm font-medium font-inter text-(--text-secondary) hover:text-(--primary) transition-colors rounded-(--radius-badge) -ml-0.5",
     className,
   );
   const content = (

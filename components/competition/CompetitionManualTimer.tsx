@@ -556,7 +556,7 @@ export default function CompetitionManualTimer({
 
           {/* Preview */}
           {parsedTime !== null && !error && (
-            <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-control) p-4 border border-(--border)">
               <div className="text-xs text-(--text-muted) uppercase tracking-wide mb-2">
                 Preview
               </div>

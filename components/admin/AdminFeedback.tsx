@@ -238,7 +238,7 @@ function CustomResponseValue({
                 key={star}
                 className={`w-3.5 h-3.5 ${
                   star <= value
-                    ? "text-(--warning) fill-amber-500"
+                    ? "text-(--warning) fill-(--warning)"
                     : "text-(--text-muted)"
                 }`}
               />
@@ -661,7 +661,7 @@ function RatingDistribution({
             <span className="text-xs text-(--text-muted) font-inter w-6 text-right">
               {rating}
             </span>
-            <Star className="w-3.5 h-3.5 text-(--warning) fill-amber-500" />
+            <Star className="w-3.5 h-3.5 text-(--warning) fill-(--warning)" />
             <div className="flex-1 h-2 bg-(--surface) rounded-full overflow-hidden">
               <div
                 className="h-full bg-(--primary) rounded-full transition-all duration-500"
@@ -822,7 +822,7 @@ function FormSectionToggle({
       }`}
     >
       <div
-        className={`w-3 h-3 rounded-sm border transition-all ${
+        className={`w-3 h-3 rounded-(--radius-badge) border transition-all ${
           enabled
             ? "bg-(--primary) border-(--primary)"
             : "border-(--text-muted)"
@@ -1221,7 +1221,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     <Star
                       className={`w-6 h-6 ${
                         rating <= uiuxRating
-                          ? "text-(--warning) fill-amber-500"
+                          ? "text-(--warning) fill-(--warning)"
                           : "text-(--text-muted)"
                       }`}
                     />
@@ -1250,7 +1250,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     key={feature.key}
                     type="button"
                     onClick={() => toggleFeature(feature.key)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-inter transition-colors ${
+                    className={`px-2.5 py-1 rounded-(--radius-badge) text-xs font-inter transition-colors ${
                       selectedFeatures.includes(feature.key)
                         ? "bg-(--primary)/10 text-(--primary) border border-(--primary)/30"
                         : "bg-(--surface-elevated) text-(--text-muted) border border-(--border)"
@@ -1285,7 +1285,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                 <button
                   type="button"
                   onClick={addExtraFeature}
-                  className="flex items-center gap-1 px-2 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-secondary) transition-colors font-inter"
+                  className="flex items-center gap-1 px-2 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-badge) text-(--text-secondary) transition-colors font-inter"
                 >
                   <Plus className="w-3 h-3" />
                   Add Feature
@@ -1323,7 +1323,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                             <Star
                               className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
                                 rating <= (featureRatings[feature.key] || 0)
-                                  ? "text-(--warning) fill-amber-500"
+                                  ? "text-(--warning) fill-(--warning)"
                                   : "text-(--text-muted)"
                               }`}
                             />
@@ -1424,7 +1424,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
               <button
                 type="button"
                 onClick={addCustomQuestion}
-                className="flex items-center gap-1 px-2 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-secondary) transition-colors font-inter"
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-badge) text-(--text-secondary) transition-colors font-inter"
               >
                 <Plus className="w-3 h-3" />
                 Add Question
@@ -1555,7 +1555,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                                     r <=
                                     ((customAnswers[question.id] as number) ||
                                       0)
-                                      ? "text-(--warning) fill-amber-500"
+                                      ? "text-(--warning) fill-(--warning)"
                                       : "text-(--text-muted)"
                                   }`}
                                 />
@@ -1987,7 +1987,7 @@ export default function AdminFeedback() {
             <button
               onClick={handleExportFeedback}
               disabled={!feedbackList || feedbackList.length === 0}
-              className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-badge) text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
               title="Export feedback as CSV"
             >
               <Download className="w-3.5 h-3.5" />

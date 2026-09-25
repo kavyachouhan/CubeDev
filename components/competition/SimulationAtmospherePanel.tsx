@@ -35,7 +35,7 @@ export default function SimulationAtmospherePanel({
       <div className="flex items-center gap-3 text-sm">
         <button
           onClick={onToggleSound}
-          className="p-2 rounded-lg text-(--text-muted) hover:text-(--primary) hover:bg-(--surface-elevated) transition-colors"
+          className="p-2 rounded-(--radius-control) text-(--text-muted) hover:text-(--primary) hover:bg-(--surface-elevated) transition-colors"
           title={soundEnabled ? "Mute sounds" : "Enable sounds"}
         >
           {soundEnabled ? (
@@ -72,7 +72,7 @@ export default function SimulationAtmospherePanel({
         </h3>
         <button
           onClick={onToggleSound}
-          className="p-2 rounded-lg text-(--text-muted) hover:text-(--primary) hover:bg-(--surface-elevated) transition-colors"
+          className="p-2 rounded-(--radius-control) text-(--text-muted) hover:text-(--primary) hover:bg-(--surface-elevated) transition-colors"
           title={soundEnabled ? "Mute sounds" : "Enable sounds"}
         >
           {soundEnabled ? (
@@ -85,7 +85,7 @@ export default function SimulationAtmospherePanel({
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {/* Crowd Noise */}
-        <div className="p-3 rounded-lg bg-(--surface-elevated) border border-(--border)">
+        <div className="p-3 rounded-(--radius-control) bg-(--surface-elevated) border border-(--border)">
           <div className="text-xs text-(--text-muted) mb-1">
             Crowd Noise
           </div>
@@ -95,7 +95,7 @@ export default function SimulationAtmospherePanel({
         </div>
 
         {/* Pressure */}
-        <div className="p-3 rounded-lg bg-(--surface-elevated) border border-(--border)">
+        <div className="p-3 rounded-(--radius-control) bg-(--surface-elevated) border border-(--border)">
           <div className="text-xs text-(--text-muted) mb-1">Pressure</div>
           <div className={`text-sm font-medium ${getPressureColor()}`}>
             {getPressureLevel()} ({atmosphere.pressure}%)
@@ -103,7 +103,7 @@ export default function SimulationAtmospherePanel({
         </div>
 
         {/* Distractions */}
-        <div className="p-3 rounded-lg bg-(--surface-elevated) border border-(--border)">
+        <div className="p-3 rounded-(--radius-control) bg-(--surface-elevated) border border-(--border)">
           <div className="text-xs text-(--text-muted) mb-1">
             Distractions
           </div>
@@ -115,7 +115,7 @@ export default function SimulationAtmospherePanel({
         </div>
 
         {/* Timer Delay */}
-        <div className="p-3 rounded-lg bg-(--surface-elevated) border border-(--border)">
+        <div className="p-3 rounded-(--radius-control) bg-(--surface-elevated) border border-(--border)">
           <div className="text-xs text-(--text-muted) mb-1">
             Timer Delay
           </div>
@@ -129,7 +129,7 @@ export default function SimulationAtmospherePanel({
 
       {/* High Pressure Warning */}
       {atmosphere.pressure >= 75 && (
-        <div className="mt-4 p-3 rounded-lg bg-(--warning)/10 border border-(--warning)/30">
+        <div className="mt-4 p-3 rounded-(--radius-control) bg-(--warning)/10 border border-(--warning)/30">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-(--warning) animate-pulse" />
             <span className="text-sm text-(--warning)">

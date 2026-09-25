@@ -9,6 +9,5 @@ export { default as PerformanceIntelligenceCard } from "./PerformanceIntelligenc
 export { default as MonthlyOverviewCard } from "./MonthlyOverviewCard";
 export { default as ProgressHistoryCard } from "./ProgressHistoryCard";
 export { default as AllTimeStatsCard } from "./AllTimeStatsCard";
-export { default as EditGoalModal } from "./EditGoalModal";
 export * from "./types";
 export * from "./utils";

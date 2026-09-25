@@ -410,7 +410,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
           </button>
           <button
             onClick={() => setShowHeatmap(!showHeatmap)}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
+            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-badge) transition-colors"
             title={
               showHeatmap ? "Hide review activity" : "Show review activity"
             }
@@ -424,7 +424,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
         </div>
 
         {showHeatmap && (
-          <div className="flex items-center gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border) sm:overflow-x-auto">
+          <div className="flex items-center gap-1 p-1 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) sm:overflow-x-auto">
             {(
               [
                 ["3m", "3 months"],
@@ -435,9 +435,9 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
               <button
                 key={period}
                 onClick={() => setSelectedPeriod(period)}
-                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap flex-1 sm:flex-none ${
+                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-(--radius-badge) transition-all whitespace-nowrap flex-1 sm:flex-none ${
                   selectedPeriod === period
-                    ? "bg-(--primary) text-white shadow-sm"
+                    ? "bg-(--primary) text-(--on-primary) shadow-sm"
                     : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface)"
                 }`}
               >
@@ -452,9 +452,9 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
         <>
           {/* Stats Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -468,9 +468,9 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
               </div>
             </div>
 
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--accent)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--accent)/10 rounded-(--radius-control)">
                   <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--accent)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -487,9 +487,9 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
               </div>
             </div>
 
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--warning)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--warning)/10 rounded-(--radius-control)">
                   <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-(--warning)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -506,9 +506,9 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
               </div>
             </div>
 
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--success)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--success)/10 rounded-(--radius-control)">
                   <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-(--success)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -524,7 +524,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
           </div>
 
           {/* Heatmap */}
-          <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-6 border border-(--border) relative heatmap-container">
+          <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-6 border border-(--border) relative heatmap-container">
             <div className="overflow-x-auto">
               <div className="inline-block min-w-full">
                 {/* Month labels */}
@@ -578,7 +578,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
                             return (
                               <div
                                 key={`empty-${week.weekNumber}-${dayIndex}`}
-                                className="w-3 h-3 rounded-sm bg-transparent"
+                                className="w-3 h-3 rounded-(--radius-badge) bg-transparent"
                               />
                             );
                           }
@@ -593,7 +593,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
                             <div
                               key={`${week.weekNumber}-${dayIndex}`}
                               data-heatmap-cell
-                              className={`w-3 h-3 rounded-sm border transition-all duration-200 cursor-pointer relative ${getIntensityColor(dayData.level, isActive)}`}
+                              className={`w-3 h-3 rounded-(--radius-badge) border transition-all duration-200 cursor-pointer relative ${getIntensityColor(dayData.level, isActive)}`}
                               onMouseEnter={(e) => {
                                 setHoveredDay(dayData);
                                 const heatmapContainer =
@@ -668,7 +668,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
                               }}
                             >
                               {dayData.isToday && (
-                                <div className="absolute -inset-0.5 rounded-sm border-2 border-(--primary) animate-pulse" />
+                                <div className="absolute -inset-0.5 rounded-(--radius-badge) border-2 border-(--primary) animate-pulse" />
                               )}
                             </div>
                           );
@@ -686,7 +686,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
                       {[0, 1, 2, 3, 4, 5].map((level) => (
                         <div
                           key={level}
-                          className={`w-3 h-3 rounded-sm border ${getIntensityColor(level)}`}
+                          className={`w-3 h-3 rounded-(--radius-badge) border ${getIntensityColor(level)}`}
                         />
                       ))}
                     </div>
@@ -706,7 +706,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
             {/* Tooltip */}
             {(hoveredDay || clickedDay) && (
               <div
-                className="absolute bg-(--surface) border border-(--border) rounded-lg p-3 shadow-xl z-50 pointer-events-none max-w-xs text-sm"
+                className="absolute bg-(--surface) border border-(--border) rounded-(--radius-control) p-3 shadow-xl z-(--z-dropdown) pointer-events-none max-w-xs text-sm"
                 style={{
                   left: tooltipPosition.x,
                   top: tooltipPosition.y,

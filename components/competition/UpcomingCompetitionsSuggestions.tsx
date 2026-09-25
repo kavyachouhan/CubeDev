@@ -299,7 +299,7 @@ export default function UpcomingCompetitionsSuggestions() {
           </div>
 
           <div className="ml-auto flex items-center gap-2 self-start">
-            <span className="inline-flex items-center rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-1.5 text-xs font-medium text-(--text-secondary) sm:px-3 sm:py-2 sm:text-sm">
+            <span className="inline-flex items-center rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) px-2.5 py-1.5 text-xs font-medium text-(--text-secondary) sm:px-3 sm:py-2 sm:text-sm">
               {competitions.length} competition
               {competitions.length !== 1 ? "s" : ""}
             </span>
@@ -354,7 +354,7 @@ export default function UpcomingCompetitionsSuggestions() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
-                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
                     <Calendar className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
                     <span className="truncate">
                       {formatCompetitionDateRange(
@@ -363,7 +363,7 @@ export default function UpcomingCompetitionsSuggestions() {
                       )}
                     </span>
                   </span>
-                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
                     <MapPin className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
                     <span className="truncate">
                       {comp.city}, {comp.country_iso2}
@@ -380,7 +380,7 @@ export default function UpcomingCompetitionsSuggestions() {
                         <div
                           key={eventId}
                           title={event.name}
-                          className="rounded-md border border-(--border) bg-(--surface-elevated) p-1.5"
+                          className="rounded-(--radius-badge) border border-(--border) bg-(--surface-elevated) p-1.5"
                         >
                           <Image
                             src={event.icon}
@@ -395,7 +395,7 @@ export default function UpcomingCompetitionsSuggestions() {
                       ) : null;
                     })}
                     {comp.event_ids.length > 10 && (
-                      <span className="inline-flex items-center rounded-md border border-(--border) bg-(--surface-elevated) px-2 py-1 text-xs font-medium text-(--text-muted)">
+                      <span className="inline-flex items-center rounded-(--radius-badge) border border-(--border) bg-(--surface-elevated) px-2 py-1 text-xs font-medium text-(--text-muted)">
                         +{comp.event_ids.length - 10}
                       </span>
                     )}

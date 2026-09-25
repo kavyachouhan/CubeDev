@@ -50,7 +50,7 @@ export default function RoomHeader({
           {canEdit && onEdit && (
             <button
               onClick={onEdit}
-              className="inline-flex items-center gap-2 px-3 py-1.5 bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg transition-all duration-200 font-inter text-sm"
+              className="inline-flex items-center gap-2 px-3 py-1.5 bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) transition-all duration-200 font-inter text-sm"
               title="Edit room settings"
             >
               <Edit3 className="w-4 h-4" />
@@ -59,7 +59,7 @@ export default function RoomHeader({
           )}
           <button
             onClick={onShare}
-            className="inline-flex items-center gap-2 px-3 py-1.5 bg-(--primary) text-white hover:bg-(--primary-hover) rounded-lg transition-all duration-200 font-inter text-sm hover:scale-105"
+            className="inline-flex items-center gap-2 px-3 py-1.5 bg-(--primary) text-(--on-primary) hover:bg-(--primary-hover) rounded-(--radius-control) transition-all duration-200 font-inter text-sm hover:scale-105"
             title="Share room link"
           >
             {copied ? (
@@ -79,7 +79,7 @@ export default function RoomHeader({
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="flex items-start gap-4">
             {/* Event Icon */}
-            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-(--primary) rounded-xl flex items-center justify-center border border-(--primary)/20">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-(--primary) rounded-(--radius-panel) flex items-center justify-center border border-(--primary)/20">
               <Image
                 src={event.icon}
                 alt={event.name}
@@ -97,17 +97,17 @@ export default function RoomHeader({
 
               {/* Room Metadata */}
               <div className="flex flex-wrap items-center gap-3 text-sm text-(--text-secondary) font-inter mb-3">
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-(--surface-elevated) border border-(--border) rounded-lg">
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)">
                   <Goal className="w-3.5 h-3.5 text-(--primary)" />
                   <span className="font-medium">{event.name}</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-(--surface-elevated) border border-(--border) rounded-lg">
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)">
                   <Trophy className="w-3.5 h-3.5 text-(--primary)" />
                   <span className="font-medium">
                     {room.format.toUpperCase()}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-(--surface-elevated) border border-(--border) rounded-lg">
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)">
                   <Users className="w-3.5 h-3.5 text-(--primary)" />
                   <span className="font-medium">
                     {room.participantCount || 0} participants
@@ -129,7 +129,7 @@ export default function RoomHeader({
             <div className="mb-3">
               <div className="flex items-center gap-2 justify-start sm:justify-end mb-1">
                 <div
-                  className={`text-sm font-semibold px-3 py-1.5 rounded-lg border ${
+                  className={`text-sm font-semibold px-3 py-1.5 rounded-(--radius-control) border ${
                     isExpired
                       ? "bg-(--error)/15 text-(--error) border-(--error)/30"
                       : timeRemaining.includes("h")

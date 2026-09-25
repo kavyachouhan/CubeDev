@@ -261,13 +261,13 @@ export default function SimulationHistory({
                 </div>
 
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
-                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
                     <Clock className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
                     <span className="truncate">
                       {formatDate(sim.startedAt)}
                     </span>
                   </span>
-                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
                     <Trophy className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
                     <span className="truncate">
                       {sim.status === "completed"
@@ -287,7 +287,7 @@ export default function SimulationHistory({
                       return event ? (
                         <div
                           key={eventId}
-                          className={`rounded-md border p-1.5 ${
+                          className={`rounded-(--radius-badge) border p-1.5 ${
                             isCompleted
                               ? "border-(--success)/40 bg-(--success)/10"
                               : "border-(--border) bg-(--surface-elevated)"
@@ -307,7 +307,7 @@ export default function SimulationHistory({
                       ) : null;
                     })}
                   {sim.selectedEvents.length > 6 && (
-                    <span className="inline-flex items-center rounded-md border border-(--border) bg-(--surface-elevated) px-2 py-1 text-xs font-medium text-(--text-muted)">
+                    <span className="inline-flex items-center rounded-(--radius-badge) border border-(--border) bg-(--surface-elevated) px-2 py-1 text-xs font-medium text-(--text-muted)">
                       +{sim.selectedEvents.length - 6}
                     </span>
                   )}
@@ -350,7 +350,7 @@ export default function SimulationHistory({
           </p>
           <Link
             href={`/cube-lab/competitions/${inProgressSimulations[0].competitionId}/simulate/${inProgressSimulations[0]._id}`}
-            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-(--primary) border border-(--primary) rounded-lg hover:bg-(--primary)/10 transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-(--primary) border border-(--primary) rounded-(--radius-control) hover:bg-(--primary)/10 transition-colors"
           >
             <Play className="w-3 h-3" />
             Continue

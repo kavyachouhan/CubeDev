@@ -66,7 +66,7 @@ export default function VirtualCompetitionList({
             {visibleCompetitions.map((competition) => (
               <div
                 key={competition.id}
-                className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)"
+                className="p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)"
               >
                 <div className="flex items-start justify-between">
                   <div className="min-w-0 flex-1">
@@ -94,7 +94,7 @@ export default function VirtualCompetitionList({
                     href={`https://www.worldcubeassociation.org/competitions/${competition.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ml-3 p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 rounded-lg transition-colors"
+                    className="ml-3 p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 rounded-(--radius-control) transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </a>

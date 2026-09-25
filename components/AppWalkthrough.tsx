@@ -149,7 +149,7 @@ export default function AppWalkthrough({
         <div className="min-h-[140px] sm:min-h-[160px]">
           <div className="flex items-start gap-4">
             {step.icon && (
-              <div className="shrink-0 p-3 bg-(--primary)/10 rounded-xl">
+              <div className="shrink-0 p-3 bg-(--primary)/10 rounded-(--radius-panel)">
                 <span className="text-(--primary)">{step.icon}</span>
               </div>
             )}

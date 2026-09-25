@@ -291,7 +291,7 @@ export default function AddCasesModal({
                     {cases.length > 5 && !isExpanded && (
                       <button
                         onClick={() => toggleGroup(setName)}
-                        className="w-full text-xs text-(--primary) hover:text-(--primary-hover) font-medium text-center py-2 mt-1 hover:bg-(--surface-elevated) rounded-lg transition-colors cursor-pointer font-inter"
+                        className="w-full text-xs text-(--primary) hover:text-(--primary-hover) font-medium text-center py-2 mt-1 hover:bg-(--surface-elevated) rounded-(--radius-control) transition-colors cursor-pointer font-inter"
                       >
                         Show all {cases.length} cases
                       </button>
@@ -338,7 +338,7 @@ function CaseItem({
 }: CaseItemProps) {
   return (
     <div
-      className={`rounded-lg border transition-all ${
+      className={`rounded-(--radius-control) border transition-all ${
         isAdded
           ? "border-(--success)/25 bg-(--success)/5"
           : "border-(--border) bg-(--surface-elevated)"
@@ -376,7 +376,7 @@ function CaseItem({
 
         {/* Add / Added button */}
         {isAdded ? (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-(--success) bg-(--success)/10 rounded-lg shrink-0 font-inter">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-(--success) bg-(--success)/10 rounded-(--radius-control) shrink-0 font-inter">
             <Check className="w-3.5 h-3.5" />
             Added
           </span>
@@ -384,7 +384,7 @@ function CaseItem({
           <button
             onClick={onAdd}
             disabled={isAdding}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-(--primary) bg-(--primary)/10 hover:bg-(--primary)/20 rounded-lg transition-colors shrink-0 disabled:opacity-50 font-inter"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-(--primary) bg-(--primary)/10 hover:bg-(--primary)/20 rounded-(--radius-control) transition-colors shrink-0 disabled:opacity-50 font-inter"
           >
             {isAdding ? <Spinner size="xs" /> : <Plus className="w-3.5 h-3.5" />}
             Add

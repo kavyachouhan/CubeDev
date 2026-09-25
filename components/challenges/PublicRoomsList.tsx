@@ -58,11 +58,11 @@ export default function PublicRoomsList() {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg animate-pulse"
+              className="p-4 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) animate-pulse"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 skeleton rounded-lg" />
+                  <div className="w-10 h-10 skeleton rounded-(--radius-control)" />
                   <div className="space-y-2">
                     <div className="h-4 skeleton rounded w-32" />
                     <div className="h-3 skeleton rounded w-24" />
@@ -85,7 +85,7 @@ export default function PublicRoomsList() {
             Active Public Rooms
           </h2>
         </div>
-        <div className="p-8 text-center bg-(--surface-elevated) border border-(--border) rounded-lg">
+        <div className="p-8 text-center bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)">
           <div className="w-16 h-16 bg-(--primary)/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <Trophy className="w-8 h-8 text-(--primary)" />
           </div>
@@ -124,12 +124,12 @@ export default function PublicRoomsList() {
             <Link
               key={room._id}
               href={`/cube-lab/challenges/room/${room.roomId}`}
-              className="block p-3 md:p-4 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) rounded-lg transition-all duration-300 group"
+              className="block p-3 md:p-4 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) rounded-(--radius-control) transition-all duration-300 group"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   {/* Event Icon */}
-                  <div className="w-8 h-8 md:w-10 md:h-10 bg-(--primary) text-white rounded-lg flex items-center justify-center p-1 shrink-0">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-(--primary) text-(--on-primary) rounded-(--radius-control) flex items-center justify-center p-1 shrink-0">
                     <Image
                       src={event.icon}
                       alt={event.name}

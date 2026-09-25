@@ -124,7 +124,7 @@ export default function AtmosphereControls({
                 judgeInteractions: false,
               })
             }
-            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
+            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             Practice Mode
           </button>
@@ -138,7 +138,7 @@ export default function AtmosphereControls({
                 judgeInteractions: true,
               })
             }
-            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
+            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             Local Comp
           </button>
@@ -152,7 +152,7 @@ export default function AtmosphereControls({
                 judgeInteractions: true,
               })
             }
-            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
+            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             Major Championship
           </button>
@@ -166,7 +166,7 @@ export default function AtmosphereControls({
                 judgeInteractions: true,
               })
             }
-            className="px-3 py-1.5 text-sm border border-(--warning) text-(--warning) rounded-lg hover:bg-(--warning)/10"
+            className="px-3 py-1.5 text-sm border border-(--warning) text-(--warning) rounded-(--radius-control) hover:bg-(--warning)/10"
           >
             World Finals
           </button>

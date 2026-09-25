@@ -252,7 +252,7 @@ export default function ConfettiCelebration({
   if (!show) return null;
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-50">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-(--z-sticky)">
       {/* Confetti pieces */}
       {confetti.map((piece) => {
         // Check if piece is out of bounds

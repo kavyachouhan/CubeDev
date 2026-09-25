@@ -948,14 +948,14 @@ export default function AdminContactNew() {
           <div className="flex items-center gap-2">
             <button
               onClick={handleExportCSV}
-              className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
+              className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-badge) transition-colors"
               title="Export CSV"
             >
               <Download className="w-4 h-4" />
             </button>
             <button
               onClick={handleExportJSON}
-              className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
+              className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-badge) transition-colors"
               title="Export JSON"
             >
               <FileText className="w-4 h-4" />

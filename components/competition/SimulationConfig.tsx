@@ -353,7 +353,7 @@ export default function SimulationConfig() {
                 <button
                   key={eventId}
                   onClick={() => toggleEvent(eventId)}
-                  className={`relative flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border transition-all ${
+                  className={`relative flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-(--radius-control) border transition-all ${
                     isSelected
                       ? "border-(--primary) bg-(--primary)/15"
                       : "border-(--border) hover:border-(--primary)/50 bg-(--surface)"
@@ -365,7 +365,7 @@ export default function SimulationConfig() {
                     </div>
                   )}
                   <div
-                    className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg ${
+                    className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-(--radius-control) ${
                       isSelected
                         ? "bg-(--primary)/20"
                         : "bg-(--surface-elevated)"
@@ -483,7 +483,7 @@ export default function SimulationConfig() {
                     distractions: !atmosphere.distractions,
                   })
                 }
-                className={`p-3 sm:p-4 rounded-lg border text-left transition-all ${
+                className={`p-3 sm:p-4 rounded-(--radius-control) border text-left transition-all ${
                   atmosphere.distractions
                     ? "border-(--primary) bg-(--primary)/15"
                     : "border-(--border) hover:border-(--primary)/50 bg-(--surface)"
@@ -515,7 +515,7 @@ export default function SimulationConfig() {
                     timerDelay: !atmosphere.timerDelay,
                   })
                 }
-                className={`p-3 sm:p-4 rounded-lg border text-left transition-all ${
+                className={`p-3 sm:p-4 rounded-(--radius-control) border text-left transition-all ${
                   atmosphere.timerDelay
                     ? "border-(--primary) bg-(--primary)/15"
                     : "border-(--border) hover:border-(--primary)/50 bg-(--surface)"
@@ -547,7 +547,7 @@ export default function SimulationConfig() {
                     judgeInteractions: !atmosphere.judgeInteractions,
                   })
                 }
-                className={`p-3 sm:p-4 rounded-lg border text-left transition-all ${
+                className={`p-3 sm:p-4 rounded-(--radius-control) border text-left transition-all ${
                   atmosphere.judgeInteractions
                     ? "border-(--primary) bg-(--primary)/15"
                     : "border-(--border) hover:border-(--primary)/50 bg-(--surface)"
@@ -580,7 +580,7 @@ export default function SimulationConfig() {
             Atmosphere Preview
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-            <div className="text-center p-2 sm:p-3 bg-(--surface-elevated) rounded-lg">
+            <div className="text-center p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control)">
               <div className="text-lg sm:text-2xl font-bold text-(--primary)">
                 {atmosphere.crowdNoise}%
               </div>
@@ -588,7 +588,7 @@ export default function SimulationConfig() {
                 Crowd Noise
               </div>
             </div>
-            <div className="text-center p-2 sm:p-3 bg-(--surface-elevated) rounded-lg">
+            <div className="text-center p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control)">
               <div className="text-lg sm:text-2xl font-bold text-(--warning)">
                 {atmosphere.pressure}%
               </div>
@@ -596,7 +596,7 @@ export default function SimulationConfig() {
                 Pressure
               </div>
             </div>
-            <div className="text-center p-2 sm:p-3 bg-(--surface-elevated) rounded-lg">
+            <div className="text-center p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control)">
               <div className="text-lg sm:text-2xl font-bold text-(--text-primary)">
                 {atmosphere.distractions ? "On" : "Off"}
               </div>
@@ -604,7 +604,7 @@ export default function SimulationConfig() {
                 Distractions
               </div>
             </div>
-            <div className="text-center p-2 sm:p-3 bg-(--surface-elevated) rounded-lg">
+            <div className="text-center p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control)">
               <div className="text-lg sm:text-2xl font-bold text-(--text-primary)">
                 {atmosphere.judgeInteractions ? "On" : "Off"}
               </div>

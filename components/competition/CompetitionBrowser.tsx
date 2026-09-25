@@ -440,7 +440,7 @@ export default function CompetitionBrowser() {
                           key={event.id}
                           onClick={() => toggleEvent(event.id)}
                           title={event.name}
-                          className={`p-1.5 sm:p-2 rounded-lg border transition-all ${
+                          className={`p-1.5 sm:p-2 rounded-(--radius-control) border transition-all ${
                             selectedEvents.includes(event.id)
                               ? "border-(--primary) bg-(--primary)/20"
                               : "border-(--border) hover:border-(--border-hover) bg-(--surface)"
@@ -584,13 +584,13 @@ export default function CompetitionBrowser() {
                         </div>
 
                         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
-                          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
                             <Calendar className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
                             <span className="truncate">
                               {formatDateRange(comp.start_date, comp.end_date)}
                             </span>
                           </span>
-                          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
                             <MapPin className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
                             <span className="truncate">
                               {comp.city}, {comp.country_iso2}
@@ -606,7 +606,7 @@ export default function CompetitionBrowser() {
                             return event ? (
                               <div
                                 key={eventId}
-                                className="rounded-md border border-(--border) bg-(--surface-elevated) p-1.5"
+                                className="rounded-(--radius-badge) border border-(--border) bg-(--surface-elevated) p-1.5"
                                 title={event.name}
                               >
                                 <Image
@@ -624,7 +624,7 @@ export default function CompetitionBrowser() {
                             ) : null;
                           })}
                           {comp.event_ids.length > 12 && (
-                            <span className="inline-flex items-center rounded-md border border-(--border) bg-(--surface-elevated) px-2 py-1 text-xs font-medium text-(--text-muted)">
+                            <span className="inline-flex items-center rounded-(--radius-badge) border border-(--border) bg-(--surface-elevated) px-2 py-1 text-xs font-medium text-(--text-muted)">
                               +{comp.event_ids.length - 12}
                             </span>
                           )}

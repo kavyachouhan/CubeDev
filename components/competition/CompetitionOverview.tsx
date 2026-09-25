@@ -381,7 +381,7 @@ export default function CompetitionOverview() {
                   href={competition.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-3 py-2 text-sm text-(--primary) border border-(--primary) rounded-lg hover:bg-(--primary)/10 transition-colors w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 px-3 py-2 text-sm text-(--primary) border border-(--primary) rounded-(--radius-control) hover:bg-(--primary)/10 transition-colors w-full sm:w-auto"
                 >
                   <ExternalLink className="w-4 h-4" />
                   <span>View on WCA</span>
@@ -461,7 +461,7 @@ export default function CompetitionOverview() {
                   Competition Details
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                       Date
                     </div>
@@ -477,7 +477,7 @@ export default function CompetitionOverview() {
                       )}
                     </div>
                   </div>
-                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                       Location
                     </div>
@@ -486,7 +486,7 @@ export default function CompetitionOverview() {
                     </div>
                   </div>
                   {competition.venue && (
-                    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg sm:col-span-2">
+                    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) sm:col-span-2">
                       <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                         Venue
                       </div>
@@ -496,7 +496,7 @@ export default function CompetitionOverview() {
                     </div>
                   )}
                   {competition.competitor_limit && (
-                    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg">
+                    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                       <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                         Competitor Limit
                       </div>
@@ -505,7 +505,7 @@ export default function CompetitionOverview() {
                       </div>
                     </div>
                   )}
-                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                       Number of Events
                     </div>
@@ -542,9 +542,9 @@ export default function CompetitionOverview() {
                   return event ? (
                     <div
                       key={eventId}
-                      className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border border-(--border) bg-(--surface-elevated) hover:border-(--primary)/50 transition-colors"
+                      className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) hover:border-(--primary)/50 transition-colors"
                     >
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg bg-(--surface)">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-(--radius-control) bg-(--surface)">
                         <Image
                           src={event.icon}
                           alt={event.name}
@@ -561,7 +561,7 @@ export default function CompetitionOverview() {
                 })}
               </div>
 
-              <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                 <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
                   <Timer className="w-4 h-4 text-(--primary)" />
                   Event Format Information
@@ -583,7 +583,7 @@ export default function CompetitionOverview() {
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                   <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
                     <Clock className="w-4 h-4 text-(--warning)" />
                     Time Limits
@@ -595,7 +595,7 @@ export default function CompetitionOverview() {
                   </p>
                 </div>
 
-                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                   <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
                     <Target className="w-4 h-4 text-(--primary)" />
                     Cutoffs
@@ -607,7 +607,7 @@ export default function CompetitionOverview() {
                   </p>
                 </div>
 
-                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                   <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
                     <Zap className="w-4 h-4 text-(--success)" />
                     Inspection
@@ -619,7 +619,7 @@ export default function CompetitionOverview() {
                   </p>
                 </div>
 
-                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                   <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
                     <Trophy className="w-4 h-4 text-(--warning)" />
                     Advancement
@@ -688,7 +688,7 @@ export default function CompetitionOverview() {
                       <Link
                         key={sim._id}
                         href={`/cube-lab/competitions/${competitionId}/simulate/${sim._id}`}
-                        className="block p-4 rounded-lg border border-(--border) hover:border-(--primary)/50 bg-(--surface) hover:bg-(--surface-elevated) transition-all"
+                        className="block p-4 rounded-(--radius-control) border border-(--border) hover:border-(--primary)/50 bg-(--surface) hover:bg-(--surface-elevated) transition-all"
                       >
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-2">

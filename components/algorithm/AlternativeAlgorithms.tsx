@@ -63,7 +63,7 @@ export default function AlternativeAlgorithms({
             return (
               <div
                 key={alg._id}
-                className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg"
+                className="p-4 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)"
               >
                 {/* Algorithm Header */}
                 <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
@@ -141,7 +141,7 @@ export default function AlternativeAlgorithms({
                   {currentAlgId !== alg._id && (
                     <button
                       onClick={() => onSelectAlgorithm(alg._id)}
-                      className="px-3 py-1.5 bg-(--primary) hover:bg-(--primary-hover) text-white text-sm rounded transition-colors whitespace-nowrap"
+                      className="px-3 py-1.5 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) text-sm rounded transition-colors whitespace-nowrap"
                     >
                       Use This Algorithm
                     </button>

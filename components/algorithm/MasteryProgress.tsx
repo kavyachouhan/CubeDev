@@ -73,10 +73,10 @@ export default function MasteryProgress({
           {stages.map((stage) => (
             <div
               key={stage.label}
-              className="text-center p-3 rounded-lg bg-(--surface-elevated)"
+              className="text-center p-3 rounded-(--radius-control) bg-(--surface-elevated)"
             >
               <div
-                className={`p-2 ${stage.bg} rounded-lg inline-flex items-center justify-center mb-2`}
+                className={`p-2 ${stage.bg} rounded-(--radius-control) inline-flex items-center justify-center mb-2`}
               >
                 <stage.icon className={`w-4 h-4 ${stage.text}`} />
               </div>

@@ -9,6 +9,7 @@ import CubeLabLayout from "@/components/CubeLabLayout";
 import { AlgorithmCaseCard } from "@/components/algorithm";
 import { AlgorithmSetDetailSkeleton } from "@/components/SkeletonLoaders";
 import { Filter, Search, CheckCircle2 } from "lucide-react";
+import { Input, Select } from "@/components/ui/Field";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Id } from "@/convex/_generated/dataModel";
 
@@ -168,12 +169,10 @@ export default function AlgorithmSetPage() {
             {/* Search */}
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-(--text-muted)" />
-              <input
-                type="text"
+              <Input
                 placeholder="Search cases..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
               />
             </div>
 
@@ -181,17 +180,17 @@ export default function AlgorithmSetPage() {
             {user && (
               <div className="flex items-center gap-2">
                 <Filter className="w-5 h-5 text-(--text-muted)" />
-                <select
+                <Select
                   value={filterStage}
                   onChange={(e) => setFilterStage(e.target.value)}
-                  className="px-4 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
+                  aria-label="Filter cases by stage"
                 >
                   <option value="all">All Cases</option>
                   <option value="new">Not Learned</option>
                   <option value="learning">Learning</option>
                   <option value="reviewing">Reviewing</option>
                   <option value="mastered">Mastered</option>
-                </select>
+                </Select>
               </div>
             )}
 
@@ -200,7 +199,7 @@ export default function AlgorithmSetPage() {
               <button
                 onClick={handleBulkMarkAsLearned}
                 disabled={isBulkMarking}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-(--primary) bg-(--primary)/10 hover:bg-(--primary)/20 border border-(--primary)/20 rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-(--primary) bg-(--primary)/10 hover:bg-(--primary)/20 border border-(--primary)/20 rounded-(--radius-control) transition-colors disabled:opacity-50 whitespace-nowrap"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 {isBulkMarking

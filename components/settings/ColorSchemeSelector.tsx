@@ -36,7 +36,7 @@ export default function ColorSchemeSelector() {
                 style={{ backgroundColor: scheme.swatch }}
               >
                 {active && (
-                  <Check className="w-4 h-4 text-white drop-shadow" strokeWidth={3} aria-hidden />
+                  <Check className="w-4 h-4 text-(--on-primary) drop-shadow" strokeWidth={3} aria-hidden />
                 )}
               </span>
             </button>

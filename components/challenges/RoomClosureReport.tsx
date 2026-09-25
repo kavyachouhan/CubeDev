@@ -89,7 +89,7 @@ export default function RoomClosureReport({
       <div className="timer-card">
         <div className="text-center space-y-4">
           <div className="w-16 h-16 bg-(--primary) rounded-full flex items-center justify-center mx-auto">
-            <Trophy className="w-8 h-8 text-white" />
+            <Trophy className="w-8 h-8 text-(--on-primary)" />
           </div>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-(--text-primary) font-statement mb-2">
@@ -116,7 +116,7 @@ export default function RoomClosureReport({
           Challenge Statistics
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control)">
             <TrendingUp className="w-6 h-6 text-(--primary) mx-auto mb-2" />
             <div className="text-2xl font-bold text-(--text-primary) font-statement">
               {completedCount}
@@ -125,7 +125,7 @@ export default function RoomClosureReport({
               Completed
             </div>
           </div>
-          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control)">
             <Clock className="w-6 h-6 text-(--primary) mx-auto mb-2" />
             <div className="text-2xl font-bold text-(--text-primary) font-statement">
               {Math.round(completionRate)}%
@@ -134,7 +134,7 @@ export default function RoomClosureReport({
               Completion Rate
             </div>
           </div>
-          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control)">
             <Trophy className="w-6 h-6 text-(--warning) mx-auto mb-2" />
             <div className="text-2xl font-bold text-(--text-primary) font-statement">
               {room.format.toUpperCase()}
@@ -143,7 +143,7 @@ export default function RoomClosureReport({
               Format
             </div>
           </div>
-          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control)">
             <Users className="w-6 h-6 text-(--success) mx-auto mb-2" />
             <div className="text-2xl font-bold text-(--text-primary) font-statement">
               {totalParticipants}
@@ -172,7 +172,7 @@ export default function RoomClosureReport({
                 <div className="text-center space-y-3">
                   {/* Rank Badge */}
                   <div
-                    className="w-12 h-12 mx-auto rounded-full flex items-center justify-center text-white"
+                    className="w-12 h-12 mx-auto rounded-full flex items-center justify-center text-(--on-primary)"
                     style={medalBadgeStyle(participant.finalRank)}
                   >
                     {getRankIcon(participant.finalRank)}
@@ -180,7 +180,7 @@ export default function RoomClosureReport({
 
                   {/* User Info */}
                   <div className="space-y-1">
-                    <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-white font-bold text-lg mx-auto">
+                    <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-(--on-primary) font-bold text-lg mx-auto">
                       {participant.user?.avatar &&
                       !(
                         participant.user?.isDeleted ||
@@ -285,18 +285,18 @@ export default function RoomClosureReport({
                 <button
                   key={participant._id}
                   onClick={() => setSelectedParticipant(participant)}
-                  className="w-full flex items-center gap-3 p-4 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) hover:border-(--primary) transition-all duration-200 cursor-pointer"
+                  className="w-full flex items-center gap-3 p-4 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-(--radius-control) border border-(--border) hover:border-(--primary) transition-all duration-200 cursor-pointer"
                 >
                   {/* Rank */}
                   <div
-                    className="w-8 h-8 rounded-(--radius-control) flex items-center justify-center text-sm font-bold text-white shrink-0"
+                    className="w-8 h-8 rounded-(--radius-control) flex items-center justify-center text-sm font-bold text-(--on-primary) shrink-0"
                     style={medalBadgeStyle(participant.finalRank)}
                   >
                     {participant.finalRank}
                   </div>
 
                   {/* User Avatar */}
-                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-(--on-primary) font-bold text-sm">
                     {participant.user?.avatar &&
                     !(
                       participant.user?.isDeleted ||
@@ -397,10 +397,10 @@ export default function RoomClosureReport({
                 <button
                   key={participant._id}
                   onClick={() => setSelectedParticipant(participant)}
-                  className="w-full flex items-center gap-3 p-4 bg-(--surface-elevated)/60 hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border)/50 transition-all duration-200 cursor-pointer"
+                  className="w-full flex items-center gap-3 p-4 bg-(--surface-elevated)/60 hover:bg-(--surface-elevated)/80 rounded-(--radius-control) border border-(--border)/50 transition-all duration-200 cursor-pointer"
                 >
                   {/* User Avatar */}
-                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--text-muted) text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--text-muted) text-(--on-primary) font-bold text-sm">
                     {participant.user?.avatar &&
                     !(
                       participant.user?.isDeleted ||
@@ -450,8 +450,8 @@ export default function RoomClosureReport({
                   </div>
 
                   {/* Status */}
-                  <div className="w-8 h-8 rounded-lg bg-(--text-muted) flex items-center justify-center">
-                    <Users className="w-4 h-4 text-white" />
+                  <div className="w-8 h-8 rounded-(--radius-control) bg-(--text-muted) flex items-center justify-center">
+                    <Users className="w-4 h-4 text-(--on-primary)" />
                   </div>
 
                   {/* User Info */}

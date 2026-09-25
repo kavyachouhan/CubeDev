@@ -243,7 +243,7 @@ export default function MockSchedule({
       {isExpanded && (
         <div className="mt-4 space-y-4">
           {/* Settings Row */}
-          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 sm:gap-4 p-3 bg-(--surface-elevated) rounded-lg">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 sm:gap-4 p-3 bg-(--surface-elevated) rounded-(--radius-control)">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-(--text-muted)" />
               <label className="text-sm text-(--text-secondary)">
@@ -289,7 +289,7 @@ export default function MockSchedule({
               return (
                 <div key={block.id} className="relative">
                   <div
-                    className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-all ${
+                    className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-(--radius-control) border transition-all ${
                       isActive
                         ? "border-(--primary) bg-(--primary)/10"
                         : isPast
@@ -420,7 +420,7 @@ export default function MockSchedule({
                 <>
                   <button
                     onClick={togglePause}
-                    className="flex items-center gap-2 px-3 py-1.5 border border-(--border) text-(--text-primary) rounded-lg hover:bg-(--surface-elevated) transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 border border-(--border) text-(--text-primary) rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
                   >
                     {isRunning ? (
                       <>
@@ -436,7 +436,7 @@ export default function MockSchedule({
                   </button>
                   <button
                     onClick={resetSchedule}
-                    className="flex items-center gap-2 px-3 py-1.5 text-(--error) border border-(--error)/50 rounded-lg hover:bg-(--error)/10 transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 text-(--error) border border-(--error)/50 rounded-(--radius-control) hover:bg-(--error)/10 transition-colors"
                   >
                     <RotateCcw className="w-4 h-4" />
                     Reset

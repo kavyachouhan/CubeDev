@@ -19,9 +19,9 @@ export interface SegmentOption<T extends string> {
 
 const TONE: Record<SegmentTone, string> = {
   primary: "bg-(--primary) text-(--on-primary)",
-  warning: "bg-(--penalty-plus2) text-white",
-  error: "bg-(--penalty-dnf) text-white",
-  success: "bg-(--success) text-white",
+  warning: "bg-(--penalty-plus2) text-(--on-primary)",
+  error: "bg-(--penalty-dnf) text-(--on-primary)",
+  success: "bg-(--success) text-(--on-primary)",
 };
 
 export interface SegmentedControlProps<T extends string> {

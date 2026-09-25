@@ -283,9 +283,9 @@ export default function WCAStats({
         </h3>
         {achievements ? (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -298,9 +298,9 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -313,9 +313,9 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -328,9 +328,9 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -343,9 +343,9 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -358,9 +358,9 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -373,9 +373,9 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -393,9 +393,9 @@ export default function WCAStats({
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -408,9 +408,9 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -423,9 +423,9 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -438,9 +438,9 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -453,9 +453,9 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -468,9 +468,9 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -483,9 +483,9 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -531,7 +531,7 @@ export default function WCAStats({
               .map((record) => (
                 <div
                   key={record.event_id}
-                  className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)"
+                  className="p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-(--text-primary) font-inter">
@@ -607,7 +607,7 @@ export default function WCAStats({
               ))}
           </div>
         ) : (
-          <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+          <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="min-w-0 flex-1">
                 <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
@@ -628,7 +628,7 @@ export default function WCAStats({
             <h3 className="text-lg font-semibold text-(--text-primary) font-statement flex items-center gap-2">
               Competition Activity
             </h3>
-            <div className="flex items-center gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border) sm:overflow-x-auto">
+            <div className="flex items-center gap-1 p-1 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) sm:overflow-x-auto">
               {(
                 [
                   ["1y", "1 year"],
@@ -639,9 +639,9 @@ export default function WCAStats({
                 <button
                   key={period}
                   onClick={() => setSelectedPeriod(period)}
-                  className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap flex-1 sm:flex-none ${
+                  className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-(--radius-badge) transition-all whitespace-nowrap flex-1 sm:flex-none ${
                     selectedPeriod === period
-                      ? "bg-(--primary) text-white shadow-sm"
+                      ? "bg-(--primary) text-(--on-primary) shadow-sm"
                       : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface)"
                   }`}
                 >

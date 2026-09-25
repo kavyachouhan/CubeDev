@@ -83,7 +83,7 @@ export default function UserSolvesCard({
       {/* Summary Stats */}
       {(isCompleted || solves.length >= 3) && (
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-3">
+          <div className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) p-3">
             <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-1">
               Best Single
             </div>
@@ -93,7 +93,7 @@ export default function UserSolvesCard({
                 : "--:--"}
             </div>
           </div>
-          <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-3">
+          <div className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) p-3">
             <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-1">
               {format.toUpperCase()} Average
             </div>
@@ -158,7 +158,7 @@ export default function UserSolvesCard({
               {/* Expanded Details */}
               {selectedSolve === index && (
                 <div className="mt-3 pt-3 border-t border-(--border)">
-                  <div className="bg-(--surface) border border-(--border) rounded-lg p-3">
+                  <div className="bg-(--surface) border border-(--border) rounded-(--radius-control) p-3">
                     <h5 className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-3">
                       Time Breakdown
                     </h5>
@@ -200,7 +200,7 @@ export default function UserSolvesCard({
 
                   {/* Comment */}
                   {solve.comment && (
-                    <div className="mt-3 bg-(--surface) border border-(--border) rounded-lg p-3">
+                    <div className="mt-3 bg-(--surface) border border-(--border) rounded-(--radius-control) p-3">
                       <h5 className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-2">
                         Comment
                       </h5>

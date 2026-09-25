@@ -292,7 +292,7 @@ export default function AlgorithmCasePage() {
                       height="350px"
                     />
                   ) : (
-                    <div className="h-87.5 bg-(--surface-elevated) rounded-lg flex items-center justify-center border border-(--border)">
+                    <div className="h-87.5 bg-(--surface-elevated) rounded-(--radius-control) flex items-center justify-center border border-(--border)">
                       <p className="text-sm text-(--text-muted)">
                         No algorithm available for this case yet
                       </p>
@@ -341,7 +341,7 @@ export default function AlgorithmCasePage() {
                               key={i}
                               className={`w-4 h-4 ${
                                 i < difficultyStars
-                                  ? "fill-yellow-500 text-(--warning)"
+                                  ? "fill-(--warning) text-(--warning)"
                                   : "text-(--border)"
                               }`}
                             />
@@ -400,7 +400,7 @@ export default function AlgorithmCasePage() {
                 {selectedAlgorithm && (
                   <div className="space-y-4">
                     {/* Algorithm Notation */}
-                    <div className="p-4 bg-(--surface-elevated) rounded-lg overflow-x-auto">
+                    <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control) overflow-x-auto">
                       <p className="text-base sm:text-lg lg:text-xl font-mono text-(--text-primary) text-center whitespace-nowrap">
                         {selectedAlgorithm.notation}
                       </p>
@@ -484,7 +484,7 @@ export default function AlgorithmCasePage() {
                   <>
                     <button
                       onClick={handleStartLearning}
-                      className="w-full sm:flex-1 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                      className="w-full sm:flex-1 py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-medium flex items-center justify-center gap-2"
                     >
                       <PlayCircle className="w-5 h-5 shrink-0" />
                       <span className="truncate">Start Learning This Case</span>
@@ -492,7 +492,7 @@ export default function AlgorithmCasePage() {
                     <button
                       onClick={handleMarkAsLearned}
                       disabled={isMarkingLearned}
-                      className="w-full sm:flex-1 py-3 border border-(--primary) text-(--primary) hover:bg-(--primary)/10 rounded-lg transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                      className="w-full sm:flex-1 py-3 border border-(--primary) text-(--primary) hover:bg-(--primary)/10 rounded-(--radius-control) transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                       <CheckCircle2 className="w-5 h-5 shrink-0" />
                       <span className="truncate">
@@ -504,14 +504,14 @@ export default function AlgorithmCasePage() {
                   <>
                     <Link
                       href={`/cube-lab/algorithm-trainer/practice?mode=all&case=${algorithmCase.slug || caseSlug}`}
-                      className="w-full sm:flex-1 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                      className="w-full sm:flex-1 py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-medium flex items-center justify-center gap-2"
                     >
                       <Brain className="w-5 h-5 shrink-0" />
                       <span className="truncate">Practice This Case</span>
                     </Link>
                     <Link
                       href={`/cube-lab/algorithm-trainer/practice?mode=infinite&case=${algorithmCase.slug || caseSlug}`}
-                      className="w-full sm:flex-1 py-3 border border-(--primary) text-(--primary) hover:bg-(--primary)/10 rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                      className="w-full sm:flex-1 py-3 border border-(--primary) text-(--primary) hover:bg-(--primary)/10 rounded-(--radius-control) transition-colors font-medium flex items-center justify-center gap-2"
                     >
                       <PlayCircle className="w-5 h-5 shrink-0" />
                       <span className="truncate">Drill This Case</span>
@@ -529,7 +529,7 @@ export default function AlgorithmCasePage() {
                       {prevCase ? (
                         <Link
                           href={`/cube-lab/algorithm-trainer/cases/${prevCase.slug}`}
-                          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-lg transition-colors flex-1 min-w-0 max-w-[40%]"
+                          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-(--radius-control) transition-colors flex-1 min-w-0 max-w-[40%]"
                         >
                           <ChevronLeft className="w-4 h-4 shrink-0" />
                           <span className="truncate">{prevCase.caseName}</span>
@@ -545,7 +545,7 @@ export default function AlgorithmCasePage() {
                       {nextCase ? (
                         <Link
                           href={`/cube-lab/algorithm-trainer/cases/${nextCase.slug}`}
-                          className="flex items-center justify-end gap-1.5 px-3 py-2 text-xs font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-lg transition-colors flex-1 min-w-0 max-w-[40%]"
+                          className="flex items-center justify-end gap-1.5 px-3 py-2 text-xs font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-(--radius-control) transition-colors flex-1 min-w-0 max-w-[40%]"
                         >
                           <span className="truncate">{nextCase.caseName}</span>
                           <ChevronRight className="w-4 h-4 shrink-0" />
@@ -560,7 +560,7 @@ export default function AlgorithmCasePage() {
                       {prevCase ? (
                         <Link
                           href={`/cube-lab/algorithm-trainer/cases/${prevCase.slug}`}
-                          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-lg transition-colors min-w-0"
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-(--radius-control) transition-colors min-w-0"
                         >
                           <ChevronLeft className="w-4 h-4 shrink-0" />
                           <span className="truncate">{prevCase.caseName}</span>
@@ -576,7 +576,7 @@ export default function AlgorithmCasePage() {
                       {nextCase ? (
                         <Link
                           href={`/cube-lab/algorithm-trainer/cases/${nextCase.slug}`}
-                          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-lg transition-colors min-w-0"
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-(--radius-control) transition-colors min-w-0"
                         >
                           <span className="truncate">{nextCase.caseName}</span>
                           <ChevronRight className="w-4 h-4 shrink-0" />

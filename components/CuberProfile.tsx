@@ -608,10 +608,10 @@ export default function CuberProfile({ wcaId }: CuberProfileProps) {
                 <ProfileSidebarSkeleton />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="h-12 bg-(--surface-elevated) rounded-lg w-full mb-6" />
+                <div className="h-12 bg-(--surface-elevated) rounded-(--radius-control) w-full mb-6" />
                 <div className="space-y-8">
-                  <div className="h-64 bg-(--surface-elevated) rounded-lg" />
-                  <div className="h-48 bg-(--surface-elevated) rounded-lg" />
+                  <div className="h-64 bg-(--surface-elevated) rounded-(--radius-control)" />
+                  <div className="h-48 bg-(--surface-elevated) rounded-(--radius-control)" />
                 </div>
               </div>
             </div>

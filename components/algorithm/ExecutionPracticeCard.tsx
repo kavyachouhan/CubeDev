@@ -304,7 +304,7 @@ export default function ExecutionPracticeCard({
             </p>
             <button
               onClick={onStart}
-              className="px-8 py-4 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium text-lg"
+              className="px-8 py-4 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-medium text-lg"
             >
               Start Execution Drill
             </button>
@@ -319,7 +319,7 @@ export default function ExecutionPracticeCard({
               <h3 className="text-3xl font-bold text-(--primary) font-statement mb-2">
                 {caseName}
               </h3>
-              <div className="inline-block px-4 py-2 bg-(--surface-elevated) rounded-lg">
+              <div className="inline-block px-4 py-2 bg-(--surface-elevated) rounded-(--radius-control)">
                 <p className="text-sm text-(--text-muted) mb-1">
                   Algorithm
                 </p>
@@ -340,7 +340,7 @@ export default function ExecutionPracticeCard({
                   height="300px"
                 />
               ) : (
-                <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-6 min-h-62.5 flex flex-col items-center justify-center">
+                <div className="bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) p-6 min-h-62.5 flex flex-col items-center justify-center">
                   <div className="flex items-center gap-2 mb-4">
                     <AlertTriangle className="w-4 h-4 text-(--warning)" />
                     <span className="text-xs text-(--warning)/80">
@@ -400,7 +400,7 @@ export default function ExecutionPracticeCard({
                   <div className="flex gap-2 justify-center mt-4">
                     <button
                       onClick={handleNext}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-medium"
                     >
                       Next Case
                     </button>
@@ -411,7 +411,7 @@ export default function ExecutionPracticeCard({
 
             {/* Tips */}
             {timerState === "idle" && (
-              <div className="p-4 bg-(--surface-elevated) rounded-lg">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                 <h4 className="text-sm font-semibold text-(--text-primary) mb-2">
                   Tips:
                 </h4>

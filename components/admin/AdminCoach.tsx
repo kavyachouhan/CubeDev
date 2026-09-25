@@ -1002,7 +1002,7 @@ export default function AdminCoach() {
           <button
             onClick={handleExportProfiles}
             disabled={!allProfiles || allProfiles.length === 0}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-badge) text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
             title="Export profiles as CSV"
           >
             <Download className="w-3.5 h-3.5" />

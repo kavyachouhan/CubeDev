@@ -68,7 +68,7 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 bg-(--surface) border-b border-(--border) backdrop-blur-sm transition-all duration-500 ease-in-out ${
+      className={`sticky top-0 z-(--z-sticky) bg-(--surface) border-b border-(--border) backdrop-blur-sm transition-all duration-500 ease-in-out ${
         isVisible || mobileMenuOpen
           ? "translate-y-0 opacity-100"
           : "-translate-y-full opacity-0"

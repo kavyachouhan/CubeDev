@@ -338,7 +338,7 @@ export default function RoundSimulatorRedesigned({
                     return (
                       <div
                         key={idx}
-                        className={`text-center p-2 sm:p-3 rounded-lg ${cardStyle}`}
+                        className={`text-center p-2 sm:p-3 rounded-(--radius-control) ${cardStyle}`}
                       >
                         <div className="text-xs text-(--text-muted) mb-0.5">
                           #{idx + 1}

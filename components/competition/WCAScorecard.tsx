@@ -184,7 +184,7 @@ export default function WCAScorecard({
         <div className="flex flex-wrap justify-between items-start gap-3 mb-4">
           <div className="shrink-0">
             <div className="text-xs text-(--text-muted) mb-1">Event</div>
-            <div className="border border-(--border) px-3 py-1.5 bg-(--surface-elevated) rounded-lg inline-block">
+            <div className="border border-(--border) px-3 py-1.5 bg-(--surface-elevated) rounded-(--radius-control) inline-block">
               <span className="font-medium text-(--text-primary)">
                 {event.name}
               </span>
@@ -195,7 +195,7 @@ export default function WCAScorecard({
               <div className="text-xs text-(--text-muted) mb-1 text-center">
                 Round
               </div>
-              <div className="border border-(--border) w-9 sm:w-10 h-8 flex items-center justify-center bg-(--surface-elevated) rounded-lg">
+              <div className="border border-(--border) w-9 sm:w-10 h-8 flex items-center justify-center bg-(--surface-elevated) rounded-(--radius-control)">
                 <span className="font-bold text-(--text-primary)">
                   {roundNumber}
                 </span>
@@ -205,7 +205,7 @@ export default function WCAScorecard({
               <div className="text-xs text-(--text-muted) mb-1 text-center">
                 Group
               </div>
-              <div className="border border-(--border) w-9 sm:w-10 h-8 flex items-center justify-center bg-(--surface-elevated) rounded-lg">
+              <div className="border border-(--border) w-9 sm:w-10 h-8 flex items-center justify-center bg-(--surface-elevated) rounded-(--radius-control)">
                 <span className="font-bold text-(--text-primary)">
                   {groupNumber}
                 </span>
@@ -219,7 +219,7 @@ export default function WCAScorecard({
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0 flex-1">
             <div className="shrink-0">
               <div className="text-xs text-(--text-muted) mb-1">ID</div>
-              <div className="border border-(--border) px-2 py-1 bg-(--surface-elevated) rounded-lg">
+              <div className="border border-(--border) px-2 py-1 bg-(--surface-elevated) rounded-(--radius-control)">
                 <span className="font-mono text-sm text-(--text-primary)">
                   {displayId}
                 </span>
@@ -227,7 +227,7 @@ export default function WCAScorecard({
             </div>
             <div className="min-w-0 flex-1 max-w-45 sm:max-w-50">
               <div className="text-xs text-(--text-muted) mb-1">Name</div>
-              <div className="border border-(--border) px-3 py-1 bg-(--surface-elevated) rounded-lg overflow-hidden">
+              <div className="border border-(--border) px-3 py-1 bg-(--surface-elevated) rounded-(--radius-control) overflow-hidden">
                 <span className="text-sm font-medium text-(--text-primary) block truncate">
                   {displayName}
                 </span>
@@ -244,7 +244,7 @@ export default function WCAScorecard({
         </div>
 
         {/* Results Table */}
-        <div className="border border-(--border) rounded-lg overflow-hidden mb-4">
+        <div className="border border-(--border) rounded-(--radius-control) overflow-hidden mb-4">
           {/* Table Header */}
           <div className="grid grid-cols-[40px_1fr_50px_50px] sm:grid-cols-[50px_1fr_60px_60px] bg-(--surface-elevated)">
             <div className="p-2 text-center border-r border-(--border)">
@@ -351,7 +351,7 @@ export default function WCAScorecard({
         {/* Results Summary */}
         <div className="border-t border-(--border) pt-4">
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            <div className="text-center p-3 sm:p-4 bg-(--success)/10 border border-(--success)/30 rounded-lg">
+            <div className="text-center p-3 sm:p-4 bg-(--success)/10 border border-(--success)/30 rounded-(--radius-control)">
               <div className="text-xs text-(--text-muted) mb-1">
                 Best Single
               </div>
@@ -359,7 +359,7 @@ export default function WCAScorecard({
                 {formatTime(result.best)}
               </div>
             </div>
-            <div className="text-center p-3 sm:p-4 bg-(--primary)/10 border border-(--primary)/30 rounded-lg">
+            <div className="text-center p-3 sm:p-4 bg-(--primary)/10 border border-(--primary)/30 rounded-(--radius-control)">
               <div className="text-xs text-(--text-muted) mb-1">
                 Average
               </div>

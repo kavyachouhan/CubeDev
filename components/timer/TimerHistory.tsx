@@ -73,8 +73,8 @@ function PenaltyToggle({
         "min-w-9 h-7 px-2 rounded-(--radius-badge) text-xs font-semibold font-inter transition-colors",
         active
           ? tone === "plus2"
-            ? "bg-(--penalty-plus2) text-white"
-            : "bg-(--penalty-dnf) text-white"
+            ? "bg-(--penalty-plus2) text-(--on-primary)"
+            : "bg-(--penalty-dnf) text-(--on-primary)"
           : "bg-(--surface) text-(--text-secondary) border border-(--border) hover:border-(--border-hover) hover:text-(--text-primary)",
       )}
     >

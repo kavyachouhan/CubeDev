@@ -189,7 +189,7 @@ export default function RecognitionBenchmarks({
       <div className="space-y-6">
         {/* Current Level Display */}
         <div
-          className={`p-4 rounded-lg border ${currentStyles.bg} ${currentStyles.border}`}
+          className={`p-4 rounded-(--radius-control) border ${currentStyles.bg} ${currentStyles.border}`}
         >
           <div className="flex items-center justify-center gap-2 mb-2">
             <Award className={`w-5 h-5 ${currentStyles.text}`} />
@@ -248,7 +248,7 @@ export default function RecognitionBenchmarks({
                 return (
                   <div
                     key={benchmark.level}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
+                    className={`flex items-center justify-between px-3 py-2.5 rounded-(--radius-control) transition-colors ${
                       isActive
                         ? `${styles.bg} ${styles.border} border`
                         : "bg-(--surface-elevated)"

@@ -16,6 +16,7 @@ import {
   Users,
   EyeOff,
 } from "lucide-react";
+import { medalBadgeStyle } from "@/components/ui/medal";
 import { SelectMenu } from "@/components/ui/Menu";
 import SolveHeatmap from "../stats/SolveHeatmap";
 import { EventStatsSkeleton, PlatformStatsSkeleton } from "../SkeletonLoaders";
@@ -307,9 +308,9 @@ export default function CubeDevStats({
 
             {/* Event Statistics Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-              <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                     <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -323,9 +324,9 @@ export default function CubeDevStats({
                 </div>
               </div>
 
-              <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                     <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -341,9 +342,9 @@ export default function CubeDevStats({
                 </div>
               </div>
 
-              <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                     <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -359,9 +360,9 @@ export default function CubeDevStats({
                 </div>
               </div>
 
-              <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                     <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -418,9 +419,9 @@ export default function CubeDevStats({
             CubeDev Statistics
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -434,9 +435,9 @@ export default function CubeDevStats({
               </div>
             </div>
 
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -450,9 +451,9 @@ export default function CubeDevStats({
               </div>
             </div>
 
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -466,9 +467,9 @@ export default function CubeDevStats({
               </div>
             </div>
 
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -514,9 +515,9 @@ export default function CubeDevStats({
             Challenge Room Statistics
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -530,9 +531,9 @@ export default function CubeDevStats({
               </div>
             </div>
 
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Users className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -546,9 +547,9 @@ export default function CubeDevStats({
               </div>
             </div>
 
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-lg">
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -586,16 +587,12 @@ export default function CubeDevStats({
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-3 h-3 rounded-full ${
+                          className="w-3 h-3 rounded-full"
+                          style={
                             showIncomplete
-                              ? "bg-red-500"
-                              : participation.finalRank === 1
-                                ? "bg-yellow-500"
-                                : participation.finalRank &&
-                                    participation.finalRank <= 3
-                                  ? "bg-gray-400"
-                                  : "bg-gray-600"
-                          }`}
+                              ? { background: "var(--error)" }
+                              : medalBadgeStyle(participation.finalRank)
+                          }
                         />
                         <div>
                           <div className="font-medium text-(--text-primary)">
@@ -629,7 +626,7 @@ export default function CubeDevStats({
                             `/cube-lab/challenges/room/${participation.roomPublicId}`,
                           )
                         }
-                        className="px-3 py-1 text-xs bg-(--primary) text-white rounded hover:bg-(--primary-hover) transition-colors"
+                        className="px-3 py-1 text-xs bg-(--primary) text-(--on-primary) rounded hover:bg-(--primary-hover) transition-colors"
                       >
                         View Room
                       </button>

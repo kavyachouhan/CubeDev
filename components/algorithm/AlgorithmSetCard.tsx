@@ -135,21 +135,21 @@ export default function AlgorithmSetCard({
       {!isLocked && (
         <div className="mt-4">
           {mastered === caseCount ? (
-            <div className="flex items-center justify-center gap-2 py-2 bg-(--success)/10 border border-(--success)/25 rounded-lg">
+            <div className="flex items-center justify-center gap-2 py-2 bg-(--success)/10 border border-(--success)/25 rounded-(--radius-control)">
               <CircleCheck className="w-4 h-4 text-(--success)" />
               <span className="text-sm font-medium text-(--success)">
                 Fully Mastered!
               </span>
             </div>
           ) : learned > 0 ? (
-            <div className="flex items-center justify-center gap-2 py-2 bg-(--primary)/10 border border-(--primary)/20 rounded-lg">
+            <div className="flex items-center justify-center gap-2 py-2 bg-(--primary)/10 border border-(--primary)/20 rounded-(--radius-control)">
               <Clock className="w-4 h-4 text-(--primary)" />
               <span className="text-sm font-medium text-(--primary)">
                 In Progress
               </span>
             </div>
           ) : (
-            <div className="flex items-center justify-center py-2 bg-(--surface-elevated) border border-(--border) rounded-lg">
+            <div className="flex items-center justify-center py-2 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)">
               <span className="text-sm font-medium text-(--text-muted)">
                 Not Started
               </span>

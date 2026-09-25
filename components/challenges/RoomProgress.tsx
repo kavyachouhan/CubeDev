@@ -39,9 +39,9 @@ export default function RoomProgress({
         </div>
 
         {isCompleted && (
-          <div className="flex items-center gap-2 p-3 bg-(--success)/10 border border-(--success)/25 rounded-lg">
+          <div className="flex items-center gap-2 p-3 bg-(--success)/10 border border-(--success)/25 rounded-(--radius-control)">
             <div className="w-8 h-8 bg-(--success) rounded-full flex items-center justify-center">
-              <Check className="w-5 h-5 text-white" />
+              <Check className="w-5 h-5 text-(--on-primary)" />
             </div>
             <div>
               <div className="text-sm font-medium text-(--success) font-inter">

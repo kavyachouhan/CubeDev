@@ -166,7 +166,7 @@ export default function PhaseAverages({ solves }: PhaseAveragesProps) {
               {stats.map((stat) => (
                 <div
                   key={stat.phase}
-                  className="p-3 bg-(--surface-elevated) border border-(--border) rounded-lg"
+                  className="p-3 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span

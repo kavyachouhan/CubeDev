@@ -179,7 +179,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
             </div>
           </div>
           {event && (
-            <div className="flex items-center gap-2 px-3 py-2 bg-(--surface-elevated) rounded-lg">
+            <div className="flex items-center gap-2 px-3 py-2 bg-(--surface-elevated) rounded-(--radius-control)">
               <Image src={event.icon} alt={event.name} width={24} height={24} />
               <span className="font-medium text-(--text-primary)">
                 {event.name}
@@ -219,7 +219,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
               return (
                 <div
                   key={idx}
-                  className={`px-4 py-2 rounded-lg font-mono ${
+                  className={`px-4 py-2 rounded-(--radius-control) font-mono ${
                     isBest
                       ? "bg-(--success)/10 text-(--success) border border-(--success)/30"
                       : isWorst
@@ -240,7 +240,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
         {/* Statistics */}
         {stats && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-(--border)">
-            <div className="text-center p-3 bg-(--success)/5 rounded-lg">
+            <div className="text-center p-3 bg-(--success)/5 rounded-(--radius-control)">
               <div className="text-xs text-(--text-muted) mb-1">
                 Best Single
               </div>
@@ -248,7 +248,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
                 {formatTime(stats.best)}
               </div>
             </div>
-            <div className="text-center p-3 bg-(--primary)/5 rounded-lg">
+            <div className="text-center p-3 bg-(--primary)/5 rounded-(--radius-control)">
               <div className="text-xs text-(--text-muted) mb-1">
                 {results.length >= 5 ? "Average" : "Mean"}
               </div>
@@ -256,7 +256,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
                 {stats.average > 0 ? formatTime(stats.average) : "N/A"}
               </div>
             </div>
-            <div className="text-center p-3 bg-(--surface-elevated) rounded-lg sm:col-span-1 col-span-2">
+            <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control) sm:col-span-1 col-span-2">
               <div className="text-xs text-(--text-muted) mb-1">
                 Worst Single
               </div>

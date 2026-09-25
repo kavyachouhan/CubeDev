@@ -295,7 +295,7 @@ export default function InspectionViolationTrainer({
         className="flex items-center justify-between w-full"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-(--warning)/20 text-(--warning) rounded-lg flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-(--warning)/20 text-(--warning) rounded-(--radius-control) flex items-center justify-center shrink-0">
             <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="text-left min-w-0">
@@ -320,7 +320,7 @@ export default function InspectionViolationTrainer({
         <div className="mt-4 space-y-4">
           {/* Stats Overview */}
           <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
-            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-base sm:text-xl font-bold text-(--success)">
                 {stats.perfectStops}
               </div>
@@ -328,7 +328,7 @@ export default function InspectionViolationTrainer({
                 Perfect
               </div>
             </div>
-            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-base sm:text-xl font-bold text-(--info)">
                 {stats.earlyStops}
               </div>
@@ -336,7 +336,7 @@ export default function InspectionViolationTrainer({
                 Early
               </div>
             </div>
-            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-base sm:text-xl font-bold text-(--warning)">
                 {stats.plus2s}
               </div>
@@ -344,7 +344,7 @@ export default function InspectionViolationTrainer({
                 +2
               </div>
             </div>
-            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-base sm:text-xl font-bold text-(--error)">
                 {stats.dnfs}
               </div>
@@ -356,7 +356,7 @@ export default function InspectionViolationTrainer({
 
           {/* Main Timer Area */}
           <div
-            className={`rounded-xl border-2 transition-all cursor-pointer select-none ${
+            className={`rounded-(--radius-panel) border-2 transition-all cursor-pointer select-none ${
               isRunning
                 ? "border-(--warning) bg-(--warning)/5"
                 : showResult
@@ -587,7 +587,7 @@ export default function InspectionViolationTrainer({
             {stats.totalAttempts > 0 && (
               <button
                 onClick={resetStats}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-(--error) hover:bg-(--error)/10 rounded-lg transition-colors self-start sm:self-auto"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-(--error) hover:bg-(--error)/10 rounded-(--radius-control) transition-colors self-start sm:self-auto"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 Reset Stats

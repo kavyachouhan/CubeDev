@@ -23,11 +23,11 @@ const SOFT: Record<BadgeTone, string> = {
 const SOLID: Record<BadgeTone, string> = {
   neutral: "bg-(--text-muted) text-(--background) border-transparent",
   primary: "bg-(--primary) text-(--on-primary) border-transparent",
-  accent: "bg-(--accent) text-white border-transparent",
-  success: "bg-(--success) text-white border-transparent",
-  warning: "bg-(--warning) text-white border-transparent",
-  danger: "bg-(--error) text-white border-transparent",
-  info: "bg-(--info) text-white border-transparent",
+  accent: "bg-(--accent) text-(--on-primary) border-transparent",
+  success: "bg-(--success) text-(--on-primary) border-transparent",
+  warning: "bg-(--warning) text-(--on-primary) border-transparent",
+  danger: "bg-(--error) text-(--on-primary) border-transparent",
+  info: "bg-(--info) text-(--on-primary) border-transparent",
 };
 
 export interface BadgeProps {

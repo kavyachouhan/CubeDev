@@ -395,8 +395,8 @@ export default function RoomTimer({
               aria-pressed={currentPenalty === "+2"}
               className={`inline-flex items-center justify-center gap-1.5 min-w-24 min-h-11 px-5 text-sm rounded-(--radius-control) font-statement transition-colors ${
                 currentPenalty === "+2"
-                  ? "bg-(--penalty-plus2-hover) text-white ring-2 ring-offset-2 ring-offset-(--surface) ring-(--penalty-plus2)"
-                  : "bg-(--penalty-plus2) text-white hover:bg-(--penalty-plus2-hover)"
+                  ? "bg-(--penalty-plus2-hover) text-(--on-primary) ring-2 ring-offset-2 ring-offset-(--surface) ring-(--penalty-plus2)"
+                  : "bg-(--penalty-plus2) text-(--on-primary) hover:bg-(--penalty-plus2-hover)"
               }`}
             >
               +2
@@ -413,8 +413,8 @@ export default function RoomTimer({
               aria-pressed={currentPenalty === "DNF"}
               className={`inline-flex items-center justify-center gap-1.5 min-w-24 min-h-11 px-5 text-sm rounded-(--radius-control) font-statement transition-colors ${
                 currentPenalty === "DNF"
-                  ? "bg-(--penalty-dnf-hover) text-white ring-2 ring-offset-2 ring-offset-(--surface) ring-(--penalty-dnf)"
-                  : "bg-(--penalty-dnf) text-white hover:bg-(--penalty-dnf-hover)"
+                  ? "bg-(--penalty-dnf-hover) text-(--on-primary) ring-2 ring-offset-2 ring-offset-(--surface) ring-(--penalty-dnf)"
+                  : "bg-(--penalty-dnf) text-(--on-primary) hover:bg-(--penalty-dnf-hover)"
               }`}
             >
               DNF
@@ -432,7 +432,7 @@ export default function RoomTimer({
                 e.preventDefault();
                 handleConfirmSolve();
               }}
-              className="px-8 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white text-lg rounded-lg font-bold font-statement transition-all hover:scale-105 shadow-lg"
+              className="px-8 py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) text-lg rounded-(--radius-control) font-bold font-statement transition-all hover:scale-105 shadow-lg"
             >
               OK - Save Solve
             </button>

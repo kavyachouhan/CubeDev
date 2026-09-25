@@ -1337,7 +1337,7 @@ export default function AdminChallengesNew() {
           headerExtra={
             <button
               onClick={handleExportRooms}
-              className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
+              className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-badge) transition-colors"
               title="Export Rooms"
               disabled={!rooms}
             >

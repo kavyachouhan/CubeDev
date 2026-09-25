@@ -9,6 +9,7 @@ import {
   StickyNote,
   AlertTriangle,
 } from "lucide-react";
+import { Input, Textarea } from "@/components/ui/Field";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 
 // Common cube notation moves for validation hint
@@ -146,12 +147,10 @@ export default function CustomAlgorithmCard({
           <label className="block text-xs font-medium text-(--text-muted) mb-1 font-inter">
             Name
           </label>
-          <input
-            type="text"
+          <Input
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-sm font-inter transition-all"
             autoFocus
             maxLength={100}
           />
@@ -160,16 +159,15 @@ export default function CustomAlgorithmCard({
           <label className="block text-xs font-medium text-(--text-muted) mb-1 font-inter">
             Notation
           </label>
-          <textarea
+          <Textarea
             value={editNotation}
             onChange={(e) => setEditNotation(e.target.value)}
             onKeyDown={handleKeyDown}
             rows={2}
-            className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) font-mono focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-sm resize-none transition-all"
             maxLength={500}
           />
           {hasEditInvalidMoves && (
-            <div className="flex items-start gap-2 mt-1.5 p-2 bg-(--warning)/10 border border-(--warning)/25 rounded-lg">
+            <div className="flex items-start gap-2 mt-1.5 p-2 bg-(--warning)/10 border border-(--warning)/25 rounded-(--radius-control)">
               <AlertTriangle className="w-3.5 h-3.5 text-(--warning) shrink-0 mt-0.5" />
               <p className="text-xs text-(--warning)/80 font-inter">
                 Non-standard notation:{" "}
@@ -182,12 +180,11 @@ export default function CustomAlgorithmCard({
           <label className="block text-xs font-medium text-(--text-muted) mb-1 font-inter">
             Notes <span className="font-normal">(optional)</span>
           </label>
-          <textarea
+          <Textarea
             value={editNotes}
             onChange={(e) => setEditNotes(e.target.value)}
             rows={2}
             placeholder="Finger tricks, tips..."
-            className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent text-sm resize-none transition-all font-inter"
             maxLength={500}
           />
         </div>
@@ -259,14 +256,14 @@ export default function CustomAlgorithmCard({
         <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={() => setIsEditing(true)}
-            className="p-2 hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--text-primary) rounded-lg transition-colors"
+            className="p-2 hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--text-primary) rounded-(--radius-control) transition-colors"
             title="Edit algorithm"
           >
             <Edit2 className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleRemove}
-            className="p-2 hover:bg-(--error)/10 text-(--text-muted) hover:text-(--error) rounded-lg transition-colors"
+            className="p-2 hover:bg-(--error)/10 text-(--text-muted) hover:text-(--error) rounded-(--radius-control) transition-colors"
             title="Remove from set"
           >
             <Trash2 className="w-3.5 h-3.5" />

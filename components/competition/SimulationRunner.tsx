@@ -312,7 +312,7 @@ export default function SimulationRunner() {
                   key={eventId}
                   onClick={() => !isCompleted && handleSelectEvent(eventId)}
                   disabled={isCompleted}
-                  className={`relative flex flex-col items-center gap-3 p-6 rounded-xl border transition-all ${
+                  className={`relative flex flex-col items-center gap-3 p-6 rounded-(--radius-panel) border transition-all ${
                     isCompleted
                       ? "border-(--success) bg-(--success)/10 cursor-default"
                       : progress > 0
@@ -366,7 +366,7 @@ export default function SimulationRunner() {
             <div className="flex justify-center">
               <button
                 onClick={() => setPhase("competition-complete")}
-                className="flex items-center gap-2 px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-lg hover:bg-(--surface-elevated) transition-colors"
+                className="flex items-center gap-2 px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
               >
                 <BarChart3 className="w-5 h-5" />
                 View Current Results
@@ -431,7 +431,7 @@ export default function SimulationRunner() {
             )}
             <button
               onClick={handleBackToEvents}
-              className="px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-lg"
+              className="px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-(--radius-control)"
             >
               Back to Events
             </button>

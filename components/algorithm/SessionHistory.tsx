@@ -135,12 +135,12 @@ export default function SessionHistory({
             return (
               <div
                 key={session._id}
-                className="p-4 rounded-lg bg-(--surface-elevated) hover:border-(--border-hover) border border-transparent transition-colors"
+                className="p-4 rounded-(--radius-control) bg-(--surface-elevated) hover:border-(--border-hover) border border-transparent transition-colors"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   {/* Session Info */}
                   <div className="flex items-center gap-3">
-                    <div className={`p-2.5 rounded-lg ${config.bg}`}>
+                    <div className={`p-2.5 rounded-(--radius-control) ${config.bg}`}>
                       <IconComponent className={`w-5 h-5 ${config.text}`} />
                     </div>
                     <div>
@@ -215,7 +215,7 @@ export default function SessionHistory({
             <button
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="p-2 rounded-lg border border-(--border) hover:bg-(--surface-elevated) disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-2 rounded-(--radius-control) border border-(--border) hover:bg-(--surface-elevated) disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4 text-(--text-primary)" />
@@ -228,7 +228,7 @@ export default function SessionHistory({
                 setCurrentPage((prev) => Math.min(totalPages, prev + 1))
               }
               disabled={currentPage === totalPages}
-              className="p-2 rounded-lg border border-(--border) hover:bg-(--surface-elevated) disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-2 rounded-(--radius-control) border border-(--border) hover:bg-(--surface-elevated) disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               aria-label="Next page"
             >
               <ChevronRight className="w-4 h-4 text-(--text-primary)" />

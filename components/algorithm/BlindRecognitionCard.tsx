@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Eye, Clock, Search, Check, X, AlertTriangle } from "lucide-react";
+import { Input } from "@/components/ui/Field";
 import CubeVisualizer3D from "./CubeVisualizer3D";
 
 interface BlindRecognitionCardProps {
@@ -123,7 +124,7 @@ export default function BlindRecognitionCard({
             </p>
             <button
               onClick={onStart}
-              className="px-8 py-4 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium text-lg"
+              className="px-8 py-4 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-medium text-lg"
             >
               Start Blind Recognition
             </button>
@@ -136,7 +137,7 @@ export default function BlindRecognitionCard({
             {/* Timer */}
             {!isAnswered && (
               <div className="flex justify-center mb-4">
-                <div className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) rounded-lg">
+                <div className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) rounded-(--radius-control)">
                   <Clock className="w-4 h-4 text-(--primary)" />
                   <span className="text-lg font-mono text-(--text-primary) font-statement">
                     {Math.floor((currentTime - startTime) / 100) / 10}s
@@ -159,7 +160,7 @@ export default function BlindRecognitionCard({
                 </div>
               ) : setupMoves && !hasValidNotation ? (
                 <div className="w-full max-w-md">
-                  <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-6 min-h-62.5 flex flex-col items-center justify-center">
+                  <div className="bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) p-6 min-h-62.5 flex flex-col items-center justify-center">
                     <div className="flex items-center gap-2 mb-4">
                       <AlertTriangle className="w-4 h-4 text-(--warning)" />
                       <span className="text-xs text-(--warning)/80">
@@ -178,10 +179,10 @@ export default function BlindRecognitionCard({
                 <img
                   src={caseImage}
                   alt="Case to identify"
-                  className="max-w-full h-auto rounded-lg"
+                  className="max-w-full h-auto rounded-(--radius-control)"
                 />
               ) : (
-                <div className="w-48 h-48 bg-(--surface-elevated) rounded-lg flex items-center justify-center border-2 border-dashed border-(--border)">
+                <div className="w-48 h-48 bg-(--surface-elevated) rounded-(--radius-control) flex items-center justify-center border-2 border-dashed border-(--border)">
                   <div className="text-center text-(--text-muted)">
                     <Eye className="w-12 h-12 mx-auto mb-2 opacity-50" />
                     <p className="text-sm">
@@ -195,7 +196,7 @@ export default function BlindRecognitionCard({
 
               {/* Setup Moves - hide for custom algs with non-standard notation */}
               {setupMoves && !(isCustomAlgorithm && !hasValidNotation) && (
-                <div className="mt-4 p-3 bg-(--surface-elevated) rounded-lg">
+                <div className="mt-4 p-3 bg-(--surface-elevated) rounded-(--radius-control)">
                   <p className="text-xs text-(--text-muted) text-center mb-1">
                     Setup
                   </p>
@@ -222,8 +223,7 @@ export default function BlindRecognitionCard({
                 <div className="relative">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-(--text-muted)" />
-                    <input
-                      type="text"
+                    <Input
                       value={searchQuery}
                       onChange={(e) => {
                         setSearchQuery(e.target.value);
@@ -233,13 +233,12 @@ export default function BlindRecognitionCard({
                       onFocus={() => setShowDropdown(true)}
                       onKeyDown={handleKeyDown}
                       placeholder="Type case name (e.g., T-Perm, OLL 21)..."
-                      className="w-full pl-10 pr-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
                     />
                   </div>
 
                   {/* Dropdown */}
                   {showDropdown && filteredCases.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-(--surface) border border-(--border) rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-(--surface) border border-(--border) rounded-(--radius-control) shadow-lg z-10 max-h-48 overflow-y-auto">
                       {filteredCases.map((name) => (
                         <button
                           key={name}
@@ -261,9 +260,9 @@ export default function BlindRecognitionCard({
                 <button
                   onClick={handleSubmitAnswer}
                   disabled={!selectedCase && !searchQuery}
-                  className={`w-full py-3 rounded-lg transition-colors font-medium ${
+                  className={`w-full py-3 rounded-(--radius-control) transition-colors font-medium ${
                     selectedCase || searchQuery
-                      ? "bg-(--primary) hover:bg-(--primary-hover) text-white"
+                      ? "bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary)"
                       : "bg-(--surface-elevated) text-(--text-muted) cursor-not-allowed"
                   }`}
                 >
@@ -275,7 +274,7 @@ export default function BlindRecognitionCard({
               <div className="space-y-4">
                 {/* Result */}
                 <div
-                  className={`text-center p-4 rounded-lg border ${
+                  className={`text-center p-4 rounded-(--radius-control) border ${
                     wasCorrect
                       ? "bg-(--success)/10 border-(--success)/25"
                       : "bg-(--error)/10 border-(--error)/25"
@@ -307,7 +306,7 @@ export default function BlindRecognitionCard({
                 </div>
 
                 {/* Correct Answer */}
-                <div className="text-center p-4 bg-(--primary)/10 border border-(--primary)/20 rounded-lg">
+                <div className="text-center p-4 bg-(--primary)/10 border border-(--primary)/20 rounded-(--radius-control)">
                   <h3 className="text-3xl font-bold text-(--primary) font-statement">
                     {caseName}
                   </h3>
@@ -320,7 +319,7 @@ export default function BlindRecognitionCard({
 
                 {/* Algorithm */}
                 {algorithm && (
-                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <h4 className="text-sm font-semibold text-(--text-primary) mb-2">
                       Algorithm:
                     </h4>
@@ -332,7 +331,7 @@ export default function BlindRecognitionCard({
 
                 {/* Recognition Tips */}
                 {recognition && recognition.length > 0 ? (
-                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <h4 className="text-sm font-semibold text-(--text-primary) mb-2">
                       Recognition Tips:
                     </h4>
@@ -351,7 +350,7 @@ export default function BlindRecognitionCard({
                     </ul>
                   </div>
                 ) : isCustomAlgorithm ? (
-                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <h4 className="text-sm font-semibold text-(--text-primary) mb-2">
                       Custom Algorithm
                     </h4>
@@ -371,28 +370,28 @@ export default function BlindRecognitionCard({
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     <button
                       onClick={() => handleRating("again")}
-                      className="py-3 px-2 bg-(--error)/10 hover:bg-(--error)/10 border border-(--error)/25 text-(--error) rounded-lg transition-colors font-medium text-sm"
+                      className="py-3 px-2 bg-(--error)/10 hover:bg-(--error)/10 border border-(--error)/25 text-(--error) rounded-(--radius-control) transition-colors font-medium text-sm"
                     >
                       <div className="font-bold">Again</div>
                       <div className="text-xs opacity-75 mt-1">Didn't know</div>
                     </button>
                     <button
                       onClick={() => handleRating("hard")}
-                      className="py-3 px-2 bg-(--warning)/10 hover:bg-(--warning)/10 border border-(--warning)/25 text-(--warning) rounded-lg transition-colors font-medium text-sm"
+                      className="py-3 px-2 bg-(--warning)/10 hover:bg-(--warning)/10 border border-(--warning)/25 text-(--warning) rounded-(--radius-control) transition-colors font-medium text-sm"
                     >
                       <div className="font-bold">Hard</div>
                       <div className="text-xs opacity-75 mt-1">Struggled</div>
                     </button>
                     <button
                       onClick={() => handleRating("good")}
-                      className="py-3 px-2 bg-(--primary)/10 hover:bg-(--primary)/10 border border-(--primary)/25 text-(--primary) rounded-lg transition-colors font-medium text-sm"
+                      className="py-3 px-2 bg-(--primary)/10 hover:bg-(--primary)/10 border border-(--primary)/25 text-(--primary) rounded-(--radius-control) transition-colors font-medium text-sm"
                     >
                       <div className="font-bold">Good</div>
                       <div className="text-xs opacity-75 mt-1">Normal</div>
                     </button>
                     <button
                       onClick={() => handleRating("easy")}
-                      className="py-3 px-2 bg-(--success)/10 hover:bg-(--success)/10 border border-(--success)/25 text-(--success) rounded-lg transition-colors font-medium text-sm"
+                      className="py-3 px-2 bg-(--success)/10 hover:bg-(--success)/10 border border-(--success)/25 text-(--success) rounded-(--radius-control) transition-colors font-medium text-sm"
                     >
                       <div className="font-bold">Easy</div>
                       <div className="text-xs opacity-75 mt-1">Instantly</div>

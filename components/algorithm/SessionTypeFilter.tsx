@@ -25,9 +25,9 @@ export default function SessionTypeFilter({
         <button
           key={type.value}
           onClick={() => onTypeChange(type.value)}
-          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+          className={`px-4 py-2 rounded-(--radius-control) text-sm font-semibold transition-colors ${
             selectedType === type.value
-              ? "bg-(--primary) text-white"
+              ? "bg-(--primary) text-(--on-primary)"
               : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border)"
           }`}
         >

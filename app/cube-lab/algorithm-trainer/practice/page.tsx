@@ -327,7 +327,7 @@ function PracticePageContent() {
               {/* Stats Grid - Different for each mode */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
                 {/* Cases Reviewed - Always show */}
-                <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                   <div className="text-2xl font-bold text-(--primary) font-statement">
                     {totalCases}
                   </div>
@@ -340,7 +340,7 @@ function PracticePageContent() {
                 {(drillType === "pattern" ||
                   drillType === "blind" ||
                   mode === "srs") && (
-                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <div className="text-2xl font-bold text-(--success) font-statement">
                       {accuracyRate.toFixed(0)}%
                     </div>
@@ -353,7 +353,7 @@ function PracticePageContent() {
                 {/* Avg Time - Show for execution and recognition */}
                 {(drillType === "exec" || drillType === "rec") &&
                   sessionStats.times.length > 0 && (
-                    <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                    <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                       <div className="text-2xl font-bold text-(--primary) font-statement">
                         {avgTime}s
                       </div>
@@ -364,7 +364,7 @@ function PracticePageContent() {
                   )}
 
                 {/* Session Duration - Always show */}
-                <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                   <div className="text-2xl font-bold text-(--warning) font-statement">
                     {totalTimeStr}
                   </div>
@@ -375,7 +375,7 @@ function PracticePageContent() {
 
                 {/* Correct Count - Show for SRS */}
                 {mode === "srs" && (
-                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <div className="text-2xl font-bold text-(--success) font-statement">
                       {sessionStats.correct}
                     </div>
@@ -393,7 +393,7 @@ function PracticePageContent() {
                       ? `/cube-lab/algorithm-trainer/custom/${customSetId}`
                       : "/cube-lab/algorithm-trainer"
                   }
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-medium"
                 >
                   {mode === "custom" ? "Back to Custom Set" : "Back to Trainer"}
                 </Link>
@@ -411,7 +411,7 @@ function PracticePageContent() {
                       times: [],
                     });
                   }}
-                  className="flex-1 px-6 py-3 border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors font-medium"
+                  className="flex-1 px-6 py-3 border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-(--radius-control) transition-colors font-medium"
                 >
                   Practice Again
                 </button>
@@ -464,16 +464,16 @@ function PracticePageContent() {
                 (mode === "drill" || mode === "custom") && !hasStarted ? (
                   <div className="flex flex-col gap-3 w-full sm:w-auto">
                     {/* Recognition/Execution/Blind Toggle */}
-                    <div className="inline-flex rounded-lg border border-(--border) bg-(--surface) p-1 w-full sm:w-auto flex-wrap">
+                    <div className="inline-flex rounded-(--radius-control) border border-(--border) bg-(--surface) p-1 w-full sm:w-auto flex-wrap">
                       <Link
                         href={
                           mode === "custom"
                             ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=rec`
                             : "/cube-lab/algorithm-trainer/practice?mode=drill&type=rec"
                         }
-                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
+                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-(--radius-badge) text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "rec"
-                            ? "bg-(--primary) text-white"
+                            ? "bg-(--primary) text-(--on-primary)"
                             : "text-(--text-muted) hover:text-(--text-primary)"
                         }`}
                       >
@@ -485,9 +485,9 @@ function PracticePageContent() {
                             ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=exec`
                             : "/cube-lab/algorithm-trainer/practice?mode=drill&type=exec"
                         }
-                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
+                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-(--radius-badge) text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "exec"
-                            ? "bg-(--primary) text-white"
+                            ? "bg-(--primary) text-(--on-primary)"
                             : "text-(--text-muted) hover:text-(--text-primary)"
                         }`}
                       >
@@ -499,9 +499,9 @@ function PracticePageContent() {
                             ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=blind`
                             : "/cube-lab/algorithm-trainer/practice?mode=drill&type=blind"
                         }
-                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
+                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-(--radius-badge) text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "blind"
-                            ? "bg-(--primary) text-white"
+                            ? "bg-(--primary) text-(--on-primary)"
                             : "text-(--text-muted) hover:text-(--text-primary)"
                         }`}
                       >
@@ -517,7 +517,7 @@ function PracticePageContent() {
                             ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=${drillType === "pattern" ? "rec" : "pattern"}`
                             : `/cube-lab/algorithm-trainer/practice?mode=drill&type=${drillType === "pattern" ? "rec" : "pattern"}`
                         }
-                        className={`inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors border w-full sm:w-auto ${
+                        className={`inline-flex items-center justify-center px-4 py-2 rounded-(--radius-control) text-xs sm:text-sm font-medium transition-colors border w-full sm:w-auto ${
                           drillType === "pattern"
                             ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
                             : "border-(--border) text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
@@ -577,7 +577,7 @@ function PracticePageContent() {
                 <div
                   className={`grid gap-4 mt-4 ${drillType === "rec" && !isInfiniteMode ? "grid-cols-1" : "grid-cols-2"}`}
                 >
-                  <div className="text-center p-3 rounded-lg bg-(--surface-elevated)">
+                  <div className="text-center p-3 rounded-(--radius-control) bg-(--surface-elevated)">
                     <div className="flex items-center justify-center gap-1 mb-1">
                       <CheckCircle2 className="w-4 h-4 text-(--success)" />
                       <span className="text-xl font-bold text-(--success) font-statement">
@@ -594,7 +594,7 @@ function PracticePageContent() {
                   {(drillType === "pattern" ||
                     drillType === "blind" ||
                     isInfiniteMode) && (
-                    <div className="text-center p-3 rounded-lg bg-(--surface-elevated)">
+                    <div className="text-center p-3 rounded-(--radius-control) bg-(--surface-elevated)">
                       <div className="flex items-center justify-center gap-1 mb-1">
                         <X className="w-4 h-4 text-(--error)" />
                         <span className="text-xl font-bold text-(--error) font-statement">
@@ -608,7 +608,7 @@ function PracticePageContent() {
                   )}
 
                   {drillType === "exec" && sessionStats.times.length > 0 && (
-                    <div className="text-center p-3 rounded-lg bg-(--surface-elevated)">
+                    <div className="text-center p-3 rounded-(--radius-control) bg-(--surface-elevated)">
                       <div className="text-xl font-bold text-(--primary) font-statement mb-1">
                         {(
                           sessionStats.times.reduce((a, b) => a + b, 0) /

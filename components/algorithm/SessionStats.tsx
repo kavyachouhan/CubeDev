@@ -184,10 +184,10 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
         {statItems.map((item, index) => (
           <div
             key={index}
-            className="p-4 rounded-lg bg-(--surface-elevated)"
+            className="p-4 rounded-(--radius-control) bg-(--surface-elevated)"
           >
             <div className="flex items-center gap-3 mb-3">
-              <div className={`p-2 rounded-lg ${item.iconBg}`}>
+              <div className={`p-2 rounded-(--radius-control) ${item.iconBg}`}>
                 <item.icon className={`w-4 h-4 ${item.iconColor}`} />
               </div>
               {item.trend !== undefined && (
@@ -210,9 +210,9 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
 
       {stats.avgRecognitionTime > 0 && (
         <div className="mt-6 pt-6 border-t border-(--border)">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-(--surface-elevated)">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-(--radius-control) bg-(--surface-elevated)">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-(--accent)/10">
+              <div className="p-2 rounded-(--radius-control) bg-(--accent)/10">
                 <Eye className="w-4 h-4 text-(--accent)" />
               </div>
               <div>

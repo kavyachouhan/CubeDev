@@ -53,7 +53,7 @@ function StatCard({
   return (
     <div className="timer-card">
       <div className="flex items-start justify-between mb-3">
-        <div className={`p-2 rounded-lg ${iconBg}`}>
+        <div className={`p-2 rounded-(--radius-control) ${iconBg}`}>
           <Icon className={`w-5 h-5 ${iconColor}`} />
         </div>
         {trend && (

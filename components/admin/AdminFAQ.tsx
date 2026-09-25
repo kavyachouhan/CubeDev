@@ -946,7 +946,7 @@ function ArticleModal({
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 px-3 py-2 text-sm font-inter rounded-md transition-colors capitalize ${
+              className={`flex-1 px-3 py-2 text-sm font-inter rounded-(--radius-badge) transition-colors capitalize ${
                 activeTab === tab
                   ? "bg-(--primary) text-(--on-primary)"
                   : "text-(--text-secondary) hover:text-(--text-primary)"

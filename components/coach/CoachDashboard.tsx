@@ -504,7 +504,7 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id)}
                   data-tour={tourId}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-(--radius-badge) font-medium transition-all ${
                     isActive
                       ? "bg-(--primary) text-(--on-primary) shadow-sm"
                       : "text-(--text-secondary) hover:bg-(--surface)"

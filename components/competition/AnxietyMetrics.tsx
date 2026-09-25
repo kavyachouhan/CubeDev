@@ -366,7 +366,7 @@ export default function AnxietyMetrics() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div
-                    className={`p-2 rounded-lg ${getStatusBg(metric.status)}`}
+                    className={`p-2 rounded-(--radius-control) ${getStatusBg(metric.status)}`}
                   >
                     {metric.status === "good" ? (
                       <Target
@@ -443,7 +443,7 @@ export default function AnxietyMetrics() {
             Session Comparison
           </h3>
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-xs text-(--text-muted) mb-1">
                 Practice Sessions
               </div>
@@ -460,7 +460,7 @@ export default function AnxietyMetrics() {
                 </div>
               )}
             </div>
-            <div className="p-4 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-xs text-(--text-muted) mb-1">
                 Competition Simulations
               </div>

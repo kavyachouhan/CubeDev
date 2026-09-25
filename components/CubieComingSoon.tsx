@@ -10,7 +10,7 @@ export default function CubieComingSoon() {
       <div className="container-responsive">
         <div className="max-w-5xl mx-auto">
           {/* Main Announcement Card */}
-          <div className="bg-(--surface-elevated) border border-(--border) rounded-2xl p-6 sm:p-8 md:p-12 shadow-xl">
+          <div className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-card) p-6 sm:p-8 md:p-12 shadow-xl">
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary)/10 border border-(--primary)/20 rounded-full mb-6">
                 <Sparkles className="w-4 h-4 text-(--primary)" />
