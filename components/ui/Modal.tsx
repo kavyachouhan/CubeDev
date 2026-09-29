@@ -13,7 +13,8 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cx } from "@/lib/cx";
 import { IconButton } from "./IconButton";
-import { isolateKeys, useMounted, useOverlay } from "./overlay";
+import { LAYER_Z, LayerProvider, isolateKeys, useMounted, useOverlay } from "./overlay";
+import type { LayerName } from "./overlay";
 
 export type ModalSize = "sm" | "md" | "lg" | "xl" | "2xl";
 /**
@@ -72,7 +73,7 @@ export interface ModalProps {
   role?: "dialog" | "alertdialog";
   className?: string;
   /** Stacking layer; nested dialogs (opened from a dialog) use "nested". */
-  layer?: "modal" | "nested" | "tour";
+  layer?: LayerName;
 }
 
 /**
@@ -138,6 +139,7 @@ export function Modal({
     layer === "nested" ? "z-(--z-nested)" : layer === "tour" ? "z-(--z-tour)" : "z-(--z-modal)";
 
   return createPortal(
+    <LayerProvider value={LAYER_Z[layer]}>
     <ModalContext.Provider
       value={{
         titleId,
@@ -198,7 +200,8 @@ export function Modal({
           </div>
         </div>
       </div>
-    </ModalContext.Provider>,
+    </ModalContext.Provider>
+    </LayerProvider>,
     document.body,
   );
 }
@@ -210,6 +213,13 @@ interface ModalHeaderProps {
   icon?: ReactNode;
   /** Extra controls before the close button. */
   actions?: ReactNode;
+  /**
+   * Drop `actions` onto their own row below the title under `sm`, leaving only
+   * the close button on the title row. Use it when there are two or more
+   * actions, which would otherwise squeeze a long description into three lines
+   * on a phone.
+   */
+  stackActions?: boolean;
   hideClose?: boolean;
   closeLabel?: string;
   className?: string;
@@ -220,6 +230,7 @@ function ModalHeader({
   description,
   icon,
   actions,
+  stackActions,
   hideClose,
   closeLabel = "Close",
   className,
@@ -233,39 +244,52 @@ function ModalHeader({
     setHasDescription(hasDescription);
   }, [hasDescription, setHasDescription]);
 
+  const closeButton = !hideClose && dismissible && (
+    <IconButton aria-label={closeLabel} icon={<X />} onClick={onClose} />
+  );
+  const stopDrag = (e: PointerEvent) => e.stopPropagation();
+
   return (
     <div
       className={cx(
-        "flex items-start gap-3 px-(--dialog-pad) pb-4 border-b border-(--border) shrink-0",
+        "px-(--dialog-pad) pb-4 border-b border-(--border) shrink-0",
         mobile === "sheet" ? "pt-2 sm:pt-(--dialog-pad)" : "pt-(--dialog-pad)",
         className,
       )}
       {...(mobile === "sheet" ? dragHandlers : {})}
     >
-      {icon}
-      <div className="flex-1 min-w-0 self-center">
-        <h2 id={titleId} className="type-section-title wrap-break-word">
-          {title}
-        </h2>
-        {description && (
-          <p id={descriptionId} className="type-body mt-1">
-            {description}
-          </p>
+      <div className="flex items-start gap-3">
+        {icon}
+        <div className="flex-1 min-w-0 self-center">
+          <h2 id={titleId} className="type-section-title wrap-break-word">
+            {title}
+          </h2>
+          {description && (
+            <p id={descriptionId} className="type-body mt-1">
+              {description}
+            </p>
+          )}
+        </div>
+        {(actions || closeButton) && (
+          <div
+            className="flex items-center gap-1 shrink-0 -mr-1.5 -mt-1"
+            onPointerDown={stopDrag}
+          >
+            {stackActions ? (
+              <span className="hidden sm:flex items-center gap-1">{actions}</span>
+            ) : (
+              actions
+            )}
+            {closeButton}
+          </div>
         )}
       </div>
-      {(actions || (!hideClose && dismissible)) && (
+      {stackActions && actions && (
         <div
-          className="flex items-center gap-1 shrink-0 -mr-1.5 -mt-1"
-          onPointerDown={(e) => e.stopPropagation()}
+          className="flex items-center gap-1 mt-3 -ml-1.5 sm:hidden"
+          onPointerDown={stopDrag}
         >
           {actions}
-          {!hideClose && dismissible && (
-            <IconButton
-              aria-label={closeLabel}
-              icon={<X />}
-              onClick={onClose}
-            />
-          )}
         </div>
       )}
     </div>
@@ -297,8 +321,9 @@ function ModalBody({
 /**
  * Action row. Order children as [secondary, primary]: on desktop they sit
  * right-aligned in that order; on mobile they stack full-width with the
- * primary on top. `start` holds left-aligned extras (step counter, a
- * destructive "Delete" in edit forms).
+ * primary on top. `start` holds extras (step counter, a destructive "Delete"
+ * in edit forms, Share): left-aligned on desktop, and below the actions —
+ * full-width like them — on mobile.
  */
 function ModalFooter({
   children,
@@ -316,10 +341,14 @@ function ModalFooter({
         className,
       )}
     >
-      {start && <div className="flex items-center gap-2 sm:mr-auto">{start}</div>}
-      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:gap-3 sm:ml-auto [&>*]:w-full sm:[&>*]:w-auto">
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:gap-3 sm:order-2 sm:ml-auto [&>*]:w-full sm:[&>*]:w-auto">
         {children}
       </div>
+      {start && (
+        <div className="order-last sm:order-1 flex items-center gap-2 sm:mr-auto [&>*]:w-full sm:[&>*]:w-auto">
+          {start}
+        </div>
+      )}
     </div>
   );
 }

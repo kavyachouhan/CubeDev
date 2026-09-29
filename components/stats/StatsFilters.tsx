@@ -4,9 +4,14 @@ import { useEffect, useState } from "react";
 import { Calendar, Filter, FolderOpen, X } from "lucide-react";
 import { CollapsibleCard } from "@/components/ui/Card";
 import { EventIcon } from "@/components/ui/EventIcon";
-import { Field, Input } from "@/components/ui/Field";
+import { Field } from "@/components/ui/Field";
 import { SelectMenu } from "@/components/ui/Menu";
 import { TimeFilter, EventFilter, SessionFilter } from "../CubeLabStats";
+import {
+  DateTimePicker,
+  fromDateInputValue,
+  toDateInputValue,
+} from "@/components/ui/DateTimePicker";
 
 interface Session {
   id: string;
@@ -268,14 +273,15 @@ export default function StatsFilters({
       {filters.timeFilter === "custom" && (
         <div className="grid grid-cols-2 gap-3 mt-4 max-w-md">
           <Field label="Start date">
-            <Input
-              type="date"
+            <DateTimePicker
+              mode="date"
+              label="Start date"
               size="sm"
-              value={filters.customTimeRange?.startDate || ""}
-              onChange={(e) =>
+              value={fromDateInputValue(filters.customTimeRange?.startDate || "")}
+              onChange={(value) =>
                 onFilterChange({
                   customTimeRange: {
-                    startDate: e.target.value,
+                    startDate: toDateInputValue(value),
                     endDate: filters.customTimeRange?.endDate || "",
                   },
                 })
@@ -283,15 +289,16 @@ export default function StatsFilters({
             />
           </Field>
           <Field label="End date">
-            <Input
-              type="date"
+            <DateTimePicker
+              mode="date"
+              label="End date"
               size="sm"
-              value={filters.customTimeRange?.endDate || ""}
-              onChange={(e) =>
+              value={fromDateInputValue(filters.customTimeRange?.endDate || "")}
+              onChange={(value) =>
                 onFilterChange({
                   customTimeRange: {
                     startDate: filters.customTimeRange?.startDate || "",
-                    endDate: e.target.value,
+                    endDate: toDateInputValue(value),
                   },
                 })
               }

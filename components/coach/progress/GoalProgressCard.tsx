@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
 import {
   Target,
   TrendingDown,
@@ -14,8 +15,15 @@ import {
   Plus,
 } from "lucide-react";
 import {
-  CollapsibleSection,
-  StatCard,
+  Badge,
+  CollapsibleCard,
+  IconButton,
+  ProgressBar,
+  StatTile,
+  useCollapsed,
+} from "@/components/ui";
+import type { BadgeTone } from "@/components/ui";
+import {
   formatTime,
   getDaysRemaining,
   getProgressPercentage,
@@ -55,6 +63,7 @@ export default function GoalProgressCard({
   currentAverage,
   startingAverage,
 }: GoalProgressCardProps) {
+  const collapsed = useCollapsed("coach-progress-goal", true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showNewGoalModal, setShowNewGoalModal] = useState(false);
   const { user } = useUser();
@@ -70,8 +79,7 @@ export default function GoalProgressCard({
   const status = getGoalStatus(profile, currentAverage);
 
   const totalDays = Math.ceil(
-    (profile.targetDate -
-      (profile.createdAt || profile.targetDate)) /
+    (profile.targetDate - (profile.createdAt || profile.targetDate)) /
       (24 * 60 * 60 * 1000),
   );
   const daysPassed = Math.max(0, totalDays - daysRemaining);
@@ -80,58 +88,31 @@ export default function GoalProgressCard({
   const improvement = startingAverage - currentAverage;
   const timeToGo = currentAverage - targetTime;
 
-  const getStatusBadge = () => {
-    if (status === "achieved") {
-      return (
-        <span className="flex items-center gap-1 text-xs sm:text-sm text-(--success) px-1.5 sm:px-2 py-0.5 sm:py-1 bg-(--success)/10 rounded-full whitespace-nowrap shrink-0">
-          <Trophy className="w-3 h-3 sm:w-4 sm:h-4" />
-          <span className="hidden sm:inline">Goal </span>Achieved
-        </span>
-      );
-    }
-    if (status === "expired") {
-      return (
-        <span className="flex items-center gap-1 text-xs sm:text-sm text-(--warning) px-1.5 sm:px-2 py-0.5 sm:py-1 bg-(--warning)/10 rounded-full whitespace-nowrap shrink-0">
-          <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4" />
-          Overdue
-        </span>
-      );
-    }
-    if (isOnTrack) {
-      return (
-        <span className="flex items-center gap-1 text-xs sm:text-sm text-(--success) px-1.5 sm:px-2 py-0.5 sm:py-1 bg-(--success)/10 rounded-full whitespace-nowrap shrink-0">
-          <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
-          On Track
-        </span>
-      );
-    }
-    return (
-      <span className="flex items-center gap-1 text-xs sm:text-sm text-(--warning) px-1.5 sm:px-2 py-0.5 sm:py-1 bg-(--warning)/10 rounded-full whitespace-nowrap shrink-0">
-        <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-        <span className="hidden sm:inline">Needs </span>Focus
-      </span>
-    );
-  };
+  const statusBadge: { tone: BadgeTone; icon: ReactNode; label: string } =
+    status === "achieved"
+      ? { tone: "success", icon: <Trophy />, label: "Achieved" }
+      : status === "expired"
+        ? { tone: "warning", icon: <AlertTriangle />, label: "Overdue" }
+        : isOnTrack
+          ? { tone: "success", icon: <CheckCircle2 />, label: "On Track" }
+          : { tone: "warning", icon: <AlertCircle />, label: "Needs Focus" };
 
   const getDaysLeftDisplay = () => {
-    if (status === "achieved") {
-      return "Completed";
-    }
-    if (status === "expired") {
-      return `${Math.abs(daysRemaining)} overdue`;
-    }
-    return daysRemaining;
+    if (status === "achieved") return "Completed";
+    if (status === "expired") return `${Math.abs(daysRemaining)} overdue`;
+    return String(daysRemaining);
   };
 
   return (
     <>
-      <CollapsibleSection
+      <CollapsibleCard
         title="Goal Progress"
-        storageKey="coach-progress-goal"
-        defaultExpanded={true}
-        dataTour="goal-progress"
-        headerAction={
-          <div className="flex items-center gap-1">
+        variant="static"
+        open={collapsed.open}
+        onOpenChange={collapsed.onOpenChange}
+        rootProps={{ "data-tour": "goal-progress" }}
+        actions={
+          <>
             <GoalShareMenu
               goalData={{
                 goalType: profile.goalType,
@@ -143,106 +124,117 @@ export default function GoalProgressCard({
                 wcaId: user?.wcaId,
               }}
             />
-            <button
+            <IconButton
+              size="sm"
+              aria-label="Edit goal"
+              icon={<Pencil />}
               onClick={(e) => {
                 e.stopPropagation();
                 setShowEditModal(true);
               }}
-              className="p-1.5 rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
-              title="Edit goal"
-            >
-              <Pencil className="w-4 h-4 text-(--text-muted) hover:text-(--primary)" />
-            </button>
-            <button
+            />
+            <IconButton
+              size="sm"
+              aria-label="Set new goal"
+              icon={<Plus />}
               onClick={(e) => {
                 e.stopPropagation();
                 setShowNewGoalModal(true);
               }}
-              className="p-1.5 rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
-              title="Set new goal"
-            >
-              <Plus className="w-4 h-4 text-(--text-muted) hover:text-(--primary)" />
-            </button>
-          </div>
+            />
+          </>
         }
       >
         <div className="space-y-4">
-          {/* Target and Status Badge - same line, responsive */}
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-xs sm:text-sm text-(--text-muted) truncate">
+          {/* Target and status */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="type-caption min-w-0 truncate">
               Target:{" "}
               {profile.goalType === "custom"
                 ? `CUSTOM (${formatTime(targetTime)})`
                 : profile.goalType.replace("-", " ").toUpperCase()}
             </span>
-            {getStatusBadge()}
+            <Badge
+              tone={statusBadge.tone}
+              shape="pill"
+              size="sm"
+              icon={statusBadge.icon}
+              className="shrink-0"
+            >
+              {statusBadge.label}
+            </Badge>
           </div>
 
-          {/* Progress Bar */}
+          {/* Progress */}
           <div>
-            <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-(--text-muted) text-xs sm:text-sm">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="type-caption">
                 Start: {formatTime(startingAverage)}
               </span>
               <span
-                className={`font-bold text-base sm:text-lg ${status === "achieved" ? "text-(--success)" : "text-(--primary)"}`}
+                className={`font-bold text-base sm:text-lg ${
+                  status === "achieved"
+                    ? "text-(--success)"
+                    : "text-(--primary)"
+                }`}
               >
                 {progressPercentage.toFixed(0)}%
               </span>
-              <span className="text-(--success) text-xs sm:text-sm">
+              <span className="type-caption text-(--success)!">
                 Goal: {formatTime(targetTime)}
               </span>
             </div>
-            <div className="relative h-3 sm:h-4 bg-(--surface-elevated) rounded-full overflow-hidden">
-              <div
-                className={`absolute h-full transition-all duration-500 rounded-full ${status === "achieved" ? "bg-(--success)" : "bg-(--primary)"}`}
-                style={{ width: `${Math.min(100, progressPercentage)}%` }}
-              />
-              {/* Expected progress marker - only show when active */}
-              {status === "active" && (
-                <div
-                  className="absolute top-0 h-full w-0.5 bg-(--text-muted)"
-                  style={{ left: `${Math.min(100, expectedProgress)}%` }}
-                  title={`Expected: ${expectedProgress.toFixed(0)}%`}
-                />
-              )}
-            </div>
+            <ProgressBar
+              label="Goal progress"
+              value={progressPercentage}
+              valueText={`${progressPercentage.toFixed(0)}% toward ${formatTime(targetTime)}`}
+              tone={status === "achieved" ? "success" : "primary"}
+              marker={
+                status === "active"
+                  ? {
+                      value: expectedProgress,
+                      label: `Expected: ${expectedProgress.toFixed(0)}%`,
+                    }
+                  : undefined
+              }
+            />
             {status === "active" && (
-              <div className="flex justify-between text-xs text-(--text-muted) mt-1">
+              <div className="flex justify-between type-caption mt-1">
                 <span>Progress: {progressPercentage.toFixed(1)}%</span>
                 <span>Expected: {expectedProgress.toFixed(1)}%</span>
               </div>
             )}
           </div>
 
-          {/* Key Stats Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-            <StatCard
-              icon={Target}
-              iconColor="bg-(--primary)/10 text-(--primary)"
+          {/* Key stats */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+            <StatTile
+              size="sm"
+              mobileLayout="row"
+              icon={<Target />}
+              tone="primary"
               label="Current"
               value={formatTime(currentAverage)}
-              valueColor="text-(--primary)"
             />
-            <StatCard
-              icon={TrendingDown}
-              iconColor="bg-(--success)/10 text-(--success)"
+            <StatTile
+              size="sm"
+              mobileLayout="row"
+              icon={<TrendingDown />}
+              tone={improvement > 0 ? "success" : "error"}
               label="Improved"
               value={`${improvement > 0 ? "-" : "+"}${formatTime(Math.abs(improvement))}`}
-              valueColor={
-                improvement > 0
-                  ? "text-(--success)"
-                  : "text-(--error)"
-              }
             />
-            <StatCard
-              icon={Calendar}
-              iconColor={
+            <StatTile
+              size="sm"
+              mobileLayout="row"
+              mono={false}
+              icon={<Calendar />}
+              tone={
                 status === "expired"
-                  ? "bg-(--warning)/10 text-(--warning)"
+                  ? "warning"
                   : status === "achieved"
-                    ? "bg-(--success)/10 text-(--success)"
-                    : "bg-(--warning)/10 text-(--warning)"
+                    ? "success"
+                    : "default"
               }
               label={
                 status === "expired"
@@ -252,24 +244,18 @@ export default function GoalProgressCard({
                     : "Days Left"
               }
               value={getDaysLeftDisplay()}
-              valueColor={
-                status === "expired"
-                  ? "text-(--warning)"
-                  : status === "achieved"
-                    ? "text-(--success)"
-                    : undefined
-              }
             />
-            <StatCard
-              icon={Zap}
-              iconColor="bg-(--accent)/10 text-(--accent)"
+            <StatTile
+              size="sm"
+              mobileLayout="row"
+              icon={<Zap />}
+              tone={timeToGo <= 0 ? "success" : "accent"}
               label="To Go"
               value={timeToGo > 0 ? `-${formatTime(timeToGo)}` : "Done!"}
-              valueColor={timeToGo <= 0 ? "text-(--success)" : undefined}
             />
           </div>
         </div>
-      </CollapsibleSection>
+      </CollapsibleCard>
 
       <GoalSetupModal
         isOpen={showEditModal}
@@ -278,7 +264,6 @@ export default function GoalProgressCard({
         currentAverage={currentAverage}
         mode="edit"
       />
-
       <GoalSetupModal
         isOpen={showNewGoalModal}
         onClose={() => setShowNewGoalModal(false)}

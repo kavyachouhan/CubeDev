@@ -11,12 +11,12 @@ import {
   Zap,
 } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SearchInput } from "@/components/ui/Field";
 import { SelectMenu } from "@/components/ui/Menu";
 import { Modal } from "@/components/ui/Modal";
-import { Spinner } from "@/components/ui/Spinner";
 
 interface AlgorithmCase {
   _id: Id<"algorithmCases">;
@@ -376,19 +376,20 @@ function CaseItem({
 
         {/* Add / Added button */}
         {isAdded ? (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-(--success) bg-(--success)/10 rounded-(--radius-control) shrink-0 font-inter">
-            <Check className="w-3.5 h-3.5" />
+          <Badge tone="success" size="md" icon={<Check />} className="shrink-0">
             Added
-          </span>
+          </Badge>
         ) : (
-          <button
+          <Button
+            size="sm"
+            variant="subtle"
             onClick={onAdd}
-            disabled={isAdding}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-(--primary) bg-(--primary)/10 hover:bg-(--primary)/20 rounded-(--radius-control) transition-colors shrink-0 disabled:opacity-50 font-inter"
+            loading={isAdding}
+            iconLeft={<Plus className="w-3.5 h-3.5" />}
+            className="shrink-0"
           >
-            {isAdding ? <Spinner size="xs" /> : <Plus className="w-3.5 h-3.5" />}
             Add
-          </button>
+          </Button>
         )}
       </div>
 

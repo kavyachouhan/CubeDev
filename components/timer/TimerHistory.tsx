@@ -192,7 +192,7 @@ export default function TimerHistory({
           <EmptyState
             icon={<TimerIcon />}
             title={`No solves yet for ${getEventName(selectedEvent)}`}
-            description="Press and hold space (or the timer on touch screens) to start your first solve."
+            description="Recent solves will appear here as you complete them."
           />
         ) : (
           <div

@@ -17,9 +17,13 @@ import {
   VolumeX,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Field";
 import Image from "next/image";
 import { WCA_EVENTS } from "./CompetitionBrowser";
+import {
+  DateTimePicker,
+  fromTimeInputValue,
+  toTimeInputValue,
+} from "@/components/ui/DateTimePicker";
 
 interface ScheduleBlock {
   id: string;
@@ -249,13 +253,19 @@ export default function MockSchedule({
               <label className="text-sm text-(--text-secondary)">
                 Start:
               </label>
-              <Input
-                type="time"
+              <DateTimePicker
+                mode="time"
                 size="sm"
-                aria-label="Competition start time"
-                value={competitionStartTime}
-                onChange={(e) => setCompetitionStartTime(e.target.value)}
+                fullWidth={false}
+                clearable={false}
+                minuteStep={5}
+                label="Competition start time"
+                value={fromTimeInputValue(competitionStartTime)}
+                onChange={(value) =>
+                  setCompetitionStartTime(toTimeInputValue(value))
+                }
                 disabled={isRunning}
+                className="w-32"
               />
             </div>
             <button

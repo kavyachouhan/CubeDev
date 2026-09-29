@@ -4,9 +4,8 @@ import { useMemo } from "react";
 import { Calendar, Clock, BarChart3, Target } from "lucide-react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
+import { CollapsibleCard, StatTile, useCollapsed } from "@/components/ui";
 import {
-  CollapsibleSection,
-  StatCard,
   formatTime,
   formatDuration,
   useEffectiveTheme,
@@ -24,6 +23,7 @@ interface MonthlyOverviewCardProps {
 export default function MonthlyOverviewCard({
   progressStats,
 }: MonthlyOverviewCardProps) {
+  const collapsed = useCollapsed("coach-progress-monthly", true);
   const effectiveTheme = useEffectiveTheme();
   const primaryColor = usePrimaryColor();
   const isLight = effectiveTheme === "light";
@@ -85,39 +85,50 @@ export default function MonthlyOverviewCard({
   };
 
   return (
-    <CollapsibleSection
+    <CollapsibleCard
       title="Monthly Overview"
-      storageKey="coach-progress-monthly"
-      defaultExpanded={true}
+      variant="static"
+      open={collapsed.open}
+      onOpenChange={collapsed.onOpenChange}
     >
       <div className="space-y-4">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-          <StatCard
-            icon={Clock}
-            iconColor="bg-(--primary)/10 text-(--primary)"
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            mono={false}
+            icon={<Clock />}
+            tone="primary"
             label="Practice"
             value={formatDuration(progressStats.monthly.practiceMinutes)}
           />
-          <StatCard
-            icon={BarChart3}
-            iconColor="bg-(--accent)/10 text-(--accent)"
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            mono={false}
+            icon={<BarChart3 />}
+            tone="accent"
             label="Solves"
             value={progressStats.monthly.solves.toLocaleString()}
           />
-          <StatCard
-            icon={Target}
-            iconColor="bg-(--success)/10 text-(--success)"
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            icon={<Target />}
+            tone="success"
             label="Average"
             value={
               progressStats.monthly.average
                 ? formatTime(progressStats.monthly.average)
                 : "—"
             }
-            valueColor="text-(--success)"
           />
-          <StatCard
-            icon={Calendar}
-            iconColor="bg-(--warning)/10 text-(--warning)"
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            mono={false}
+            icon={<Calendar />}
+            tone="warning"
             label="Active"
             value={`${progressStats.monthly.activeDays} days`}
           />
@@ -126,15 +137,15 @@ export default function MonthlyOverviewCard({
         {/* Mood Distribution Chart */}
         {moodChartData && (
           <div className="mt-4">
-            <div className="text-sm font-medium text-(--text-primary) border-b border-(--border) pb-2 mb-3">
+            <h4 className="type-label border-b border-(--border) pb-2 mb-3">
               Mood Distribution
-            </div>
+            </h4>
             <div className="h-40 sm:h-48">
               <Doughnut data={moodChartData} options={moodChartOptions} />
             </div>
           </div>
         )}
       </div>
-    </CollapsibleSection>
+    </CollapsibleCard>
   );
 }

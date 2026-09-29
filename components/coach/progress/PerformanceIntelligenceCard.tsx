@@ -8,7 +8,12 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
-import { CollapsibleSection } from "./utils";
+import {
+  Card,
+  CardIcon,
+  CollapsibleCard,
+  useCollapsed,
+} from "@/components/ui";
 import { ProgressStats } from "./types";
 
 type InsightTone = "success" | "warning" | "error" | "neutral";
@@ -25,28 +30,17 @@ function formatSeconds(ms: number) {
   return (ms / 1000).toFixed(1);
 }
 
+/** Maps an insight's tone onto a `CardIcon` tone and a matching border. */
 function getToneClasses(tone: InsightTone) {
   switch (tone) {
     case "success":
-      return {
-        iconWrap: "bg-(--success)/10 text-(--success)",
-        border: "border-(--success)/30",
-      };
+      return { icon: "success" as const, border: "border-(--success)/30" };
     case "warning":
-      return {
-        iconWrap: "bg-(--warning)/10 text-(--warning)",
-        border: "border-(--warning)/30",
-      };
+      return { icon: "warning" as const, border: "border-(--warning)/30" };
     case "error":
-      return {
-        iconWrap: "bg-(--error)/10 text-(--error)",
-        border: "border-(--error)/30",
-      };
+      return { icon: "error" as const, border: "border-(--error)/30" };
     default:
-      return {
-        iconWrap: "bg-(--primary)/10 text-(--primary)",
-        border: "border-(--border)",
-      };
+      return { icon: "primary" as const, border: "" };
   }
 }
 
@@ -57,6 +51,7 @@ interface PerformanceIntelligenceCardProps {
 export default function PerformanceIntelligenceCard({
   progressStats,
 }: PerformanceIntelligenceCardProps) {
+  const collapsed = useCollapsed("coach-progress-intelligence", true);
   const intelligence = progressStats.intelligence;
   if (!intelligence) return null;
 
@@ -122,44 +117,42 @@ export default function PerformanceIntelligenceCard({
   }
 
   return (
-    <CollapsibleSection
+    <CollapsibleCard
       title="Performance Intelligence"
-      storageKey="coach-progress-intelligence"
-      defaultExpanded={true}
+      variant="static"
+      open={collapsed.open}
+      onOpenChange={collapsed.onOpenChange}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3">
         {insights.map((insight) => {
           const toneClasses = getToneClasses(insight.tone);
           const Icon = insight.icon;
 
           return (
-            <div
+            <Card
               key={insight.key}
-              className={`bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border ${toneClasses.border}`}
+              variant="nested"
+              className={toneClasses.border}
             >
               <div className="flex items-center gap-2 mb-2">
-                <div className={`p-1.5 rounded ${toneClasses.iconWrap}`}>
-                  <Icon className="w-4 h-4" />
-                </div>
-                <span className="text-sm font-medium text-(--text-primary)">
-                  {insight.title}
-                </span>
+                <CardIcon tone={toneClasses.icon} className="w-7 h-7 [&_svg]:w-4 [&_svg]:h-4">
+                  <Icon />
+                </CardIcon>
+                <h4 className="type-label min-w-0">{insight.title}</h4>
               </div>
-              <p className="text-sm text-(--text-secondary) leading-relaxed">
-                {insight.message}
-              </p>
-            </div>
+              <p className="type-body">{insight.message}</p>
+            </Card>
           );
         })}
       </div>
 
-      <div className="mt-3 flex items-center gap-2 text-xs text-(--text-muted)">
-        <Brain className="w-3.5 h-3.5" />
+      <div className="mt-3 flex items-start gap-2 type-caption">
+        <Brain aria-hidden className="w-3.5 h-3.5 shrink-0 mt-0.5" />
         <span>
           Insights are shown only when there is enough data for reliable
           analysis.
         </span>
       </div>
-    </CollapsibleSection>
+    </CollapsibleCard>
   );
 }

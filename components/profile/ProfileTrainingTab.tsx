@@ -21,6 +21,8 @@ import {
 import type { LucideIcon } from "lucide-react";
 import GoalShareMenu from "../coach/GoalShareMenu";
 import GoalDetailModal from "../coach/progress/GoalDetailModal";
+import { StatTile } from "@/components/ui/StatTile";
+import type { StatTone } from "@/components/ui/StatTile";
 
 interface ProfileTrainingTabProps {
   wcaId: string;
@@ -356,7 +358,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
         </div>
 
         {/* Stats Grid - Matches CubeDevStats design pattern */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
           <StatCard
             icon={TrendingUp}
             iconColor="text-(--primary)"
@@ -421,7 +423,7 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
             Training Statistics
           </h3>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
             <StatCard
               icon={Target}
               iconColor="text-(--primary)"
@@ -630,41 +632,39 @@ export default function ProfileTrainingTab({ wcaId }: ProfileTrainingTabProps) {
 // Stat Card Component - Matches CubeDevStats design pattern exactly
 interface StatCardProps {
   icon: LucideIcon;
-  iconColor: string;
-  bgColor: string;
+  /** Kept for call-site compatibility; StatTile tones its own icon. */
+  iconColor?: string;
+  bgColor?: string;
   label: string;
   value: string;
+  /** A `text-(--token)` class; mapped onto a StatTile tone. */
   valueColor?: string;
 }
 
-function StatCard({
-  icon: Icon,
-  iconColor,
-  bgColor,
-  label,
-  value,
-  valueColor,
-}: StatCardProps) {
+const VALUE_TONE: Record<string, StatTone> = {
+  "text-(--success)": "success",
+  "text-(--error)": "error",
+  "text-(--warning)": "warning",
+  "text-(--primary)": "primary",
+  "text-(--accent)": "accent",
+};
+
+/**
+ * Thin wrapper over the shared StatTile so these cards match the rest of the
+ * app. It used to truncate its own label, which cut "Journal Entries" and
+ * "Current Streak" short on a phone.
+ */
+function StatCard({ icon: Icon, label, value, valueColor }: StatCardProps) {
   return (
-    <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-2.5 sm:p-3 md:p-4 border border-(--border)">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className={`p-1.5 sm:p-2 ${bgColor} rounded-(--radius-control) shrink-0`}>
-          <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-[10px] sm:text-xs text-(--text-muted) uppercase tracking-wide truncate">
-            {label}
-          </div>
-          <div
-            className={`text-sm sm:text-lg font-bold truncate ${
-              valueColor || "text-(--text-primary)"
-            }`}
-          >
-            {value}
-          </div>
-        </div>
-      </div>
-    </div>
+    <StatTile
+      mobileLayout="row"
+      size="sm"
+      mono={false}
+      icon={<Icon />}
+      label={label}
+      value={value}
+      tone={(valueColor && VALUE_TONE[valueColor]) || "default"}
+    />
   );
 }
 
@@ -849,7 +849,7 @@ function ProfileTrainingTabSkeleton() {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}

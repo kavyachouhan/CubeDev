@@ -20,7 +20,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Field";
+import { DateTimePicker } from "@/components/ui/DateTimePicker";
 import { Modal } from "@/components/ui/Modal";
 import { Spinner } from "@/components/ui/Spinner";
 import { Stepper } from "@/components/ui/Stepper";
@@ -704,19 +704,14 @@ export default function CoachOnboardingModal({
                 <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Or pick a specific date
                 </h4>
-                <Input
-                  type="date"
-                  aria-label="Target date"
-                  value={
-                    data.targetDate
-                      ? new Date(data.targetDate).toISOString().split("T")[0]
-                      : ""
-                  }
-                  min={new Date().toISOString().split("T")[0]}
-                  onChange={(e) =>
-                    updateData({
-                      targetDate: new Date(e.target.value).getTime(),
-                    })
+                <DateTimePicker
+                  mode="date"
+                  label="Target date"
+                  value={data.targetDate ?? null}
+                  min={Date.now()}
+                  clearable={false}
+                  onChange={(value) =>
+                    updateData({ targetDate: value ?? undefined })
                   }
                 />
               </div>

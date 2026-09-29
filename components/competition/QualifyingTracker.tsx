@@ -13,6 +13,11 @@ import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { IconButton } from "@/components/ui/IconButton";
 import { Modal } from "@/components/ui/Modal";
 import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
+import {
+  DateTimePicker,
+  fromDateInputValue,
+  toDateInputValue,
+} from "@/components/ui/DateTimePicker";
 
 /** Minutes : seconds . hundredths entry. `ms` is omitted for cutoffs. */
 function TimeFields({
@@ -564,10 +569,13 @@ export default function QualifyingTracker() {
           </Field>
 
           <Field label="Competition Date">
-            <Input
-              type="date"
-              value={formCompetitionDate}
-              onChange={(e) => setFormCompetitionDate(e.target.value)}
+            <DateTimePicker
+              mode="date"
+              label="Competition date"
+              value={fromDateInputValue(formCompetitionDate)}
+              onChange={(value) =>
+                setFormCompetitionDate(toDateInputValue(value))
+              }
             />
           </Field>
 

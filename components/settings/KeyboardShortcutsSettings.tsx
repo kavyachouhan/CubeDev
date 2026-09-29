@@ -301,27 +301,32 @@ export default function KeyboardShortcutsSettings() {
                                 }
                               `}
                             >
-                              {/* Responsive layout: stack on mobile */}
-                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                              <div
+                                className={
+                                  isEditing
+                                    ? "flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+                                    : "flex items-center justify-between gap-3"
+                                }
+                              >
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="text-sm text-(--text-primary)">
+                                    <span className="type-label">
                                       {shortcut.label}
                                     </span>
                                     {modified && <Badge tone="primary">Modified</Badge>}
                                   </div>
-                                  <p className="text-xs text-(--text-muted) mt-0.5 line-clamp-1">
+                                  <p className="type-caption mt-0.5 line-clamp-1">
                                     {shortcut.description}
                                   </p>
                                 </div>
 
                                 {isEditing ? (
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex w-full items-center gap-2 sm:w-auto">
                                     <div
                                       ref={inputRef}
                                       tabIndex={0}
                                       className={`
-                                        px-2 sm:px-3 py-1.5 flex-1 sm:flex-none min-w-0 sm:min-w-[100px] text-center text-xs sm:text-sm font-mono rounded border-2 transition-colors truncate
+                                        px-2 sm:px-3 min-h-9 flex items-center justify-center flex-1 sm:flex-none min-w-0 sm:min-w-[120px] text-xs sm:text-sm font-mono rounded-(--radius-control) border-2 transition-colors truncate
                                         ${
                                           hasConflict
                                             ? "border-(--error) bg-(--error)/10 text-(--error)"
@@ -349,12 +354,12 @@ export default function KeyboardShortcutsSettings() {
                                     />
                                   </div>
                                 ) : (
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex shrink-0 items-center gap-1.5">
                                     <button
                                       type="button"
                                       onClick={() => handleStartEdit(shortcut)}
                                       aria-label={`Change shortcut for ${shortcut.label}: ${formatShortcut(shortcut)}`}
-                                      className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm type-time bg-(--surface) border border-(--border) border-b-2 rounded-(--radius-badge) hover:border-(--border-hover) text-(--text-secondary) transition-colors truncate max-w-35 sm:max-w-none"
+                                      className="px-2 sm:px-3 py-1.5 whitespace-nowrap text-xs sm:text-sm type-time bg-(--surface) border border-(--border) border-b-2 rounded-(--radius-badge) hover:border-(--border-hover) text-(--text-secondary) transition-colors"
                                     >
                                       {formatShortcut(shortcut)}
                                     </button>

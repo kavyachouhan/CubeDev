@@ -1,6 +1,8 @@
 import { ExternalLink, Heart, Code, Box, Grid3x3, Volume2, Lock } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { ButtonLink } from "@/components/ui/Button";
+import { Card, CardIcon } from "@/components/ui/Card";
 
 interface CreditItem {
   name: string;
@@ -20,7 +22,7 @@ export default function CreditsPage() {
       maintainer: "StoreMyAPI",
       website: "https://storemyapi.dev/",
       usage: "Secure API key management",
-      icon: <Lock className="w-6 h-6 text-(--primary)" />,
+      icon: <Lock />,
     },
     {
       name: "cubing/twisty",
@@ -29,7 +31,7 @@ export default function CreditsPage() {
       maintainer: "Cubing.js",
       website: "https://js.cubing.net/cubing/twisty/",
       usage: "3D cube visualization and scramble previews",
-      icon: <Box className="w-6 h-6 text-(--primary)" />,
+      icon: <Box />,
     },
     {
       name: "cubing/scramble",
@@ -38,7 +40,7 @@ export default function CreditsPage() {
       maintainer: "Cubing.js",
       website: "https://js.cubing.net/cubing/scramble/",
       usage: "Scramble generation for all supported puzzle types",
-      icon: <Code className="w-6 h-6 text-(--accent)" />,
+      icon: <Code />,
     },
     {
       name: "cubing/icons",
@@ -47,7 +49,7 @@ export default function CreditsPage() {
       maintainer: "Cubing.js",
       website: "https://icons.cubing.net/",
       usage: "Event icons throughout the application interface",
-      icon: <Grid3x3 className="w-6 h-6 text-(--success)" />,
+      icon: <Grid3x3 />,
     },
     {
       name: "WCA OAuth",
@@ -57,7 +59,7 @@ export default function CreditsPage() {
       website: "https://www.worldcubeassociation.org/",
       usage: "User authentication and WCA profile integration",
       icon: (
-        <img src="/wca_logo.png" alt="WCA" className="w-6 h-6 object-contain" />
+        <img src="/wca_logo.png" alt="WCA" className="w-5 h-5 object-contain" />
       ),
     },
     {
@@ -68,7 +70,7 @@ export default function CreditsPage() {
       website: "https://freesound.org/",
       usage:
         "Sound effects and audio feedback for competition simulations and timer interactions",
-      icon: <Volume2 className="w-6 h-6 text-(--warning)" />,
+      icon: <Volume2 />,
     },
   ];
 
@@ -77,12 +79,11 @@ export default function CreditsPage() {
       <Header />
       <div className="container-responsive py-8 max-w-4xl">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-(--text-primary) mb-4 font-statement">
-            Credits &{" "}
-            <span className="text-(--primary)">Acknowledgments</span>
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="type-page-title">
+            Credits & <span className="text-(--primary)">Acknowledgments</span>
           </h1>
-          <p className="text-xl text-(--text-secondary) max-w-2xl mx-auto font-inter">
+          <p className="type-body mt-3 max-w-2xl mx-auto">
             CubeDev is built on the shoulders of giants. We're grateful to the
             open-source community and organizations that make our platform
             possible.
@@ -90,81 +91,67 @@ export default function CreditsPage() {
         </div>
 
         {/* Primary Credits */}
-        <div className="space-y-6 mb-16">
-          <h2 className="text-2xl font-bold text-(--text-primary) mb-6 font-statement">
-            Core Dependencies
-          </h2>
+        <div className="space-y-4 mb-10 sm:mb-16">
+          <h2 className="type-section-title">Core Dependencies</h2>
 
-          <div className="grid gap-6">
-            {credits.map((credit, index) => (
-              <div
+          <div className="grid gap-4 sm:grid-cols-2">
+            {credits.map((credit) => (
+              <Card
                 key={credit.name}
-                className="timer-card group hover:border-(--primary)/30 transition-all duration-300"
+                className="flex flex-col gap-3 hover:border-(--primary)/30 transition-colors"
               >
-                <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                  {/* Icon & Title */}
-                  <div className="flex items-center gap-4">
-                    <div className="shrink-0">{credit.icon}</div>
-                    <div>
-                      <h3 className="text-xl font-bold text-(--text-primary) mb-1 font-statement">
-                        {credit.name}
-                      </h3>
-                      <div className="flex items-center gap-2 text-sm text-(--text-muted)">
-                        <span className="font-inter">{credit.maintainer}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 space-y-3">
-                    <p className="text-(--text-secondary) font-inter leading-relaxed">
-                      {credit.description}
-                    </p>
-
-                    <div className="bg-(--surface-elevated) p-3 rounded-(--radius-control) border border-(--border)">
-                      <div className="text-sm font-medium text-(--text-primary) mb-1 font-inter">
-                        Used for:
-                      </div>
-                      <div className="text-sm text-(--text-secondary) font-inter">
-                        {credit.usage}
-                      </div>
-                    </div>
-
-                    <a
-                      href={credit.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-(--primary) hover:text-(--primary-hover) transition-colors font-inter text-sm group"
-                    >
-                      Visit Project
-                      <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                    </a>
+                <div className="flex items-start gap-3 min-w-0">
+                  <CardIcon>{credit.icon}</CardIcon>
+                  <div className="min-w-0">
+                    <h3 className="type-card-title wrap-break-word">
+                      {credit.name}
+                    </h3>
+                    <p className="type-caption">{credit.maintainer}</p>
                   </div>
                 </div>
-              </div>
+
+                <p className="type-body">{credit.description}</p>
+
+                <div className="rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) p-3">
+                  <p className="type-overline">Used for</p>
+                  <p className="type-caption mt-0.5">{credit.usage}</p>
+                </div>
+
+                <ButtonLink
+                  size="sm"
+                  variant="secondary"
+                  href={credit.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="self-start mt-auto"
+                  iconRight={<ExternalLink className="w-4 h-4" />}
+                >
+                  Visit Project
+                </ButtonLink>
+              </Card>
             ))}
           </div>
         </div>
 
         {/* Special Thanks */}
-        <div className="timer-card text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Heart className="w-6 h-6 text-(--error)" />
-            <h2 className="text-2xl font-bold text-(--text-primary) font-statement">
-              Special Thanks
-            </h2>
+        <Card className="text-center">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <CardIcon tone="error">
+              <Heart />
+            </CardIcon>
+            <h2 className="type-section-title">Special Thanks</h2>
           </div>
 
-          <p className="text-(--text-secondary) font-inter mb-6 max-w-2xl mx-auto">
+          <p className="type-body max-w-2xl mx-auto">
             To the entire community, WCA delegates, competition organizers, and
             every cuber who has contributed to making this sport amazing.
             CubeDev exists to serve and celebrate this incredible sports.
           </p>
-        </div>
+        </Card>
 
         {/* Footer Note */}
-        <div className="mt-12 text-center">
-          <div className="text-sm text-(--text-muted) font-inter max-w-xl mx-auto">
+        <div className="mt-8 sm:mt-12 text-center">
+          <div className="type-caption max-w-xl mx-auto">
             If you notice any missing attributions or have questions about
             licensing, please reach out to us. We're committed to properly
             crediting all contributors.

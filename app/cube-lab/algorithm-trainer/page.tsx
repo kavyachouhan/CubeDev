@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
 import { ButtonLink } from "@/components/ui/Button";
+import { CalloutCard } from "@/components/ui/CalloutCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatTile } from "@/components/ui/StatTile";
 
@@ -170,29 +171,25 @@ export default function AlgorithmTrainerPage() {
 
             {/* Quick Actions */}
             {(userStats?.dueToday || 0) > 0 && (
-              <div
-                className="timer-card border-l-4 border-(--primary)"
-                data-tour="srs-review-prompt"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div>
-                    <h3 className="text-lg font-bold text-(--text-primary) font-statement mb-1">
-                      You have {userStats?.dueToday} review
-                      {userStats?.dueToday !== 1 ? "s" : ""} due
-                    </h3>
-                    <p className="text-sm text-(--text-muted)">
-                      Keep your learning momentum going with spaced repetition
-                    </p>
-                  </div>
-                  <Link
+              <CalloutCard
+                rootProps={{ "data-tour": "srs-review-prompt" }}
+                title={
+                  <>
+                    You have {userStats?.dueToday} review
+                    {userStats?.dueToday !== 1 ? "s" : ""} due
+                  </>
+                }
+                description="Keep your learning momentum going with spaced repetition"
+                action={
+                  <ButtonLink
                     href="/cube-lab/algorithm-trainer/practice?mode=srs"
-                    className="px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors flex items-center justify-center gap-2 font-medium whitespace-nowrap"
+                    className="w-full sm:w-auto"
+                    iconLeft={<Play className="w-4 h-4" />}
                   >
-                    <Play className="w-5 h-5" />
                     Start SRS Review
-                  </Link>
-                </div>
-              </div>
+                  </ButtonLink>
+                }
+              />
             )}
 
             {/* Practice Options */}
@@ -313,9 +310,7 @@ export default function AlgorithmTrainerPage() {
 
             {/* Recent Activity Heatmap */}
             {reviewHistory && reviewHistory.length > 0 && (
-              <div className="timer-card" data-tour="heatmap">
-                <AlgorithmHeatmap reviews={reviewHistory} />
-              </div>
+              <AlgorithmHeatmap reviews={reviewHistory} />
             )}
           </div>
         </div>

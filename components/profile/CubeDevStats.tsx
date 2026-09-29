@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { medalBadgeStyle } from "@/components/ui/medal";
 import { SelectMenu } from "@/components/ui/Menu";
+import { StatTile } from "@/components/ui/StatTile";
 import SolveHeatmap from "../stats/SolveHeatmap";
 import { EventStatsSkeleton, PlatformStatsSkeleton } from "../SkeletonLoaders";
 import { useUser } from "@/components/UserProvider";
@@ -287,17 +288,15 @@ export default function CubeDevStats({
       ) : (
         attemptedEvents.length > 0 && (
           <div className="timer-card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
-                Event Statistics
-              </h3>
+            <div className="flex flex-col items-stretch gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+              <h3 className="type-card-title">Event Statistics</h3>
               <SelectMenu
                 label="Event"
                 placement="bottom-end"
                 fullWidth={false}
                 value={selectedEvent}
                 onChange={setSelectedEvent}
-                className="min-w-44"
+                className="w-full sm:w-44 sm:shrink-0"
                 options={attemptedEvents.map((event) => ({
                   value: event,
                   label:
@@ -306,85 +305,53 @@ export default function CubeDevStats({
               />
             </div>
 
-            {/* Event Statistics Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-              <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
-                    <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                      Total Solves
-                    </div>
-                    <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                      {(selectedEventStats?.totalSolves ?? 0).toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
-                    <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                      Overall AVG
-                    </div>
-                    <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-mono">
-                      {selectedEventStats?.overallAverage
-                        ? formatMs(selectedEventStats.overallAverage)
-                        : "--:--"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
-                    <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                      Best Single
-                    </div>
-                    <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-mono">
-                      {selectedEventStats?.bestSingle
-                        ? formatMs(selectedEventStats.bestSingle)
-                        : "--:--"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
-                    <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                      Best Ao5
-                    </div>
-                    <div
-                      className={`text-sm sm:text-lg font-bold font-mono ${
-                        selectedEventStats?.bestAo5 === Infinity
-                          ? "text-(--error)"
-                          : "text-(--text-primary)"
-                      }`}
-                    >
-                      {selectedEventStats?.bestAo5 == null
-                        ? "--:--"
-                        : isFinite(selectedEventStats.bestAo5)
-                          ? formatMs(selectedEventStats.bestAo5)
-                          : "DNF"}
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+              <StatTile
+                mobileLayout="row"
+                size="sm"
+                mono={false}
+                icon={<Target />}
+                label="Total Solves"
+                value={(selectedEventStats?.totalSolves ?? 0).toLocaleString()}
+              />
+              <StatTile
+                mobileLayout="row"
+                size="sm"
+                icon={<Clock />}
+                label="Overall Average"
+                value={
+                  selectedEventStats?.overallAverage
+                    ? formatMs(selectedEventStats.overallAverage)
+                    : "--:--"
+                }
+              />
+              <StatTile
+                mobileLayout="row"
+                size="sm"
+                icon={<Zap />}
+                label="Best Single"
+                value={
+                  selectedEventStats?.bestSingle
+                    ? formatMs(selectedEventStats.bestSingle)
+                    : "--:--"
+                }
+              />
+              <StatTile
+                mobileLayout="row"
+                size="sm"
+                icon={<Trophy />}
+                label="Best Ao5"
+                tone={
+                  selectedEventStats?.bestAo5 === Infinity ? "error" : "default"
+                }
+                value={
+                  selectedEventStats?.bestAo5 == null
+                    ? "--:--"
+                    : isFinite(selectedEventStats.bestAo5)
+                      ? formatMs(selectedEventStats.bestAo5)
+                      : "DNF"
+                }
+              />
             </div>
           </div>
         )
@@ -415,78 +382,42 @@ export default function CubeDevStats({
         <PlatformStatsSkeleton />
       ) : (
         <div className="timer-card">
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-4 flex items-center gap-2">
-            CubeDev Statistics
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
-                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                    Active Days
-                  </div>
-                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                    {activityStats.activeDays}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
-                  <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                    Current Streak
-                  </div>
-                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                    {activityStats.currentStreak}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
-                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                    Events Practiced
-                  </div>
-                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                    {attemptedEvents.length}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
-                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                    Total Solves
-                  </div>
-                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                    {(
-                      eventStats?.reduce(
-                        (sum, stat) => sum + stat.totalSolves,
-                        0,
-                      ) ?? 0
-                    ).toLocaleString()}
-                  </div>
-                </div>
-              </div>
-            </div>
+          <h3 className="type-card-title mb-4">CubeDev Statistics</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+            <StatTile
+              mobileLayout="row"
+              size="sm"
+              mono={false}
+              icon={<Calendar />}
+              label="Active Days"
+              value={activityStats.activeDays}
+            />
+            <StatTile
+              mobileLayout="row"
+              size="sm"
+              mono={false}
+              icon={<Flame />}
+              label="Current Streak"
+              value={activityStats.currentStreak}
+            />
+            <StatTile
+              mobileLayout="row"
+              size="sm"
+              mono={false}
+              icon={<Target />}
+              label="Events Practiced"
+              value={attemptedEvents.length}
+            />
+            <StatTile
+              mobileLayout="row"
+              size="sm"
+              mono={false}
+              icon={<TrendingUp />}
+              label="Total Solves"
+              value={(
+                eventStats?.reduce((sum, stat) => sum + stat.totalSolves, 0) ?? 0
+              ).toLocaleString()}
+            />
           </div>
         </div>
       )}
@@ -511,57 +442,32 @@ export default function CubeDevStats({
         </div>
       ) : (
         <div className="timer-card">
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-4 flex items-center gap-2">
-            Challenge Room Statistics
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
-            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
-                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                    Rooms Won
-                  </div>
-                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                    {challengeStats?.roomsWon ?? 0}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
-                  <Users className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                    Rooms Participated
-                  </div>
-                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                    {challengeStats?.roomsParticipated ?? 0}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
-                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                    Rooms Created
-                  </div>
-                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                    {challengeStats?.roomsCreated ?? 0}
-                  </div>
-                </div>
-              </div>
-            </div>
+          <h3 className="type-card-title mb-4">Challenge Room Statistics</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mb-6">
+            <StatTile
+              mobileLayout="row"
+              size="sm"
+              mono={false}
+              icon={<Trophy />}
+              label="Rooms Won"
+              value={challengeStats?.roomsWon ?? 0}
+            />
+            <StatTile
+              mobileLayout="row"
+              size="sm"
+              mono={false}
+              icon={<Users />}
+              label="Rooms Participated"
+              value={challengeStats?.roomsParticipated ?? 0}
+            />
+            <StatTile
+              mobileLayout="row"
+              size="sm"
+              mono={false}
+              icon={<Calendar />}
+              label="Rooms Created"
+              value={challengeStats?.roomsCreated ?? 0}
+            />
           </div>
 
           {/* Recent Room Participations */}
@@ -659,9 +565,7 @@ export default function CubeDevStats({
           </div>
         </div>
       ) : (
-        <div className="timer-card">
-          <SolveHeatmap heatmapData={heatmapDataForComponent} />
-        </div>
+        <SolveHeatmap heatmapData={heatmapDataForComponent} />
       )}
     </div>
   );

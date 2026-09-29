@@ -340,23 +340,6 @@ export default function SimulationHistory({
           );
         })}
       </div>
-
-      {/* Continue in-progress simulations */}
-      {inProgressSimulations && inProgressSimulations.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-(--border)">
-          <p className="text-xs text-(--text-muted) mb-2">
-            You have {inProgressSimulations.length} simulation
-            {inProgressSimulations.length > 1 ? "s" : ""} in progress
-          </p>
-          <Link
-            href={`/cube-lab/competitions/${inProgressSimulations[0].competitionId}/simulate/${inProgressSimulations[0]._id}`}
-            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-(--primary) border border-(--primary) rounded-(--radius-control) hover:bg-(--primary)/10 transition-colors"
-          >
-            <Play className="w-3 h-3" />
-            Continue
-          </Link>
-        </div>
-      )}
     </div>
   );
 }

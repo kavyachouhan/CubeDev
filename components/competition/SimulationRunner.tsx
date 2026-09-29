@@ -356,7 +356,7 @@ export default function SimulationRunner() {
               <p className="text-(--text-muted) mb-4">
                 You've completed all events in this competition simulation.
               </p>
-              <Button size="lg" onClick={handleCompleteSimulation}>
+              <Button onClick={handleCompleteSimulation} className="w-full sm:w-auto">
                 View full results &amp; analytics
               </Button>
             </div>
@@ -364,13 +364,14 @@ export default function SimulationRunner() {
 
           {roundResults.length > 0 && !allEventsCompleted && (
             <div className="flex justify-center">
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => setPhase("competition-complete")}
-                className="flex items-center gap-2 px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
+                className="w-full sm:w-auto"
+                iconLeft={<BarChart3 className="w-4 h-4" />}
               >
-                <BarChart3 className="w-5 h-5" />
                 View Current Results
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -419,22 +420,18 @@ export default function SimulationRunner() {
             result={latestResult}
           />
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center [&>*]:w-full sm:[&>*]:w-auto">
             {currentRound < maxRounds && (
               <Button
-                size="lg"
                 onClick={handleNextRound}
-                iconRight={<ArrowRight className="w-5 h-5" />}
+                iconRight={<ArrowRight className="w-4 h-4" />}
               >
                 Continue to round {currentRound + 1}
               </Button>
             )}
-            <button
-              onClick={handleBackToEvents}
-              className="px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-(--radius-control)"
-            >
+            <Button variant="secondary" onClick={handleBackToEvents}>
               Back to Events
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -467,9 +464,9 @@ export default function SimulationRunner() {
 
           <div className="flex justify-center">
             <Button
-              size="lg"
               onClick={handleBackToEvents}
-              iconRight={<ArrowRight className="w-5 h-5" />}
+              className="w-full sm:w-auto"
+              iconRight={<ArrowRight className="w-4 h-4" />}
             >
               Continue to next event
             </Button>

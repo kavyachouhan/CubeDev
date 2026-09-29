@@ -78,7 +78,6 @@ function formatTimeRemaining(expiresAt: number): string {
 export default function ChallengeRoom({ roomId }: ChallengeRoomProps) {
   const { user } = useUser();
   const [currentSolveIndex, setCurrentSolveIndex] = useState(0);
-  const [copied, setCopied] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
 
@@ -134,14 +133,6 @@ export default function ChallengeRoom({ roomId }: ChallengeRoomProps) {
     } catch (error) {
       console.error("Failed to submit solve:", error);
     }
-  };
-
-  // Handle sharing room
-  const handleShareRoom = () => {
-    const roomUrl = `${window.location.origin}/cube-lab/challenges/room/${roomId}`;
-    navigator.clipboard.writeText(roomUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   // Handle edit room
@@ -204,9 +195,7 @@ export default function ChallengeRoom({ roomId }: ChallengeRoomProps) {
         event={event}
         timeRemaining={timeRemaining}
         isExpired={isExpired}
-        onShare={handleShareRoom}
         onEdit={handleEditRoom}
-        copied={copied}
         canEdit={canEdit}
       />
 

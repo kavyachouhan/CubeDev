@@ -3,24 +3,16 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Clock, Users, Trophy, Calendar, ArrowRight } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-
-const EVENTS = {
-  "333": { name: "3x3", icon: "/cube-icons/333.svg" },
-  "222": { name: "2x2", icon: "/cube-icons/222.svg" },
-  "444": { name: "4x4", icon: "/cube-icons/444.svg" },
-  "555": { name: "5x5", icon: "/cube-icons/555.svg" },
-  "666": { name: "6x6", icon: "/cube-icons/666.svg" },
-  "777": { name: "7x7", icon: "/cube-icons/777.svg" },
-  "333oh": { name: "3x3 OH", icon: "/cube-icons/333oh.svg" },
-  "333bf": { name: "3x3 BLD", icon: "/cube-icons/333bf.svg" },
-  pyram: { name: "Pyraminx", icon: "/cube-icons/pyram.svg" },
-  minx: { name: "Megaminx", icon: "/cube-icons/minx.svg" },
-  skewb: { name: "Skewb", icon: "/cube-icons/skewb.svg" },
-  sq1: { name: "Square-1", icon: "/cube-icons/sq1.svg" },
-  clock: { name: "Clock", icon: "/cube-icons/clock.svg" },
-};
+import {
+  Badge,
+  Card,
+  CardHeader,
+  EmptyState,
+  EventIcon,
+  SkeletonList,
+} from "@/components/ui";
+import { getTimerEvent } from "@/lib/timer-events";
 
 function formatTimeRemaining(expiresAt: number): string {
   const now = Date.now();
@@ -48,169 +40,119 @@ export default function PublicRoomsList() {
 
   if (publicRooms === undefined) {
     return (
-      <div className="timer-card">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-(--text-primary) font-statement">
-            Active Public Rooms
-          </h2>
-        </div>
-        <div className="space-y-3">
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="p-4 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) animate-pulse"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 skeleton rounded-(--radius-control)" />
-                  <div className="space-y-2">
-                    <div className="h-4 skeleton rounded w-32" />
-                    <div className="h-3 skeleton rounded w-24" />
-                  </div>
-                </div>
-                <div className="h-8 skeleton rounded w-20" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Card variant="static">
+        <CardHeader as="h2" title="Active public rooms" />
+        <SkeletonList rows={3} withAvatar />
+      </Card>
     );
   }
 
   if (!publicRooms || publicRooms.length === 0) {
     return (
-      <div className="timer-card">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-(--text-primary) font-statement">
-            Active Public Rooms
-          </h2>
-        </div>
-        <div className="p-8 text-center bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)">
-          <div className="w-16 h-16 bg-(--primary)/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Trophy className="w-8 h-8 text-(--primary)" />
-          </div>
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-2">
-            No Active Rooms
-          </h3>
-          <p className="text-(--text-secondary) font-inter">
-            Be the first to create a public challenge room!
-          </p>
-        </div>
-      </div>
+      <Card variant="static">
+        <CardHeader as="h2" title="Active public rooms" />
+        <EmptyState
+          icon={<Trophy />}
+          title="No active rooms"
+          description="Be the first to create a public challenge room!"
+        />
+      </Card>
     );
   }
 
   return (
-    <div className="timer-card">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-(--text-primary) font-statement">
-          Active Public Rooms
-        </h2>
-        <span className="px-3 py-1 bg-(--primary)/10 text-(--primary) text-sm font-medium rounded-full font-inter">
-          {publicRooms.length} room{publicRooms.length !== 1 ? "s" : ""}
-        </span>
-      </div>
+    <Card variant="static">
+      <CardHeader
+        as="h2"
+        title="Active public rooms"
+        actions={
+          <Badge tone="primary" shape="pill">
+            {publicRooms.length} room{publicRooms.length !== 1 ? "s" : ""}
+          </Badge>
+        }
+      />
 
-      <div className="space-y-3">
+      <ul className="space-y-2">
         {publicRooms.map((room) => {
-          const event = EVENTS[room.event as keyof typeof EVENTS] || {
-            name: room.event,
-            icon: "/cube-icons/333.svg",
-          };
+          const eventName = getTimerEvent(room.event).name;
           const timeRemaining = formatTimeRemaining(room.expiresAt);
-          const isExpiring = room.expiresAt - Date.now() < 6 * 60 * 60 * 1000; // less than 6 hours
+          // Under six hours the countdown is the thing to notice, not decoration.
+          const isExpiring = room.expiresAt - Date.now() < 6 * 60 * 60 * 1000;
 
           return (
-            <Link
+            <Card
+              as="li"
               key={room._id}
-              href={`/cube-lab/challenges/room/${room.roomId}`}
-              className="block p-3 md:p-4 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) rounded-(--radius-control) transition-all duration-300 group"
+              variant="nested"
+              className="p-0! hover:border-(--primary) transition-colors group"
             >
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                  {/* Event Icon */}
-                  <div className="w-8 h-8 md:w-10 md:h-10 bg-(--primary) text-(--on-primary) rounded-(--radius-control) flex items-center justify-center p-1 shrink-0">
-                    <Image
-                      src={event.icon}
-                      alt={event.name}
-                      width={24}
-                      height={24}
-                      className="w-5 h-5 md:w-6 md:h-6 brightness-0 invert"
-                    />
+              <Link
+                href={`/cube-lab/challenges/room/${room.roomId}`}
+                className="flex items-start gap-3 p-3 md:p-4"
+              >
+                {/* Aligned to the title line, not to the middle of a block
+                    that runs to three lines on a phone. */}
+                <EventIcon eventId={room.event} size="lg" className="mt-0.5" />
+
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <h3 className="type-card-title min-w-0 truncate group-hover:text-(--primary) transition-colors">
+                      {room.name}
+                    </h3>
+                    <Badge tone="primary" size="sm">
+                      {room.format.toUpperCase()}
+                    </Badge>
+                    <Badge tone="neutral" size="sm">
+                      {eventName}
+                    </Badge>
                   </div>
 
-                  {/* Room Info */}
-                  <div className="min-w-0 flex-1">
-                    {/* Room Name */}
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <h3 className="font-semibold text-(--text-primary) font-statement group-hover:text-(--primary) transition-colors text-sm md:text-base truncate">
-                        {room.name}
-                      </h3>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="px-2 py-1 bg-(--primary)/10 text-(--primary) text-xs font-medium rounded font-inter">
-                          {room.format.toUpperCase()}
-                        </span>
-                        <span className="hidden sm:inline px-2 py-1 bg-(--surface) border border-(--border) text-(--text-secondary) text-xs font-medium rounded font-inter">
-                          {event.name}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Room Stats */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs md:text-sm text-(--text-secondary) font-inter">
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1">
-                          <Users className="w-3 h-3 md:w-4 md:h-4" />
-                          <span>{room.participantCount}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 md:w-4 md:h-4" />
-                          <span>{room.completedCount} done</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3 md:w-4 md:h-4" />
-                        <span
-                          className={
-                            isExpiring ? "text-(--warning) font-medium" : ""
-                          }
-                        >
-                          {timeRemaining} left
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Room Description */}
-                    {room.description && (
-                      <p className="hidden md:block text-sm text-(--text-secondary) font-inter line-clamp-1 mt-1">
-                        {room.description}
-                      </p>
-                    )}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 type-caption">
+                    <span className="flex items-center gap-1">
+                      <Users aria-hidden className="w-3.5 h-3.5" />
+                      {room.participantCount}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock aria-hidden className="w-3.5 h-3.5" />
+                      {room.completedCount} done
+                    </span>
+                    <span
+                      className={`flex items-center gap-1 ${
+                        isExpiring ? "text-(--warning) font-medium" : ""
+                      }`}
+                    >
+                      <Calendar aria-hidden className="w-3.5 h-3.5" />
+                      {timeRemaining} left
+                    </span>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-2 md:gap-3 shrink-0">
-                  {/* Room Creator */}
+                  {room.description && (
+                    <p className="type-caption line-clamp-2">
+                      {room.description}
+                    </p>
+                  )}
+
                   {room.creator && (
-                    <div className="hidden lg:block text-right text-sm">
-                      <p className="text-(--text-muted) font-inter text-xs">
-                        by
-                      </p>
-                      <p className="font-medium text-(--text-secondary) font-inter">
+                    <p className="type-caption truncate">
+                      by{" "}
+                      <span className="text-(--text-secondary)">
                         {room.creator.isDeleted
                           ? "Deleted User"
                           : room.creator.name}
-                      </p>
-                    </div>
+                      </span>
+                    </p>
                   )}
-
-                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-(--text-muted) group-hover:text-(--primary) transition-colors" />
                 </div>
-              </div>
-            </Link>
+
+                <ArrowRight
+                  aria-hidden
+                  className="w-5 h-5 shrink-0 self-center text-(--text-muted) group-hover:text-(--primary) transition-colors"
+                />
+              </Link>
+            </Card>
           );
         })}
-      </div>
-    </div>
+      </ul>
+    </Card>
   );
 }

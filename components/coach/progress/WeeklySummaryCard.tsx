@@ -12,9 +12,8 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { CollapsibleCard, StatTile, useCollapsed } from "@/components/ui";
 import {
-  CollapsibleSection,
-  StatCard,
   formatTime,
   formatDuration,
   useEffectiveTheme,
@@ -39,6 +38,7 @@ interface WeeklySummaryCardProps {
 export default function WeeklySummaryCard({
   progressStats,
 }: WeeklySummaryCardProps) {
+  const collapsed = useCollapsed("coach-progress-weekly", true);
   const effectiveTheme = useEffectiveTheme();
   const primaryColor = usePrimaryColor();
   const isLight = effectiveTheme === "light";
@@ -108,39 +108,50 @@ export default function WeeklySummaryCard({
   };
 
   return (
-    <CollapsibleSection
+    <CollapsibleCard
       title="Weekly Summary"
-      storageKey="coach-progress-weekly"
-      defaultExpanded={true}
+      variant="static"
+      open={collapsed.open}
+      onOpenChange={collapsed.onOpenChange}
     >
       <div className="space-y-4">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-          <StatCard
-            icon={Clock}
-            iconColor="bg-(--primary)/10 text-(--primary)"
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            mono={false}
+            icon={<Clock />}
+            tone="primary"
             label="Practice"
             value={formatDuration(progressStats.weekly.practiceMinutes)}
           />
-          <StatCard
-            icon={BarChart3}
-            iconColor="bg-(--accent)/10 text-(--accent)"
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            mono={false}
+            icon={<BarChart3 />}
+            tone="accent"
             label="Solves"
             value={progressStats.weekly.solves.toLocaleString()}
           />
-          <StatCard
-            icon={Target}
-            iconColor="bg-(--success)/10 text-(--success)"
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            icon={<Target />}
+            tone="success"
             label="Average"
             value={
               progressStats.weekly.average
                 ? formatTime(progressStats.weekly.average)
                 : "—"
             }
-            valueColor="text-(--success)"
           />
-          <StatCard
-            icon={Calendar}
-            iconColor="bg-(--warning)/10 text-(--warning)"
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            mono={false}
+            icon={<Calendar />}
+            tone="warning"
             label="Active"
             value={`${progressStats.weekly.activeDays} days`}
           />
@@ -151,6 +162,6 @@ export default function WeeklySummaryCard({
           <Bar data={weeklyActivityData} options={weeklyActivityOptions} />
         </div>
       </div>
-    </CollapsibleSection>
+    </CollapsibleCard>
   );
 }

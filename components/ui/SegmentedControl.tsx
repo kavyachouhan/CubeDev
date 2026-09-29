@@ -30,7 +30,8 @@ export interface SegmentedControlProps<T extends string> {
   options: SegmentOption<T>[];
   "aria-label": string;
   size?: "sm" | "md" | "lg";
-  fullWidth?: boolean;
+  /** `true` always fills its container; `"mobile"` only below `sm`. */
+  fullWidth?: boolean | "mobile";
   className?: string;
 }
 
@@ -71,12 +72,21 @@ export function SegmentedControl<T extends string>({
   const height =
     size === "sm" ? "min-h-7 text-xs" : size === "lg" ? "min-h-10 text-sm" : "min-h-8 text-sm";
 
+  // On a phone a filter row reads better spanning the card than hugging its
+  // labels in the corner, so `"mobile"` stretches only below `sm`.
+  const stretchAll = fullWidth === true;
+  const stretchMobile = fullWidth === "mobile";
+
   return (
     <div
       role="radiogroup"
       className={cx(
-        "inline-flex gap-1 p-1 rounded-(--radius-control) bg-(--surface-elevated) border border-(--border)",
-        fullWidth && "flex w-full",
+        "gap-1 p-1 rounded-(--radius-control) bg-(--surface-elevated) border border-(--border)",
+        stretchAll
+          ? "flex w-full"
+          : stretchMobile
+            ? "flex w-full sm:inline-flex sm:w-auto"
+            : "inline-flex",
         className,
       )}
       {...aria}
@@ -101,7 +111,7 @@ export function SegmentedControl<T extends string>({
               "inline-flex items-center justify-center gap-1.5 px-3 rounded-[0.375rem] font-medium font-inter whitespace-nowrap transition-colors duration-(--duration-fast)",
               "disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:w-4 [&_svg]:h-4",
               height,
-              fullWidth && "flex-1",
+              stretchAll ? "flex-1" : stretchMobile ? "flex-1 sm:flex-none" : undefined,
               selected
                 ? cx(TONE[option.tone ?? "primary"], "shadow-sm")
                 : "text-(--text-secondary) hover:enabled:text-(--text-primary) hover:enabled:bg-(--surface)",

@@ -491,11 +491,13 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
       open={showChart}
       onOpenChange={setShowChart}
       variant="static"
+      stackActions
       actions={
         showChart ? (
           <SegmentedControl
             aria-label="Solves shown"
             size="sm"
+            fullWidth="mobile"
             value={dataRange}
             onChange={setDataRange}
             options={[
@@ -509,9 +511,10 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
       }
     >
       <div className="space-y-4">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <StatTile
             size="sm"
+            mobileLayout="row"
             label="Progress Trend"
             value={trend ? `${Math.abs(trend.improvementPercent).toFixed(1)}%` : "—"}
             tone={trendTone}
@@ -531,12 +534,14 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
           />
           <StatTile
             size="sm"
+            mobileLayout="row"
             label="Best Single"
             value={progressStats.bestSingle ? formatTime(progressStats.bestSingle) : "—"}
             tone={progressStats.bestSingle ? "warning" : "default"}
           />
           <StatTile
             size="sm"
+            mobileLayout="row"
             label="Sessions"
             mono={false}
             value={progressStats.uniqueSessions}
@@ -545,6 +550,7 @@ export default function TimeProgressChart({ solves }: TimeProgressChartProps) {
           {trend === null && (
             <StatTile
               size="sm"
+              mobileLayout="row"
               label="Consistency"
               value={
                 progressStats.consistencyScore === null

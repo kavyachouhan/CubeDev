@@ -7,9 +7,10 @@ import { useUser } from "@/components/UserProvider";
 import { Bell, Compass, GraduationCap } from "lucide-react";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
-import { Card, CardHeader, CardIcon } from "@/components/ui/Card";
-import { Field, Input } from "@/components/ui/Field";
+import { Card, CardHeader } from "@/components/ui/Card";
+import { Field } from "@/components/ui/Field";
 import { SettingRow } from "@/components/ui/SettingRow";
+import { SettingGroup } from "@/components/ui/SettingGroup";
 import { SwitchRow } from "@/components/ui/Switch";
 import {
   useNotificationPermission,
@@ -20,6 +21,11 @@ import {
   getDeviceName,
   CoachingNotificationPreferences,
 } from "@/lib/notification-utils";
+import {
+  DateTimePicker,
+  fromTimeInputValue,
+  toTimeInputValue,
+} from "@/components/ui/DateTimePicker";
 
 export default function NotificationSettings() {
   const { user } = useUser();
@@ -250,13 +256,7 @@ export default function NotificationSettings() {
           <div className="space-y-4">
             <Alert tone="success">Notifications enabled</Alert>
 
-            <section className="rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <CardIcon className="w-7 h-7 [&_svg]:w-4 [&_svg]:h-4">
-                  <GraduationCap />
-                </CardIcon>
-                <h3 className="type-label">Algorithm Trainer</h3>
-              </div>
+            <SettingGroup title="Algorithm Trainer" icon={<GraduationCap />}>
               <SwitchRow
                 variant="plain"
                 label="Algorithm Reminders"
@@ -264,15 +264,13 @@ export default function NotificationSettings() {
                 checked={preferences.algorithmReminders}
                 onChange={() => handleToggleAlgorithmReminders()}
               />
-            </section>
+            </SettingGroup>
 
-            <section className="rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <CardIcon tone="accent" className="w-7 h-7 [&_svg]:w-4 [&_svg]:h-4">
-                  <Compass />
-                </CardIcon>
-                <h3 className="type-label">Coaching Reminders</h3>
-              </div>
+            <SettingGroup
+              title="Coaching Reminders"
+              icon={<Compass />}
+              tone="accent"
+            >
               <div className="divide-y divide-(--border)">
                 <SwitchRow
                   variant="plain"
@@ -284,11 +282,19 @@ export default function NotificationSettings() {
                 >
                   {coachingPrefs.dailyPracticeReminder && (
                     <Field label="Reminder time">
-                      <Input
-                        type="time"
+                      <DateTimePicker
+                        mode="time"
                         size="sm"
-                        value={coachingPrefs.dailyPracticeTime || "19:00"}
-                        onChange={(e) => handleUpdateReminderTime(e.target.value)}
+                        fullWidth={false}
+                        clearable={false}
+                        minuteStep={15}
+                        label="Reminder time"
+                        value={fromTimeInputValue(
+                          coachingPrefs.dailyPracticeTime || "19:00",
+                        )}
+                        onChange={(value) =>
+                          handleUpdateReminderTime(toTimeInputValue(value))
+                        }
                         className="w-36"
                       />
                     </Field>
@@ -319,7 +325,7 @@ export default function NotificationSettings() {
                   onChange={() => handleToggleCoachingPreference("goalProgressUpdates")}
                 />
               </div>
-            </section>
+            </SettingGroup>
           </div>
         )}
       </div>

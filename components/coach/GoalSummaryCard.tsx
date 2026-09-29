@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Target, Trophy, AlertTriangle, Pencil, Plus } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
+import { Badge, CalloutCard, IconButton } from "@/components/ui";
 import GoalSetupModal from "./GoalSetupModal";
 
 interface CoachProfile {
@@ -74,17 +75,15 @@ export default function GoalSummaryCard({
     switch (status) {
       case "achieved":
         return (
-          <span className="flex items-center gap-1 text-xs text-(--success) px-1.5 py-0.5 bg-(--success)/10 rounded-full whitespace-nowrap shrink-0">
-            <Trophy className="w-3 h-3" />
+          <Badge tone="success" size="sm" shape="pill" icon={<Trophy />}>
             Achieved
-          </span>
+          </Badge>
         );
       case "expired":
         return (
-          <span className="flex items-center gap-1 text-xs text-(--warning) px-1.5 py-0.5 bg-(--warning)/10 rounded-full whitespace-nowrap shrink-0">
-            <AlertTriangle className="w-3 h-3" />
+          <Badge tone="warning" size="sm" shape="pill" icon={<AlertTriangle />}>
             Overdue
-          </span>
+          </Badge>
         );
       default:
         return null;
@@ -115,104 +114,65 @@ export default function GoalSummaryCard({
     );
   };
 
-  const getIconStyles = () => {
-    switch (status) {
-      case "achieved":
-        return {
-          bg: "bg-(--success)/10",
-          icon: "text-(--success)",
-        };
-      case "expired":
-        return {
-          bg: "bg-(--warning)/10",
-          icon: "text-(--warning)",
-        };
-      default:
-        return {
-          bg: "bg-(--primary)/10",
-          icon: "text-(--primary)",
-        };
-    }
-  };
-
-  const iconStyles = getIconStyles();
+  const tone =
+    status === "achieved"
+      ? "success"
+      : status === "expired"
+        ? "warning"
+        : "primary";
   const StatusIcon =
     status === "achieved"
       ? Trophy
       : status === "expired"
         ? AlertTriangle
         : Target;
+  const targetLabel =
+    status === "expired"
+      ? "Status"
+      : status === "achieved"
+        ? "Status"
+        : "Target Date";
 
   return (
     <>
-      <div
-        className={`timer-card ${status === "achieved" ? "border-(--success)" : status === "expired" ? "border-(--warning)" : ""}`}
-        data-tour="goal-summary"
-      >
-        <div className="flex flex-col gap-3">
-          {/* Main row: icon + goal info + (desktop: target date + actions) */}
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <div
-                className={`w-10 h-10 rounded-full ${iconStyles.bg} flex items-center justify-center shrink-0`}
-              >
-                <StatusIcon className={`w-5 h-5 ${iconStyles.icon}`} />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs text-(--text-muted)">
-                    Your Goal
-                  </span>
-                  {getStatusBadge()}
-                </div>
-                <span className="font-bold text-(--text-primary) block truncate">
-                  {profile.goalType === "custom"
-                    ? `CUSTOM (${profile.customGoalTime ? (profile.customGoalTime / 1000).toFixed(2) + "s" : "Set"})`
-                    : profile.goalType.replace("-", " ").toUpperCase()}
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              {/* Target date - desktop only, inline with actions */}
-              <div className="hidden sm:flex items-center gap-2">
-                <span className="text-xs text-(--text-muted)">
-                  {status === "expired"
-                    ? "Status"
-                    : status === "achieved"
-                      ? "Status:"
-                      : "Target Date:"}
-                </span>
-                {getTargetDateDisplay()}
-              </div>
-              <button
-                onClick={() => setShowEditModal(true)}
-                className="p-1.5 rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
-                title="Edit goal"
-              >
-                <Pencil className="w-4 h-4 text-(--text-muted) hover:text-(--primary)" />
-              </button>
-              <button
-                onClick={() => setShowNewGoalModal(true)}
-                className="p-1.5 rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
-                title="Set new goal"
-              >
-                <Plus className="w-4 h-4 text-(--text-muted) hover:text-(--primary)" />
-              </button>
-            </div>
-          </div>
-          {/* Mobile only: target date below */}
-          <div className="flex items-center gap-2 pl-[52px] sm:hidden">
-            <span className="text-xs text-(--text-muted)">
-              {status === "expired"
-                ? "Status"
-                : status === "achieved"
-                  ? "Status:"
-                  : "Target Date:"}
+      <CalloutCard
+        tone={tone}
+        rootProps={{ "data-tour": "goal-summary" }}
+        icon={<StatusIcon />}
+        title={
+          <span className="flex flex-wrap items-center gap-2">
+            <span className="min-w-0 truncate">
+              {profile.goalType === "custom"
+                ? `CUSTOM (${profile.customGoalTime ? (profile.customGoalTime / 1000).toFixed(2) + "s" : "Set"})`
+                : profile.goalType.replace("-", " ").toUpperCase()}
             </span>
-            {getTargetDateDisplay()}
+            {getStatusBadge()}
+          </span>
+        }
+        description="Your goal"
+        action={
+          <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
+            <span className="flex items-center gap-2 min-w-0">
+              <span className="type-caption shrink-0">{targetLabel}</span>
+              {getTargetDateDisplay()}
+            </span>
+            <span className="flex items-center gap-1 shrink-0">
+              <IconButton
+                size="sm"
+                aria-label="Edit goal"
+                icon={<Pencil />}
+                onClick={() => setShowEditModal(true)}
+              />
+              <IconButton
+                size="sm"
+                aria-label="Set new goal"
+                icon={<Plus />}
+                onClick={() => setShowNewGoalModal(true)}
+              />
+            </span>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       <GoalSetupModal
         isOpen={showEditModal}

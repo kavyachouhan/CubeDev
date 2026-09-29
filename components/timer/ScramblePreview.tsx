@@ -194,6 +194,7 @@ export default function ScramblePreview({
     <Card>
       <CardHeader
         title="Scramble Preview"
+        stackActions
         actions={
           showPreview ? (
             <>
@@ -201,6 +202,7 @@ export default function ScramblePreview({
               <Button
                 variant="ghost"
                 size="sm"
+                className="shrink-0"
                 onClick={() => {
                   setShowPreview(false);
                   setIsLoaded(false);

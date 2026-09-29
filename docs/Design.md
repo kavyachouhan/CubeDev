@@ -255,6 +255,19 @@ mobile) · `Stepper` (wizard progress) · `Pagination`.
 `CollapsibleCard` (+ `useCollapsed` to remember the state per viewer),
 `StatTile`, `Badge`, `TimeValue`, `Table`.
 
+`CalloutCard` — a standing prompt about the viewer ("You have 3 reviews due"),
+outlined in its tone with a heavier rule down the left edge. `action` takes the
+next step and drops below the text on a phone; `adornment` takes a small
+control (refresh, dismiss) that stays on the title row at every width. For
+transient feedback use `Alert` instead.
+
+`SettingGroup` — a labelled panel of related rows inside a settings `Card`, so
+every settings card has the same two levels: card title, then groups.
+
+`StatTile` takes `mobileLayout="row"`, which puts the label and value on one
+line below `sm`. Use it whenever three or more tiles would share a phone row:
+`type-overline` is uppercase and tracked, and wraps badly under ~110px.
+
 ### States
 
 `Spinner` / `LoadingState` · `Skeleton` and friends · `EmptyState` ·

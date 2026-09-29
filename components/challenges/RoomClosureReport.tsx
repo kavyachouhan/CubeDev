@@ -5,13 +5,11 @@ import {
   Trophy,
   Calendar,
   Users,
-  Crown,
-  Medal,
-  Award,
   Clock,
   TrendingUp,
 } from "lucide-react";
-import { medalBadgeStyle, medalRowStyle } from "@/components/ui/medal";
+import { medalRowStyle } from "@/components/ui/medal";
+import { RankBadge } from "@/components/ui/RankBadge";
 import UserSolvesModal from "./UserSolvesModal";
 
 function formatTime(ms: number): string {
@@ -70,18 +68,6 @@ export default function RoomClosureReport({
     totalParticipants > 0 ? (completedCount / totalParticipants) * 100 : 0;
 
 
-  const getRankIcon = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return <Crown className="w-5 h-5" />;
-      case 2:
-        return <Medal className="w-5 h-5" />;
-      case 3:
-        return <Award className="w-5 h-5" />;
-      default:
-        return <Trophy className="w-4 h-4" />;
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -170,17 +156,10 @@ export default function RoomClosureReport({
                 style={medalRowStyle(participant.finalRank)}
               >
                 <div className="text-center space-y-3">
-                  {/* Rank Badge */}
-                  <div
-                    className="w-12 h-12 mx-auto rounded-full flex items-center justify-center text-(--on-primary)"
-                    style={medalBadgeStyle(participant.finalRank)}
-                  >
-                    {getRankIcon(participant.finalRank)}
-                  </div>
-
                   {/* User Info */}
                   <div className="space-y-1">
-                    <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-(--on-primary) font-bold text-lg mx-auto">
+                    <div className="relative w-14 h-14 mx-auto">
+                      <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-(--on-primary) font-bold text-lg">
                       {participant.user?.avatar &&
                       !(
                         participant.user?.isDeleted ||
@@ -227,6 +206,14 @@ export default function RoomClosureReport({
                           ? "?"
                           : participant.user?.name?.[0] || "?"}
                       </span>
+                      </div>
+                      {/* The position rides on the avatar; no separate disc,
+                          which read as a second, broken avatar when unranked. */}
+                      <RankBadge
+                        rank={participant.finalRank}
+                        size="md"
+                        className="absolute -bottom-1 -right-1 ring-2 ring-(--surface)"
+                      />
                     </div>
                     <h4 className="font-semibold text-(--text-primary) font-statement">
                       {participant.user?.isDeleted ||
@@ -288,12 +275,7 @@ export default function RoomClosureReport({
                   className="w-full flex items-center gap-3 p-4 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-(--radius-control) border border-(--border) hover:border-(--primary) transition-all duration-200 cursor-pointer"
                 >
                   {/* Rank */}
-                  <div
-                    className="w-8 h-8 rounded-(--radius-control) flex items-center justify-center text-sm font-bold text-(--on-primary) shrink-0"
-                    style={medalBadgeStyle(participant.finalRank)}
-                  >
-                    {participant.finalRank}
-                  </div>
+                  <RankBadge rank={participant.finalRank} size="lg" />
 
                   {/* User Avatar */}
                   <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-(--on-primary) font-bold text-sm">
@@ -447,11 +429,6 @@ export default function RoomClosureReport({
                         ? "?"
                         : participant.user?.name?.[0] || "?"}
                     </span>
-                  </div>
-
-                  {/* Status */}
-                  <div className="w-8 h-8 rounded-(--radius-control) bg-(--text-muted) flex items-center justify-center">
-                    <Users className="w-4 h-4 text-(--on-primary)" />
                   </div>
 
                   {/* User Info */}

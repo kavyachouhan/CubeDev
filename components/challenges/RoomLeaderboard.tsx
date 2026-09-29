@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { medalBadgeStyle, medalRowStyle } from "@/components/ui/medal";
+import { medalRowStyle } from "@/components/ui/medal";
+import { RankBadge } from "@/components/ui/RankBadge";
 import UserSolvesModal from "./UserSolvesModal";
 
 function formatTime(ms: number): string {
@@ -85,12 +86,7 @@ export default function RoomLeaderboard({
                   style={medalRowStyle(participant.finalRank)}
                 >
                   {/* Rank Badge */}
-                  <div
-                    className="w-8 h-8 rounded-(--radius-control) flex items-center justify-center text-sm font-bold text-(--on-primary) shrink-0"
-                    style={medalBadgeStyle(participant.finalRank)}
-                  >
-                    {participant.finalRank}
-                  </div>
+                  <RankBadge rank={participant.finalRank} size="lg" />
                   {/* User Avatar */}
                   <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-(--on-primary) font-bold text-sm">
                     {participant.user?.avatar &&

@@ -340,7 +340,7 @@ export default function SolveDetailsModal({
             </Button>
           }
         >
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="primary" onClick={onClose}>
             Done
           </Button>
         </Modal.Footer>

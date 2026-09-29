@@ -330,20 +330,26 @@ export default function PersonalBestsCard({
       variant="static"
     >
       <div className="space-y-5">
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
           <StatTile
+            size="sm"
+            mobileLayout="row"
             label="Total"
             icon={<Target />}
             value={displayTotalSolves.toLocaleString()}
             tone="primary"
           />
           <StatTile
+            size="sm"
+            mobileLayout="row"
             label="Success"
             icon={<Trophy />}
             value={displayTotalSolves === 0 ? "—" : `${displaySuccessRate.toFixed(1)}%`}
             tone={successTone}
           />
           <StatTile
+            size="sm"
+            mobileLayout="row"
             label="Average"
             icon={<TrendingUp />}
             value={personalBests?.averageTime ? formatTime(personalBests.averageTime) : "—"}
@@ -386,15 +392,17 @@ export default function PersonalBestsCard({
 
         <section className="pt-4 border-t border-(--border) space-y-2">
           <h4 className="type-label">Current Averages</h4>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             <StatTile
               size="sm"
+              mobileLayout="row"
               label="Current Ao5"
               value={averageText(personalBests?.currentAo5)}
               tone={personalBests?.currentAo5 === Infinity ? "error" : "primary"}
             />
             <StatTile
               size="sm"
+              mobileLayout="row"
               label="Current Ao12"
               value={averageText(personalBests?.currentAo12)}
               tone={personalBests?.currentAo12 === Infinity ? "error" : "accent"}

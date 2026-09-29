@@ -17,11 +17,16 @@ import { CompetitionCardsSkeleton } from "@/components/SkeletonLoaders";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { Checkbox, Field, Input, SearchInput } from "@/components/ui/Field";
+import { Checkbox, Field, SearchInput } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import { Pagination } from "@/components/ui/Pagination";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import RegionDropdown from "./RegionDropdown";
+import {
+  DateTimePicker,
+  fromDateInputValue,
+  toDateInputValue,
+} from "@/components/ui/DateTimePicker";
 
 interface CompetitionListProps {
   onStartSimulation: (competition: WCACompetition, eventId: string) => void;
@@ -388,17 +393,23 @@ export default function CompetitionList({
               {timeFilter === "custom" && (
                 <div className="flex flex-wrap gap-4 mt-3">
                   <Field label="Start date">
-                    <Input
-                      type="date"
-                      value={customStartDate}
-                      onChange={(e) => setCustomStartDate(e.target.value)}
+                    <DateTimePicker
+                      mode="date"
+                      label="Start date"
+                      value={fromDateInputValue(customStartDate)}
+                      onChange={(value) =>
+                        setCustomStartDate(toDateInputValue(value))
+                      }
                     />
                   </Field>
                   <Field label="End date">
-                    <Input
-                      type="date"
-                      value={customEndDate}
-                      onChange={(e) => setCustomEndDate(e.target.value)}
+                    <DateTimePicker
+                      mode="date"
+                      label="End date"
+                      value={fromDateInputValue(customEndDate)}
+                      onChange={(value) =>
+                        setCustomEndDate(toDateInputValue(value))
+                      }
                     />
                   </Field>
                 </div>

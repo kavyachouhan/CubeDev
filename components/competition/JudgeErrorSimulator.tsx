@@ -12,6 +12,7 @@ import {
   Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 interface JudgeError {
   id: string;
@@ -330,18 +331,13 @@ export default function JudgeErrorSimulator({
 
           {/* Scenario Area */}
           {!currentScenario ? (
-            <div className="p-8 text-center border-2 border-dashed border-(--border) rounded-(--radius-panel)">
-              <AlertTriangle className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
-              <h4 className="text-lg font-medium text-(--text-primary) mb-2">
-                Judge Decision Practice
-              </h4>
-              <p className="text-sm text-(--text-muted) mb-4 max-w-md mx-auto">
-                Practice identifying whether situations require a +2 penalty
-                according to WCA regulations.
-              </p>
-              <Button size="lg" onClick={startPractice}>
-                Start practice
-              </Button>
+            <div className="border-2 border-dashed border-(--border) rounded-(--radius-panel)">
+              <EmptyState
+                icon={<AlertTriangle />}
+                title="Judge Decision Practice"
+                description="Practice identifying whether situations require a +2 penalty according to WCA regulations."
+                action={<Button onClick={startPractice}>Start practice</Button>}
+              />
             </div>
           ) : (
             <div

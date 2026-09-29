@@ -223,7 +223,7 @@ export default function CustomSetsPage() {
               title="Custom Algorithm Sets"
               description="Build your own algorithm collections for focused practice"
               actions={
-                <>
+                <div className="flex w-full gap-2 sm:w-auto [&>*]:flex-1 sm:[&>*]:flex-none">
                   <Button
                     variant="secondary"
                     onClick={() => setShowImportModal(true)}
@@ -237,7 +237,7 @@ export default function CustomSetsPage() {
                   >
                     New Set
                   </Button>
-                </>
+                </div>
               }
             />
 
@@ -331,17 +331,32 @@ export default function CustomSetsPage() {
                         onClick={(e) => e.stopPropagation()}
                       >
                         {totalAlgs > 0 && (
-                          <Button
-                            size="sm"
-                            onClick={() =>
-                              router.push(
-                                `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${set._id}&type=rec`,
-                              )
-                            }
-                            iconLeft={<Play className="w-3.5 h-3.5" />}
-                          >
-                            <span className="hidden sm:inline">Practice</span>
-                          </Button>
+                          <>
+                            <IconButton
+                              size="sm"
+                              variant="primary"
+                              className="sm:hidden"
+                              aria-label={`Practice ${set.name}`}
+                              onClick={() =>
+                                router.push(
+                                  `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${set._id}&type=rec`,
+                                )
+                              }
+                              icon={<Play />}
+                            />
+                            <Button
+                              size="sm"
+                              className="hidden sm:inline-flex"
+                              onClick={() =>
+                                router.push(
+                                  `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${set._id}&type=rec`,
+                                )
+                              }
+                              iconLeft={<Play className="w-3.5 h-3.5" />}
+                            >
+                              Practice
+                            </Button>
+                          </>
                         )}
 
                         <Menu
@@ -372,7 +387,7 @@ export default function CustomSetsPage() {
                       </div>
 
                       {/* Set Info */}
-                      <div className="pr-24 sm:pr-36">
+                      <div className="pr-20 sm:pr-36">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-base font-bold text-(--text-primary) font-statement truncate">
                             {set.name}
@@ -463,7 +478,7 @@ export default function CustomSetsPage() {
                     }}
                   />
                 </Field>
-                <Field label="Description" hint="Optional">
+                <Field label="Description">
                   <Textarea
                     value={newSetDescription}
                     onChange={(e) => setNewSetDescription(e.target.value)}

@@ -46,6 +46,7 @@ import {
   Slider,
   Spinner,
   StatTile,
+  CalloutCard,
   Stepper,
   Switch,
   SwitchRow,
@@ -56,6 +57,9 @@ import {
   Tooltip,
   useCollapsed,
   useToast,
+  ProgressBar,
+  ProgressLabel,
+  DateTimePicker,
 } from "@/components/ui";
 import { ThemeControls } from "./ThemeControls";
 
@@ -306,6 +310,9 @@ function FormShowcase() {
   const [slider, setSlider] = useState(40);
   const [checked, setChecked] = useState(true);
   const [on, setOn] = useState(true);
+  const [date, setDate] = useState<number | null>(Date.now());
+  const [time, setTime] = useState<number | null>(null);
+  const [moment, setMoment] = useState<number | null>(null);
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
@@ -332,6 +339,15 @@ function FormShowcase() {
           placeholder="Search…"
           aria-label="Search"
         />
+      </Field>
+      <Field label="Date" hint="Replaces the native browser picker">
+        <DateTimePicker mode="date" value={date} onChange={setDate} />
+      </Field>
+      <Field label="Time">
+        <DateTimePicker mode="time" value={time} onChange={setTime} />
+      </Field>
+      <Field label="Date and time" className="sm:col-span-2">
+        <DateTimePicker mode="datetime" value={moment} onChange={setMoment} />
       </Field>
       <Field label="Textarea" className="sm:col-span-2">
         <Textarea rows={3} placeholder="Notes…" />
@@ -482,6 +498,46 @@ function CardShowcase() {
           <Settings />
         </CardIcon>
       </Row>
+      <CalloutCard
+        icon={<Flame />}
+        title="You have 3 reviews due"
+        description="Keep your learning momentum going with spaced repetition"
+        action={
+          <Button className="w-full sm:w-auto" iconLeft={<Play />}>
+            Start SRS Review
+          </Button>
+        }
+      />
+      <CalloutCard
+        tone="warning"
+        title="Your streak is at risk"
+        description="A standing prompt, outlined in its tone with a heavier left rule."
+        adornment={<IconButton aria-label="Dismiss" size="sm" icon={<Check />} />}
+      />
+      <Card variant="static">
+        <CardHeader title="Progress" description="Determinate fill with an optional expectation marker" />
+        <div className="space-y-4">
+          <div>
+            <ProgressLabel value="62%">Goal progress</ProgressLabel>
+            <ProgressBar
+              label="Goal progress"
+              value={62}
+              marker={{ value: 45, label: "Expected: 45%" }}
+            />
+          </div>
+          <div>
+            <ProgressLabel value="3 / 5">Solves completed</ProgressLabel>
+            <ProgressBar
+              label="Solves completed"
+              tone="success"
+              size="sm"
+              value={3}
+              max={5}
+              valueText="3 of 5 solves"
+            />
+          </div>
+        </div>
+      </Card>
       <CollapsibleCard
         title="Collapsible card"
         open={collapsible.open}

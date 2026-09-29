@@ -12,7 +12,7 @@ export default function CoachPage() {
   return (
     <ProtectedRoute>
       <CubeLabLayout activeSection="coach">
-        <div className="p-4 sm:p-6">
+        <div className="container-responsive py-4 md:py-8">
           {user?.convexId ? (
             <CoachDashboard userId={user.convexId as any} />
           ) : (

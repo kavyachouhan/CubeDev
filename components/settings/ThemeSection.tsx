@@ -14,7 +14,9 @@ export default function ThemeSection() {
         title="Theme & Appearance"
         description="Customize your CubeDev experience"
       />
-      <div className="space-y-6 divide-y divide-(--border) [&>*:not(:first-child)]:pt-6">
+      {/* Spacing alone separates these groups: the divider rules read as
+          stray lines under the tile rows rather than as structure. */}
+      <div className="space-y-8">
         <ThemeModeSelector />
         <ColorSchemeSelector />
         <TimerCustomization />

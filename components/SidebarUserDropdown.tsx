@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  ChevronsUpDown,
+  ChevronDown,
+  ChevronUp,
   HelpCircle,
   Home,
   LogOut,
@@ -101,7 +102,11 @@ export default function SidebarUserDropdown({
                   {user.wcaId ?? "Connected"}
                 </span>
               </span>
-              <ChevronsUpDown className="w-4 h-4 shrink-0 text-(--text-muted)" aria-hidden />
+              {props["aria-expanded"] ? (
+                <ChevronUp className="w-4 h-4 shrink-0 text-(--text-muted)" aria-hidden />
+              ) : (
+                <ChevronDown className="w-4 h-4 shrink-0 text-(--text-muted)" aria-hidden />
+              )}
             </>
           )}
         </button>

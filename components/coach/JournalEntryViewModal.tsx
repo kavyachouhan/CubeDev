@@ -30,6 +30,9 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Card, CardIcon } from "@/components/ui/Card";
+import { ProgressBar } from "@/components/ui/ProgressBar";
+import { StatTile } from "@/components/ui/StatTile";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 import { IconButton } from "@/components/ui/IconButton";
 import { Lightbox } from "@/components/ui/Lightbox";
@@ -307,9 +310,9 @@ export default function JournalEntryViewModal({
   return (
     <Modal open onClose={onClose} size="lg" mobile="fullscreen">
       <Modal.Header
-        icon={<BookOpen />}
         title="Journal entry"
         description={formatDate(entry.entryDate)}
+        stackActions
         actions={
           <>
             <IconButton
@@ -329,76 +332,64 @@ export default function JournalEntryViewModal({
       <Modal.Body>
         <div className="space-y-5">
           {/* Mood Section */}
-          <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
+          <Card variant="nested">
             <div className="flex items-center gap-3">
               <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center ${moodBgColors[entry.mood]}`}
+                className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${moodBgColors[entry.mood]}`}
               >
                 <MoodIcon className={`w-6 h-6 ${moodColors[entry.mood]}`} />
               </div>
-              <div>
-                <span className="text-xs text-(--text-muted) block">Mood</span>
-                <p className="text-lg font-semibold text-(--text-primary)">
+              <div className="min-w-0">
+                <span className="type-overline block">Mood</span>
+                <p className="type-card-title mt-0.5">
                   {moodLabels[entry.mood]}
                 </p>
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* Stats Grid */}
           {hasSessionData && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
               {entry.practiceMinutes && (
-                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                    <span className="text-[10px] sm:text-xs text-(--text-muted)">
-                      Practice
-                    </span>
-                  </div>
-                  <p className="text-sm sm:text-base font-bold text-(--text-primary)">
-                    {entry.practiceMinutes} min
-                  </p>
-                </div>
+                <StatTile
+                  size="sm"
+                  mobileLayout="row"
+                  mono={false}
+                  icon={<Clock />}
+                  label="Practice"
+                  value={`${entry.practiceMinutes} min`}
+                />
               )}
               {displaySolveCount && (
-                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                    <span className="text-[10px] sm:text-xs text-(--text-muted)">
-                      {entry.customSolveCount ? "Solves" : "Solves"}
-                    </span>
-                  </div>
-                  <p className="text-sm sm:text-base font-bold text-(--text-primary)">
-                    {displaySolveCount}
-                  </p>
-                </div>
+                <StatTile
+                  size="sm"
+                  mobileLayout="row"
+                  mono={false}
+                  icon={<Target />}
+                  label="Solves"
+                  value={displaySolveCount}
+                />
               )}
               {displayAverage && (
-                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <Timer className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                    <span className="text-[10px] sm:text-xs text-(--text-muted) truncate">
-                      {entry.customAverage ? "Avg" : "Avg Time"}
-                    </span>
-                  </div>
-                  <p className="text-sm sm:text-base font-bold text-(--primary)">
-                    {formatTime(displayAverage)}
-                  </p>
-                </div>
+                <StatTile
+                  size="sm"
+                  mobileLayout="row"
+                  icon={<Timer />}
+                  tone="primary"
+                  label={entry.customAverage ? "Avg" : "Avg Time"}
+                  value={formatTime(displayAverage)}
+                />
               )}
               {entry.bestSingle && (
-                <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-(--success)" />
-                    <span className="text-[10px] sm:text-xs text-(--text-muted)">
-                      Best
-                    </span>
-                  </div>
-                  <p className="text-sm sm:text-base font-bold text-(--success)">
-                    {formatTime(entry.bestSingle)}
-                  </p>
-                </div>
+                <StatTile
+                  size="sm"
+                  mobileLayout="row"
+                  icon={<Zap />}
+                  tone="success"
+                  label="Best"
+                  value={formatTime(entry.bestSingle)}
+                />
               )}
             </div>
           )}
@@ -463,20 +454,20 @@ export default function JournalEntryViewModal({
           {dateTasks &&
             !dateTasks.plan.isRestDay &&
             dateTasks.plan.activities.length > 0 && (
-              <div className="bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) overflow-hidden">
+              <Card variant="nested" padding="none">
                 <button
+                  type="button"
+                  aria-expanded={showTasks}
                   onClick={() => setShowTasks(!showTasks)}
-                  className="w-full flex items-center justify-between p-4 text-left"
+                  className="w-full flex items-center justify-between gap-3 p-4 text-left"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-(--primary)/10 flex items-center justify-center">
-                      <CheckCircle2 className="w-4 h-4 text-(--primary)" />
-                    </div>
-                    <div>
-                      <span className="font-medium text-(--text-primary) block text-sm">
-                        Training Tasks
-                      </span>
-                      <span className="text-xs text-(--text-muted)">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <CardIcon className="w-8 h-8 rounded-full [&_svg]:w-4 [&_svg]:h-4">
+                      <CheckCircle2 />
+                    </CardIcon>
+                    <div className="min-w-0">
+                      <span className="type-label block">Training Tasks</span>
+                      <span className="type-caption">
                         {
                           dateTasks.plan.activities.filter((a) => a.completed)
                             .length
@@ -485,27 +476,21 @@ export default function JournalEntryViewModal({
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-(--surface) rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-(--primary) transition-all"
-                        style={{
-                          width: `${
-                            dateTasks.plan.activities.length > 0
-                              ? (dateTasks.plan.activities.filter(
-                                  (a) => a.completed,
-                                ).length /
-                                  dateTasks.plan.activities.length) *
-                                100
-                              : 0
-                          }%`,
-                        }}
-                      />
-                    </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <ProgressBar
+                      size="sm"
+                      className="w-16"
+                      label="Training tasks completed"
+                      max={dateTasks.plan.activities.length}
+                      value={
+                        dateTasks.plan.activities.filter((a) => a.completed)
+                          .length
+                      }
+                    />
                     {showTasks ? (
-                      <ChevronUp className="w-4 h-4 text-(--text-muted)" />
+                      <ChevronUp aria-hidden className="w-4 h-4 text-(--text-muted)" />
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-(--text-muted)" />
+                      <ChevronDown aria-hidden className="w-4 h-4 text-(--text-muted)" />
                     )}
                   </div>
                 </button>
@@ -525,7 +510,7 @@ export default function JournalEntryViewModal({
                             }`}
                           >
                             <div
-                              className={`mt-0.5 shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center ${
+                              className={`mt-0.5 shrink-0 w-5 h-5 rounded-(--radius-badge) border-2 flex items-center justify-center ${
                                 isCompleted
                                   ? "bg-(--success) border-(--success) text-(--on-media)"
                                   : "border-(--border)"
@@ -568,7 +553,7 @@ export default function JournalEntryViewModal({
                     )}
                   </div>
                 )}
-              </div>
+              </Card>
             )}
 
           {/* Reflection Section */}

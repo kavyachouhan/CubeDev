@@ -11,6 +11,8 @@ export interface TabItem<T extends string> {
   /** Small count or status shown after the label. */
   badge?: ReactNode;
   disabled?: boolean;
+  /** Extra attributes for this tab button, e.g. `data-tour`. */
+  rootProps?: Record<`data-${string}`, string>;
 }
 
 export interface TabsProps<T extends string> {
@@ -88,6 +90,7 @@ export function Tabs<T extends string>({
         return (
           <button
             key={item.value}
+            {...item.rootProps}
             ref={(el) => {
               refs.current[index] = el;
             }}

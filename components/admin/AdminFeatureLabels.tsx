@@ -9,6 +9,11 @@ import { Checkbox, Field, Input, Select } from "@/components/ui/Field";
 import FeatureBadge, { BadgeVariant } from "@/components/FeatureBadge";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
+import {
+  DateTimePicker,
+  fromDateTimeInputValue,
+  toDateTimeInputValue,
+} from "@/components/ui/DateTimePicker";
 
 type LabelType = BadgeVariant;
 
@@ -218,26 +223,28 @@ export default function AdminFeatureLabels() {
           </Field>
 
           <Field label="Start Time">
-            <Input
-              type="datetime-local"
-              value={formState.startAt}
-              onChange={(event) =>
+            <DateTimePicker
+              mode="datetime"
+              label="Start time"
+              value={fromDateTimeInputValue(formState.startAt)}
+              onChange={(value) =>
                 setFormState((prev) => ({
                   ...prev,
-                  startAt: event.target.value,
+                  startAt: toDateTimeInputValue(value),
                 }))
               }
             />
           </Field>
 
           <Field label="End Time">
-            <Input
-              type="datetime-local"
-              value={formState.endAt}
-              onChange={(event) =>
+            <DateTimePicker
+              mode="datetime"
+              label="End time"
+              value={fromDateTimeInputValue(formState.endAt)}
+              onChange={(value) =>
                 setFormState((prev) => ({
                   ...prev,
-                  endAt: event.target.value,
+                  endAt: toDateTimeInputValue(value),
                 }))
               }
             />

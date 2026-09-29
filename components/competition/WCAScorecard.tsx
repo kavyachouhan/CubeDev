@@ -234,13 +234,6 @@ export default function WCAScorecard({
               </div>
             </div>
           </div>
-          {displayWcaId && (
-            <div className="text-right shrink-0">
-              <div className="text-xs text-(--text-muted)">
-                {displayWcaId}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Results Table */}

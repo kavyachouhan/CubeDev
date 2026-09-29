@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import type {
   CSSProperties,
   KeyboardEvent as ReactKeyboardEvent,
@@ -23,6 +30,26 @@ export function getFocusable(root: HTMLElement): HTMLElement[] {
   );
 }
 
+/*
+ * Stacking values for the dialog layers. These mirror the --z-* tokens in
+ * app/globals.css; keep the two in sync. They exist in JS because an anchored
+ * panel opened from inside a dialog has to compute a z-index above whichever
+ * dialog it came from, which a static class cannot express.
+ */
+export const LAYER_Z = { modal: 110, nested: 120, tour: 140 } as const;
+
+export type LayerName = keyof typeof LAYER_Z;
+
+/* 0 means "not inside a dialog": anchored panels then use --z-dropdown. */
+const LayerContext = createContext(0);
+
+export const LayerProvider = LayerContext.Provider;
+
+/** Stacking value of the nearest enclosing dialog, or 0 when there is none. */
+export function useParentLayer() {
+  return useContext(LayerContext);
+}
+
 /* Layer stack: only the top-most layer reacts to Escape and traps focus. */
 const stack: number[] = [];
 let nextLayerId = 1;
@@ -39,7 +66,10 @@ let savedPaddingRight = "";
 function lockScroll() {
   if (lockCount === 0) {
     const body = document.body;
-    savedOverflow = body.style.overflow;
+    // "hidden" is only ever set by a scroll lock, so restoring it would
+    // strand the page unscrollable if something else locked without
+    // unlocking. Treat it as "no inline value".
+    savedOverflow = body.style.overflow === "hidden" ? "" : body.style.overflow;
     savedPaddingRight = body.style.paddingRight;
     const scrollbar = window.innerWidth - document.documentElement.clientWidth;
     body.style.overflow = "hidden";

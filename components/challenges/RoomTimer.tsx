@@ -1,8 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Check } from "lucide-react";
+import type { SyntheticEvent } from "react";
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import PenaltyButtons from "@/components/timer/PenaltyButtons";
+
+// The card arms the timer on pointer events, so controls inside it must not
+// let those bubble or tapping Save would start the next solve.
+const stopTimerEvent = (e: SyntheticEvent) => e.stopPropagation();
 
 interface RoomTimerProps {
   onSolveComplete: (time: number, penalty: "none" | "+2" | "DNF") => void;
@@ -381,61 +387,30 @@ export default function RoomTimer({
       {state === "stopped" && showPenaltySelection && (
         <div className="space-y-4 mt-6">
           <div className="text-center">
-            <p className="text-sm text-(--text-secondary) font-inter mb-3">
-              Select penalty for this solve:
-            </p>
+            <p className="type-caption mb-3">Select penalty for this solve:</p>
           </div>
-          <div className="flex justify-center gap-3">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                handlePenalty("+2");
-              }}
-              aria-pressed={currentPenalty === "+2"}
-              className={`inline-flex items-center justify-center gap-1.5 min-w-24 min-h-11 px-5 text-sm rounded-(--radius-control) font-statement transition-colors ${
-                currentPenalty === "+2"
-                  ? "bg-(--penalty-plus2-hover) text-(--on-primary) ring-2 ring-offset-2 ring-offset-(--surface) ring-(--penalty-plus2)"
-                  : "bg-(--penalty-plus2) text-(--on-primary) hover:bg-(--penalty-plus2-hover)"
-              }`}
-            >
-              +2
-              {currentPenalty === "+2" && (
-                <Check className="w-4 h-4" strokeWidth={3} aria-hidden />
-              )}
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                handlePenalty("DNF");
-              }}
-              aria-pressed={currentPenalty === "DNF"}
-              className={`inline-flex items-center justify-center gap-1.5 min-w-24 min-h-11 px-5 text-sm rounded-(--radius-control) font-statement transition-colors ${
-                currentPenalty === "DNF"
-                  ? "bg-(--penalty-dnf-hover) text-(--on-primary) ring-2 ring-offset-2 ring-offset-(--surface) ring-(--penalty-dnf)"
-                  : "bg-(--penalty-dnf) text-(--on-primary) hover:bg-(--penalty-dnf-hover)"
-              }`}
-            >
-              DNF
-              {currentPenalty === "DNF" && (
-                <Check className="w-4 h-4" strokeWidth={3} aria-hidden />
-              )}
-            </button>
-          </div>
+          <PenaltyButtons
+            showPenaltyButtons
+            currentPenalty={currentPenalty}
+            onPenaltyChange={handlePenalty}
+          />
 
-          {/* OK Button */}
+          {/* Save */}
           <div className="flex justify-center">
-            <button
+            <Button
+              className="w-full sm:w-auto"
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
                 handleConfirmSolve();
               }}
-              className="px-8 py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) text-lg rounded-(--radius-control) font-bold font-statement transition-all hover:scale-105 shadow-lg"
+              onTouchStart={stopTimerEvent}
+              onTouchEnd={stopTimerEvent}
+              onMouseDown={stopTimerEvent}
+              onMouseUp={stopTimerEvent}
             >
-              OK - Save Solve
-            </button>
+              Save solve
+            </Button>
           </div>
         </div>
       )}

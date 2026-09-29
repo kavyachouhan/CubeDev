@@ -6,6 +6,8 @@ import { useUser } from "@/components/UserProvider";
 import { ArrowRight, ExternalLink, Trophy, Users } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
+import { RankBadge } from "@/components/ui/RankBadge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { EventIcon } from "@/components/ui/EventIcon";
@@ -83,7 +85,7 @@ export default function RecentRoomsModal({
   );
 
   return (
-    <Modal open={isOpen} onClose={onClose} size="xl" mobile="fullscreen">
+    <Modal open={isOpen} onClose={onClose} size="md" mobile="sheet">
       <Modal.Header title="Recent Challenge Rooms" />
       <Modal.Body>
         {!user ? (
@@ -104,7 +106,7 @@ export default function RecentRoomsModal({
             }
           />
         ) : (
-          <div className="space-y-3">
+          <ul className="space-y-2">
             {recentRooms.map(({ participation, room }) => {
               if (!room) return null;
 
@@ -113,58 +115,25 @@ export default function RecentRoomsModal({
                 icon: "/cube-icons/333.svg",
               };
 
-              const getRankDisplay = () => {
-                if (!participation.finalRank) return null;
-
-                if (participation.finalRank === 1) {
-                  return (
-                    <span className="inline-flex items-center gap-1.5">
-                      <span
-                        aria-hidden
-                        className="w-4 h-4 rounded-full flex items-center justify-center text-[0.625rem] text-(--on-primary) font-bold"
-                        style={{ background: "var(--medal-gold)" }}
-                      >
-                        1
-                      </span>
-                      <span className="text-xs font-medium" style={{ color: "var(--medal-gold)" }}>
-                        Winner
-                      </span>
-                    </span>
-                  );
-                } else if (participation.finalRank <= 3) {
-                  return (
-                    <span className="inline-flex items-center gap-1.5">
-                      <span
-                        aria-hidden
-                        className="w-4 h-4 rounded-full flex items-center justify-center text-[0.625rem] text-(--on-primary) font-bold"
-                        style={{ background: "var(--medal-silver)" }}
-                      >
-                        {participation.finalRank}
-                      </span>
-                      <span className="text-xs font-medium text-(--text-secondary)">Top 3</span>
-                    </span>
-                  );
-                } else {
-                  return (
-                    <span className="text-xs text-(--text-muted)">
-                      #{participation.finalRank}
-                    </span>
-                  );
-                }
-              };
-
               return (
-                <div
+                <Card
+                  as="li"
                   key={participation._id}
-                  className="p-3 sm:p-4 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) hover:border-(--border-hover) transition-colors group"
+                  variant="nested"
+                  className="hover:border-(--primary) transition-colors group"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <EventIcon eventId={room.event} src={event.icon} alt={event.name} />
+                  <div className="flex items-start gap-3">
+                    <EventIcon
+                      eventId={room.event}
+                      src={event.icon}
+                      alt={event.name}
+                      className="mt-0.5"
+                    />
+                    <div className="flex flex-col gap-2 min-w-0 flex-1 sm:flex-row sm:items-center sm:gap-4">
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="type-label truncate">{room.name}</h4>
-                          <Badge tone="primary">{room.format.toUpperCase()}</Badge>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1">
+                          <h4 className="type-label min-w-0 truncate">{room.name}</h4>
+                          <Badge tone="primary" size="sm">{room.format.toUpperCase()}</Badge>
                         </div>
                         <div className="flex items-center gap-2 type-caption flex-wrap">
                           <span>{event.name}</span>
@@ -183,10 +152,9 @@ export default function RecentRoomsModal({
                           ) : null}
                         </div>
                       </div>
-                    </div>
 
-                    <div className="flex items-center gap-3 sm:gap-4 justify-between sm:justify-end">
-                      <div className="text-left sm:text-right flex flex-col gap-1">
+                    <div className="flex items-center gap-3 justify-between sm:justify-end sm:shrink-0">
+                      <div className="text-left sm:text-right flex items-center gap-2 sm:flex-col sm:items-end sm:gap-1">
                         {isRoomExpiredAndIncomplete(room, participation) ? (
                           <span className="text-(--error) text-sm font-medium">Incomplete</span>
                         ) : participation.average ? (
@@ -200,22 +168,33 @@ export default function RecentRoomsModal({
                             {participation.solvesCompleted}/{participation.totalSolves}
                           </span>
                         )}
-                        {!isRoomExpiredAndIncomplete(room, participation) && getRankDisplay()}
+                        {!isRoomExpiredAndIncomplete(room, participation) &&
+                          participation.finalRank != null && (
+                            <span className="inline-flex items-center gap-1.5 sm:justify-end">
+                              <RankBadge rank={participation.finalRank} size="sm" />
+                              {participation.finalRank === 1 && (
+                                <span className="type-caption font-medium">
+                                  Winner
+                                </span>
+                              )}
+                            </span>
+                          )}
                       </div>
 
                       <Link
                         href={`/cube-lab/challenges/room/${room.roomId}`}
                         aria-label={`Open ${room.name}`}
-                        className="icon-btn w-9 h-9 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100 transition-opacity"
+                        className="icon-btn w-9 h-9 shrink-0 text-(--text-muted) group-hover:text-(--primary) transition-colors"
                       >
                         <ExternalLink className="w-4 h-4" />
                       </Link>
                     </div>
+                    </div>
                   </div>
-                </div>
+                </Card>
               );
             })}
-          </div>
+          </ul>
         )}
       </Modal.Body>
       <Modal.Footer>

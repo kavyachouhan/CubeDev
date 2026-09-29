@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ClipboardPaste, File, FolderOpen, Upload } from "lucide-react";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
@@ -331,6 +331,36 @@ export default function ImportModal({
     total: number;
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const successTimer = useRef<number | null>(null);
+
+  // The modal stays mounted when closed, so anything typed survives a cancel
+  // unless we clear it ourselves.
+  const reset = useCallback(() => {
+    setImportData("");
+    setValidationStatus(null);
+    setImportResult(null);
+    setImportProgress(null);
+    setIsDragOver(false);
+    setActiveTab("paste");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, []);
+
+  const handleClose = useCallback(() => {
+    if (isImporting) return;
+    if (successTimer.current !== null) {
+      window.clearTimeout(successTimer.current);
+      successTimer.current = null;
+    }
+    reset();
+    onClose();
+  }, [isImporting, onClose, reset]);
+
+  useEffect(
+    () => () => {
+      if (successTimer.current !== null) window.clearTimeout(successTimer.current);
+    },
+    [],
+  );
 
   // Validate import data format
   const validateImportData = (data: string) => {
@@ -685,12 +715,10 @@ export default function ImportModal({
         message: `Successfully imported ${solves.length} solves!`,
       });
 
-      // Clear form after successful import
-      setTimeout(() => {
-        setImportData("");
-        setValidationStatus(null);
-        setImportResult(null);
-        setImportProgress(null);
+      // Let the success message sit for a moment, then clear and close.
+      successTimer.current = window.setTimeout(() => {
+        successTimer.current = null;
+        reset();
         onClose();
       }, 2000);
     } catch (error) {
@@ -729,8 +757,7 @@ export default function ImportModal({
     reader.onload = (e) => {
       const content = e.target?.result as string;
       if (content) {
-        setImportData(content);
-        handleDataChange(content);
+        handleDataChange(content); // sets importData and validates in one go
         setActiveTab("paste"); // Switch to paste tab to show content
       }
     };
@@ -772,7 +799,7 @@ export default function ImportModal({
   return (
     <Modal
       open={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       size="xl"
       mobile="fullscreen"
       dismissible={!isImporting}
@@ -901,7 +928,7 @@ export default function ImportModal({
         </section>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose} disabled={isImporting}>
+        <Button variant="secondary" onClick={handleClose} disabled={isImporting}>
           {importResult?.success ? "Close" : "Cancel"}
         </Button>
         <Button

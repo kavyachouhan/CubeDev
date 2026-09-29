@@ -5,7 +5,6 @@ import {
   MapPin,
   Calendar,
   ExternalLink,
-  Trophy,
   Clock,
   User,
 } from "lucide-react";
@@ -47,41 +46,6 @@ interface ProfileSidebarProps {
   cubeDevUser: any;
   personalRecords: WCAPersonalRecord[] | null;
 }
-
-function formatTime(centiseconds: number): string {
-  if (!centiseconds || centiseconds <= 0) return "--";
-
-  const totalMs = centiseconds * 10;
-  const minutes = Math.floor(totalMs / 60000);
-  const seconds = Math.floor((totalMs % 60000) / 1000);
-  const milliseconds = totalMs % 1000;
-
-  if (minutes > 0) {
-    return `${minutes}:${seconds.toString().padStart(2, "0")}.${milliseconds.toString().padStart(3, "0")}`;
-  } else {
-    return `${seconds}.${milliseconds.toString().padStart(3, "0")}`;
-  }
-}
-
-const EVENT_NAMES = {
-  "333": "3×3 Cube",
-  "222": "2×2 Cube",
-  "444": "4×4 Cube",
-  "555": "5×5 Cube",
-  "666": "6×6 Cube",
-  "777": "7×7 Cube",
-  "333bf": "3×3 BLD",
-  "333fm": "3×3 FM",
-  "333oh": "3×3 OH",
-  clock: "Clock",
-  minx: "Megaminx",
-  pyram: "Pyraminx",
-  skewb: "Skewb",
-  sq1: "Square-1",
-  "444bf": "4×4 BLD",
-  "555bf": "5×5 BLD",
-  "333mbf": "3×3 MBLD",
-};
 
 export default function ProfileSidebar({
   person,
@@ -191,7 +155,7 @@ export default function ProfileSidebar({
 
         {/* CubeDev Membership Info */}
         {cubeDevUser && (
-          <div className="space-y-2 p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) mb-6">
+          <div className="space-y-1.5 px-3 py-2.5 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) mb-6">
             {joinDate && (
               <div className="flex items-center justify-center gap-2 text-xs text-(--text-muted)">
                 <Calendar className="w-3 h-3" />
@@ -224,75 +188,6 @@ export default function ProfileSidebar({
         </div>
       </div>
 
-      {/* Best Events Card */}
-      {personalRecords && personalRecords.length > 0 && (
-        <div className="timer-card">
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-(--primary)" />
-            Top Events
-          </h3>
-          <div className="space-y-3">
-            {personalRecords
-              .filter(
-                (record) =>
-                  record.world_ranking > 0 ||
-                  (record.average_world_ranking &&
-                    record.average_world_ranking > 0),
-              )
-              .sort((a, b) => {
-                const aRank = Math.min(
-                  a.world_ranking || Infinity,
-                  a.average_world_ranking || Infinity,
-                );
-                const bRank = Math.min(
-                  b.world_ranking || Infinity,
-                  b.average_world_ranking || Infinity,
-                );
-                return aRank - bRank;
-              })
-              .slice(0, 5)
-              .map((record) => {
-                const bestRank = Math.min(
-                  record.world_ranking > 0 ? record.world_ranking : Infinity,
-                  record.average_world_ranking &&
-                    record.average_world_ranking > 0
-                    ? record.average_world_ranking
-                    : Infinity,
-                );
-                const bestTime =
-                  record.world_ranking > 0 &&
-                  record.world_ranking <=
-                    (record.average_world_ranking || Infinity)
-                    ? record.best
-                    : record.average;
-
-                return (
-                  <div
-                    key={record.event_id}
-                    className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium text-(--text-primary) font-inter">
-                        {EVENT_NAMES[
-                          record.event_id as keyof typeof EVENT_NAMES
-                        ] || record.event_id}
-                      </div>
-                      <div className="text-xs text-(--text-muted)">
-                        {formatTime(bestTime || 0)}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-bold text-(--primary)">
-                        #{bestRank}
-                      </div>
-                      <div className="text-xs text-(--text-muted)">WR</div>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -198,8 +198,10 @@ export function AppShell({
                 aria-current={active ? "page" : undefined}
                 title={collapsed ? section.name : undefined}
                 className={cx(
-                  "sidebar-nav-item group relative flex items-center rounded-(--radius-control) overflow-hidden",
-                  collapsed ? "justify-center h-11" : "gap-3 px-3 py-2.5",
+                  "sidebar-nav-item group relative flex items-center rounded-(--radius-control)",
+                  collapsed
+                    ? "justify-center h-11 overflow-hidden"
+                    : "gap-3 px-3 py-2 min-h-11",
                   active
                     ? "active bg-(--primary) text-(--on-primary)"
                     : "text-(--text-secondary) hover:bg-(--surface-elevated) hover:text-(--primary)",
@@ -226,9 +228,12 @@ export function AppShell({
                     >
                       {section.name}
                     </span>
+                    {/* Wraps rather than truncating: the descriptions are the
+                        only thing distinguishing two similar section names, so
+                        an ellipsis mid-phrase costs more than a second line. */}
                     <span
                       className={cx(
-                        "block text-xs font-inter truncate",
+                        "block text-xs font-inter leading-snug",
                         active ? "text-(--on-primary)/75" : "text-(--text-muted)",
                       )}
                     >
@@ -266,19 +271,23 @@ export function AppShell({
       )}
 
       <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
-        <header className="lg:hidden sticky top-0 z-(--z-sticky) flex items-center gap-2 h-14 px-2 bg-(--surface) border-b border-(--border)">
-          <IconButton
-            ref={menuButtonRef}
-            aria-label="Open menu"
-            aria-expanded={drawerOpen}
-            icon={<Menu />}
-            size="lg"
-            onClick={() => setDrawerOpen(true)}
-          />
-          <p className="flex-1 min-w-0 text-lg text-(--text-primary) font-statement truncate">
+        {/* Three equal end columns keep the title optically centred however
+            many actions the page hangs on the right. */}
+        <header className="lg:hidden sticky top-0 z-(--z-sticky) grid grid-cols-[1fr_auto_1fr] items-center gap-2 h-14 px-2 bg-(--surface) border-b border-(--border)">
+          <div className="flex items-center justify-self-start">
+            <IconButton
+              ref={menuButtonRef}
+              aria-label="Open menu"
+              aria-expanded={drawerOpen}
+              icon={<Menu />}
+              size="lg"
+              onClick={() => setDrawerOpen(true)}
+            />
+          </div>
+          <p className="min-w-0 text-center text-lg text-(--text-primary) font-statement truncate">
             {title}
           </p>
-          <div className="flex items-center gap-1 pr-1">
+          <div className="flex items-center justify-end gap-1 pr-1">
             {mobileActions?.(() => setDrawerOpen(true))}
           </div>
         </header>

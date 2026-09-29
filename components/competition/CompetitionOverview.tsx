@@ -35,7 +35,9 @@ import { WCA_EVENTS, WCACompetition } from "./CompetitionBrowser";
 import InspectionViolationTrainer from "./InspectionViolationTrainer";
 import JudgeErrorSimulator from "./JudgeErrorSimulator";
 import MockSchedule from "./MockSchedule";
+import { Badge } from "@/components/ui/Badge";
 import { Button, ButtonLink } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   CompetitionOverviewSkeleton,
   CompetitionEventsTabSkeleton,
@@ -649,25 +651,25 @@ export default function CompetitionOverview() {
           {/* My Simulations Tab */}
           {activeTab === "history" && (
             <div className="space-y-4 sm:space-y-6">
-              <h3 className="text-base sm:text-lg font-bold text-(--text-primary)">
+              <h3 className="type-card-title wrap-break-word">
                 My Simulations for {competition.name}
               </h3>
 
               {!simulations || simulations.length === 0 ? (
-                <div className="timer-card text-center py-12">
-                  <History className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
-                  <h4 className="text-lg font-medium text-(--text-primary) mb-2">
-                    No Simulations Yet
-                  </h4>
-                  <p className="text-sm text-(--text-muted) mb-4">
-                    Start a simulation to practice for this competition.
-                  </p>
-                  <Button
-                    onClick={handleSimulate}
-                    iconLeft={<Play className="w-4 h-4" />}
-                  >
-                    Start simulation
-                  </Button>
+                <div className="timer-card">
+                  <EmptyState
+                    icon={<History />}
+                    title="No Simulations Yet"
+                    description="Start a simulation to practice for this competition."
+                    action={
+                      <Button
+                        onClick={handleSimulate}
+                        iconLeft={<Play className="w-4 h-4" />}
+                      >
+                        Start simulation
+                      </Button>
+                    }
+                  />
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -690,23 +692,24 @@ export default function CompetitionOverview() {
                         href={`/cube-lab/competitions/${competitionId}/simulate/${sim._id}`}
                         className="block p-4 rounded-(--radius-control) border border-(--border) hover:border-(--primary)/50 bg-(--surface) hover:bg-(--surface-elevated) transition-all"
                       >
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                        <div className="flex flex-col gap-2 mb-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge
+                              shape="pill"
+                              tone={
                                 sim.status === "completed"
-                                  ? "bg-(--success)/10 text-(--success)"
+                                  ? "success"
                                   : sim.status === "in-progress"
-                                    ? "bg-(--warning)/10 text-(--warning)"
-                                    : "bg-(--text-muted)/10 text-(--text-muted)"
-                              }`}
+                                    ? "warning"
+                                    : "neutral"
+                              }
                             >
                               {sim.status === "completed"
                                 ? "Completed"
                                 : sim.status === "in-progress"
                                   ? "In Progress"
                                   : "Abandoned"}
-                            </span>
+                            </Badge>
                             <span className="text-xs text-(--text-muted)">
                               {new Date(sim.startedAt).toLocaleDateString(
                                 "en-US",
@@ -832,19 +835,18 @@ export default function CompetitionOverview() {
           <div className="timer-card border-(--primary)/20">
             <div className="flex flex-col gap-4">
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-(--text-primary)">
+                <h3 className="type-card-title">
                   Practice for this Competition
                 </h3>
-                <p className="text-xs sm:text-sm text-(--text-muted) mt-1">
+                <p className="type-caption mt-1">
                   Simulate the competition atmosphere with configurable
                   pressure, noise, and more.
                 </p>
               </div>
               <Button
-                size="lg"
                 onClick={handleSimulate}
                 className="w-full sm:w-auto"
-                iconLeft={<Play className="w-5 h-5" />}
+                iconLeft={<Play className="w-4 h-4" />}
               >
                 Simulate competition
               </Button>

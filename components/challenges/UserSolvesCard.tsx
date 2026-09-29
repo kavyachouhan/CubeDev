@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, Clock, CircleCheck } from "lucide-react";
+import { Clock, CircleCheck } from "lucide-react";
+import {
+  Badge,
+  CollapsibleCard,
+  EmptyState,
+  StatTile,
+  useCollapsed,
+} from "@/components/ui";
 
 interface RoomSolve {
   _id: string;
@@ -32,7 +39,10 @@ export default function UserSolvesCard({
   bestSingle,
   average,
 }: UserSolvesCardProps) {
-  const [showSolves, setShowSolves] = useState(true);
+  const { open: showSolves, onOpenChange: setShowSolves } = useCollapsed(
+    "challenge-room-solves-expanded",
+    true,
+  );
   const [selectedSolve, setSelectedSolve] = useState<number | null>(null);
 
   // Format time function
@@ -48,64 +58,49 @@ export default function UserSolvesCard({
   };
 
   return (
-    <div className="timer-card">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
-          Your Solves
-        </h3>
-        <div className="flex items-center gap-2">
-          <div className="text-sm text-(--text-muted) font-inter">
+    <CollapsibleCard
+      title="Your Solves"
+      open={showSolves}
+      onOpenChange={setShowSolves}
+      actions={
+        <>
+          <span className="type-caption">
             {solves.length} / {totalSolves}
-          </div>
+          </span>
           {isCompleted && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-(--success)/15 border border-(--success)/30 rounded-full">
-              <CircleCheck className="w-3 h-3 text-(--success)" />
-              <span className="text-xs text-(--success) font-medium font-inter">
-                Complete
-              </span>
-            </div>
+            <Badge tone="success" size="sm" shape="pill" icon={<CircleCheck />}>
+              Complete
+            </Badge>
           )}
-          <button
-            onClick={() => setShowSolves(!showSolves)}
-            className="p-2 text-(--text-muted) hover:text-(--primary) transition-colors"
-            title={showSolves ? "Hide solves" : "Show solves"}
-          >
-            {showSolves ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-
+        </>
+      }
+    >
       {/* Summary Stats */}
       {(isCompleted || solves.length >= 3) && (
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) p-3">
-            <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-1">
-              Best Single
-            </div>
-            <div className="text-lg font-mono font-bold text-(--success)">
-              {bestSingle && bestSingle !== Infinity
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-4">
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            tone="success"
+            label="Best Single"
+            value={
+              bestSingle && bestSingle !== Infinity
                 ? formatTime(bestSingle)
-                : "--:--"}
-            </div>
-          </div>
-          <div className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) p-3">
-            <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-1">
-              {format.toUpperCase()} Average
-            </div>
-            <div className="text-lg font-mono font-bold text-(--text-primary)">
-              {average && average !== Infinity ? formatTime(average) : "--:--"}
-            </div>
-          </div>
+                : "--:--"
+            }
+          />
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            label={`${format.toUpperCase()} Average`}
+            value={
+              average && average !== Infinity ? formatTime(average) : "--:--"
+            }
+          />
         </div>
       )}
 
-      {showSolves && (
-        <div className="space-y-2 max-h-64 overflow-y-auto">
+      <div className="space-y-2 max-h-64 overflow-y-auto">
           {/* Completed Solves */}
           {solves.map((solve, index) => (
             <div
@@ -258,14 +253,13 @@ export default function UserSolvesCard({
           )}
 
           {solves.length === 0 && (
-            <div className="text-center py-8 text-(--text-muted)">
-              <Clock className="w-8 h-8 mx-auto mb-2 text-(--text-muted) opacity-50" />
-              <p className="text-sm">No solves recorded yet</p>
-              <p className="text-xs mt-1">Complete solves to see them here</p>
-            </div>
+            <EmptyState
+              icon={<Clock />}
+              title="No solves recorded yet"
+              description="Complete solves to see them here"
+            />
           )}
-        </div>
-      )}
-    </div>
+      </div>
+    </CollapsibleCard>
   );
 }

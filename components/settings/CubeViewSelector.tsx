@@ -38,6 +38,8 @@ export default function CubeViewSelector({ compact }: CubeViewSelectorProps) {
       <SegmentedControl
         aria-label="Cube view"
         size="sm"
+        fullWidth="mobile"
+        className="min-w-0 flex-1 sm:flex-none"
         value={cubeViewMode}
         onChange={setCubeViewMode}
         options={viewModes.map((mode) => ({

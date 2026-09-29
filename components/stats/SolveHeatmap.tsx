@@ -94,8 +94,8 @@ function usePersistentBool(key: string, defaultValue: boolean) {
 export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps) {
   const [hoveredDay, setHoveredDay] = useState<DayData | null>(null);
   const [clickedDay, setClickedDay] = useState<DayData | null>(null);
-  const [selectedPeriod, setSelectedPeriod] = useState<"3m" | "6m" | "1y">(
-    "1y"
+  const [selectedPeriod, setSelectedPeriod] = useState<"3 months" | "6 months" | "1 year">(
+    "1 year"
   );
   const [tooltipPosition, setTooltipPosition] = useState<{
     x: number;
@@ -131,7 +131,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
 
     // Calculate days back from today
     const daysBack =
-      selectedPeriod === "3m" ? 90 : selectedPeriod === "6m" ? 180 : 365;
+      selectedPeriod === "3 months" ? 90 : selectedPeriod === "6 months" ? 180 : 365;
 
     const startDate = new Date(today);
     startDate.setDate(today.getDate() - daysBack + 1); // +1 to include start date
@@ -262,7 +262,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
   const stats = useMemo(() => {
     // Calculate days back from today
     const daysBack =
-      selectedPeriod === "3m" ? 90 : selectedPeriod === "6m" ? 180 : 365;
+      selectedPeriod === "3 months" ? 90 : selectedPeriod === "6 months" ? 180 : 365;
 
     const today = new Date();
     today.setHours(23, 59, 59, 999);
@@ -408,31 +408,35 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
       open={showHeatmap}
       onOpenChange={setShowHeatmap}
       variant="static"
+      stackActions
       actions={
         showHeatmap ? (
           <SegmentedControl
             aria-label="Activity period"
             size="sm"
+            fullWidth="mobile"
             value={selectedPeriod}
             onChange={setSelectedPeriod}
             options={[
-              { value: "3m", label: "3M", "aria-label": "3 months" },
-              { value: "6m", label: "6M", "aria-label": "6 months" },
-              { value: "1y", label: "1Y", "aria-label": "1 year" },
+              { value: "3 months", label: "3 months", "aria-label": "3 months" },
+              { value: "6 months", label: "6 months", "aria-label": "6 months" },
+              { value: "1 year", label: "1 year", "aria-label": "1 year" },
             ]}
           />
         ) : undefined
       }
     >
       <div className="space-y-5">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
             <StatTile
+              mobileLayout="row"
               label="Total Solves"
               icon={<Target />}
               mono={false}
               value={stats.totalSolves.toLocaleString()}
             />
             <StatTile
+              mobileLayout="row"
               label="Active Days"
               icon={<Calendar />}
               mono={false}
@@ -444,6 +448,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
               }
             />
             <StatTile
+              mobileLayout="row"
               label="Current Streak"
               icon={<Flame />}
               mono={false}
@@ -455,6 +460,7 @@ export default function SolveHeatmap({ solves, heatmapData }: SolveHeatmapProps)
               }
             />
             <StatTile
+              mobileLayout="row"
               label="Daily Average"
               icon={<TrendingUp />}
               mono={false}

@@ -1,16 +1,13 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import { Calendar, TrendingUp, Target, Flame } from "lucide-react";
 import {
-  Calendar,
-  TrendingUp,
-  Target,
-  Flame,
-  Eye,
-  EyeOff,
-  ChevronDown,
-  ChevronRight,
-} from "lucide-react";
+  CollapsibleCard,
+  SegmentedControl,
+  StatTile,
+  useCollapsed,
+} from "@/components/ui";
 
 interface ReviewSession {
   _id: string;
@@ -60,25 +57,6 @@ const MONTHS = [
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-// Custom hook for persistent boolean state in localStorage
-function usePersistentBool(key: string, defaultValue: boolean) {
-  const [state, setState] = useState<boolean>(() => {
-    if (typeof window === "undefined") return defaultValue;
-    try {
-      const raw = localStorage.getItem(key);
-      return raw === null ? defaultValue : JSON.parse(raw);
-    } catch {
-      return defaultValue;
-    }
-  });
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(state));
-    } catch {}
-  }, [key, state]);
-  return [state, setState] as const;
-}
-
 export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
   const [hoveredDay, setHoveredDay] = useState<DayData | null>(null);
   const [clickedDay, setClickedDay] = useState<DayData | null>(null);
@@ -92,9 +70,9 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
     x: 0,
     y: 0,
   });
-  const [showHeatmap, setShowHeatmap] = usePersistentBool(
+  const { open: showHeatmap, onOpenChange: setShowHeatmap } = useCollapsed(
     "cubelab-algorithm-heatmap-expanded",
-    true
+    true,
   );
 
   // Handle click outside to close clicked day tooltip
@@ -388,139 +366,77 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowHeatmap(!showHeatmap)}
-            className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-            title={
-              showHeatmap ? "Hide review activity" : "Show review activity"
-            }
-          >
-            <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-              Review Activity
-            </h3>
-            {showHeatmap ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-          <button
-            onClick={() => setShowHeatmap(!showHeatmap)}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-badge) transition-colors"
-            title={
-              showHeatmap ? "Hide review activity" : "Show review activity"
-            }
-          >
-            {showHeatmap ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-
-        {showHeatmap && (
-          <div className="flex items-center gap-1 p-1 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) sm:overflow-x-auto">
-            {(
-              [
-                ["3m", "3 months"],
-                ["6m", "6 months"],
-                ["1y", "1 year"],
-              ] as const
-            ).map(([period, label]) => (
-              <button
-                key={period}
-                onClick={() => setSelectedPeriod(period)}
-                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-(--radius-badge) transition-all whitespace-nowrap flex-1 sm:flex-none ${
-                  selectedPeriod === period
-                    ? "bg-(--primary) text-(--on-primary) shadow-sm"
-                    : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface)"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {showHeatmap && (
-        <>
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
-                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                    Total Reviews
-                  </div>
-                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                    {stats.totalReviews.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--accent)/10 rounded-(--radius-control)">
-                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--accent)" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                    Active Days
-                  </div>
-                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                    {stats.activeDays}{" "}
-                    <span className="text-xs sm:text-sm text-(--text-muted) font-normal">
-                      / {stats.totalDays}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--warning)/10 rounded-(--radius-control)">
-                  <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-(--warning)" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                    Current Streak
-                  </div>
-                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                    {stats.currentStreak}{" "}
-                    <span className="text-xs sm:text-sm text-(--text-muted) font-normal">
-                      days
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-(--success)/10 rounded-(--radius-control)">
-                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-(--success)" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
-                    Daily Average
-                  </div>
-                  <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                    {stats.averagePerDay.toFixed(1)}
-                  </div>
-                </div>
-              </div>
-            </div>
+    <CollapsibleCard
+      title="Review Activity"
+      open={showHeatmap}
+      onOpenChange={setShowHeatmap}
+      variant="static"
+      stackActions
+      rootProps={{ "data-tour": "heatmap" }}
+      actions={
+        showHeatmap ? (
+          <SegmentedControl
+            aria-label="Activity period"
+            size="sm"
+            fullWidth="mobile"
+            value={selectedPeriod}
+            onChange={setSelectedPeriod}
+            options={[
+              { value: "3m", label: "3 months", "aria-label": "3 months" },
+              { value: "6m", label: "6 months", "aria-label": "6 months" },
+              { value: "1y", label: "1 year", "aria-label": "1 year" },
+            ]}
+          />
+        ) : undefined
+      }
+    >
+      <div className="space-y-5">
+          {/* Stats */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+            <StatTile
+              mobileLayout="row"
+              label="Total Reviews"
+              icon={<Target />}
+              mono={false}
+              value={stats.totalReviews.toLocaleString()}
+            />
+            <StatTile
+              mobileLayout="row"
+              label="Active Days"
+              icon={<Calendar />}
+              mono={false}
+              value={
+                <>
+                  {stats.activeDays}
+                  <span className="text-sm text-(--text-muted) font-normal">
+                    {" "}
+                    / {stats.totalDays}
+                  </span>
+                </>
+              }
+            />
+            <StatTile
+              mobileLayout="row"
+              label="Current Streak"
+              icon={<Flame />}
+              mono={false}
+              value={
+                <>
+                  {stats.currentStreak}
+                  <span className="text-sm text-(--text-muted) font-normal">
+                    {" "}
+                    days
+                  </span>
+                </>
+              }
+            />
+            <StatTile
+              mobileLayout="row"
+              label="Daily Average"
+              icon={<TrendingUp />}
+              mono={false}
+              value={stats.averagePerDay.toFixed(1)}
+            />
           </div>
 
           {/* Heatmap */}
@@ -706,7 +622,8 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
             {/* Tooltip */}
             {(hoveredDay || clickedDay) && (
               <div
-                className="absolute bg-(--surface) border border-(--border) rounded-(--radius-control) p-3 shadow-xl z-(--z-dropdown) pointer-events-none max-w-xs text-sm"
+                role="tooltip"
+                className="absolute popover-panel p-3 z-(--z-dropdown) pointer-events-none max-w-xs text-sm font-inter"
                 style={{
                   left: tooltipPosition.x,
                   top: tooltipPosition.y,
@@ -728,8 +645,7 @@ export default function AlgorithmHeatmap({ reviews }: AlgorithmHeatmapProps) {
               </div>
             )}
           </div>
-        </>
-      )}
-    </div>
+      </div>
+    </CollapsibleCard>
   );
 }

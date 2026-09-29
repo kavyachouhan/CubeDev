@@ -140,6 +140,12 @@ export interface PageHeaderProps {
    * (top-level CubeLab sections). Actions and description remain.
    */
   hideTitleOnMobile?: boolean;
+  /**
+   * Let the actions fill the row below `sm` instead of hugging the left edge.
+   * Use it when the action is a single primary button that reads as the page's
+   * main affordance; pass `fullWidth` (or `w-full sm:w-auto`) on the button too.
+   */
+  stretchActionsOnMobile?: boolean;
   className?: string;
 }
 
@@ -152,6 +158,7 @@ export function PageHeader({
   breadcrumbs,
   actions,
   hideTitleOnMobile,
+  stretchActionsOnMobile,
   className,
 }: PageHeaderProps) {
   return (
@@ -172,7 +179,16 @@ export function PageHeader({
           {description && <p className="type-body mt-1 max-w-2xl">{description}</p>}
         </div>
         {actions && (
-          <div className="flex flex-wrap items-center gap-2 shrink-0">{actions}</div>
+          <div
+            className={cx(
+              "flex flex-wrap items-center gap-2",
+              stretchActionsOnMobile
+                ? "w-full *:flex-1 sm:w-auto sm:shrink-0 sm:*:flex-initial"
+                : "shrink-0",
+            )}
+          >
+            {actions}
+          </div>
         )}
       </div>
     </header>

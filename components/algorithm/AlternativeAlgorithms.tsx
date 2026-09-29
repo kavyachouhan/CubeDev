@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { CheckCircle2, TrendingUp, Users, Zap } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import CubeVisualizer3D from "./CubeVisualizer3D";
 
 type PuzzleType =
@@ -96,11 +98,7 @@ export default function AlternativeAlgorithms({
                         </div>
                       )}
 
-                      {alg.isDefault && (
-                        <span className="px-2 py-0.5 bg-(--primary)/10 text-(--primary) rounded">
-                          Recommended
-                        </span>
-                      )}
+                      {alg.isDefault && <Badge tone="primary">Recommended</Badge>}
                     </div>
 
                     {/* Fingertricks */}
@@ -130,32 +128,51 @@ export default function AlternativeAlgorithms({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-wrap gap-2 mt-3">
-                  <button
-                    onClick={() => setExpandedAlg(isExpanded ? null : alg._id)}
-                    className="px-3 py-1.5 bg-(--surface) hover:bg-(--background) border border-(--border) text-sm text-(--text-secondary) rounded transition-colors"
-                  >
-                    {isExpanded ? "Hide Preview" : "Preview"}
-                  </button>
-
-                  {currentAlgId !== alg._id && (
-                    <button
-                      onClick={() => onSelectAlgorithm(alg._id)}
-                      className="px-3 py-1.5 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) text-sm rounded transition-colors whitespace-nowrap"
+                <div className="mt-3 space-y-2">
+                  {/* "Use This Algorithm" doesn't fit a phone row beside the
+                      toggle, and truncating it strands "Use This Algorit…", so
+                      below `sm` it shortens to "Use" and the pair sits on an
+                      even split. */}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="flex-1 justify-center sm:flex-none sm:min-w-28"
+                      onClick={() => setExpandedAlg(isExpanded ? null : alg._id)}
                     >
-                      Use This Algorithm
-                    </button>
-                  )}
+                      {isExpanded ? (
+                        <>
+                          Hide<span className="hidden sm:inline">&nbsp;Preview</span>
+                        </>
+                      ) : (
+                        "Preview"
+                      )}
+                    </Button>
+
+                    {currentAlgId !== alg._id && (
+                      <Button
+                        size="sm"
+                        aria-label="Use this algorithm"
+                        className="flex-1 justify-center sm:flex-none"
+                        onClick={() => onSelectAlgorithm(alg._id)}
+                      >
+                        Use<span className="hidden sm:inline">This Algorithm</span>
+                      </Button>
+                    )}
+                  </div>
 
                   {alg.videoUrl && (
-                    <a
+                    <ButtonLink
+                      size="sm"
+                      variant="secondary"
+                      fullWidth
+                      className="sm:w-auto"
                       href={alg.videoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1.5 bg-(--surface) hover:bg-(--background) border border-(--border) text-sm text-(--text-secondary) rounded transition-colors whitespace-nowrap"
                     >
                       Video Tutorial
-                    </a>
+                    </ButtonLink>
                   )}
                 </div>
 

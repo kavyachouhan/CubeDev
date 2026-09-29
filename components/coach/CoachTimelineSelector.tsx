@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Calendar, Clock, AlertTriangle, CheckCircle2 } from "lucide-react";
-import { Field, Input } from "@/components/ui/Field";
+import { Field } from "@/components/ui/Field";
+import { DateTimePicker } from "@/components/ui/DateTimePicker";
 import { OnboardingData } from "./CoachOnboarding";
 
 interface CoachTimelineSelectorProps {
@@ -130,10 +131,9 @@ export default function CoachTimelineSelector({
     }
   };
 
-  const handleCustomDateChange = (dateString: string) => {
-    const date = new Date(dateString);
-    if (!isNaN(date.getTime())) {
-      onUpdate({ targetDate: date.getTime() });
+  const handleCustomDateChange = (value: number | null) => {
+    if (value !== null) {
+      onUpdate({ targetDate: value });
     }
   };
 
@@ -212,19 +212,13 @@ export default function CoachTimelineSelector({
       {selectedOption === "custom" && (
         <div className="timer-card">
           <Field label="Select target date">
-            <Input
-              type="date"
-              value={
-                data.targetDate
-                  ? new Date(data.targetDate).toISOString().split("T")[0]
-                  : ""
-              }
-              onChange={(e) => handleCustomDateChange(e.target.value)}
-              min={
-                new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-                  .toISOString()
-                  .split("T")[0]
-              }
+            <DateTimePicker
+              mode="date"
+              label="Target date"
+              value={data.targetDate ?? null}
+              min={Date.now() + 7 * 24 * 60 * 60 * 1000}
+              clearable={false}
+              onChange={handleCustomDateChange}
             />
           </Field>
         </div>

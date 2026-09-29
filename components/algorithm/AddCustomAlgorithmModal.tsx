@@ -155,7 +155,7 @@ export default function AddCustomAlgorithmModal({
             </Alert>
           )}
 
-          <Field label="Notes" hint="Optional">
+          <Field label="Notes">
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

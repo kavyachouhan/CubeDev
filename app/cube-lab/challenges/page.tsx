@@ -37,6 +37,7 @@ export default function ChallengesPage() {
             title="Challenge Rooms"
             description="Compete on the same scrambles with other cubers."
             hideTitleOnMobile
+            stretchActionsOnMobile
             actions={
               <Menu
                 title="Quick action"

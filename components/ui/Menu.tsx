@@ -26,6 +26,7 @@ import {
   useAnchoredPosition,
   useMounted,
   useOverlay,
+  useParentLayer,
 } from "./overlay";
 import type { Placement } from "./overlay";
 
@@ -82,6 +83,9 @@ function AnchoredLayer({
   const isPhone = useIsPhone();
   const asSheet = isPhone && mobile === "sheet";
   const mounted = useMounted();
+  // A panel opened from inside a dialog has to clear that dialog: --z-dropdown
+  // sits below --z-modal, so an anchored menu in a modal would paint behind it.
+  const parentLayer = useParentLayer();
   const panelRef = useRef<HTMLDivElement>(null);
   const style = useAnchoredPosition(
     open && !asSheet,
@@ -143,7 +147,7 @@ function AnchoredLayer({
   return createPortal(
     <div
       ref={panelRef}
-      style={style}
+      style={parentLayer ? { ...style, zIndex: parentLayer + 1 } : style}
       className={cx(
         "popover-panel z-(--z-dropdown) flex flex-col overflow-hidden animate-menu-in",
         "min-w-48 max-w-[min(22rem,calc(100vw-1rem))]",
@@ -232,6 +236,8 @@ export interface MenuProps {
   title: string;
   placement?: Placement;
   mobile?: LayerMobile;
+  /** Make the panel at least as wide as its trigger (full-width triggers). */
+  matchWidth?: boolean;
   className?: string;
 }
 
@@ -242,6 +248,7 @@ export function Menu({
   title,
   placement = "bottom-end",
   mobile = "sheet",
+  matchWidth,
   className,
 }: MenuProps) {
   const [open, setOpen] = useState(false);
@@ -271,6 +278,7 @@ export function Menu({
         role="menu"
         placement={placement}
         mobile={mobile}
+        matchWidth={matchWidth}
         panelClassName={className}
         onKeyDown={onKeyDown}
       >

@@ -64,13 +64,17 @@ export default function ProfileSection() {
               href={`https://www.worldcubeassociation.org/persons/${user.wcaId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className={buttonClasses({ variant: "primary", size: "md", fullWidth: true })}
+              className={buttonClasses({
+                variant: "secondary",
+                size: "sm",
+                className: "w-full sm:w-auto",
+              })}
             >
               <ExternalLink className="w-4 h-4" aria-hidden />
               View WCA Profile
             </a>
           ) : (
-            <Button fullWidth onClick={handleReauth}>
+            <Button size="sm" className="w-full sm:w-auto" onClick={handleReauth}>
               Re-auth with WCA
             </Button>
           )}

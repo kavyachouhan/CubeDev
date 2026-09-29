@@ -24,10 +24,11 @@ import {
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
 import { Badge } from "@/components/ui/Badge";
-import { ButtonLink } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { StatTile } from "@/components/ui/StatTile";
 
 export default function AlgorithmCasePage() {
   const params = useParams();
@@ -217,50 +218,57 @@ export default function AlgorithmCasePage() {
 
               {/* Progress Stats (if learning) */}
               {userProgress && userProgress.learningStage !== "new" && (
-                <div className="timer-card border-l-4 border-(--primary) overflow-x-auto">
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 min-w-max lg:min-w-0">
-                    <div>
-                      <div className="text-xs text-(--text-muted) mb-1">
-                        Status
-                      </div>
-                      <div className="text-lg font-bold text-(--primary) font-statement capitalize">
-                        {userProgress.learningStage}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-(--text-muted) mb-1">
-                        Reviews
-                      </div>
-                      <div className="text-lg font-bold text-(--text-primary) font-statement">
-                        {userProgress.reviewCount}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-(--text-muted) mb-1">
-                        Accuracy
-                      </div>
-                      <div
-                        className={`text-lg font-bold font-statement ${
-                          userProgress.reviewCount === 0
-                            ? "text-(--text-muted)"
-                            : userProgress.accuracyRate >= 90
-                              ? "text-(--success)"
-                              : userProgress.accuracyRate >= 70
-                                ? "text-(--warning)"
-                                : "text-(--error)"
-                        }`}
-                      >
-                        {userProgress.reviewCount === 0
+                <Card variant="static" className="border-l-4 border-(--primary)">
+                  {/* Wraps instead of scrolling sideways: the row used
+                      `min-w-max` inside `overflow-x-auto`, so on a phone the
+                      last two stats sat off the edge of the card. */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+                    <StatTile
+                      size="sm"
+                      mobileLayout="row"
+                      mono={false}
+                      tone="primary"
+                      label="Status"
+                      value={
+                        <span className="capitalize">
+                          {userProgress.learningStage}
+                        </span>
+                      }
+                    />
+                    <StatTile
+                      size="sm"
+                      mobileLayout="row"
+                      mono={false}
+                      label="Reviews"
+                      value={userProgress.reviewCount}
+                    />
+                    <StatTile
+                      size="sm"
+                      mobileLayout="row"
+                      mono={false}
+                      label="Accuracy"
+                      tone={
+                        userProgress.reviewCount === 0
+                          ? "default"
+                          : userProgress.accuracyRate >= 90
+                            ? "success"
+                            : userProgress.accuracyRate >= 70
+                              ? "warning"
+                              : "error"
+                      }
+                      value={
+                        userProgress.reviewCount === 0
                           ? "N/A"
-                          : `${Math.round(userProgress.accuracyRate)}%`}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-(--text-muted) mb-1">
-                        Next Review
-                      </div>
-                      <div className="text-sm sm:text-base lg:text-lg font-bold text-(--text-primary) font-statement">
-                        {userProgress.learningStage === "mastered"
+                          : `${Math.round(userProgress.accuracyRate)}%`
+                      }
+                    />
+                    <StatTile
+                      size="sm"
+                      mobileLayout="row"
+                      mono={false}
+                      label="Next Review"
+                      value={
+                        userProgress.learningStage === "mastered"
                           ? "Complete"
                           : userProgress.nextReviewDate
                             ? new Date(
@@ -269,11 +277,11 @@ export default function AlgorithmCasePage() {
                                 month: "short",
                                 day: "numeric",
                               })
-                            : "Not set"}
-                      </div>
-                    </div>
+                            : "Not set"
+                      }
+                    />
                   </div>
-                </div>
+                </Card>
               )}
 
               {/* Main Content Grid */}
@@ -479,114 +487,92 @@ export default function AlgorithmCasePage() {
               )}
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 {!userProgress || userProgress.learningStage === "new" ? (
                   <>
-                    <button
+                    <Button
+                      fullWidth
                       onClick={handleStartLearning}
-                      className="w-full sm:flex-1 py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-medium flex items-center justify-center gap-2"
+                      iconLeft={<PlayCircle className="w-4 h-4 shrink-0" />}
                     >
-                      <PlayCircle className="w-5 h-5 shrink-0" />
-                      <span className="truncate">Start Learning This Case</span>
-                    </button>
-                    <button
-                      onClick={handleMarkAsLearned}
-                      disabled={isMarkingLearned}
-                      className="w-full sm:flex-1 py-3 border border-(--primary) text-(--primary) hover:bg-(--primary)/10 rounded-(--radius-control) transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
-                    >
-                      <CheckCircle2 className="w-5 h-5 shrink-0" />
-                      <span className="truncate">
-                        {isMarkingLearned ? "Marking..." : "Already Know This"}
+                      <span className="sm:hidden">Learn</span>
+                      <span className="hidden sm:inline">
+                        Start Learning This Case
                       </span>
-                    </button>
+                    </Button>
+                    <Button
+                      fullWidth
+                      variant="secondary"
+                      onClick={handleMarkAsLearned}
+                      loading={isMarkingLearned}
+                      loadingText="Marking…"
+                      iconLeft={<CheckCircle2 className="w-4 h-4 shrink-0" />}
+                    >
+                      <span className="sm:hidden">Know it</span>
+                      <span className="hidden sm:inline">Already Know This</span>
+                    </Button>
                   </>
                 ) : (
                   <>
-                    <Link
+                    <ButtonLink
+                      fullWidth
                       href={`/cube-lab/algorithm-trainer/practice?mode=all&case=${algorithmCase.slug || caseSlug}`}
-                      className="w-full sm:flex-1 py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-medium flex items-center justify-center gap-2"
+                      iconLeft={<Brain className="w-4 h-4 shrink-0" />}
                     >
-                      <Brain className="w-5 h-5 shrink-0" />
-                      <span className="truncate">Practice This Case</span>
-                    </Link>
-                    <Link
+                      <span className="sm:hidden">Practice</span>
+                      <span className="hidden sm:inline">Practice This Case</span>
+                    </ButtonLink>
+                    <ButtonLink
+                      fullWidth
+                      variant="secondary"
                       href={`/cube-lab/algorithm-trainer/practice?mode=infinite&case=${algorithmCase.slug || caseSlug}`}
-                      className="w-full sm:flex-1 py-3 border border-(--primary) text-(--primary) hover:bg-(--primary)/10 rounded-(--radius-control) transition-colors font-medium flex items-center justify-center gap-2"
+                      iconLeft={<PlayCircle className="w-4 h-4 shrink-0" />}
                     >
-                      <PlayCircle className="w-5 h-5 shrink-0" />
-                      <span className="truncate">Drill This Case</span>
-                    </Link>
+                      <span className="sm:hidden">Drill</span>
+                      <span className="hidden sm:inline">Drill This Case</span>
+                    </ButtonLink>
                   </>
                 )}
               </div>
 
               {/* Prev / Next Case Navigation */}
               {caseSlugs && caseSlugs.length > 1 && (
-                <div className="timer-card">
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-                    {/* Mobile: Navigation row with icons only */}
-                    <div className="flex sm:hidden items-center justify-between w-full gap-2">
-                      {prevCase ? (
-                        <Link
-                          href={`/cube-lab/algorithm-trainer/cases/${prevCase.slug}`}
-                          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-(--radius-control) transition-colors flex-1 min-w-0 max-w-[40%]"
-                        >
-                          <ChevronLeft className="w-4 h-4 shrink-0" />
-                          <span className="truncate">{prevCase.caseName}</span>
-                        </Link>
-                      ) : (
-                        <div className="flex-1 max-w-[40%]" />
-                      )}
+                <nav
+                  aria-label="Case navigation"
+                  className="timer-card p-2 sm:p-3 grid grid-cols-[1fr_auto_1fr] items-center gap-2"
+                >
+                  {prevCase ? (
+                    <ButtonLink
+                      size="sm"
+                      variant="secondary"
+                      href={`/cube-lab/algorithm-trainer/cases/${prevCase.slug}`}
+                      className="justify-self-start min-w-0 max-w-full sm:max-w-[16rem]"
+                      iconLeft={<ChevronLeft className="w-4 h-4 shrink-0" />}
+                    >
+                      <span className="truncate">{prevCase.caseName}</span>
+                    </ButtonLink>
+                  ) : (
+                    <span />
+                  )}
 
-                      <span className="text-xs text-(--text-muted) shrink-0 px-2">
-                        {currentIndex + 1} / {caseSlugs.length}
-                      </span>
+                  <span className="type-caption px-1 text-center">
+                    {currentIndex + 1} / {caseSlugs.length}
+                  </span>
 
-                      {nextCase ? (
-                        <Link
-                          href={`/cube-lab/algorithm-trainer/cases/${nextCase.slug}`}
-                          className="flex items-center justify-end gap-1.5 px-3 py-2 text-xs font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-(--radius-control) transition-colors flex-1 min-w-0 max-w-[40%]"
-                        >
-                          <span className="truncate">{nextCase.caseName}</span>
-                          <ChevronRight className="w-4 h-4 shrink-0" />
-                        </Link>
-                      ) : (
-                        <div className="flex-1 max-w-[40%]" />
-                      )}
-                    </div>
-
-                    {/* Desktop: Full navigation */}
-                    <div className="hidden sm:flex items-center justify-between w-full gap-4">
-                      {prevCase ? (
-                        <Link
-                          href={`/cube-lab/algorithm-trainer/cases/${prevCase.slug}`}
-                          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-(--radius-control) transition-colors min-w-0"
-                        >
-                          <ChevronLeft className="w-4 h-4 shrink-0" />
-                          <span className="truncate">{prevCase.caseName}</span>
-                        </Link>
-                      ) : (
-                        <div />
-                      )}
-
-                      <span className="text-xs text-(--text-muted) shrink-0">
-                        {currentIndex + 1} / {caseSlugs.length}
-                      </span>
-
-                      {nextCase ? (
-                        <Link
-                          href={`/cube-lab/algorithm-trainer/cases/${nextCase.slug}`}
-                          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-(--text-primary) bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-(--radius-control) transition-colors min-w-0"
-                        >
-                          <span className="truncate">{nextCase.caseName}</span>
-                          <ChevronRight className="w-4 h-4 shrink-0" />
-                        </Link>
-                      ) : (
-                        <div />
-                      )}
-                    </div>
-                  </div>
-                </div>
+                  {nextCase ? (
+                    <ButtonLink
+                      size="sm"
+                      variant="secondary"
+                      href={`/cube-lab/algorithm-trainer/cases/${nextCase.slug}`}
+                      className="justify-self-end min-w-0 max-w-full sm:max-w-[16rem]"
+                      iconRight={<ChevronRight className="w-4 h-4 shrink-0" />}
+                    >
+                      <span className="truncate">{nextCase.caseName}</span>
+                    </ButtonLink>
+                  ) : (
+                    <span />
+                  )}
+                </nav>
               )}
             </div>
           </div>

@@ -9,7 +9,6 @@ export { default as CoachTimelineSelector } from "./CoachTimelineSelector";
 export { default as CoachScheduleSelector } from "./CoachScheduleSelector";
 export { default as CoachOnboardingSummary } from "./CoachOnboardingSummary";
 export { default as CoachTrainingPlan } from "./CoachTrainingPlan";
-export { default as CoachJournalEntry } from "./CoachJournalEntry";
 export { default as CoachJournalList } from "./CoachJournalList";
 export { default as CoachJournalCalendar } from "./CoachJournalCalendar";
 export { default as CoachProgress } from "./CoachProgress";

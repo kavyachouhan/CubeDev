@@ -23,6 +23,9 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { ButtonLink } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { CardIcon } from "@/components/ui/Card";
+import { cardClasses } from "@/components/ui/card-styles";
 import { SearchInput } from "@/components/ui/Field";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -105,9 +108,7 @@ export default function HelpCenter() {
           {/* Featured Articles */}
           {featuredArticles && featuredArticles.length > 0 && (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-(--text-primary) font-statement">
-                Popular Articles
-              </h2>
+              <h2 className="type-section-title">Popular Articles</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {featuredArticles.map((article) => {
                   const IconComp = article.category
@@ -118,29 +119,31 @@ export default function HelpCenter() {
                     <Link
                       key={article._id}
                       href={`/help/${article.category?.slug || "article"}/${article.slug}`}
-                      className="timer-card block text-left group cursor-pointer"
+                      className={cardClasses({
+                        variant: "interactive",
+                        className: "group flex h-full items-start gap-3 text-left",
+                      })}
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-(--primary)/10 rounded-(--radius-control) shrink-0">
-                          <IconComp className="w-4 h-4 text-(--primary)" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h3 className="text-sm font-semibold text-(--text-primary) group-hover:text-(--primary) transition-colors line-clamp-2 font-statement">
-                            {article.title}
-                          </h3>
-                          <p className="text-xs text-(--text-muted) mt-1 line-clamp-2 font-inter">
-                            {article.summary}
-                          </p>
-                          <div className="flex items-center gap-3 mt-2 flex-wrap">
-                            {article.category && (
-                              <span className="text-xs text-(--primary) font-inter">
-                                {article.category.name}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-(--text-muted) group-hover:text-(--primary) transition-colors shrink-0 mt-0.5" />
+                      <CardIcon>
+                        <IconComp />
+                      </CardIcon>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="type-label line-clamp-2 group-hover:text-(--primary) transition-colors">
+                          {article.title}
+                        </h3>
+                        <p className="type-caption mt-1 line-clamp-2">
+                          {article.summary}
+                        </p>
+                        {article.category && (
+                          <Badge tone="primary" className="mt-2">
+                            {article.category.name}
+                          </Badge>
+                        )}
                       </div>
+                      <ChevronRight
+                        aria-hidden
+                        className="w-4 h-4 mt-0.5 shrink-0 text-(--text-muted) group-hover:text-(--primary) transition-colors"
+                      />
                     </Link>
                   );
                 })}
@@ -150,9 +153,7 @@ export default function HelpCenter() {
 
           {/* Categories */}
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-(--text-primary) font-statement">
-              Browse by Topic
-            </h2>
+            <h2 className="type-section-title">Browse by Topic</h2>
             {categories === undefined ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(6)].map((_, i) => (

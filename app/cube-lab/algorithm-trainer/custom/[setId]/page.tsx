@@ -33,8 +33,9 @@ import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Field, Input, Textarea } from "@/components/ui/Field";
+import { Field, Input, SearchInput, Textarea } from "@/components/ui/Field";
 import { Menu } from "@/components/ui/Menu";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { PageHeader } from "@/components/ui/PageHeader";
 
 type TabType = "all" | "predefined" | "custom";
@@ -279,7 +280,7 @@ export default function EditCustomSetPage() {
                       }}
                     />
                   </Field>
-                  <Field label="Description" hint="Optional">
+                  <Field label="Description">
                     <Textarea
                       value={editDescription}
                       onChange={(e) => setEditDescription(e.target.value)}
@@ -431,7 +432,7 @@ export default function EditCustomSetPage() {
             <Menu
               title="Add Algorithms"
               placement="bottom-start"
-              className="min-w-[min(22rem,calc(100vw-1rem))]"
+              matchWidth
               items={[
                 {
                   label: "Add Custom Algorithm",
@@ -484,49 +485,31 @@ export default function EditCustomSetPage() {
             {/* Search and Filter */}
             {totalCount > 0 && (
               <div className="space-y-3">
-                {/* Tabs */}
-                <div className="flex gap-1 p-1 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) w-fit">
-                  {(
-                    [
-                      { key: "all", label: "All", count: totalCount },
-                      {
-                        key: "predefined",
-                        label: "Predefined",
-                        count: predefinedCases.length,
-                      },
-                      {
-                        key: "custom",
-                        label: "Custom",
-                        count: customAlgorithms.length,
-                      },
-                    ] as { key: TabType; label: string; count: number }[]
-                  ).map((tab) => (
-                    <button
-                      key={tab.key}
-                      onClick={() => setActiveTab(tab.key)}
-                      className={`px-3 py-1.5 rounded-(--radius-badge) text-xs font-medium transition-colors ${
-                        activeTab === tab.key
-                          ? "bg-(--primary) text-(--on-primary)"
-                          : "text-(--text-muted) hover:text-(--text-primary)"
-                      }`}
-                    >
-                      {tab.label}
-                      {tab.count > 0 && (
-                        <span className="ml-1 opacity-75">({tab.count})</span>
-                      )}
-                    </button>
-                  ))}
-                </div>
+                <SegmentedControl
+                  aria-label="Filter algorithms"
+                  size="sm"
+                  fullWidth="mobile"
+                  value={activeTab}
+                  onChange={setActiveTab}
+                  options={[
+                    { value: "all" as TabType, label: `All (${totalCount})` },
+                    {
+                      value: "predefined" as TabType,
+                      label: `Predefined (${predefinedCases.length})`,
+                    },
+                    {
+                      value: "custom" as TabType,
+                      label: `Custom (${customAlgorithms.length})`,
+                    },
+                  ]}
+                />
 
-                {/* Search */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-                  <Input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search algorithms, names, or notations..."
-                  />
-                </div>
+                <SearchInput
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  aria-label="Search algorithms"
+                  placeholder="Search algorithms, names, or notations…"
+                />
               </div>
             )}
 

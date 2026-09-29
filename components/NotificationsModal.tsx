@@ -8,7 +8,6 @@ import {
   X,
   Calendar,
   Clock,
-  ChevronRight,
   CheckCircle2,
   Trophy,
   Flame,
@@ -305,11 +304,11 @@ export default function NotificationsModal({
                         <Link
                           href={notification.url}
                           onClick={onClose}
-                          className="block pr-8"
+                          className="block"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
+                              <div className="flex items-center gap-2 mb-1 pr-8">
                                 <span
                                   className="text-xs font-medium font-inter px-2 py-0.5 rounded flex items-center gap-1"
                                   style={{
@@ -341,7 +340,6 @@ export default function NotificationsModal({
                                 {formatTimeAgo(notification.timestamp)}
                               </span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-(--text-muted) group-hover:text-(--primary) transition-colors shrink-0" />
                           </div>
                         </Link>
                         <button
@@ -375,11 +373,11 @@ export default function NotificationsModal({
                         <Link
                           href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
                           onClick={onClose}
-                          className="block pr-8"
+                          className="block"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
+                              <div className="flex items-center gap-2 mb-1 pr-8">
                                 <span className="text-xs font-medium text-(--error) font-inter px-2 py-0.5 bg-(--error)/10 rounded">
                                   {review.set?.name}
                                 </span>
@@ -399,7 +397,6 @@ export default function NotificationsModal({
                                 </span>
                               </div>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-(--text-muted) group-hover:text-(--primary) transition-colors shrink-0" />
                           </div>
                         </Link>
                         <button
@@ -433,11 +430,11 @@ export default function NotificationsModal({
                         <Link
                           href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
                           onClick={onClose}
-                          className="block pr-8"
+                          className="block"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
+                              <div className="flex items-center gap-2 mb-1 pr-8">
                                 <span className="text-xs font-medium text-(--warning) font-inter px-2 py-0.5 bg-(--warning)/10 rounded">
                                   {review.set?.name}
                                 </span>
@@ -457,7 +454,6 @@ export default function NotificationsModal({
                                 </span>
                               </div>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-(--text-muted) group-hover:text-(--primary) transition-colors shrink-0" />
                           </div>
                         </Link>
                         <button
@@ -491,11 +487,11 @@ export default function NotificationsModal({
                         <Link
                           href={`/cube-lab/algorithm-trainer/cases/${review.case?.slug}`}
                           onClick={onClose}
-                          className="block pr-8"
+                          className="block"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
+                              <div className="flex items-center gap-2 mb-1 pr-8">
                                 <span className="text-xs font-medium text-(--primary) font-inter px-2 py-0.5 bg-(--primary)/10 rounded">
                                   {review.set?.name}
                                 </span>
@@ -515,7 +511,6 @@ export default function NotificationsModal({
                                 </span>
                               </div>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-(--text-muted) group-hover:text-(--primary) transition-colors shrink-0" />
                           </div>
                         </Link>
                         <button

@@ -27,6 +27,9 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/Button";
+import { Card, CardIcon } from "@/components/ui/Card";
+import { ProgressBar } from "@/components/ui/ProgressBar";
+import { StatTile } from "@/components/ui/StatTile";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 import { Lightbox } from "@/components/ui/Lightbox";
 import { Input, Textarea } from "@/components/ui/Field";
@@ -852,7 +855,6 @@ export default function DailyJournalModal({
   return (
     <Modal open onClose={onClose} size="lg" mobile="fullscreen">
       <Modal.Header
-        icon={<BookOpen />}
         title="Daily journal"
         description={formatDate(stableDate)}
       />
@@ -910,35 +912,35 @@ export default function DailyJournalModal({
                     Remove
                   </button>
                 </div>
-                <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="p-2 bg-(--surface) rounded-(--radius-panel)">
-                    <span className="text-xs text-(--text-muted) block">
-                      Solves
-                    </span>
-                    <span className="font-semibold text-(--text-primary) text-sm">
-                      {sessionStats.solveCount}
-                    </span>
-                  </div>
-                  <div className="p-2 bg-(--surface) rounded-(--radius-panel)">
-                    <span className="text-xs text-(--text-muted) block">
-                      Average
-                    </span>
-                    <span className="font-semibold text-(--text-primary) text-sm">
-                      {sessionStats.average
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+                  <StatTile
+                    size="sm"
+                    mobileLayout="row"
+                    mono={false}
+                    label="Solves"
+                    value={sessionStats.solveCount}
+                  />
+                  <StatTile
+                    size="sm"
+                    mobileLayout="row"
+                    label="Average"
+                    value={
+                      sessionStats.average
                         ? formatTime(sessionStats.average)
-                        : "-"}
-                    </span>
-                  </div>
-                  <div className="p-2 bg-(--surface) rounded-(--radius-panel)">
-                    <span className="text-xs text-(--text-muted) block">
-                      Best
-                    </span>
-                    <span className="font-semibold text-(--success) text-sm">
-                      {sessionStats.bestSingle
+                        : "—"
+                    }
+                  />
+                  <StatTile
+                    size="sm"
+                    mobileLayout="row"
+                    tone="success"
+                    label="Best"
+                    value={
+                      sessionStats.bestSingle
                         ? formatTime(sessionStats.bestSingle)
-                        : "-"}
-                    </span>
-                  </div>
+                        : "—"
+                    }
+                  />
                 </div>
               </div>
             ) : (
@@ -963,12 +965,12 @@ export default function DailyJournalModal({
                         setSelectedSessionId(session._id);
                         setShowSessionSelector(false);
                       }}
-                      className="w-full flex items-center justify-between p-2 rounded hover:bg-(--surface) transition-colors"
+                      className="w-full flex items-center justify-between gap-2 p-2 rounded-(--radius-control) hover:bg-(--surface) transition-colors"
                     >
-                      <span className="text-sm font-medium text-(--text-primary)">
+                      <span className="type-label min-w-0 truncate">
                         {session.name}
                       </span>
-                      <span className="text-xs text-(--text-muted)">
+                      <span className="type-caption shrink-0">
                         {session.solveCount3x3} solves
                       </span>
                     </button>
@@ -1101,37 +1103,36 @@ export default function DailyJournalModal({
 
           {/* Tasks Section for the selected date */}
           {dateTasks && !dateTasks.plan.isRestDay && (
-            <div className="timer-card !p-0 overflow-hidden bg-(--surface-elevated) border border-(--border)">
+            <Card variant="nested" padding="none">
               <button
+                type="button"
+                aria-expanded={showTasks}
                 onClick={() => setShowTasks(!showTasks)}
-                className="w-full flex items-center justify-between p-4 text-left"
+                className="w-full flex items-center justify-between gap-3 p-4 text-left"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-(--primary)/10 flex items-center justify-center">
-                    <CheckCircle2 className="w-4 h-4 text-(--primary)" />
-                  </div>
-                  <div>
-                    <span className="font-medium text-(--text-primary) block text-sm">
-                      Training Tasks
-                    </span>
-                    <span className="text-xs text-(--text-muted)">
+                <div className="flex items-center gap-3 min-w-0">
+                  <CardIcon className="w-8 h-8 rounded-full [&_svg]:w-4 [&_svg]:h-4">
+                    <CheckCircle2 />
+                  </CardIcon>
+                  <div className="min-w-0">
+                    <span className="type-label block">Training Tasks</span>
+                    <span className="type-caption">
                       {completedActivitiesCount}/{totalActivities} completed
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-16 h-2 bg-(--surface) rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-(--primary) transition-all"
-                      style={{
-                        width: `${totalActivities > 0 ? (completedActivitiesCount / totalActivities) * 100 : 0}%`,
-                      }}
-                    />
-                  </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <ProgressBar
+                    size="sm"
+                    className="w-16"
+                    label="Training tasks completed"
+                    max={totalActivities}
+                    value={completedActivitiesCount}
+                  />
                   {showTasks ? (
-                    <ChevronUp className="w-4 h-4 text-(--text-muted)" />
+                    <ChevronUp aria-hidden className="w-4 h-4 text-(--text-muted)" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-(--text-muted)" />
+                    <ChevronDown aria-hidden className="w-4 h-4 text-(--text-muted)" />
                   )}
                 </div>
               </button>
@@ -1183,7 +1184,7 @@ export default function DailyJournalModal({
                   })}
                 </div>
               )}
-            </div>
+            </Card>
           )}
 
           {/* Rest Day Notice */}

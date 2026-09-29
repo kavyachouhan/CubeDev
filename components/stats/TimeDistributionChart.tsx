@@ -141,18 +141,18 @@ export default function TimeDistributionChart({
   const rows = data?.buckets ?? [null, null, null, null];
 
   const summary: [string, string | null][] = [
-    ["Your fastest solve", data ? formatTime(data.stats.min) : null],
-    ["Your slowest solve", data ? formatTime(data.stats.max) : null],
+    ["Fastest solve", data ? formatTime(data.stats.min) : null],
+    ["Slowest solve", data ? formatTime(data.stats.max) : null],
     [
       data
-        ? `Most of your solves (${data.stats.mostFrequentRange.percentage.toFixed(1)}%) are between`
-        : "Most of your solves are between",
+        ? `Most common range (${data.stats.mostFrequentRange.percentage.toFixed(1)}%)`
+        : "Most common range",
       data
         ? `${formatTime(data.stats.mostFrequentRange.min)} – ${formatTime(data.stats.mostFrequentRange.max)}`
         : null,
     ],
-    ["50% of your solves are faster than", data ? formatTime(data.stats.median) : null],
-    ["25% of your solves are faster than", data ? formatTime(data.stats.q1) : null],
+    ["Half of solves under", data ? formatTime(data.stats.median) : null],
+    ["A quarter of solves under", data ? formatTime(data.stats.q1) : null],
   ];
 
   return (
@@ -240,13 +240,16 @@ export default function TimeDistributionChart({
 
           <div className="mt-2 p-4 rounded-(--radius-control) bg-(--surface) border border-(--border)">
             <h4 className="type-label mb-3">Performance Summary</h4>
-            <ul className="space-y-1.5 text-sm text-(--text-muted) font-inter">
+            <ul className="text-sm text-(--text-muted) font-inter">
               {summary.map(([label, value], index) => (
-                <li key={label} className="flex flex-wrap items-baseline gap-x-1.5">
-                  <span>{label}</span>
+                <li
+                  key={label}
+                  className="flex items-baseline justify-between gap-3 py-1.5 border-b border-(--border) last:border-0"
+                >
+                  <span className="min-w-0">{label}</span>
                   <span
                     className={cx(
-                      "type-time font-medium",
+                      "type-time font-medium shrink-0 text-right",
                       value === null
                         ? "text-(--text-muted)"
                         : index === 0

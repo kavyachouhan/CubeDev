@@ -279,7 +279,6 @@ export default function DataManagementSection() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Button
               variant="secondary"
-              size="lg"
               onClick={handleExport}
               disabled={(solveCount ?? timerSolves.length) === 0}
               loading={isExporting}
@@ -289,7 +288,6 @@ export default function DataManagementSection() {
               Export Data
             </Button>
             <Button
-              size="lg"
               onClick={() => setIsImportModalOpen(true)}
               iconLeft={<Upload className="w-4 h-4" />}
             >

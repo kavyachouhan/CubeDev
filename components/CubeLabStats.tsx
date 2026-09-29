@@ -281,11 +281,6 @@ export default function CubeLabStats() {
 
   return (
     <div className="container-responsive py-4 md:py-8 space-y-4 md:space-y-6">
-      <PageHeader
-        title="Statistics"
-        description="Trends, personal bests and practice activity across your solves."
-        hideTitleOnMobile
-      />
 
       <StatsFilters
         filters={filters}

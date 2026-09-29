@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { UserPen, Trophy, Check } from "lucide-react";
+import { UserPen, Check } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader } from "@/components/ui/Card";
+import { SettingGroup } from "@/components/ui/SettingGroup";
 import { SwitchRow } from "@/components/ui/Switch";
 import { useToast } from "@/components/ui/Toast";
 
@@ -71,21 +72,27 @@ export default function PrivacySection() {
         description="Control your CubeDev profile visibility and data sharing options"
       />
 
-      <div className="space-y-3">
-        <SwitchRow
-          icon={<UserPen />}
-          label="Hide Profile from Public View"
-          description="Hide your CubeDev statistics and activity from public view. Your WCA profile still remains public."
-          checked={hideProfile}
-          onChange={setHideProfile}
-        />
-        <SwitchRow
-          icon={<Trophy />}
-          label="Hide Challenge Room Statistics"
-          description="Hide your challenge room statistics from public view. You'll still appear in leaderboards during active rooms."
-          checked={hideChallengeStats}
-          onChange={setHideChallengeStats}
-        />
+      <div className="space-y-4">
+        <SettingGroup title="Profile visibility" icon={<UserPen />}>
+          <div className="divide-y divide-(--border)">
+            <SwitchRow
+              variant="plain"
+              className="py-3"
+              label="Hide Profile from Public View"
+              description="Hide your CubeDev statistics and activity from public view. Your WCA profile still remains public."
+              checked={hideProfile}
+              onChange={setHideProfile}
+            />
+            <SwitchRow
+              variant="plain"
+              className="py-3"
+              label="Hide Challenge Room Statistics"
+              description="Hide your challenge room statistics from public view. You'll still appear in leaderboards during active rooms."
+              checked={hideChallengeStats}
+              onChange={setHideChallengeStats}
+            />
+          </div>
+        </SettingGroup>
 
         {hasChanges && (
           <div className="flex justify-end pt-2">

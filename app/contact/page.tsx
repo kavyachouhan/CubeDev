@@ -10,7 +10,17 @@ import Footer from "@/components/Footer";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { CardIcon } from "@/components/ui/Card";
-import { Field, Input, Select, Textarea } from "@/components/ui/Field";
+import { Field, Input, Textarea } from "@/components/ui/Field";
+import { SelectMenu } from "@/components/ui/Menu";
+
+const SUBJECT_OPTIONS = [
+  "Bug Report",
+  "Feature Request",
+  "General Feedback",
+  "Technical Support",
+  "Partnership/Collaboration",
+  "Other",
+];
 
 export default function ContactPage() {
   const { user } = useUser();
@@ -192,22 +202,19 @@ export default function ContactPage() {
                 </Field>
 
                 <Field label="Subject" required>
-                  <Select
+                  <SelectMenu
                     id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Select a subject</option>
-                    <option value="Bug Report">Bug Report</option>
-                    <option value="Feature Request">Feature Request</option>
-                    <option value="General Feedback">General Feedback</option>
-                    <option value="Technical Support">Technical Support</option>
-                    <option value="Partnership/Collaboration">
-                      Partnership/Collaboration
-                    </option>
-                    <option value="Other">Other</option>
-                  </Select>
+                    label="Subject"
+                    placeholder="Select a subject"
+                    value={formData.subject || null}
+                    onChange={(value) =>
+                      setFormData((prev) => ({ ...prev, subject: value }))
+                    }
+                    options={SUBJECT_OPTIONS.map((subject) => ({
+                      value: subject,
+                      label: subject,
+                    }))}
+                  />
                 </Field>
 
                 <Field

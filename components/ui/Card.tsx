@@ -40,6 +40,12 @@ interface CardHeaderProps {
   description?: ReactNode;
   icon?: ReactNode;
   actions?: ReactNode;
+  /**
+   * Drop `actions` onto their own row below the title under `sm`. Use it when
+   * the actions are wider than an icon (a SegmentedControl, a toggle pair),
+   * which would otherwise squeeze the title down to an ellipsis on a phone.
+   */
+  stackActions?: boolean;
   /** Heading level; defaults to h3 (cards sit under a page h1/h2). */
   as?: "h2" | "h3" | "h4";
   className?: string;
@@ -51,11 +57,20 @@ export function CardHeader({
   description,
   icon,
   actions,
+  stackActions,
   as: Heading = "h3",
   className,
 }: CardHeaderProps) {
   return (
-    <div className={cx("flex items-start justify-between gap-3 mb-4", className)}>
+    <div
+      className={cx(
+        "flex gap-3 mb-4",
+        stackActions
+          ? "flex-col items-stretch sm:flex-row sm:items-start sm:justify-between"
+          : "items-start justify-between",
+        className,
+      )}
+    >
       <div className="flex items-start gap-3 min-w-0">
         {icon && <CardIcon>{icon}</CardIcon>}
         <div className="min-w-0">
@@ -63,7 +78,19 @@ export function CardHeader({
           {description && <p className="type-caption mt-0.5">{description}</p>}
         </div>
       </div>
-      {actions && <div className="flex items-center gap-1 shrink-0">{actions}</div>}
+      {/* Without a description the title is one line, so centre the actions
+          against it instead of pinning them to the top of the row. */}
+      {actions && (
+        <div
+          className={cx(
+            "flex items-center gap-1",
+            stackActions ? "sm:shrink-0" : "shrink-0",
+            !description && (stackActions ? "sm:self-center" : "self-center"),
+          )}
+        >
+          {actions}
+        </div>
+      )}
     </div>
   );
 }
@@ -135,11 +162,17 @@ interface CollapsibleCardProps {
   onOpenChange: (open: boolean) => void;
   /** Right-side header controls (IconButtons). Stay visible when collapsed. */
   actions?: ReactNode;
+  /**
+   * Drop `actions` onto their own row below the title under `sm`. Use it when
+   * the actions are wider than an icon (a SegmentedControl of filters), which
+   * would otherwise truncate the title away on a phone.
+   */
+  stackActions?: boolean;
   children: ReactNode;
   className?: string;
   bodyClassName?: string;
   /** Extra attributes for the root, e.g. `data-tour`. */
-  rootProps?: ComponentProps<"section">;
+  rootProps?: ComponentProps<"section"> & Record<`data-${string}`, string>;
   variant?: Exclude<CardVariant, "interactive">;
 }
 
@@ -153,6 +186,7 @@ export function CollapsibleCard({
   open,
   onOpenChange,
   actions,
+  stackActions,
   children,
   className,
   bodyClassName,
@@ -188,7 +222,15 @@ export function CollapsibleCard({
       {...rootProps}
       className={cardClasses({ variant, className })}
     >
-      <div className={cx("flex items-center justify-between gap-2", open && "mb-4")}>
+      <div
+        className={cx(
+          "flex gap-2",
+          stackActions
+            ? "flex-col items-stretch sm:flex-row sm:items-center sm:justify-between"
+            : "items-center justify-between",
+          open && "mb-4",
+        )}
+      >
         <button
           type="button"
           aria-expanded={open}
@@ -207,7 +249,16 @@ export function CollapsibleCard({
             )}
           />
         </button>
-        {actions && <div className="flex items-center gap-1 shrink-0">{actions}</div>}
+        {actions && (
+          <div
+            className={cx(
+              "flex items-center gap-1",
+              stackActions ? "sm:shrink-0" : "shrink-0",
+            )}
+          >
+            {actions}
+          </div>
+        )}
       </div>
       <div
         id={bodyId}

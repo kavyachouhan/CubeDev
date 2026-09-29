@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Clock12, Clock5, Copy } from "lucide-react";
+import { Check, Clock12, Clock5 } from "lucide-react";
 import { scrambleGenerator } from "@/components/timer/ScrambleGenerator";
 import { useUser } from "@/components/UserProvider";
 import { useMutation } from "convex/react";
@@ -16,7 +16,8 @@ import { SelectMenu } from "@/components/ui/Menu";
 import { Modal } from "@/components/ui/Modal";
 import { OptionTiles } from "@/components/ui/OptionTiles";
 import { SwitchRow } from "@/components/ui/Switch";
-import { useToast } from "@/components/ui/Toast";
+import { getTimerEvent } from "@/lib/timer-events";
+import RoomShareMenu from "./RoomShareMenu";
 
 interface CreateRoomModalProps {
   onClose: () => void;
@@ -51,12 +52,15 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [roomCreated, setRoomCreated] = useState<{ roomId: string } | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [roomCreated, setRoomCreated] = useState<{
+    roomId: string;
+    name: string;
+    event: string;
+    format: string;
+  } | null>(null);
 
   const { user } = useUser();
   const router = useRouter();
-  const toast = useToast();
   const createRoom = useMutation(api.challengeRooms.createRoom);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,25 +87,17 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
         isPublic: formData.isPublic,
       });
 
-      setRoomCreated({ roomId: result.roomId });
+      setRoomCreated({
+        roomId: result.roomId,
+        name: formData.name,
+        event: formData.event,
+        format: formData.format,
+      });
     } catch (caught) {
       console.error("Failed to create room:", caught);
       setError("Couldn't create the room. Please try again.");
     } finally {
       setIsGenerating(false);
-    }
-  };
-
-  const copyRoomLink = async () => {
-    if (!roomCreated) return;
-    const link = `${window.location.origin}/cube-lab/challenges/room/${roomCreated.roomId}`;
-    try {
-      await navigator.clipboard.writeText(link);
-      setCopied(true);
-      toast.success("Room link copied");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Couldn't copy the link");
     }
   };
 
@@ -130,13 +126,12 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={copyRoomLink}
-            iconLeft={copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-          >
-            {copied ? "Copied" : "Copy room link"}
-          </Button>
+          <RoomShareMenu
+            roomId={roomCreated.roomId}
+            roomName={roomCreated.name}
+            eventName={getTimerEvent(roomCreated.event).name}
+            format={roomCreated.format}
+          />
           <Button onClick={goToRoom} data-autofocus>
             Go to room
           </Button>
