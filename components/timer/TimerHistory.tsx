@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Pencil, Timer as TimerIcon, Trash2 } from "lucide-react";
 import { cx } from "@/lib/cx";
-import { CollapsibleCard } from "@/components/ui/Card";
+import { CollapsibleCard, useCollapsed } from "@/components/ui/Card";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { IconButton } from "@/components/ui/IconButton";
@@ -29,27 +29,6 @@ interface TimerHistoryProps {
   onDeleteSolve: (solveId: string) => void;
   onUpdateSolve?: (solveId: string, notes?: string, tags?: string[]) => void;
   onEditTime?: (solveId: string, time: number, penalty: Penalty) => void;
-}
-
-function usePersistentBool(key: string, defaultValue: boolean) {
-  const [state, setState] = useState<boolean>(() => {
-    if (typeof window === "undefined") return defaultValue;
-    try {
-      const raw = localStorage.getItem(key);
-      return raw === null ? defaultValue : JSON.parse(raw);
-    } catch {
-      return defaultValue;
-    }
-  });
-  const setStateAndStore = (newState: boolean) => {
-    setState(newState);
-    try {
-      localStorage.setItem(key, JSON.stringify(newState));
-    } catch {
-      // Storage can be unavailable (private mode); the preference just won't persist.
-    }
-  };
-  return [state, setStateAndStore] as const;
 }
 
 /** Compact toggle for a penalty directly in a history row. */
@@ -92,7 +71,7 @@ export default function TimerHistory({
   onUpdateSolve,
   onEditTime,
 }: TimerHistoryProps) {
-  const [showHistory, setShowHistory] = usePersistentBool(
+  const { open: showHistory, onOpenChange: setShowHistory } = useCollapsed(
     "cubelab-timer-history-expanded",
     true,
   );

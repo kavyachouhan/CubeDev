@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { RotateCcw, ChevronRight, ChevronLeft } from "lucide-react";
-import { CollapsibleCard } from "@/components/ui/Card";
+import { CollapsibleCard, useCollapsed } from "@/components/ui/Card";
 import { IconButton } from "@/components/ui/IconButton";
 
 interface ScrambleDisplayProps {
@@ -12,36 +12,15 @@ interface ScrambleDisplayProps {
   onActiveScrambleChange?: (scramble: string) => void;
 }
 
-// Persistent boolean that reads/writes localStorage on first render
-function usePersistentBool(key: string, defaultValue: boolean) {
-  const [state, setState] = useState<boolean>(() => {
-    if (typeof window === "undefined") return defaultValue;
-    try {
-      const raw = localStorage.getItem(key);
-      return raw === null ? defaultValue : JSON.parse(raw);
-    } catch {
-      return defaultValue;
-    }
-  });
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(state));
-    } catch {
-      // Storage can be unavailable (private mode); the preference just won't persist.
-    }
-  }, [key, state]);
-  return [state, setState] as const;
-}
-
 export default function ScrambleDisplay({
   scramble,
   onNewScramble,
   onPartialScrambleHover,
   onActiveScrambleChange,
 }: ScrambleDisplayProps) {
-  const [isExpanded, setIsExpanded] = usePersistentBool(
+  const { open: isExpanded, onOpenChange: setIsExpanded } = useCollapsed(
     "cubelab-scramble-display-expanded",
-    true
+    true,
   );
 
   // State to track hovered/tapped move for partial scramble preview

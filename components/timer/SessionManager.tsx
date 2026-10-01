@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { ChevronDown, FolderOpen } from "lucide-react";
-import { CollapsibleCard } from "@/components/ui/Card";
+import { CollapsibleCard, useCollapsed } from "@/components/ui/Card";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 import { Popover } from "@/components/ui/Menu";
 import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
@@ -21,26 +20,6 @@ interface SessionManagerProps {
   allSolveHistory?: ReadonlyArray<{ sessionId: string }>;
 }
 
-function usePersistentBool(key: string, defaultValue: boolean) {
-  const [state, setState] = useState<boolean>(() => {
-    if (typeof window === "undefined") return defaultValue;
-    try {
-      const raw = localStorage.getItem(key);
-      return raw === null ? defaultValue : JSON.parse(raw);
-    } catch {
-      return defaultValue;
-    }
-  });
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(state));
-    } catch {
-      // Storage can be unavailable (private mode); the preference just won't persist.
-    }
-  }, [key, state]);
-  return [state, setState] as const;
-}
-
 export default function SessionManager({
   currentSession,
   sessions,
@@ -50,7 +29,7 @@ export default function SessionManager({
   onDeleteSession,
   allSolveHistory = [],
 }: SessionManagerProps) {
-  const [isExpanded, setIsExpanded] = usePersistentBool(
+  const { open: isExpanded, onOpenChange: setIsExpanded } = useCollapsed(
     "cubelab-session-manager-expanded",
     true,
   );

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { CollapsibleCard } from "@/components/ui/Card";
+import { CollapsibleCard, useCollapsed } from "@/components/ui/Card";
 import ImportModal from "./ImportModal";
 
 interface TimerRecord {
@@ -36,27 +36,6 @@ interface ImportExportButtonsProps {
   onImportModalOpenChange?: (isOpen: boolean) => void;
 }
 
-// Persistent boolean that reads/writes localStorage on first render
-function usePersistentBool(key: string, defaultValue: boolean) {
-  const [state, setState] = useState<boolean>(() => {
-    if (typeof window === "undefined") return defaultValue;
-    try {
-      const raw = localStorage.getItem(key);
-      return raw === null ? defaultValue : JSON.parse(raw);
-    } catch {
-      return defaultValue;
-    }
-  });
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(state));
-    } catch {
-      // Storage can be unavailable (private mode); the preference just won't persist.
-    }
-  }, [key, state]);
-  return [state, setState] as const;
-}
-
 export default function ImportExportButtons({
   history,
   sessions,
@@ -65,7 +44,7 @@ export default function ImportExportButtons({
   onImportModalOpenChange,
 }: ImportExportButtonsProps) {
   const [internalImportModalOpen, setInternalImportModalOpen] = useState(false);
-  const [isExpanded, setIsExpanded] = usePersistentBool(
+  const { open: isExpanded, onOpenChange: setIsExpanded } = useCollapsed(
     "cubelab-import-export-expanded",
     false,
   );

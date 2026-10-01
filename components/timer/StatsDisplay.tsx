@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { BarChart3 } from "lucide-react";
 import { cx } from "@/lib/cx";
-import { CollapsibleCard } from "@/components/ui/Card";
+import { CollapsibleCard, useCollapsed } from "@/components/ui/Card";
 import { IconButton } from "@/components/ui/IconButton";
 import { TimerRecord } from "../../lib/stats-utils";
 import SessionStatsModal from "./SessionStatsModal";
@@ -11,27 +11,6 @@ import {
   ExtendedStatsVisibility,
   DEFAULT_EXTENDED_STATS,
 } from "./StatsVisibilitySettings";
-
-// Persistent boolean that reads/writes localStorage on first render
-function usePersistentBool(key: string, defaultValue: boolean) {
-  const [state, setState] = useState<boolean>(() => {
-    if (typeof window === "undefined") return defaultValue;
-    try {
-      const raw = localStorage.getItem(key);
-      return raw === null ? defaultValue : JSON.parse(raw);
-    } catch {
-      return defaultValue;
-    }
-  });
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(state));
-    } catch {
-      // ignore
-    }
-  }, [key, state]);
-  return [state, setState] as const;
-}
 
 interface StatsDisplayProps {
   history: TimerRecord[];
@@ -100,9 +79,9 @@ export default function StatsDisplay({
   selectedEvent,
   extendedStatsVisibility = DEFAULT_EXTENDED_STATS,
 }: StatsDisplayProps) {
-  const [showStats, setShowStats] = usePersistentBool(
+  const { open: showStats, onOpenChange: setShowStats } = useCollapsed(
     "cubelab-stats-display-expanded",
-    true
+    true,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
 

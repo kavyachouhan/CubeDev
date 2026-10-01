@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { CollapsibleCard } from "@/components/ui/Card";
+import { CollapsibleCard, useCollapsed } from "@/components/ui/Card";
 import { EventIcon } from "@/components/ui/EventIcon";
 import { SelectMenu } from "@/components/ui/Menu";
 import { TIMER_EVENTS, getTimerEvent } from "@/lib/timer-events";
@@ -14,33 +13,13 @@ interface EventSelectorProps {
   currentSessionId?: string;
 }
 
-function usePersistentBool(key: string, defaultValue: boolean) {
-  const [state, setState] = useState<boolean>(() => {
-    if (typeof window === "undefined") return defaultValue;
-    try {
-      const raw = localStorage.getItem(key);
-      return raw === null ? defaultValue : JSON.parse(raw);
-    } catch {
-      return defaultValue;
-    }
-  });
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(state));
-    } catch {
-      // Storage can be unavailable (private mode); the preference just won't persist.
-    }
-  }, [key, state]);
-  return [state, setState] as const;
-}
-
 export default function EventSelector({
   selectedEvent,
   onEventChange,
   solveHistory = [],
   currentSessionId,
 }: EventSelectorProps) {
-  const [isExpanded, setIsExpanded] = usePersistentBool(
+  const { open: isExpanded, onOpenChange: setIsExpanded } = useCollapsed(
     "cubelab-event-selector-expanded",
     true,
   );

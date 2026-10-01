@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Settings } from "lucide-react";
-import { CollapsibleCard } from "@/components/ui/Card";
+import { CollapsibleCard, useCollapsed } from "@/components/ui/Card";
 import { IconButton } from "@/components/ui/IconButton";
 import { Spinner } from "@/components/ui/Spinner";
 import {
@@ -44,6 +44,22 @@ function usePersistentBool(key: string, defaultValue: boolean) {
     } catch {}
   }, [key, state]);
   return [state, setState] as const;
+}
+
+/**
+ * True when the event targets a text-entry control, so the global timer
+ * shortcuts must stay out of the way (e.g. the manual timer's time input,
+ * or a solve note being typed).
+ */
+function isTypingTarget(e: KeyboardEvent) {
+  const target = e.target;
+  if (!(target instanceof HTMLElement)) return false;
+  return (
+    target.isContentEditable ||
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT"
+  );
 }
 
 interface TimerDisplayProps {
@@ -98,9 +114,9 @@ export default function TimerDisplay({
   const [currentPenalty, setCurrentPenalty] = useState<"none" | "+2" | "DNF">(
     "none"
   );
-  const [showTimer, setShowTimer] = usePersistentBool(
+  const { open: showTimer, onOpenChange: setShowTimer } = useCollapsed(
     "cubelab-timer-expanded",
-    true
+    true,
   );
   const [timerMode, setTimerMode] = useState<TimerMode>(() => {
     if (typeof window === "undefined") return "normal";
@@ -662,6 +678,7 @@ export default function TimerDisplay({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (showSettings) return;
+      if (isTypingTarget(e)) return;
 
       initializeAudioContext(); // Initialize audio context on first user interaction
 
@@ -772,6 +789,7 @@ export default function TimerDisplay({
 
     const handleKeyUp = (e: KeyboardEvent) => {
       if (showSettings) return;
+      if (isTypingTarget(e)) return;
 
       if (e.code === "Space") {
         e.preventDefault();

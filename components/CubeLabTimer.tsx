@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useUser } from "@/components/UserProvider";
 import { useQuery, useMutation } from "convex/react";
@@ -184,45 +184,38 @@ export default function CubeLabTimer({
     updateSolve: updateSolveOperation,
   } = useSolveOperations(user?.convexId, updateSessionSolveCount);
 
-  // Convert database solves to local format and merge with local history
-  const getAllSessionSolves = useCallback(
-    (sessionId: string) => {
-      // Get local solves for this session
-      const localSolves = getSessionHistory(sessionId);
+  /**
+   * Solves for the current session, database merged over local cache.
+   *
+   * Memoized because every consumer on the page needs the same list; computing
+   * it per call site rebuilt a Map over up to 1000 solves several times a
+   * render and handed each panel a fresh array identity.
+   */
+  const sessionSolves = useMemo(() => {
+    if (!currentSession) return [];
 
-      // Convert and merge database solves if available
-      if (dbSessionSolves && currentSession?.convexId) {
-        const dbSolvesLocal = convertDbSolvesToLocal(dbSessionSolves);
+    // Local solves for this session
+    const localSolves = getSessionHistory(currentSession.id);
 
-        // Create a map to avoid duplicates (prioritize database over local storage)
-        const solvesMap = new Map();
+    if (!dbSessionSolves || !currentSession.convexId) return localSolves;
 
-        // Add local solves first
-        localSolves.forEach((solve) => {
-          solvesMap.set(solve.id, solve);
-        });
+    const dbSolvesLocal = convertDbSolvesToLocal(dbSessionSolves);
 
-        // Add/overwrite with database solves
-        dbSolvesLocal.forEach((solve) => {
-          solvesMap.set(solve.id, solve);
-        });
+    // Map keyed by id so database rows win over the local cache
+    const solvesMap = new Map();
+    localSolves.forEach((solve) => solvesMap.set(solve.id, solve));
+    dbSolvesLocal.forEach((solve) => solvesMap.set(solve.id, solve));
 
-        // Return sorted array (newest first)
-        return Array.from(solvesMap.values()).sort(
-          (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
-        );
-      }
-
-      // Fallback to local solves only
-      return localSolves;
-    },
-    [
-      getSessionHistory,
-      dbSessionSolves,
-      currentSession?.convexId,
-      convertDbSolvesToLocal,
-    ],
-  );
+    // Newest first
+    return Array.from(solvesMap.values()).sort(
+      (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
+    );
+  }, [
+    currentSession,
+    getSessionHistory,
+    dbSessionSolves,
+    convertDbSolvesToLocal,
+  ]);
 
   // Handle timer focus mode changes
   const handleTimerFocusChange = useCallback(
@@ -577,8 +570,7 @@ export default function CubeLabTimer({
         localSolves.forEach((solve) => addSolve(solve));
 
         // Update session solve count
-        const newSolveCount =
-          getAllSessionSolves(currentSession.id).length + result.importedCount;
+        const newSolveCount = sessionSolves.length + result.importedCount;
         await updateSessionSolveCount(currentSession.id, newSolveCount);
 
         console.log(`Successfully imported ${result.importedCount} solves!`);
@@ -613,7 +605,7 @@ export default function CubeLabTimer({
       batchImportSolves,
       completeTimerImportOnboarding,
       addSolve,
-      getAllSessionSolves,
+      sessionSolves,
       updateSessionSolveCount,
     ],
   );
@@ -789,7 +781,7 @@ export default function CubeLabTimer({
         <div className="xl:col-span-2 space-y-4 md:space-y-6">
           {/* Import/Export */}
           <ImportExportButtons
-            history={getAllSessionSolves(currentSession.id)}
+            history={sessionSolves}
             sessions={sessions}
             onImport={handleImportSolves}
             isImportModalOpen={isImportModalOpen}
@@ -843,7 +835,7 @@ export default function CubeLabTimer({
               onApplyPenalty={handleLastSolvePenalty}
               lastSolveId={lastSolveId}
               onTimerStateChange={handleTimerFocusChange}
-              history={getAllSessionSolves(currentSession.id)}
+              history={sessionSolves}
               extendedStatsVisibility={extendedStatsVisibility}
               onToggleExtendedStat={toggleExtendedStat}
             />
@@ -867,14 +859,14 @@ export default function CubeLabTimer({
 
           {/* Stats */}
           <StatsDisplay
-            history={getAllSessionSolves(currentSession.id)}
+            history={sessionSolves}
             selectedEvent={selectedEvent}
             extendedStatsVisibility={extendedStatsVisibility}
           />
 
           {/* History */}
           <TimerHistory
-            history={getAllSessionSolves(currentSession.id)}
+            history={sessionSolves}
             selectedEvent={selectedEvent}
             onClearHistory={handleClearHistory}
             onApplyPenalty={handleApplyPenalty}
