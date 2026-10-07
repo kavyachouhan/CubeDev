@@ -13,17 +13,19 @@ interface EventSelectorProps {
   currentSessionId?: string;
 }
 
-export default function EventSelector({
+/**
+ * The event picker on its own, so a layout can put it in a toolbar instead of
+ * a card. Below 640px the menu opens as a bottom sheet.
+ */
+export function EventSelectMenu({
   selectedEvent,
   onEventChange,
   solveHistory = [],
   currentSessionId,
-}: EventSelectorProps) {
-  const { open: isExpanded, onOpenChange: setIsExpanded } = useCollapsed(
-    "cubelab-event-selector-expanded",
-    true,
-  );
-
+  /** "full" is the card's stacked tile; "chip" is a compact toolbar control. */
+  variant = "full",
+  chipClassName,
+}: EventSelectorProps & { variant?: "full" | "chip"; chipClassName?: string }) {
   const getSolveCount = (eventId: string) => {
     if (!currentSessionId) return 0;
     return solveHistory.filter(
@@ -34,22 +36,39 @@ export default function EventSelector({
   const selected = getTimerEvent(selectedEvent);
 
   return (
-    <CollapsibleCard title="Event" open={isExpanded} onOpenChange={setIsExpanded}>
-      <SelectMenu
-        label="Event"
-        value={selected.id}
-        onChange={onEventChange}
-        size="lg"
-        searchable
-        searchPlaceholder="Search events"
-        options={TIMER_EVENTS.map((event) => ({
-          value: event.id,
-          textLabel: event.name,
-          label: <span className="font-statement">{event.name}</span>,
-          description: `${getSolveCount(event.id)} solves`,
-          icon: <EventIcon eventId={event.id} size="sm" />,
-        }))}
-        trigger={(props) => (
+    <SelectMenu
+      label="Event"
+      value={selected.id}
+      onChange={onEventChange}
+      size={variant === "chip" ? "sm" : "lg"}
+      searchable
+      searchPlaceholder="Search events"
+      options={TIMER_EVENTS.map((event) => ({
+        value: event.id,
+        textLabel: event.name,
+        label: <span className="font-statement">{event.name}</span>,
+        description: `${getSolveCount(event.id)} solves`,
+        icon: <EventIcon eventId={event.id} size="sm" />,
+      }))}
+      trigger={(props) =>
+        variant === "chip" ? (
+          <button
+            {...props}
+            type="button"
+            className={chipClassName}
+          >
+            <EventIcon eventId={selected.id} size="sm" />
+            <span className="type-label text-(--text-primary) truncate">
+              {selected.name}
+            </span>
+            <ChevronDown
+              aria-hidden
+              className={`w-4 h-4 shrink-0 text-(--text-muted) transition-transform ${
+                props["aria-expanded"] ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+        ) : (
           <button
             {...props}
             type="button"
@@ -71,8 +90,25 @@ export default function EventSelector({
               }`}
             />
           </button>
-        )}
-      />
+        )
+      }
+    />
+  );
+}
+
+export default function EventSelector(props: EventSelectorProps) {
+  const { open: isExpanded, onOpenChange: setIsExpanded } = useCollapsed(
+    "cubelab-event-selector-expanded",
+    true,
+  );
+
+  return (
+    <CollapsibleCard
+      title="Event"
+      open={isExpanded}
+      onOpenChange={setIsExpanded}
+    >
+      <EventSelectMenu {...props} />
     </CollapsibleCard>
   );
 }

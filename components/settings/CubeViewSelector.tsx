@@ -28,9 +28,14 @@ const viewModes: {
 interface CubeViewSelectorProps {
   /** Renders a small segmented toggle, sized to sit inline in a card header. */
   compact?: boolean;
+  /** Compact only: false keeps it intrinsically sized instead of filling on mobile. */
+  stretch?: boolean;
 }
 
-export default function CubeViewSelector({ compact }: CubeViewSelectorProps) {
+export default function CubeViewSelector({
+  compact,
+  stretch = true,
+}: CubeViewSelectorProps) {
   const { cubeViewMode, setCubeViewMode } = useTheme();
 
   if (compact) {
@@ -38,8 +43,8 @@ export default function CubeViewSelector({ compact }: CubeViewSelectorProps) {
       <SegmentedControl
         aria-label="Cube view"
         size="sm"
-        fullWidth="mobile"
-        className="min-w-0 flex-1 sm:flex-none"
+        fullWidth={stretch ? "mobile" : false}
+        className={stretch ? "min-w-0 flex-1 sm:flex-none" : "shrink-0"}
         value={cubeViewMode}
         onChange={setCubeViewMode}
         options={viewModes.map((mode) => ({

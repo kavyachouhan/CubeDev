@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ChevronDown, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Field";
@@ -43,12 +43,13 @@ export function useExtendedStatsVisibility() {
     }
   }, [visibility]);
 
-  const toggleStat = (stat: keyof ExtendedStatsVisibility) => {
+  // Memoized so consumers behind React.memo are not re-rendered every tick.
+  const toggleStat = useCallback((stat: keyof ExtendedStatsVisibility) => {
     setVisibility((prev) => ({
       ...prev,
       [stat]: !prev[stat],
     }));
-  };
+  }, []);
 
   return { visibility, setVisibility, toggleStat };
 }

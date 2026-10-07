@@ -500,6 +500,40 @@
   }
 }
 
+/* The compact layout has to fit the viewport, so its numerals scale with the
+ * available width instead of stepping through fixed sizes. Driven by the
+ * attribute the blocking script sets, so the first paint is already correct. */
+[data-timer-layout="compact"] .timer-text {
+  font-size: clamp(3rem, 18vw, 8rem);
+}
+
+[data-timer-layout="compact"][data-timer-size="sm"] .timer-text {
+  font-size: clamp(2rem, 11vw, 4rem);
+}
+
+[data-timer-layout="compact"][data-timer-size="md"] .timer-text {
+  font-size: clamp(2.5rem, 14vw, 6rem);
+}
+
+[data-timer-layout="compact"][data-timer-size="lg"] .timer-text {
+  font-size: clamp(3rem, 18vw, 8rem);
+}
+
+[data-timer-layout="compact"][data-timer-size="xl"] .timer-text {
+  font-size: clamp(3.5rem, 22vw, 12rem);
+}
+
+/* Landscape phones have height, not width, as the binding constraint. */
+@media (orientation: landscape) and (max-height: 500px) {
+  [data-timer-layout="compact"] .timer-text,
+  [data-timer-layout="compact"][data-timer-size="sm"] .timer-text,
+  [data-timer-layout="compact"][data-timer-size="md"] .timer-text,
+  [data-timer-layout="compact"][data-timer-size="lg"] .timer-text,
+  [data-timer-layout="compact"][data-timer-size="xl"] .timer-text {
+    font-size: clamp(2rem, 14vh, 5rem);
+  }
+}
+
 [data-timer-font="mono"] .timer-text {
   font-family: var(--font-jetbrains), ui-monospace, monospace;
 }

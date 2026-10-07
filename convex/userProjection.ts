@@ -29,6 +29,7 @@ export type OwnerUser = PublicUser & {
   timerFontFamily?: string;
   timerUpdateMode?: string;
   cubeViewMode?: string;
+  timerLayout?: string;
   reduceMotion?: boolean;
   disableGlow?: boolean;
   highContrast?: boolean;
@@ -95,6 +96,7 @@ export function toOwnerUser(
     timerFontFamily: user.timerFontFamily,
     timerUpdateMode: user.timerUpdateMode,
     cubeViewMode: user.cubeViewMode,
+    timerLayout: user.timerLayout,
     reduceMotion: user.reduceMotion,
     disableGlow: user.disableGlow,
     highContrast: user.highContrast,

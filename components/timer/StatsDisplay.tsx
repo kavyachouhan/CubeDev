@@ -23,7 +23,7 @@ const truncToCentisMs = (ms: number) => Math.floor(ms / 10) * 10; // singles: tr
 const roundToCentisMs = (ms: number) => Math.round(ms / 10) * 10; // averages: round
 
 // Format milliseconds to string (M:SS.ss or SS.ss)
-const formatMs = (ms: number) => {
+export const formatStatMs = (ms: number) => {
   if (!isFinite(ms)) return "DNF";
   const total = ms / 1000;
   const m = Math.floor(total / 60);
@@ -40,7 +40,7 @@ const METRIC_TONE = {
 } as const;
 
 /** One statistic: overline label over a monospace value. DNF averages turn red. */
-function Metric({
+export function Metric({
   label,
   value,
   text,
@@ -57,7 +57,7 @@ function Metric({
 }) {
   const isDnf = value === Infinity;
   const display =
-    text ?? (value == null ? "–" : isFinite(value) ? formatMs(value) : "DNF");
+    text ?? (value == null ? "–" : isFinite(value) ? formatStatMs(value) : "DNF");
   return (
     <div className="text-center min-w-0">
       <p className="type-overline truncate">{label}</p>
@@ -74,17 +74,16 @@ function Metric({
   );
 }
 
-export default function StatsDisplay({
-  history,
-  selectedEvent,
-  extendedStatsVisibility = DEFAULT_EXTENDED_STATS,
-}: StatsDisplayProps) {
-  const { open: showStats, onOpenChange: setShowStats } = useCollapsed(
-    "cubelab-stats-display-expanded",
-    true,
-  );
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
+/**
+ * Session statistics for one event.
+ *
+ * Pure derivation, so any layout can render the same numbers in whatever shape
+ * it needs (a card grid, a one-line strip) without recomputing them differently.
+ */
+export function useSessionStats(
+  history: TimerRecord[],
+  selectedEvent: string,
+) {
   // Filter history to selected event
   const eventHistory = history.filter((r) => r.event === selectedEvent);
 
@@ -183,6 +182,47 @@ export default function StatsDisplay({
   const dnfCount = ordered.filter((r) => !isFinite(r.finalTime)).length;
   const currentSessionSolves = ordered.length;
 
+  return {
+    bestTime,
+    worstTime,
+    ao5,
+    ao12,
+    ao25,
+    ao50,
+    ao100,
+    mo3,
+    mean,
+    standardDeviation,
+    dnfCount,
+    solveCount: currentSessionSolves,
+  };
+}
+
+export type SessionStats = ReturnType<typeof useSessionStats>;
+
+/** The statistics grid, without any card chrome. */
+export function StatsBody({
+  stats,
+  extendedStatsVisibility = DEFAULT_EXTENDED_STATS,
+}: {
+  stats: SessionStats;
+  extendedStatsVisibility?: ExtendedStatsVisibility;
+}) {
+  const {
+    bestTime,
+    worstTime,
+    ao5,
+    ao12,
+    ao25,
+    ao50,
+    ao100,
+    mo3,
+    mean,
+    standardDeviation,
+    dnfCount,
+    solveCount: currentSessionSolves,
+  } = stats;
+
   const extended = (
     [
       ["ao25", "Current Ao25", ao25],
@@ -190,6 +230,68 @@ export default function StatsDisplay({
       ["ao100", "Current Ao100", ao100],
     ] as const
   ).filter(([key]) => extendedStatsVisibility[key]);
+
+  return (
+    <div className="space-y-5">
+    <div className="grid grid-cols-3 gap-x-3 gap-y-4">
+      <Metric label="Best Single" value={bestTime} tone="primary" />
+      <Metric label="Current Mo3" value={mo3} tone="primary" />
+      <Metric label="Current Ao5" value={ao5} tone="primary" />
+      <Metric label="Worst Single" value={worstTime} tone="error" />
+      <Metric label="Current Ao12" value={ao12} tone="primary" />
+      <Metric label="Session Mean" value={mean} tone="accent" />
+    </div>
+
+    {extended.length > 0 && (
+      <div
+        className={`grid gap-3 pt-4 border-t border-(--border) ${
+          extended.length === 1
+            ? "grid-cols-1"
+            : extended.length === 2
+              ? "grid-cols-2"
+              : "grid-cols-3"
+        }`}
+      >
+        {extended.map(([key, label, value]) => (
+          <Metric key={key} label={label} value={value} tone="primary" />
+        ))}
+      </div>
+    )}
+
+    <div className="grid grid-cols-3 gap-3 pt-4 border-t border-(--border)">
+      <Metric label="Solves" text={String(currentSessionSolves)} size="sm" />
+      <Metric
+        label="Std Dev"
+        text={
+          standardDeviation != null
+            ? `± ${formatStatMs(roundToCentisMs(standardDeviation))}`
+            : "–"
+        }
+        size="sm"
+        tone="muted"
+      />
+      <Metric
+        label="DNFs"
+        text={String(dnfCount)}
+        size="sm"
+        tone={dnfCount > 0 ? "error" : "muted"}
+      />
+      </div>
+    </div>
+  );
+}
+
+export default function StatsDisplay({
+  history,
+  selectedEvent,
+  extendedStatsVisibility = DEFAULT_EXTENDED_STATS,
+}: StatsDisplayProps) {
+  const { open: showStats, onOpenChange: setShowStats } = useCollapsed(
+    "cubelab-stats-display-expanded",
+    true,
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const stats = useSessionStats(history, selectedEvent);
 
   return (
     <>
@@ -206,52 +308,10 @@ export default function StatsDisplay({
           />
         }
       >
-        <div className="space-y-5">
-          <div className="grid grid-cols-3 gap-x-3 gap-y-4">
-            <Metric label="Best Single" value={bestTime} tone="primary" />
-            <Metric label="Current Mo3" value={mo3} tone="primary" />
-            <Metric label="Current Ao5" value={ao5} tone="primary" />
-            <Metric label="Worst Single" value={worstTime} tone="error" />
-            <Metric label="Current Ao12" value={ao12} tone="primary" />
-            <Metric label="Session Mean" value={mean} tone="accent" />
-          </div>
-
-          {extended.length > 0 && (
-            <div
-              className={`grid gap-3 pt-4 border-t border-(--border) ${
-                extended.length === 1
-                  ? "grid-cols-1"
-                  : extended.length === 2
-                    ? "grid-cols-2"
-                    : "grid-cols-3"
-              }`}
-            >
-              {extended.map(([key, label, value]) => (
-                <Metric key={key} label={label} value={value} tone="primary" />
-              ))}
-            </div>
-          )}
-
-          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-(--border)">
-            <Metric label="Solves" text={String(currentSessionSolves)} size="sm" />
-            <Metric
-              label="Std Dev"
-              text={
-                standardDeviation != null
-                  ? `± ${formatMs(roundToCentisMs(standardDeviation))}`
-                  : "–"
-              }
-              size="sm"
-              tone="muted"
-            />
-            <Metric
-              label="DNFs"
-              text={String(dnfCount)}
-              size="sm"
-              tone={dnfCount > 0 ? "error" : "muted"}
-            />
-          </div>
-        </div>
+        <StatsBody
+          stats={stats}
+          extendedStatsVisibility={extendedStatsVisibility}
+        />
       </CollapsibleCard>
 
       <SessionStatsModal

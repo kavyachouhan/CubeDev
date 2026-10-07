@@ -2,7 +2,11 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Settings } from "lucide-react";
-import { CollapsibleCard, useCollapsed } from "@/components/ui/Card";
+import { cx } from "@/lib/cx";
+import {
+  makeCardPanelShell,
+  type PanelShellComponent,
+} from "./TimerShell";
 import { IconButton } from "@/components/ui/IconButton";
 import { Spinner } from "@/components/ui/Spinner";
 import {
@@ -62,6 +66,8 @@ function isTypingTarget(e: KeyboardEvent) {
   );
 }
 
+const TimerCardShell = makeCardPanelShell("Timer", "cubelab-timer-expanded");
+
 interface TimerDisplayProps {
   onSolveComplete: (
     time: number,
@@ -84,6 +90,16 @@ interface TimerDisplayProps {
   history?: import("@/lib/stats-utils").TimerRecord[];
   extendedStatsVisibility?: ExtendedStatsVisibility;
   onToggleExtendedStat?: (stat: keyof ExtendedStatsVisibility) => void;
+  /** Chrome the timer renders inside. Defaults to the collapsible card. */
+  shell?: PanelShellComponent;
+  /** Sizing for the timer readout; the compact layout fills its grid row. */
+  coreClassName?: string;
+  /** Hides the "hold to start" helper line. */
+  hideStatusText?: boolean;
+  /** Sizing for the wrapper around the active timer mode. */
+  contentClassName?: string;
+  /** Shrinks in-timer controls where vertical space is scarce. */
+  dense?: boolean;
 }
 
 type TimerState =
@@ -103,6 +119,11 @@ export default function TimerDisplay({
   history = [],
   extendedStatsVisibility,
   onToggleExtendedStat,
+  shell,
+  coreClassName,
+  hideStatusText,
+  contentClassName,
+  dense,
 }: TimerDisplayProps) {
   const [state, setState] = useState<TimerState>("idle");
   const [time, setTime] = useState(0);
@@ -113,10 +134,6 @@ export default function TimerDisplay({
   const [showSettings, setShowSettings] = useState(false);
   const [currentPenalty, setCurrentPenalty] = useState<"none" | "+2" | "DNF">(
     "none"
-  );
-  const { open: showTimer, onOpenChange: setShowTimer } = useCollapsed(
-    "cubelab-timer-expanded",
-    true,
   );
   const [timerMode, setTimerMode] = useState<TimerMode>(() => {
     if (typeof window === "undefined") return "normal";
@@ -1040,11 +1057,10 @@ export default function TimerDisplay({
     [onSolveCompleteWithPenalty, onApplyPenalty, timerMode]
   );
 
+  const Shell = shell ?? TimerCardShell;
+
   return (
-    <CollapsibleCard
-      title="Timer"
-      open={showTimer}
-      onOpenChange={setShowTimer}
+    <Shell
       actions={
         <IconButton
           size="sm"
@@ -1054,16 +1070,23 @@ export default function TimerDisplay({
         />
       }
     >
-      <div ref={timerContentRef}>
+      <div ref={timerContentRef} className={contentClassName}>
         {/* Render timer based on selected mode */}
         {timerMode === "normal" && (
           <>
-            <div className="relative">
+            <div
+              className={cx(
+                "relative",
+                contentClassName && "flex-1 min-h-0 flex flex-col",
+              )}
+            >
               <TimerCore
                 state={state}
                 time={time}
                 inspectionTime={inspectionTime}
                 currentPenalty={currentPenalty}
+                className={coreClassName}
+                hideStatusText={hideStatusText}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
                 onMouseDown={handleTouchStart}
@@ -1091,6 +1114,7 @@ export default function TimerDisplay({
                 {/* Penalty Buttons */}
                 {state === "stopped" && !isSavingSolve && (
                   <PenaltyButtons
+                    size={dense ? "sm" : "md"}
                     showPenaltyButtons={showPenaltyButtons}
                     currentPenalty={currentPenalty}
                     onPenaltyChange={handlePenalty}
@@ -1124,6 +1148,10 @@ export default function TimerDisplay({
 
         {timerMode === "manual" && (
           <ManualTimerCore
+            className={cx(
+              contentClassName &&
+                "flex-1 min-h-0 flex flex-col justify-center w-full max-w-lg mx-auto",
+            )}
             onSolveComplete={handleManualOrStackmatSolveComplete}
             inspectionEnabled={inspectionEnabled}
             playBeep={playBeep}
@@ -1137,6 +1165,11 @@ export default function TimerDisplay({
 
         {timerMode === "stackmat" && (
           <StackmatTimerCore
+            className={coreClassName}
+            rootClassName={cx(
+              contentClassName &&
+                "flex-1 min-h-0 flex flex-col justify-center w-full max-w-lg mx-auto",
+            )}
             onSolveComplete={handleManualOrStackmatSolveComplete}
             inspectionEnabled={inspectionEnabled}
             playBeep={playBeep}
@@ -1171,6 +1204,6 @@ export default function TimerDisplay({
         }
         onToggleExtendedStat={onToggleExtendedStat || (() => {})}
       />
-    </CollapsibleCard>
+    </Shell>
   );
 }

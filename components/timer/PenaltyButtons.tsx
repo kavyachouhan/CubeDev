@@ -8,6 +8,8 @@ interface PenaltyButtonsProps {
   showPenaltyButtons: boolean;
   currentPenalty: "none" | "+2" | "DNF";
   onPenaltyChange: (penalty: "none" | "+2" | "DNF") => void;
+  /** "sm" keeps them out of the way where vertical space is scarce. */
+  size?: "sm" | "md";
 }
 
 // The timer starts on pointer/touch anywhere on the card; these buttons must
@@ -18,6 +20,7 @@ export default function PenaltyButtons({
   showPenaltyButtons,
   currentPenalty,
   onPenaltyChange,
+  size = "md",
 }: PenaltyButtonsProps) {
   if (!showPenaltyButtons) return null;
 
@@ -30,7 +33,7 @@ export default function PenaltyButtons({
   ];
 
   return (
-    <div role="group" aria-label="Penalty for this solve" className="flex justify-center gap-3">
+    <div role="group" aria-label="Penalty for this solve" className={cx("flex justify-center", size === "sm" ? "gap-2" : "gap-3")}>
       {options.map(({ value, label, tone }) => {
         const active = currentPenalty === value;
         return (
@@ -48,7 +51,10 @@ export default function PenaltyButtons({
             onMouseDown={stop}
             onMouseUp={stop}
             className={cx(
-              "inline-flex items-center justify-center gap-1.5 min-w-24 min-h-11 px-5 rounded-(--radius-control) text-(--on-primary) font-statement text-base transition-colors",
+              "inline-flex items-center justify-center gap-1.5 rounded-(--radius-control) text-(--on-primary) font-statement transition-colors",
+              size === "sm"
+                ? "min-w-16 min-h-9 px-3 text-sm"
+                : "min-w-24 min-h-11 px-5 text-base",
               tone === "plus2"
                 ? active
                   ? "bg-(--penalty-plus2-hover) ring-2 ring-offset-2 ring-offset-(--surface) ring-(--penalty-plus2)"

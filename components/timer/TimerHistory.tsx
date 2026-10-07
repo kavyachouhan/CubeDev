@@ -4,7 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Pencil, Timer as TimerIcon, Trash2 } from "lucide-react";
 import { cx } from "@/lib/cx";
-import { CollapsibleCard, useCollapsed } from "@/components/ui/Card";
+import {
+  makeCardPanelShell,
+  type PanelShellComponent,
+} from "./TimerShell";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { IconButton } from "@/components/ui/IconButton";
@@ -21,6 +24,11 @@ const SolveEditModal = dynamic(() => import("./SolveEditModal"), { ssr: false })
 
 type Penalty = "none" | "+2" | "DNF";
 
+const HistoryCardShell = makeCardPanelShell(
+  "Recent Times",
+  "cubelab-timer-history-expanded",
+);
+
 interface TimerHistoryProps {
   history: TimerRecord[];
   selectedEvent: string;
@@ -29,6 +37,10 @@ interface TimerHistoryProps {
   onDeleteSolve: (solveId: string) => void;
   onUpdateSolve?: (solveId: string, notes?: string, tags?: string[]) => void;
   onEditTime?: (solveId: string, time: number, penalty: Penalty) => void;
+  /** Chrome the list renders inside. Defaults to the collapsible card. */
+  shell?: PanelShellComponent;
+  /** Overrides the scroll container sizing (card caps height, sheets do not). */
+  scrollClassName?: string;
 }
 
 /** Compact toggle for a penalty directly in a history row. */
@@ -70,11 +82,10 @@ export default function TimerHistory({
   onDeleteSolve,
   onUpdateSolve,
   onEditTime,
+  shell,
+  scrollClassName,
 }: TimerHistoryProps) {
-  const { open: showHistory, onOpenChange: setShowHistory } = useCollapsed(
-    "cubelab-timer-history-expanded",
-    true,
-  );
+  const Shell = shell ?? HistoryCardShell;
   const [selectedSolve, setSelectedSolve] = useState<TimerRecord | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSolveId, setEditingSolveId] = useState<string | null>(null);
@@ -151,10 +162,7 @@ export default function TimerHistory({
 
   return (
     <>
-      <CollapsibleCard
-        title="Recent Times"
-        open={showHistory}
-        onOpenChange={setShowHistory}
+      <Shell
         actions={
           eventHistory.length > 0 ? (
             <IconButton
@@ -176,7 +184,10 @@ export default function TimerHistory({
         ) : (
           <div
             ref={scrollContainerRef}
-            className="space-y-1.5 max-h-72 overflow-y-auto -mx-1 px-1"
+            className={cx(
+              "space-y-1.5 overflow-y-auto -mx-1 px-1",
+              scrollClassName ?? "max-h-72",
+            )}
             onScroll={handleScroll}
           >
             <ol aria-label={`Solves for ${getEventName(selectedEvent)}`} className="space-y-1.5">
@@ -256,7 +267,7 @@ export default function TimerHistory({
             )}
           </div>
         )}
-      </CollapsibleCard>
+      </Shell>
 
       {editingSolveId && (
         <SolveEditModal

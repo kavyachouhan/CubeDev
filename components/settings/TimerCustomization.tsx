@@ -3,6 +3,7 @@
 import { useTheme } from "@/lib/theme-context";
 import { cx } from "@/lib/cx";
 import { OptionTiles } from "@/components/ui/OptionTiles";
+import TimerLayoutSelector from "./TimerLayoutSelector";
 
 export default function TimerCustomization() {
   const {
@@ -17,7 +18,7 @@ export default function TimerCustomization() {
   const fontSample = (className: string, selected: boolean) => (
     <span
       className={cx(
-        "text-2xl mt-1",
+        "text-lg sm:text-2xl mt-1",
         className,
         selected ? "text-(--primary)" : "text-(--text-primary)",
       )}
@@ -28,12 +29,16 @@ export default function TimerCustomization() {
 
   return (
     <div className="space-y-6">
+      {/* First: the other timer settings are sized and framed by this choice. */}
+      <TimerLayoutSelector />
+
       <OptionTiles
         legend="Timer Font Size"
         value={timerFontSize}
         onChange={setTimerFontSize}
         columns="grid-cols-2 sm:grid-cols-4"
         align="center"
+        dense
         options={[
           { value: "sm", label: "Small", description: "2.5rem" },
           { value: "md", label: "Medium", description: "4rem" },
@@ -46,7 +51,8 @@ export default function TimerCustomization() {
         legend="Timer Font Style"
         value={timerFontFamily}
         onChange={setTimerFontFamily}
-        columns="grid-cols-1 sm:grid-cols-3"
+        columns="grid-cols-3"
+        dense
         options={[
           {
             value: "mono",

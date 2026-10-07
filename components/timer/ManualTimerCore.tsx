@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, ReactNode } from "react";
+import { cx } from "@/lib/cx";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
@@ -18,6 +19,8 @@ interface ManualTimerCoreProps {
   celebrationType?: "single" | "ao5" | "ao12" | "ao100";
   celebrationTime?: string;
   onCelebrationComplete?: () => void;
+  /** Replaces the default sizing; the compact layout centres and caps it. */
+  className?: string;
 }
 
 export default function ManualTimerCore({
@@ -30,6 +33,7 @@ export default function ManualTimerCore({
   celebrationType = "single",
   celebrationTime = "",
   onCelebrationComplete,
+  className,
 }: ManualTimerCoreProps) {
   const [timeInput, setTimeInput] = useState("");
   const [penalty, setPenalty] = useState<"none" | "+2" | "DNF">("none");
@@ -424,7 +428,7 @@ export default function ManualTimerCore({
   };
 
   return (
-    <div className="relative space-y-4">
+    <div className={cx("relative space-y-4", className)}>
       {/* Confetti Celebration */}
       <ConfettiCelebration
         show={showCelebration}

@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { CollapsibleCard, useCollapsed } from "@/components/ui/Card";
+import {
+  makeCardPanelShell,
+  type PanelShellComponent,
+} from "./TimerShell";
 import ImportModal from "./ImportModal";
 
 interface TimerRecord {
@@ -28,12 +31,20 @@ interface Session {
   convexId?: string;
 }
 
+const DataCardShell = makeCardPanelShell(
+  "Data Management",
+  "cubelab-import-export-expanded",
+  false,
+);
+
 interface ImportExportButtonsProps {
   history: TimerRecord[];
   sessions: Session[];
   onImport: (solves: TimerRecord[]) => Promise<void>;
   isImportModalOpen?: boolean;
   onImportModalOpenChange?: (isOpen: boolean) => void;
+  /** Chrome the panel renders inside. Defaults to the collapsible card. */
+  shell?: PanelShellComponent;
 }
 
 export default function ImportExportButtons({
@@ -42,12 +53,10 @@ export default function ImportExportButtons({
   onImport,
   isImportModalOpen,
   onImportModalOpenChange,
+  shell,
 }: ImportExportButtonsProps) {
+  const Shell = shell ?? DataCardShell;
   const [internalImportModalOpen, setInternalImportModalOpen] = useState(false);
-  const { open: isExpanded, onOpenChange: setIsExpanded } = useCollapsed(
-    "cubelab-import-export-expanded",
-    false,
-  );
 
   const isImportModalControlled = typeof isImportModalOpen === "boolean";
   const importModalOpen = isImportModalControlled
@@ -115,11 +124,7 @@ export default function ImportExportButtons({
 
   return (
     <>
-      <CollapsibleCard
-        title="Data Management"
-        open={isExpanded}
-        onOpenChange={setIsExpanded}
-      >
+      <Shell>
         <p className="type-body mb-4">Import and export your timer data.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Button
@@ -138,7 +143,7 @@ export default function ImportExportButtons({
             Import Data
           </Button>
         </div>
-      </CollapsibleCard>
+      </Shell>
 
       {/* Import Modal */}
       <ImportModal

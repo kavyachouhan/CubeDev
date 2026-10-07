@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import { cx } from "@/lib/cx";
 import { useTheme } from "@/lib/theme-context";
 import { formatTime as formatMs } from "@/lib/stats-utils";
 
@@ -22,6 +23,13 @@ interface TimerCoreProps {
   onTouchEnd: (e: React.TouchEvent | React.MouseEvent) => void;
   onMouseDown: (e: React.TouchEvent | React.MouseEvent) => void;
   onMouseUp: (e: React.TouchEvent | React.MouseEvent) => void;
+  /** Hides the "hold to start" helper line once it stops being useful. */
+  hideStatusText?: boolean;
+  /**
+   * Replaces the default sizing. The compact layout fills a grid row
+   * instead of reserving a fixed minimum height.
+   */
+  className?: string;
 }
 
 export default function TimerCore({
@@ -34,6 +42,8 @@ export default function TimerCore({
   onTouchEnd,
   onMouseDown,
   onMouseUp,
+  className,
+  hideStatusText,
 }: TimerCoreProps) {
   const { timerUpdateMode, reduceMotion } = useTheme();
 
@@ -120,7 +130,11 @@ export default function TimerCore({
 
   return (
     <div
-      className="text-center space-y-6 min-h-[280px] sm:min-h-[320px] md:min-h-[360px] flex flex-col justify-center"
+      className={cx(
+        "text-center flex flex-col justify-center",
+        className ??
+          "space-y-6 min-h-[280px] sm:min-h-[320px] md:min-h-[360px]",
+      )}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
       onMouseDown={onMouseDown}
@@ -195,9 +209,11 @@ export default function TimerCore({
       )}
 
       {/* Status Text */}
-      <div className="text-sm text-(--text-secondary) font-inter select-none">
-        {getStatusText()}
-      </div>
+      {!hideStatusText && (
+        <div className="text-sm text-(--text-secondary) font-inter select-none px-4 text-balance">
+          {getStatusText()}
+        </div>
+      )}
     </div>
   );
 }

@@ -15,7 +15,13 @@ import {
   startOfWeek,
   subMonths,
 } from "date-fns";
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, X } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  X,
+} from "lucide-react";
 import { cx } from "@/lib/cx";
 import { Button } from "./Button";
 import { IconButton } from "./IconButton";
@@ -53,7 +59,10 @@ export function toTimeInputValue(ms: number | null | undefined): string {
 }
 
 /** HH:mm to epoch ms on `base` (today by default), or null when empty. */
-export function fromTimeInputValue(value: string, base?: number): number | null {
+export function fromTimeInputValue(
+  value: string,
+  base?: number,
+): number | null {
   if (!value) return null;
   const [h, m] = value.split(":").map(Number);
   if (Number.isNaN(h) || Number.isNaN(m)) return null;
@@ -185,7 +194,11 @@ export function DateTimePicker({
     <Popover
       title={name}
       placement={placement}
-      className="w-auto min-w-0 max-w-[min(28rem,calc(100vw-1rem))]"
+      // Time-only gets a fixed width its dials fill; the calendar sizes itself.
+      className={cx(
+        "max-w-[min(36rem,calc(100vw-1rem))]",
+        mode === "time" ? "w-72" : "w-auto",
+      )}
       trigger={(props) => (
         <button
           {...props}
@@ -279,7 +292,9 @@ function PickerPanel({
   useEffect(() => {
     if (!focusPending.current) return;
     focusPending.current = false;
-    gridRef.current?.querySelector<HTMLElement>('[data-day][tabindex="0"]')?.focus();
+    gridRef.current
+      ?.querySelector<HTMLElement>('[data-day][tabindex="0"]')
+      ?.focus();
   }, [cursor]);
 
   const days = useMemo(() => {
@@ -296,8 +311,10 @@ function PickerPanel({
 
   const outOfRange = (d: Date) => {
     const day = startOfDay(d).getTime();
-    if (min !== undefined && day < startOfDay(new Date(min)).getTime()) return true;
-    if (max !== undefined && day > startOfDay(new Date(max)).getTime()) return true;
+    if (min !== undefined && day < startOfDay(new Date(min)).getTime())
+      return true;
+    if (max !== undefined && day > startOfDay(new Date(max)).getTime())
+      return true;
     return false;
   };
 
@@ -375,13 +392,19 @@ function PickerPanel({
     rawMinute === null
       ? null
       : minutes.reduce(
-          (best, m) => (Math.abs(m - rawMinute) < Math.abs(best - rawMinute) ? m : best),
+          (best, m) =>
+            Math.abs(m - rawMinute) < Math.abs(best - rawMinute) ? m : best,
           minutes[0],
         );
 
   return (
-    <div className="flex flex-col gap-3 p-1 sm:p-2">
-      <div className={cx("flex flex-col gap-3", showDate && showTime && "sm:flex-row")}>
+    <div className="flex flex-col gap-3 p-2">
+      <div
+        className={cx(
+          "flex flex-col gap-3",
+          showDate && showTime && "sm:flex-row",
+        )}
+      >
         {showDate && (
           <div className="min-w-0">
             <div className="flex items-center justify-between gap-1 mb-2">
@@ -405,7 +428,11 @@ function PickerPanel({
             </div>
             <div className="grid grid-cols-7 mb-1">
               {weekdayLabels.map((day) => (
-                <span key={day} aria-hidden className="type-overline text-center py-1">
+                <span
+                  key={day}
+                  aria-hidden
+                  className="type-overline text-center py-1"
+                >
                   {day.slice(0, 2)}
                 </span>
               ))}
@@ -418,7 +445,8 @@ function PickerPanel({
               className="grid grid-cols-7 gap-0.5"
             >
               {days.map((day) => {
-                const isSelected = selected !== null && isSameDay(day, selected);
+                const isSelected =
+                  selected !== null && isSameDay(day, selected);
                 const isToday = isSameDay(day, new Date());
                 const isCursor = isSameDay(day, cursor);
                 const isDisabled = outOfRange(day);
@@ -438,11 +466,13 @@ function PickerPanel({
                       "relative w-9 h-9 inline-flex items-center justify-center rounded-(--radius-control) text-sm transition-colors",
                       "focus-visible:outline-2 focus-visible:outline-(--focus-ring) focus-visible:outline-offset-1",
                       isDisabled && "opacity-40 cursor-not-allowed",
-                      !isSameMonth(day, month) && !isSelected && "text-(--text-muted)",
+                      !isSameMonth(day, month) &&
+                        !isSelected &&
+                        "text-(--text-muted)",
                       isSelected
                         ? "bg-(--primary) text-(--on-primary) font-semibold"
                         : !isDisabled &&
-                          "text-(--text-primary) hover:bg-(--surface-elevated)",
+                            "text-(--text-primary) hover:bg-(--surface-elevated)",
                     )}
                   >
                     {isToday && !isSelected && (
@@ -464,11 +494,13 @@ function PickerPanel({
             className={cx(
               "min-w-0",
               showDate &&
-                "border-t border-(--border) pt-3 sm:border-t-0 sm:border-l sm:pl-3 sm:pt-0",
+                "border-t border-(--border) pt-3 sm:w-56 sm:border-t-0 sm:border-l sm:pl-3 sm:pt-0",
             )}
           >
-            <div className="type-overline mb-2">Time</div>
-            <div className="flex items-stretch gap-2">
+            {/* Time-only panels are already titled by the sheet or trigger. */}
+            {showDate && <div className="type-overline mb-2">Time</div>}
+            {/* The dials share the width; AM/PM keeps its own narrow column. */}
+            <div className="grid grid-cols-[1fr_1fr_auto] gap-2">
               <TimeColumn
                 label="Hour"
                 options={hours12}
@@ -481,35 +513,46 @@ function PickerPanel({
                 active={activeMinute}
                 onSelect={(m) => pickTime(activeHour ?? 0, m)}
               />
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col">
                 {/* Matches the columns' label row so the tops line up. */}
                 <div aria-hidden className="type-overline mb-1 invisible">
                   &nbsp;
                 </div>
-                {(["am", "pm"] as const).map((period) => {
-                  const isActive = meridiem === period;
-                  return (
-                    <button
-                      key={period}
-                      type="button"
-                      aria-pressed={isActive}
-                      onClick={() =>
-                        pickTime(
-                          to24(activeHour12 ?? 12, period),
-                          rawMinute ?? 0,
-                        )
-                      }
-                      className={cx(
-                        "w-12 py-2 rounded-(--radius-control) text-sm font-semibold uppercase transition-colors",
-                        isActive
-                          ? "bg-(--primary) text-(--on-primary)"
-                          : "bg-(--surface-elevated) border border-(--border) text-(--text-secondary) hover:text-(--text-primary)",
-                      )}
-                    >
-                      {period}
-                    </button>
-                  );
-                })}
+                {/* A small segmented switch, centred on the dials: they scroll the
+                    selected row to their middle, so AM/PM reads on the same line. */}
+                <div className="flex-1 flex items-center">
+                  <div
+                    role="group"
+                    aria-label="AM or PM"
+                    className="flex flex-col gap-1 p-1 rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated)"
+                  >
+                    {(["am", "pm"] as const).map((period) => {
+                      const isActive = meridiem === period;
+                      return (
+                        <button
+                          key={period}
+                          type="button"
+                          aria-pressed={isActive}
+                          onClick={() =>
+                            pickTime(
+                              to24(activeHour12 ?? 12, period),
+                              rawMinute ?? 0,
+                            )
+                          }
+                          className={cx(
+                            "w-11 h-8 rounded-(--radius-control) text-xs font-semibold uppercase tracking-wide transition-colors",
+                            "focus-visible:outline-2 focus-visible:outline-(--focus-ring) focus-visible:outline-offset-1",
+                            isActive
+                              ? "bg-(--primary) text-(--on-primary)"
+                              : "text-(--text-secondary) hover:bg-(--surface) hover:text-(--text-primary)",
+                          )}
+                        >
+                          {period}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -575,13 +618,13 @@ function TimeColumn({
   }, []);
 
   return (
-    <div className="min-w-0">
+    <div className="min-w-0 flex flex-col">
       <div className="type-overline mb-1 text-center">{label}</div>
       <div
         ref={listRef}
         role="listbox"
         aria-label={label}
-        className="h-36 sm:h-40 w-14 sm:w-16 overflow-y-auto overscroll-contain snap-y rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) p-1 space-y-0.5"
+        className="h-44 w-full overflow-y-auto overscroll-contain snap-y scrollbar-hide rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) p-1 space-y-1"
       >
         {options.map((option) => {
           const isActive = option === active;
@@ -593,7 +636,8 @@ function TimeColumn({
               aria-selected={isActive}
               onClick={() => onSelect(option)}
               className={cx(
-                "w-full py-2 snap-center rounded-(--radius-badge) type-time text-sm text-center transition-colors",
+                "w-full h-9 snap-center rounded-(--radius-control) type-time text-sm text-center transition-colors",
+                "focus-visible:outline-2 focus-visible:outline-(--focus-ring) focus-visible:-outline-offset-2",
                 isActive
                   ? "bg-(--primary) text-(--on-primary) font-semibold"
                   : "text-(--text-secondary) hover:bg-(--surface) hover:text-(--text-primary)",

@@ -3,7 +3,6 @@
 import { Card, CardHeader } from "@/components/ui/Card";
 import ThemeModeSelector from "./ThemeModeSelector";
 import ColorSchemeSelector from "./ColorSchemeSelector";
-import TimerCustomization from "./TimerCustomization";
 import CubeViewSelector from "./CubeViewSelector";
 import AccessibilitySettings from "./AccessibilitySettings";
 
@@ -19,7 +18,6 @@ export default function ThemeSection() {
       <div className="space-y-8">
         <ThemeModeSelector />
         <ColorSchemeSelector />
-        <TimerCustomization />
         <CubeViewSelector />
         <AccessibilitySettings />
       </div>

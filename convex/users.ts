@@ -474,6 +474,7 @@ export const updateThemeSettings = mutation({
     timerFontFamily: v.optional(v.string()),
     timerUpdateMode: v.optional(v.string()),
     cubeViewMode: v.optional(v.string()),
+    timerLayout: v.optional(v.string()),
     reduceMotion: v.optional(v.boolean()),
     disableGlow: v.optional(v.boolean()),
     highContrast: v.optional(v.boolean()),

@@ -59,6 +59,11 @@ interface AnchoredLayerProps {
   matchWidth?: boolean;
   mobile?: LayerMobile;
   panelClassName?: string;
+  /**
+   * Height cap in px. A `max-h-*` class on the panel would lose to the inline
+   * max-height the positioning sets from the free space, so it goes here.
+   */
+  maxPanelHeight?: number;
   onKeyDown?: (event: KeyboardEvent) => void;
   children: ReactNode;
   /** Rendered above the list, outside the scroll area (e.g. a search box). */
@@ -76,6 +81,7 @@ function AnchoredLayer({
   matchWidth,
   mobile = "sheet",
   panelClassName,
+  maxPanelHeight,
   onKeyDown,
   children,
   header,
@@ -94,6 +100,7 @@ function AnchoredLayer({
     placement,
     6,
     matchWidth,
+    maxPanelHeight,
   );
 
   useOverlay({
@@ -521,7 +528,7 @@ export function SelectMenu<T extends string>({
         placement={placement}
         mobile={mobile}
         matchWidth
-        panelClassName="max-h-80"
+        maxPanelHeight={400}
         onKeyDown={onKeyDown}
         header={
           searchable ? (

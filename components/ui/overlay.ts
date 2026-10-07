@@ -234,6 +234,8 @@ export function useAnchoredPosition(
   placement: Placement = "bottom-start",
   offset = 6,
   matchWidth = false,
+  /** Upper bound for the panel's height, in px; the viewport still wins if smaller. */
+  maxPanelHeight = Infinity,
 ) {
   const [style, setStyle] = useState<CSSProperties>({
     position: "fixed",
@@ -274,7 +276,10 @@ export function useAnchoredPosition(
         top,
         left,
         minWidth: matchWidth ? t.width : undefined,
-        maxHeight: Math.max(160, placeTop ? spaceAbove : spaceBelow),
+        maxHeight: Math.min(
+          maxPanelHeight,
+          Math.max(160, placeTop ? spaceAbove : spaceBelow),
+        ),
         transformOrigin: placeTop ? "bottom" : "top",
         visibility: "visible",
       });
@@ -287,7 +292,7 @@ export function useAnchoredPosition(
       window.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
     };
-  }, [open, triggerRef, panelRef, placement, offset, matchWidth]);
+  }, [open, triggerRef, panelRef, placement, offset, matchWidth, maxPanelHeight]);
 
   return style;
 }

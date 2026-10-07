@@ -24,6 +24,8 @@ export interface OptionTilesProps<T extends string> {
   /** `center` for short labels with icons, `start` for descriptions. */
   align?: "center" | "start";
   hint?: ReactNode;
+  /** Tighter padding and single-line labels, for rows of four or narrow tiles. */
+  dense?: boolean;
   className?: string;
 }
 
@@ -39,6 +41,7 @@ export function OptionTiles<T extends string>({
   columns = "grid-cols-2 sm:grid-cols-3",
   align = "start",
   hint,
+  dense = false,
   className,
 }: OptionTilesProps<T>) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -76,7 +79,8 @@ export function OptionTiles<T extends string>({
               onClick={() => onChange(option.value)}
               onKeyDown={(e) => onKeyDown(e, index)}
               className={cx(
-                "relative flex flex-col gap-1 p-3 sm:p-4 rounded-(--radius-control) border-2 transition-colors font-inter",
+                "relative flex flex-col gap-1 rounded-(--radius-control) border-2 transition-colors font-inter",
+                dense ? "p-2.5 sm:p-3" : "p-3 sm:p-4",
                 align === "center" ? "items-center text-center" : "items-start text-left",
                 selected
                   ? "border-(--primary) bg-(--primary)/10"
@@ -94,6 +98,7 @@ export function OptionTiles<T extends string>({
                 className={cx(
                   "flex items-center gap-2 text-sm font-medium [&_svg]:w-4 [&_svg]:h-4",
                   align === "center" && "flex-col gap-1.5",
+                  dense && "whitespace-nowrap",
                   selected ? "text-(--primary)" : "text-(--text-secondary)",
                 )}
               >

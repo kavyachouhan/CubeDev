@@ -100,12 +100,14 @@ export default function RootLayout({
                   root.setAttribute('data-color-scheme', prefs.colorScheme || 'blue');
                   root.setAttribute('data-timer-size', prefs.timerFontSize || 'lg');
                   root.setAttribute('data-timer-font', prefs.timerFontFamily || 'mono');
+                  root.setAttribute('data-timer-layout', prefs.timerLayout || 'compact');
                   if (prefs.reduceMotion) root.setAttribute('data-reduce-motion', 'true');
                   if (prefs.disableGlow) root.setAttribute('data-disable-glow', 'true');
                   if (prefs.highContrast) root.setAttribute('data-high-contrast', 'true');
                 } catch (e) {
                   document.documentElement.setAttribute('data-theme', 'dark');
                   document.documentElement.setAttribute('data-color-scheme', 'blue');
+                  document.documentElement.setAttribute('data-timer-layout', 'compact');
                 }
               })();
             `,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, ReactNode } from "react";
+import { cx } from "@/lib/cx";
 import { Mic, MicOff, AlertCircle, Info, Wifi } from "lucide-react";
 import { useStackmatAudio } from "./hooks/useStackmatAudio";
 import ConfettiCelebration from "./ConfettiCelebration";
@@ -21,6 +22,10 @@ interface StackmatTimerCoreProps {
   celebrationType?: "single" | "ao5" | "ao12" | "ao100";
   celebrationTime?: string;
   onCelebrationComplete?: () => void;
+  /** Replaces the default sizing; the compact layout fills its grid row. */
+  className?: string;
+  /** Sizing for the outer wrapper, including the connection banner. */
+  rootClassName?: string;
 }
 
 export default function StackmatTimerCore({
@@ -33,6 +38,8 @@ export default function StackmatTimerCore({
   celebrationType = "single",
   celebrationTime = "",
   onCelebrationComplete,
+  className,
+  rootClassName,
 }: StackmatTimerCoreProps) {
   const {
     isConnected,
@@ -336,7 +343,7 @@ export default function StackmatTimerCore({
   };
 
   return (
-    <div className="relative space-y-4">
+    <div className={cx("relative space-y-4", rootClassName)}>
       {/* Confetti Celebration */}
       <ConfettiCelebration
         show={showCelebration}
@@ -410,7 +417,13 @@ export default function StackmatTimerCore({
 
       {/* Timer Display */}
       {!isInspecting && (
-        <div className="text-center space-y-4 min-h-[280px] sm:min-h-[320px] md:min-h-[360px] flex flex-col justify-center">
+        <div
+          className={cx(
+            "text-center flex flex-col justify-center",
+            className ??
+              "space-y-4 min-h-[280px] sm:min-h-[320px] md:min-h-[360px]",
+          )}
+        >
           {/* Main Timer Display */}
           <div
             className={`font-bold timer-text ${getTimerColor()} transition-all duration-300 font-mono select-none py-4`}
