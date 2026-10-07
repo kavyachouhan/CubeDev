@@ -1,6 +1,9 @@
 "use client";
 
 import { Volume2, VolumeX } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
+import type { BadgeTone } from "@/components/ui/Badge";
+import { IconButton } from "@/components/ui/IconButton";
 import { AtmosphereSettings } from "./CompetitionDetail";
 
 interface SimulationAtmospherePanelProps {
@@ -23,42 +26,33 @@ export default function SimulationAtmospherePanel({
     return "Relaxed";
   };
 
-  // Get pressure level color
-  const getPressureColor = () => {
-    if (atmosphere.pressure >= 75) return "text-(--error)";
-    if (atmosphere.pressure >= 40) return "text-(--warning)";
-    return "text-(--success)";
+  // Get pressure level tone
+  const getPressureTone = (): BadgeTone => {
+    if (atmosphere.pressure >= 75) return "danger";
+    if (atmosphere.pressure >= 40) return "warning";
+    return "success";
   };
 
   if (isCompact) {
     return (
-      <div className="flex items-center gap-3 text-sm">
-        <button
+      <div className="flex flex-wrap items-center gap-2">
+        <IconButton
+          size="sm"
           onClick={onToggleSound}
-          className="p-2 rounded-lg text-(--text-muted) hover:text-(--primary) hover:bg-(--surface-elevated) transition-colors"
-          title={soundEnabled ? "Mute sounds" : "Enable sounds"}
-        >
-          {soundEnabled ? (
-            <Volume2 className="w-5 h-5" />
-          ) : (
-            <VolumeX className="w-5 h-5" />
-          )}
-        </button>
+          aria-label={soundEnabled ? "Mute sounds" : "Enable sounds"}
+          icon={soundEnabled ? <Volume2 /> : <VolumeX />}
+        />
 
         {atmosphere.pressure > 50 && (
-          <div
-            className={`flex items-center gap-1.5 px-2 py-1 rounded-full bg-(--warning)/10 border border-(--warning)/30 ${getPressureColor()}`}
-          >
-            <span className="text-xs font-medium">
-              {getPressureLevel()} Pressure
-            </span>
-          </div>
+          <Badge shape="pill" size="md" tone={getPressureTone()}>
+            {getPressureLevel()} Pressure
+          </Badge>
         )}
 
         {atmosphere.distractions && (
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-(--primary)/10 border border-(--primary)/30 text-(--primary)">
-            <span className="text-xs font-medium">Distractions On</span>
-          </div>
+          <Badge shape="pill" size="md" tone="primary">
+            Distractions On
+          </Badge>
         )}
       </div>
     );
@@ -70,22 +64,17 @@ export default function SimulationAtmospherePanel({
         <h3 className="text-sm font-medium text-(--text-primary)">
           Atmosphere Settings
         </h3>
-        <button
+        <IconButton
+          size="sm"
           onClick={onToggleSound}
-          className="p-2 rounded-lg text-(--text-muted) hover:text-(--primary) hover:bg-(--surface-elevated) transition-colors"
-          title={soundEnabled ? "Mute sounds" : "Enable sounds"}
-        >
-          {soundEnabled ? (
-            <Volume2 className="w-5 h-5" />
-          ) : (
-            <VolumeX className="w-5 h-5" />
-          )}
-        </button>
+          aria-label={soundEnabled ? "Mute sounds" : "Enable sounds"}
+          icon={soundEnabled ? <Volume2 /> : <VolumeX />}
+        />
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {/* Crowd Noise */}
-        <div className="p-3 rounded-lg bg-(--surface-elevated) border border-(--border)">
+        <div className="p-3 rounded-(--radius-control) bg-(--surface-elevated) border border-(--border)">
           <div className="text-xs text-(--text-muted) mb-1">
             Crowd Noise
           </div>
@@ -95,15 +84,23 @@ export default function SimulationAtmospherePanel({
         </div>
 
         {/* Pressure */}
-        <div className="p-3 rounded-lg bg-(--surface-elevated) border border-(--border)">
+        <div className="p-3 rounded-(--radius-control) bg-(--surface-elevated) border border-(--border)">
           <div className="text-xs text-(--text-muted) mb-1">Pressure</div>
-          <div className={`text-sm font-medium ${getPressureColor()}`}>
+          <div
+            className={`text-sm font-medium ${
+              atmosphere.pressure >= 75
+                ? "text-(--error)"
+                : atmosphere.pressure >= 40
+                  ? "text-(--warning)"
+                  : "text-(--success)"
+            }`}
+          >
             {getPressureLevel()} ({atmosphere.pressure}%)
           </div>
         </div>
 
         {/* Distractions */}
-        <div className="p-3 rounded-lg bg-(--surface-elevated) border border-(--border)">
+        <div className="p-3 rounded-(--radius-control) bg-(--surface-elevated) border border-(--border)">
           <div className="text-xs text-(--text-muted) mb-1">
             Distractions
           </div>
@@ -115,7 +112,7 @@ export default function SimulationAtmospherePanel({
         </div>
 
         {/* Timer Delay */}
-        <div className="p-3 rounded-lg bg-(--surface-elevated) border border-(--border)">
+        <div className="p-3 rounded-(--radius-control) bg-(--surface-elevated) border border-(--border)">
           <div className="text-xs text-(--text-muted) mb-1">
             Timer Delay
           </div>
@@ -129,7 +126,7 @@ export default function SimulationAtmospherePanel({
 
       {/* High Pressure Warning */}
       {atmosphere.pressure >= 75 && (
-        <div className="mt-4 p-3 rounded-lg bg-(--warning)/10 border border-(--warning)/30">
+        <div className="mt-4 p-3 rounded-(--radius-control) bg-(--warning)/10 border border-(--warning)/30">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-(--warning) animate-pulse" />
             <span className="text-sm text-(--warning)">

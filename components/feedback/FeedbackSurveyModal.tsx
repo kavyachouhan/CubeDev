@@ -4,9 +4,13 @@ import { useState, useMemo } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@/components/UserProvider";
-import { X, Star, Send, MessageSquare, CircleCheck } from "lucide-react";
+import { Star, Send, MessageSquare, CircleCheck } from "lucide-react";
 import Link from "next/link";
 import type { Id } from "@/convex/_generated/dataModel";
+import { Button } from "@/components/ui/Button";
+import { CardIcon } from "@/components/ui/Card";
+import { Input, Textarea } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
 import FeedbackDropdown from "./FeedbackDropdown";
 
 // Default features to rate - keep in sync with surveyConfig.ts
@@ -224,68 +228,43 @@ export default function FeedbackSurveyModal({
   // Success state
   if (isSubmitted) {
     return (
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        onKeyDown={(e) => {
-          if (e.key === " " || e.key === "Spacebar") {
-            e.stopPropagation();
-          }
-        }}
-      >
-        <div className="timer-card max-w-md w-full">
-          <div className="text-center py-6">
-            <div className="w-16 h-16 bg-(--success)/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CircleCheck className="w-8 h-8 text-(--success)" />
-            </div>
-            <h2 className="text-2xl font-bold text-(--text-primary) mb-3 font-statement">
-              {config.successTitle}
-            </h2>
-            <p className="text-(--text-secondary) font-inter mb-6">
-              {config.successMessage}
-            </p>
-            <button onClick={handleClose} className="btn-primary px-6 py-2">
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
+      <Modal open onClose={handleClose} size="md" mobile="sheet">
+        <Modal.Header title={config.successTitle} />
+        <Modal.Body className="text-center">
+          <CardIcon
+            tone="success"
+            className="mx-auto mb-4 w-14 h-14 [&_svg]:w-7 [&_svg]:h-7"
+          >
+            <CircleCheck />
+          </CardIcon>
+          <p className="type-body">{config.successMessage}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={handleClose}>Close</Button>
+        </Modal.Footer>
+      </Modal>
     );
   }
 
   const currentStepType = steps[currentStep - 1];
 
   return (
-    <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      onKeyDown={(e) => {
-        if (e.key === " " || e.key === "Spacebar") {
-          e.stopPropagation();
-        }
-      }}
-    >
-      <div className="timer-card max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-              {config.title}
-            </h2>
-            <p className="text-sm text-(--text-muted) font-inter mt-1">
-              Step {currentStep} of {totalSteps}
-            </p>
-          </div>
-          <button
-            onClick={handleClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
+    <Modal open onClose={handleClose} size="lg" mobile="sheet">
+      <Modal.Header
+        title={config.title}
+        description={`Step ${currentStep} of ${totalSteps}`}
+      />
+      <Modal.Body>
         {/* Progress Bar */}
-        <div className="w-full bg-(--surface-elevated) rounded-full h-2 mb-6">
+        <div
+          role="progressbar"
+          aria-valuenow={currentStep}
+          aria-valuemin={1}
+          aria-valuemax={totalSteps}
+          className="w-full bg-(--surface-elevated) rounded-full h-2 mb-6"
+        >
           <div
-            className="bg-(--primary) h-2 rounded-full transition-all duration-300"
+            className="bg-(--primary) h-2 rounded-full transition-all duration-(--duration-slow)"
             style={{ width: `${(currentStep / totalSteps) * 100}%` }}
           />
         </div>
@@ -308,7 +287,7 @@ export default function FeedbackSurveyModal({
                 <button
                   key={rating}
                   onClick={() => setUiuxRating(rating)}
-                  className={`p-3 rounded-lg transition-all duration-200 ${
+                  className={`p-3 rounded-(--radius-control) transition-all duration-200 ${
                     uiuxRating >= rating
                       ? "text-(--warning)"
                       : "text-(--text-muted) hover:text-(--text-secondary)"
@@ -346,7 +325,7 @@ export default function FeedbackSurveyModal({
               {config.features.map(({ key, label }) => (
                 <div
                   key={key}
-                  className="flex items-center justify-between gap-4 p-3 bg-(--surface-elevated) rounded-lg"
+                  className="flex items-center justify-between gap-4 p-3 bg-(--surface-elevated) rounded-(--radius-control)"
                 >
                   <span className="text-sm font-medium text-(--text-primary) font-inter">
                     {label}
@@ -407,9 +386,9 @@ export default function FeedbackSurveyModal({
                 <button
                   key={score}
                   onClick={() => setRecommendScore(score)}
-                  className={`py-2.5 sm:py-3 rounded-lg text-sm font-medium transition-all duration-200 font-inter ${
+                  className={`py-2.5 sm:py-3 rounded-(--radius-control) text-sm font-medium transition-all duration-200 font-inter ${
                     recommendScore === score
-                      ? "bg-(--primary) text-white"
+                      ? "bg-(--primary) text-(--on-primary)"
                       : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) hover:text-(--text-primary)"
                   }`}
                 >
@@ -425,14 +404,13 @@ export default function FeedbackSurveyModal({
 
             {config.showFeatureRequests && (
               <div>
-                <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+                <label className="type-label block mb-2">
                   What features would you like to see? (Optional)
                 </label>
-                <textarea
+                <Textarea
                   value={featureRequests}
                   onChange={(e) => setFeatureRequests(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
                   placeholder="Tell us about features you'd love to have..."
                   maxLength={500}
                 />
@@ -446,7 +424,7 @@ export default function FeedbackSurveyModal({
           <div className="space-y-6">
             {config.customQuestions.map((question) => (
               <div key={question.id}>
-                <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+                <label className="type-label block mb-2">
                   {question.question}
                   {question.required && (
                     <span className="text-(--error) ml-1">*</span>
@@ -454,25 +432,22 @@ export default function FeedbackSurveyModal({
                 </label>
 
                 {question.type === "text" && (
-                  <input
-                    type="text"
+                  <Input
                     value={(customResponses[question.id] as string) || ""}
                     onChange={(e) =>
                       handleCustomResponse(question.id, e.target.value)
                     }
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
                   />
                 )}
 
                 {question.type === "textarea" && (
-                  <textarea
+                  <Textarea
                     value={(customResponses[question.id] as string) || ""}
                     onChange={(e) =>
                       handleCustomResponse(question.id, e.target.value)
                     }
                     rows={3}
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
-                  />
+                    />
                 )}
 
                 {question.type === "rating" && (
@@ -483,7 +458,7 @@ export default function FeedbackSurveyModal({
                         onClick={() =>
                           handleCustomResponse(question.id, rating)
                         }
-                        className={`p-2 rounded-lg transition-all duration-200 ${
+                        className={`p-2 rounded-(--radius-control) transition-all duration-200 ${
                           (customResponses[question.id] as number) >= rating
                             ? "text-(--warning)"
                             : "text-(--text-muted) hover:text-(--text-secondary)"
@@ -533,17 +508,17 @@ export default function FeedbackSurveyModal({
             </div>
 
             <div>
-              <textarea
+              <Textarea
                 value={additionalComments}
                 onChange={(e) => setAdditionalComments(e.target.value)}
                 rows={4}
-                className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
-                placeholder="Share your thoughts..."
+                aria-label="Additional comments"
+                placeholder="Share your thoughts…"
                 maxLength={1000}
               />
             </div>
 
-            <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+            <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
               <div className="flex items-start gap-3">
                 <MessageSquare className="w-5 h-5 text-(--primary) mt-0.5 shrink-0" />
                 <div>
@@ -568,46 +543,28 @@ export default function FeedbackSurveyModal({
           </div>
         )}
 
-        {/* Navigation Buttons */}
-        <div className="flex flex-col-reverse sm:flex-row gap-3 mt-8">
-          {currentStep > 1 && (
-            <button
-              type="button"
-              onClick={handleBack}
-              className="flex-1 btn-secondary py-3 sm:py-2"
-            >
-              Back
-            </button>
-          )}
-
-          {currentStep < totalSteps ? (
-            <button
-              type="button"
-              onClick={handleNext}
-              disabled={!canProceed()}
-              className="flex-1 btn-primary py-3 sm:py-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Continue
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="flex-1 btn-primary py-3 sm:py-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {isSubmitting ? (
-                "Submitting..."
-              ) : (
-                <>
-                  <Send className="w-4 h-4" />
-                  Submit Feedback
-                </>
-              )}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        {currentStep > 1 && (
+          <Button variant="secondary" onClick={handleBack}>
+            Back
+          </Button>
+        )}
+        {currentStep < totalSteps ? (
+          <Button onClick={handleNext} disabled={!canProceed()}>
+            Continue
+          </Button>
+        ) : (
+          <Button
+            onClick={handleSubmit}
+            loading={isSubmitting}
+            loadingText="Submitting…"
+            iconLeft={<Send className="w-4 h-4" />}
+          >
+            Submit feedback
+          </Button>
+        )}
+      </Modal.Footer>
+    </Modal>
   );
 }

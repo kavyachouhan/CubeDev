@@ -13,6 +13,9 @@ import {
   ClipboardPaste,
   FileUp,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
+import { Input, Textarea } from "@/components/ui/Field";
 
 interface ImportResult {
   setsCreated: number;
@@ -300,30 +303,10 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      {/* Modal */}
-      <div className="relative timer-card max-w-2xl w-full my-4 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-(--border)">
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
-            Import Algorithm Data
-          </h3>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-(--surface-elevated) rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5 text-(--text-muted)" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-4 space-y-4">
+    <Modal open onClose={onClose} size="2xl" mobile="fullscreen">
+      <Modal.Header title="Import algorithm data" />
+      <Modal.Body>
+        <div className="space-y-4">
           {/* Tab Navigation */}
           <div className="flex border-b border-(--border)">
             <button
@@ -353,14 +336,11 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
           {/* Tab Content */}
           {activeTab === "paste" ? (
             <div>
-              <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-                Paste JSON Data
-              </label>
-              <textarea
+              <label className="type-label block mb-1.5">Paste JSON Data</label>
+              <Textarea
                 value={importData}
                 onChange={(e) => handleDataChange(e.target.value)}
                 rows={10}
-                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-mono text-sm resize-y"
                 placeholder={`{
   "sets": [...],
   "cases": [...],
@@ -373,13 +353,13 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+              className={`relative border-2 border-dashed rounded-(--radius-control) p-8 text-center transition-colors ${
                 isDragOver
                   ? "border-(--primary) bg-(--primary)/5"
                   : "border-(--border) hover:border-(--text-muted)"
               }`}
             >
-              <input
+              <Input
                 ref={fileInputRef}
                 type="file"
                 accept=".json,application/json"
@@ -395,7 +375,7 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
               </p>
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) rounded-lg transition-colors font-inter text-sm"
+                className="px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) rounded-(--radius-control) transition-colors font-inter text-sm"
               >
                 <Upload className="w-4 h-4 inline-block mr-2" />
                 Choose File
@@ -406,7 +386,7 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
           {/* Validation Status */}
           {validationStatus && (
             <div
-              className={`flex items-start gap-3 p-3 rounded-lg ${
+              className={`flex items-start gap-3 p-3 rounded-(--radius-control) ${
                 validationStatus.isValid
                   ? "bg-(--success)/10 border border-(--success)/20"
                   : "bg-(--error)/10 border border-(--error)/20"
@@ -443,7 +423,7 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
           {/* Import Result */}
           {importResult && (
             <div
-              className={`p-3 rounded-lg ${
+              className={`p-3 rounded-(--radius-control) ${
                 importResult.errors.length === 0
                   ? "bg-(--success)/10 border border-(--success)/20"
                   : "bg-(--warning)/10 border border-(--warning)/20"
@@ -496,7 +476,7 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
           )}
 
           {/* Help Text */}
-          <div className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+          <div className="p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
             <p className="text-xs text-(--text-muted) font-inter">
               <strong className="text-(--text-secondary)">
                 Supported formats:
@@ -506,35 +486,21 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
             </p>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="flex flex-col sm:flex-row gap-3 p-4 border-t border-(--border)">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2.5 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-lg transition-colors font-inter text-sm order-2 sm:order-1"
-            disabled={isImporting}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleImport}
-            disabled={!validationStatus?.isValid || isImporting}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white font-medium rounded-lg transition-colors font-inter text-sm disabled:opacity-50 order-1 sm:order-2"
-          >
-            {isImporting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Importing...
-              </>
-            ) : (
-              <>
-                <Upload className="w-4 h-4" />
-                Import Data
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose} disabled={isImporting}>
+          Cancel
+        </Button>
+        <Button
+          onClick={handleImport}
+          disabled={!validationStatus?.isValid}
+          loading={isImporting}
+          loadingText="Importing…"
+          iconLeft={<Upload className="w-4 h-4" />}
+        >
+          Import data
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }

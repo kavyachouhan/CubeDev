@@ -17,6 +17,9 @@ import {
   Check,
   X,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Checkbox, Field, Input, Select } from "@/components/ui/Field";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import Image from "next/image";
 import { WCA_EVENTS, WCACompetition } from "./CompetitionSimulator";
 import { formatTime } from "@/lib/stats-utils";
@@ -308,7 +311,8 @@ export default function SimulationMode({
   };
 
   // Apply penalty to last solve
-  const applyPenalty = (penalty: "+2" | "DNF") => {
+  // "none" clears a mis-tapped penalty; the old two-button row couldn't.
+  const applyPenalty = (penalty: "none" | "+2" | "DNF") => {
     if (results.length === 0) return;
     setResults((prev) => {
       const newResults = [...prev];
@@ -376,12 +380,9 @@ export default function SimulationMode({
         <p className="text-(--text-muted) mb-6">
           Select a competition to start your simulation practice.
         </p>
-        <button
-          onClick={onSelectCompetition}
-          className="px-6 py-3 bg-(--primary) text-white font-medium rounded-lg hover:bg-(--primary-hover) transition-colors"
-        >
-          Browse Competitions
-        </button>
+        <Button size="lg" onClick={onSelectCompetition}>
+          Browse competitions
+        </Button>
       </div>
     );
   }
@@ -393,7 +394,7 @@ export default function SimulationMode({
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {event && (
-              <div className="p-3 bg-(--surface-elevated) rounded-lg">
+              <div className="p-3 bg-(--surface-elevated) rounded-(--radius-control)">
                 <Image
                   src={event.icon}
                   alt={event.name}
@@ -414,7 +415,7 @@ export default function SimulationMode({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
-              className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
+              className="p-2 rounded-(--radius-control) border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
               title={soundEnabled ? "Mute sounds" : "Enable sounds"}
             >
               {soundEnabled ? (
@@ -425,13 +426,13 @@ export default function SimulationMode({
             </button>
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
+              className="p-2 rounded-(--radius-control) border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
             >
               <Settings className="w-4 h-4" />
             </button>
             <button
               onClick={resetSimulation}
-              className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
+              className="p-2 rounded-(--radius-control) border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
               title="Reset simulation"
             >
               <RotateCcw className="w-4 h-4" />
@@ -448,46 +449,35 @@ export default function SimulationMode({
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Pressure Level */}
-            <div>
-              <label className="text-sm text-(--text-secondary) block mb-2">
-                Pressure Level
-              </label>
-              <select
+            <Field label="Pressure level">
+              <Select
                 value={pressureLevel}
                 onChange={(e) =>
                   setPressureLevel(e.target.value as PressureLevel)
                 }
-                className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
               >
                 {Object.entries(PRESSURE_CONFIGS).map(([key, config]) => (
                   <option key={key} value={key}>
                     {config.label}
                   </option>
                 ))}
-              </select>
-            </div>
+              </Select>
+            </Field>
 
             {/* Solves per round */}
-            <div>
-              <label className="text-sm text-(--text-secondary) block mb-2">
-                Solves per Round
-              </label>
-              <select
+            <Field label="Solves per round">
+              <Select
                 value={solvesPerRound}
                 onChange={(e) => setSolvesPerRound(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
               >
                 <option value={3}>3 solves (Mean of 3)</option>
                 <option value={5}>5 solves (Average of 5)</option>
-              </select>
-            </div>
+              </Select>
+            </Field>
 
             {/* Inspection Time */}
-            <div>
-              <label className="text-sm text-(--text-secondary) block mb-2">
-                Inspection Time (seconds)
-              </label>
-              <input
+            <Field label="Inspection time" hint="Seconds">
+              <Input
                 type="number"
                 min={10}
                 max={20}
@@ -495,36 +485,23 @@ export default function SimulationMode({
                 onChange={(e) =>
                   setCustomInspectionTime(Number(e.target.value))
                 }
-                className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
               />
-            </div>
+            </Field>
 
             {/* Toggle Options */}
             <div className="space-y-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={judgeErrorsEnabled}
-                  onChange={(e) => setJudgeErrorsEnabled(e.target.checked)}
-                  className="w-4 h-4 rounded border-(--border) text-(--primary) focus:ring-(--primary)"
-                />
-                <span className="text-sm text-(--text-secondary)">
-                  Simulate judge errors (random +2s)
-                </span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={inspectionViolationsEnabled}
-                  onChange={(e) =>
-                    setInspectionViolationsEnabled(e.target.checked)
-                  }
-                  className="w-4 h-4 rounded border-(--border) text-(--primary) focus:ring-(--primary)"
-                />
-                <span className="text-sm text-(--text-secondary)">
-                  Enforce inspection violations
-                </span>
-              </label>
+              <Checkbox
+                checked={judgeErrorsEnabled}
+                onChange={(e) => setJudgeErrorsEnabled(e.target.checked)}
+                label="Simulate judge errors (random +2s)"
+              />
+              <Checkbox
+                checked={inspectionViolationsEnabled}
+                onChange={(e) =>
+                  setInspectionViolationsEnabled(e.target.checked)
+                }
+                label="Enforce inspection violations"
+              />
             </div>
           </div>
         </div>
@@ -603,27 +580,17 @@ export default function SimulationMode({
 
         {/* Penalty Buttons (when stopped) */}
         {state === "stopped" && (
-          <div className="flex justify-center gap-4 mb-6">
-            <button
-              onClick={() => applyPenalty("+2")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                results[results.length - 1]?.penalty === "+2"
-                  ? "bg-(--warning) text-white"
-                  : "border border-(--warning) text-(--warning) hover:bg-(--warning)/10"
-              }`}
-            >
-              +2
-            </button>
-            <button
-              onClick={() => applyPenalty("DNF")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                results[results.length - 1]?.penalty === "DNF"
-                  ? "bg-(--error) text-white"
-                  : "border border-(--error) text-(--error) hover:bg-(--error)/10"
-              }`}
-            >
-              DNF
-            </button>
+          <div className="flex justify-center mb-6">
+            <SegmentedControl<"none" | "+2" | "DNF">
+              value={results[results.length - 1]?.penalty ?? "none"}
+              onChange={(value) => applyPenalty(value)}
+              aria-label="Penalty"
+              options={[
+                { value: "none", label: "OK" },
+                { value: "+2", label: "+2", tone: "warning" },
+                { value: "DNF", label: "DNF", tone: "error" },
+              ]}
+            />
           </div>
         )}
 
@@ -743,16 +710,16 @@ export default function SimulationMode({
       {/* Completed Actions */}
       {state === "completed" && (
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
+          <Button
+            size="lg"
             onClick={resetSimulation}
-            className="px-6 py-3 bg-(--primary) text-white font-medium rounded-lg hover:bg-(--primary-hover) transition-colors flex items-center justify-center gap-2"
+            iconLeft={<RotateCcw className="w-4 h-4" />}
           >
-            <RotateCcw className="w-4 h-4" />
-            Start New Round
-          </button>
+            Start new round
+          </Button>
           <button
             onClick={onSelectCompetition}
-            className="px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-lg hover:bg-(--surface-elevated) transition-colors"
+            className="px-6 py-3 border border-(--border) text-(--text-primary) font-medium rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
           >
             Choose Different Competition
           </button>

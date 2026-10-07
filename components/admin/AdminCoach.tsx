@@ -33,6 +33,11 @@ import {
   Trophy,
   X,
 } from "lucide-react";
+import { Table } from "@/components/ui/Table";
+import { Modal } from "@/components/ui/Modal";
+import { AdminStatCard } from "./AdminStatCard";
+import { AdminCollapsibleCard } from "./AdminCollapsibleCard";
+import { useEffectiveTheme, useThemeColors } from "@/lib/hooks/useThemeColors";
 import type { LucideIcon } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -54,53 +59,6 @@ ChartJS.register(
   Tooltip,
   Legend,
 );
-
-// Theme detection hook
-function useEffectiveTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  useEffect(() => {
-    const updateTheme = () => {
-      const root = document.documentElement;
-      const dataTheme = root.getAttribute("data-theme");
-      setTheme(dataTheme === "light" ? "light" : "dark");
-    };
-
-    updateTheme();
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  return theme;
-}
-
-// Primary color hook
-function usePrimaryColor() {
-  const [primaryColor, setPrimaryColor] = useState("#FA6900");
-
-  useEffect(() => {
-    const updateColor = () => {
-      const color = getComputedStyle(document.documentElement)
-        .getPropertyValue("--primary")
-        .trim();
-      if (color) setPrimaryColor(color);
-    };
-
-    updateColor();
-    const observer = new MutationObserver(updateColor);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class", "style"],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  return primaryColor;
-}
 
 // Export helper functions
 function exportToCSV(data: Record<string, unknown>[], filename: string) {
@@ -141,132 +99,6 @@ function exportToJSON(data: unknown, filename: string) {
   link.click();
 }
 
-// CollapsibleCard Component
-function CollapsibleCard({
-  title,
-  children,
-  defaultOpen = true,
-  storageKey,
-  headerExtra,
-  className = "",
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  storageKey?: string;
-  headerExtra?: React.ReactNode;
-  className?: string;
-}) {
-  const [isOpen, setIsOpen] = useState(() => {
-    if (typeof window !== "undefined" && storageKey) {
-      const saved = localStorage.getItem(storageKey);
-      return saved !== null ? saved === "true" : defaultOpen;
-    }
-    return defaultOpen;
-  });
-
-  const toggleOpen = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    if (typeof window !== "undefined" && storageKey) {
-      localStorage.setItem(storageKey, String(newState));
-    }
-  };
-
-  return (
-    <div className={`timer-card ${className}`}>
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={toggleOpen}
-          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
-        >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            {title}
-          </h3>
-          {isOpen ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          {headerExtra}
-          <button
-            onClick={toggleOpen}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={isOpen ? "Hide" : "Show"}
-          >
-            {isOpen ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-      {isOpen && children}
-    </div>
-  );
-}
-
-// StatCard Component
-function StatCard({
-  title,
-  value,
-  icon: Icon,
-  iconColor = "text-(--primary)",
-  iconBgColor = "bg-(--primary)/10",
-  subValue,
-  trend,
-}: {
-  title: string;
-  value: string | number;
-  icon: LucideIcon;
-  iconColor?: string;
-  iconBgColor?: string;
-  subValue?: string;
-  trend?: { value: number; label: string };
-}) {
-  return (
-    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
-          <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate font-inter">
-            {title}
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
-              {typeof value === "number" ? value.toLocaleString() : value}
-            </div>
-            {trend && (
-              <div
-                className={`flex items-center gap-0.5 text-xs ${
-                  trend.value >= 0 ? "text-green-500" : "text-red-500"
-                }`}
-              >
-                {trend.value >= 0 ? (
-                  <TrendingUp className="w-3 h-3" />
-                ) : (
-                  <TrendingDown className="w-3 h-3" />
-                )}
-                <span>{Math.abs(trend.value)}%</span>
-              </div>
-            )}
-          </div>
-          {subValue && (
-            <div className="text-xs text-(--text-muted) font-inter">
-              {subValue}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // BarChart Component using Chart.js
 function BarChart({
   data,
@@ -275,7 +107,7 @@ function BarChart({
   maxValue?: number;
 }) {
   const effectiveTheme = useEffectiveTheme();
-  const primaryColor = usePrimaryColor();
+  const primaryColor = useThemeColors()["--primary"];
   const isLight = effectiveTheme === "light";
   const textColor = isLight
     ? "rgba(17, 24, 39, 0.8)"
@@ -350,18 +182,26 @@ function MoodDistributionChart({
     string,
     { icon: LucideIcon; color: string; bgColor: string }
   > = {
-    great: { icon: Heart, color: "text-green-500", bgColor: "bg-green-500/10" },
-    good: { icon: Smile, color: "text-blue-500", bgColor: "bg-blue-500/10" },
-    okay: { icon: Meh, color: "text-yellow-500", bgColor: "bg-yellow-500/10" },
+    great: {
+      icon: Heart,
+      color: "text-(--success)",
+      bgColor: "bg-(--success)/10",
+    },
+    good: { icon: Smile, color: "text-(--info)", bgColor: "bg-(--info)/10" },
+    okay: {
+      icon: Meh,
+      color: "text-(--warning)",
+      bgColor: "bg-(--warning)/10",
+    },
     frustrated: {
       icon: Frown,
-      color: "text-orange-500",
-      bgColor: "bg-orange-500/10",
+      color: "text-(--warning)",
+      bgColor: "bg-(--warning)/10",
     },
     tired: {
       icon: Moon,
-      color: "text-purple-500",
-      bgColor: "bg-purple-500/10",
+      color: "text-(--accent)",
+      bgColor: "bg-(--accent)/10",
     },
   };
 
@@ -372,8 +212,8 @@ function MoodDistributionChart({
       {Object.entries(distribution).map(([mood, count]) => {
         const config = moodConfig[mood] || {
           icon: Meh,
-          color: "text-gray-500",
-          bgColor: "bg-gray-500/10",
+          color: "text-(--text-muted)",
+          bgColor: "bg-(--border)/10",
         };
         const Icon = config.icon;
         const percentage = total > 0 ? ((count / total) * 100).toFixed(0) : 0;
@@ -381,10 +221,10 @@ function MoodDistributionChart({
         return (
           <div
             key={mood}
-            className="bg-(--surface) rounded-lg p-3 text-center border border-(--border)"
+            className="bg-(--surface) rounded-(--radius-control) p-3 text-center border border-(--border)"
           >
             <div
-              className={`p-2 ${config.bgColor} rounded-lg inline-block mb-1`}
+              className={`p-2 ${config.bgColor} rounded-(--radius-control) inline-block mb-1`}
             >
               <Icon className={`w-4 h-4 ${config.color}`} />
             </div>
@@ -415,35 +255,35 @@ function DistributionChart({
   const total = Object.values(data).reduce((sum, count) => sum + count, 0);
 
   const defaultColors: Record<string, string> = {
-    beginner: "bg-green-500",
-    intermediate: "bg-yellow-500",
-    advanced: "bg-orange-500",
+    beginner: "bg-(--success)",
+    intermediate: "bg-(--warning)",
+    advanced: "bg-(--warning)",
     expert: "bg-(--primary)",
-    "sub-60": "bg-green-500",
-    "sub-45": "bg-green-500",
-    "sub-30": "bg-blue-500",
-    "sub-20": "bg-yellow-500",
-    "sub-15": "bg-yellow-500",
-    "sub-12": "bg-orange-500",
-    "sub-10": "bg-orange-500",
+    "sub-60": "bg-(--success)",
+    "sub-45": "bg-(--success)",
+    "sub-30": "bg-(--info)",
+    "sub-20": "bg-(--warning)",
+    "sub-15": "bg-(--warning)",
+    "sub-12": "bg-(--warning)",
+    "sub-10": "bg-(--warning)",
     "sub-8": "bg-(--primary)",
-    custom: "bg-purple-500",
-    active: "bg-green-500",
-    completed: "bg-blue-500",
-    skipped: "bg-gray-500",
-    achieved: "bg-green-500",
-    expired: "bg-red-500",
-    replaced: "bg-yellow-500",
+    custom: "bg-(--accent)",
+    active: "bg-(--success)",
+    completed: "bg-(--info)",
+    skipped: "bg-(--border)",
+    achieved: "bg-(--success)",
+    expired: "bg-(--error)",
+    replaced: "bg-(--warning)",
     "333": "bg-(--primary)",
-    "222": "bg-green-500",
-    "444": "bg-orange-500",
-    "555": "bg-purple-500",
-    pyram: "bg-yellow-500",
-    skewb: "bg-cyan-500",
-    "15-30 min": "bg-green-500",
-    "30-60 min": "bg-blue-500",
-    "1-2 hours": "bg-yellow-500",
-    "2+ hours": "bg-orange-500",
+    "222": "bg-(--success)",
+    "444": "bg-(--warning)",
+    "555": "bg-(--accent)",
+    pyram: "bg-(--warning)",
+    skewb: "bg-(--primary)",
+    "15-30 min": "bg-(--success)",
+    "30-60 min": "bg-(--info)",
+    "1-2 hours": "bg-(--warning)",
+    "2+ hours": "bg-(--warning)",
   };
 
   const colors = colorMap || defaultColors;
@@ -523,8 +363,8 @@ function ProfileDetailsModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-lg w-full max-h-[90vh] overflow-y-auto">
+    <Modal open onClose={onClose} size="lg" mobile="fullscreen">
+      <Modal.Body>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -537,7 +377,7 @@ function ProfileDetailsModal({
           </div>
           <button
             onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -546,21 +386,21 @@ function ProfileDetailsModal({
         {/* Profile Info */}
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <StatCard
+            <AdminStatCard
               title="Skill Level"
               value={profile.skillLevel}
               icon={GraduationCap}
-              iconColor="text-blue-500"
-              iconBgColor="bg-blue-500/10"
+              iconColor="text-(--info)"
+              iconBgColor="bg-(--info)/10"
             />
-            <StatCard
+            <AdminStatCard
               title="Primary Event"
               value={profile.primaryEvent}
               icon={Zap}
-              iconColor="text-yellow-500"
-              iconBgColor="bg-yellow-500/10"
+              iconColor="text-(--warning)"
+              iconBgColor="bg-(--warning)/10"
             />
-            <StatCard
+            <AdminStatCard
               title="Goal"
               value={
                 profile.goalType === "custom" && profile.customGoalTime
@@ -568,38 +408,38 @@ function ProfileDetailsModal({
                   : profile.goalType
               }
               icon={Target}
-              iconColor="text-green-500"
-              iconBgColor="bg-green-500/10"
+              iconColor="text-(--success)"
+              iconBgColor="bg-(--success)/10"
             />
-            <StatCard
+            <AdminStatCard
               title="Daily Practice"
               value={`${profile.dailyPracticeMinutes} min`}
               icon={Clock}
-              iconColor="text-purple-500"
-              iconBgColor="bg-purple-500/10"
+              iconColor="text-(--accent)"
+              iconBgColor="bg-(--accent)/10"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <StatCard
+            <AdminStatCard
               title="Journal Entries"
               value={profile.journalCount}
               icon={BookOpen}
-              iconColor="text-amber-500"
-              iconBgColor="bg-amber-500/10"
+              iconColor="text-(--warning)"
+              iconBgColor="bg-(--warning)/10"
             />
-            <StatCard
+            <AdminStatCard
               title="Training Plans"
               value={profile.planCount}
               icon={Calendar}
-              iconColor="text-cyan-500"
-              iconBgColor="bg-cyan-500/10"
+              iconColor="text-(--primary)"
+              iconBgColor="bg-(--primary)/10"
             />
           </div>
 
           {/* Goal History */}
           {profile.goalStats.total > 0 && (
-            <div className="bg-(--surface-elevated) rounded-xl p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-card) p-4 border border-(--border)">
               <h4 className="text-sm font-medium text-(--text-primary) mb-3 font-statement">
                 Goal History
               </h4>
@@ -613,7 +453,7 @@ function ProfileDetailsModal({
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-green-500 font-statement">
+                  <div className="text-lg font-bold text-(--success) font-statement">
                     {profile.goalStats.achieved}
                   </div>
                   <div className="text-xs text-(--text-muted) font-inter">
@@ -621,7 +461,7 @@ function ProfileDetailsModal({
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-red-500 font-statement">
+                  <div className="text-lg font-bold text-(--error) font-statement">
                     {profile.goalStats.expired}
                   </div>
                   <div className="text-xs text-(--text-muted) font-inter">
@@ -629,7 +469,7 @@ function ProfileDetailsModal({
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-yellow-500 font-statement">
+                  <div className="text-lg font-bold text-(--warning) font-statement">
                     {profile.goalStats.replaced}
                   </div>
                   <div className="text-xs text-(--text-muted) font-inter">
@@ -656,11 +496,11 @@ function ProfileDetailsModal({
             </div>
           )}
 
-          <div className="bg-(--surface-elevated) rounded-xl p-4 border border-(--border)">
+          <div className="bg-(--surface-elevated) rounded-(--radius-card) p-4 border border-(--border)">
             <div className="flex justify-between text-sm">
               <span className="text-(--text-muted) font-inter">Status</span>
               <span
-                className={`font-inter ${profile.onboardingCompleted ? "text-green-500" : "text-yellow-500"}`}
+                className={`font-inter ${profile.onboardingCompleted ? "text-(--success)" : "text-(--warning)"}`}
               >
                 {profile.onboardingCompleted ? "Onboarded" : "Pending"}
               </span>
@@ -678,13 +518,13 @@ function ProfileDetailsModal({
         <div className="mt-6 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-lg transition-colors font-inter"
+            className="px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-(--radius-control) transition-colors font-inter"
           >
             Close
           </button>
         </div>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 }
 
@@ -761,7 +601,7 @@ function CoachAnalyticsOverview() {
           {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="h-20 bg-(--surface-elevated) rounded-xl animate-pulse"
+              className="h-20 bg-(--surface-elevated) rounded-(--radius-card) animate-pulse"
             />
           ))}
         </div>
@@ -775,7 +615,7 @@ function CoachAnalyticsOverview() {
       <div className="flex justify-end">
         <button
           onClick={handleExportAnalytics}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter"
+          className="flex items-center gap-2 px-3 py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter"
         >
           <Download className="w-4 h-4" />
           Export Analytics
@@ -784,142 +624,142 @@ function CoachAnalyticsOverview() {
 
       {/* Key Metrics - Row 1 */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatCard
+        <AdminStatCard
           title="Total Profiles"
           value={detailedStats.totalProfiles}
           icon={Users}
-          iconColor="text-blue-500"
-          iconBgColor="bg-blue-500/10"
+          iconColor="text-(--info)"
+          iconBgColor="bg-(--info)/10"
         />
-        <StatCard
+        <AdminStatCard
           title="Onboarded"
           value={detailedStats.onboardedProfiles}
           icon={CheckCircle2}
-          iconColor="text-green-500"
-          iconBgColor="bg-green-500/10"
+          iconColor="text-(--success)"
+          iconBgColor="bg-(--success)/10"
           subValue={`${detailedStats.totalProfiles > 0 ? ((detailedStats.onboardedProfiles / detailedStats.totalProfiles) * 100).toFixed(0) : 0}% of total`}
         />
-        <StatCard
+        <AdminStatCard
           title="New This Week"
           value={detailedStats.newProfilesThisWeek}
           icon={TrendingUp}
-          iconColor="text-green-500"
-          iconBgColor="bg-green-500/10"
+          iconColor="text-(--success)"
+          iconBgColor="bg-(--success)/10"
           trend={{
             value: detailedStats.profileGrowthRate,
             label: "vs last week",
           }}
         />
-        <StatCard
+        <AdminStatCard
           title="New This Month"
           value={detailedStats.newProfilesThisMonth}
           icon={TrendingUp}
-          iconColor="text-blue-500"
-          iconBgColor="bg-blue-500/10"
+          iconColor="text-(--info)"
+          iconBgColor="bg-(--info)/10"
         />
       </div>
 
       {/* Journal Activity - Row 2 */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatCard
+        <AdminStatCard
           title="Journal Entries"
           value={detailedStats.totalJournalEntries}
           icon={BookOpen}
-          iconColor="text-amber-500"
-          iconBgColor="bg-amber-500/10"
+          iconColor="text-(--warning)"
+          iconBgColor="bg-(--warning)/10"
         />
-        <StatCard
+        <AdminStatCard
           title="Entries This Week"
           value={detailedStats.journalEntriesThisWeek}
           icon={Activity}
-          iconColor="text-green-500"
-          iconBgColor="bg-green-500/10"
+          iconColor="text-(--success)"
+          iconBgColor="bg-(--success)/10"
           trend={{
             value: detailedStats.weeklyJournalGrowth,
             label: "vs last week",
           }}
         />
-        <StatCard
+        <AdminStatCard
           title="Avg Practice"
           value={`${detailedStats.avgPracticeMinutes} min`}
           icon={Clock}
-          iconColor="text-purple-500"
-          iconBgColor="bg-purple-500/10"
+          iconColor="text-(--accent)"
+          iconBgColor="bg-(--accent)/10"
           subValue="per session"
         />
-        <StatCard
+        <AdminStatCard
           title="Avg Solves"
           value={detailedStats.avgSolvesPerEntry}
           icon={Zap}
-          iconColor="text-yellow-500"
-          iconBgColor="bg-yellow-500/10"
+          iconColor="text-(--warning)"
+          iconBgColor="bg-(--warning)/10"
           subValue="per entry"
         />
       </div>
 
       {/* Training Plans & Progress - Row 3 */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatCard
+        <AdminStatCard
           title="Training Plans"
           value={detailedStats.totalTrainingPlans}
           icon={Calendar}
-          iconColor="text-blue-500"
-          iconBgColor="bg-blue-500/10"
+          iconColor="text-(--info)"
+          iconBgColor="bg-(--info)/10"
         />
-        <StatCard
+        <AdminStatCard
           title="Active Plans"
           value={detailedStats.activePlans}
           icon={Activity}
-          iconColor="text-green-500"
-          iconBgColor="bg-green-500/10"
+          iconColor="text-(--success)"
+          iconBgColor="bg-(--success)/10"
         />
-        <StatCard
+        <AdminStatCard
           title="Plan Completion"
           value={`${detailedStats.planCompletionRate}%`}
           icon={Percent}
-          iconColor="text-cyan-500"
-          iconBgColor="bg-cyan-500/10"
+          iconColor="text-(--primary)"
+          iconBgColor="bg-(--primary)/10"
           subValue={`${detailedStats.completedDaysTotal} days completed`}
         />
-        <StatCard
+        <AdminStatCard
           title="With Media"
           value={detailedStats.entriesWithMedia}
           icon={Image}
-          iconColor="text-pink-500"
-          iconBgColor="bg-pink-500/10"
+          iconColor="text-(--accent)"
+          iconBgColor="bg-(--accent)/10"
           subValue="journal entries"
         />
       </div>
 
       {/* Progress & Goals - Row 4 */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatCard
+        <AdminStatCard
           title="Progress Snapshots"
           value={detailedStats.totalProgressSnapshots}
           icon={BarChart3}
-          iconColor="text-indigo-500"
-          iconBgColor="bg-indigo-500/10"
+          iconColor="text-(--accent)"
+          iconBgColor="bg-(--accent)/10"
         />
-        <StatCard
+        <AdminStatCard
           title="Users On Track"
           value={detailedStats.usersOnTrack}
           icon={Trophy}
-          iconColor="text-yellow-500"
-          iconBgColor="bg-yellow-500/10"
+          iconColor="text-(--warning)"
+          iconBgColor="bg-(--warning)/10"
         />
-        <StatCard
+        <AdminStatCard
           title="Avg Progress"
           value={`${detailedStats.avgProgressPercentage}%`}
           icon={TrendingUp}
-          iconColor="text-green-500"
-          iconBgColor="bg-green-500/10"
+          iconColor="text-(--success)"
+          iconBgColor="bg-(--success)/10"
         />
-        <StatCard
+        <AdminStatCard
           title="Goals Achieved"
           value={detailedStats.goalAchievementStats.achieved}
           icon={CheckCircle2}
-          iconColor="text-green-500"
-          iconBgColor="bg-green-500/10"
+          iconColor="text-(--success)"
+          iconBgColor="bg-(--success)/10"
           subValue={`of ${detailedStats.totalGoalsHistory} total`}
         />
       </div>
@@ -927,7 +767,7 @@ function CoachAnalyticsOverview() {
       {/* Charts Grid - Row 5 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
         {/* Weekly Journal Trend */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Weekly Journal Activity"
           storageKey="admin-coach-journal-trend"
           defaultOpen={true}
@@ -940,10 +780,10 @@ function CoachAnalyticsOverview() {
               }))}
             />
           </div>
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Mood Distribution */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Mood Distribution"
           storageKey="admin-coach-mood"
           defaultOpen={true}
@@ -951,53 +791,53 @@ function CoachAnalyticsOverview() {
           <MoodDistributionChart
             distribution={detailedStats.moodDistribution}
           />
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Distributions Grid - Row 6 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
         {/* Plan Status Distribution */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Training Plan Status"
           storageKey="admin-coach-plan-status"
           defaultOpen={true}
         >
           <DistributionChart data={detailedStats.planStatusDistribution} />
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Goal Achievement Stats */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Goal Results"
           storageKey="admin-coach-goal-results"
           defaultOpen={true}
         >
           <DistributionChart data={detailedStats.goalAchievementStats} />
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Event & Practice Time - Row 7 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
         {/* Primary Event Distribution */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Primary Events"
           storageKey="admin-coach-events"
           defaultOpen={true}
         >
           <DistributionChart data={detailedStats.eventDistribution} />
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Practice Time Distribution */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Daily Practice Time"
           storageKey="admin-coach-practice-time"
           defaultOpen={true}
         >
           <DistributionChart data={detailedStats.practiceTimeDistribution} />
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Progress Overview - Row 8 */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title="Progress Overview"
         storageKey="admin-coach-progress"
         defaultOpen={true}
@@ -1036,7 +876,7 @@ function CoachAnalyticsOverview() {
             label="Goal Success"
           />
         </div>
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
     </div>
   );
 }
@@ -1105,14 +945,14 @@ export default function AdminCoach() {
   return (
     <div className="min-h-full p-4 sm:p-6 lg:p-8">
       {/* Detailed Analytics */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title="Coach Analytics"
         storageKey="admin-coach-analytics"
         defaultOpen={true}
         className="mb-4 sm:mb-6"
       >
         <CoachAnalyticsOverview />
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* Skill Level & Goal Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6 items-start">
@@ -1135,26 +975,26 @@ export default function AdminCoach() {
           ))
         ) : (
           <>
-            <CollapsibleCard
+            <AdminCollapsibleCard
               title="Skill Level Distribution"
               storageKey="admin-coach-skill-open"
               defaultOpen={true}
             >
               <DistributionChart data={coachStats.bySkillLevel} />
-            </CollapsibleCard>
-            <CollapsibleCard
+            </AdminCollapsibleCard>
+            <AdminCollapsibleCard
               title="Goal Distribution"
               storageKey="admin-coach-goal-open"
               defaultOpen={true}
             >
               <DistributionChart data={coachStats.byGoalType} />
-            </CollapsibleCard>
+            </AdminCollapsibleCard>
           </>
         )}
       </div>
 
       {/* Profiles List */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title={`Coach Profiles${allProfiles ? ` (${allProfiles.length})` : ""}`}
         storageKey="admin-coach-profiles"
         defaultOpen={true}
@@ -1162,7 +1002,7 @@ export default function AdminCoach() {
           <button
             onClick={handleExportProfiles}
             disabled={!allProfiles || allProfiles.length === 0}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-badge) text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
             title="Export profiles as CSV"
           >
             <Download className="w-3.5 h-3.5" />
@@ -1195,43 +1035,27 @@ export default function AdminCoach() {
         ) : (
           <>
             {/* Desktop Table */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-(--surface-elevated) border-y border-(--border)">
-                  <tr>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      User
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      Skill
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      Event
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      Goal
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      Journals
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      Plans
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-(--text-muted) font-inter uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+            <Table.Scroll className="hidden md:block">
+              <Table>
+                <Table.Head>
+                  <Table.Row>
+                    <Table.HeaderCell>User</Table.HeaderCell>
+                    <Table.HeaderCell>Skill</Table.HeaderCell>
+                    <Table.HeaderCell>Event</Table.HeaderCell>
+                    <Table.HeaderCell>Goal</Table.HeaderCell>
+                    <Table.HeaderCell>Journals</Table.HeaderCell>
+                    <Table.HeaderCell>Plans</Table.HeaderCell>
+                    <Table.HeaderCell>Status</Table.HeaderCell>
+                    <Table.HeaderCell>Actions</Table.HeaderCell>
+                  </Table.Row>
+                </Table.Head>
+                <Table.Body>
                   {allProfiles.map((profile) => (
-                    <tr
+                    <Table.Row
                       key={profile._id}
                       className="border-b border-(--border) hover:bg-(--surface-elevated) transition-colors"
                     >
-                      <td className="px-4 py-3">
+                      <Table.Cell>
                         <div>
                           <p className="text-sm font-medium text-(--text-primary) font-inter">
                             {profile.userName}
@@ -1240,73 +1064,73 @@ export default function AdminCoach() {
                             {profile.wcaId}
                           </p>
                         </div>
-                      </td>
-                      <td className="px-4 py-3">
+                      </Table.Cell>
+                      <Table.Cell>
                         <span
                           className={`px-2 py-0.5 text-xs rounded-full font-inter ${
                             profile.skillLevel === "beginner"
-                              ? "bg-green-500/10 text-green-500"
+                              ? "bg-(--success)/10 text-(--success)"
                               : profile.skillLevel === "intermediate"
-                                ? "bg-yellow-500/10 text-yellow-500"
+                                ? "bg-(--warning)/10 text-(--warning)"
                                 : profile.skillLevel === "advanced"
-                                  ? "bg-orange-500/10 text-orange-500"
+                                  ? "bg-(--warning)/10 text-(--warning)"
                                   : "bg-(--primary)/10 text-(--primary)"
                           }`}
                         >
                           {profile.skillLevel}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
+                      </Table.Cell>
+                      <Table.Cell>
                         <span className="text-sm text-(--text-secondary) font-inter">
                           {profile.primaryEvent}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
+                      </Table.Cell>
+                      <Table.Cell>
                         <span className="text-sm text-(--text-secondary) font-inter">
                           {profile.goalType}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
+                      </Table.Cell>
+                      <Table.Cell>
                         <span className="text-sm text-(--text-primary) font-inter">
                           {profile.journalCount}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
+                      </Table.Cell>
+                      <Table.Cell>
                         <span className="text-sm text-(--text-primary) font-inter">
                           {profile.planCount}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
+                      </Table.Cell>
+                      <Table.Cell>
                         <span
                           className={`px-2 py-0.5 text-xs rounded-full font-inter ${
                             profile.onboardingCompleted
-                              ? "bg-green-500/10 text-green-500"
-                              : "bg-yellow-500/10 text-yellow-500"
+                              ? "bg-(--success)/10 text-(--success)"
+                              : "bg-(--warning)/10 text-(--warning)"
                           }`}
                         >
                           {profile.onboardingCompleted ? "Active" : "Pending"}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
+                      </Table.Cell>
+                      <Table.Cell>
                         <button
                           onClick={() => setSelectedProfile(profile)}
-                          className="p-1.5 text-(--text-muted) hover:text-(--primary) hover:bg-(--surface) rounded-lg transition-colors"
+                          className="p-1.5 text-(--text-muted) hover:text-(--primary) hover:bg-(--surface) rounded-(--radius-control) transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                      </td>
-                    </tr>
+                      </Table.Cell>
+                    </Table.Row>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </Table.Body>
+              </Table>
+            </Table.Scroll>
 
             {/* Mobile Cards */}
             <div className="md:hidden space-y-3">
               {allProfiles.map((profile) => (
                 <div
                   key={profile._id}
-                  className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)"
+                  className="bg-(--surface-elevated) rounded-(--radius-control) p-4 border border-(--border)"
                   onClick={() => setSelectedProfile(profile)}
                 >
                   <div className="flex items-center justify-between mb-3">
@@ -1321,8 +1145,8 @@ export default function AdminCoach() {
                     <span
                       className={`px-2 py-0.5 text-xs rounded-full font-inter ${
                         profile.onboardingCompleted
-                          ? "bg-green-500/10 text-green-500"
-                          : "bg-yellow-500/10 text-yellow-500"
+                          ? "bg-(--success)/10 text-(--success)"
+                          : "bg-(--warning)/10 text-(--warning)"
                       }`}
                     >
                       {profile.onboardingCompleted ? "Active" : "Pending"}
@@ -1367,7 +1191,7 @@ export default function AdminCoach() {
             </div>
           </>
         )}
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* Profile Details Modal */}
       {selectedProfile && (

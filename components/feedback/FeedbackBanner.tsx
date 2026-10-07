@@ -65,14 +65,14 @@ export default function FeedbackBanner({
         {/* Close button */}
         <button
           onClick={handleDismiss}
-          className="absolute top-2 right-2 text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
+          className="absolute top-2 right-2 text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated)"
           aria-label="Dismiss feedback prompt"
         >
           <X className="w-4 h-4" />
         </button>
 
         <div className="flex items-start gap-2 pr-5">
-          <div className="w-8 h-8 bg-(--primary)/10 rounded-lg flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 bg-(--primary)/10 rounded-(--radius-control) flex items-center justify-center shrink-0">
             <MessageSquareText className="w-4 h-4 text-(--primary)" />
           </div>
 
@@ -87,13 +87,13 @@ export default function FeedbackBanner({
             <div className="flex gap-2 mt-2">
               <button
                 onClick={handleOpenSurvey}
-                className="px-3 py-1 bg-(--primary) hover:bg-(--primary-hover) text-white text-xs font-medium rounded-lg transition-colors font-inter"
+                className="px-3 py-1 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) text-xs font-medium rounded-(--radius-control) transition-colors font-inter"
               >
                 Give Feedback
               </button>
               <button
                 onClick={handleDismiss}
-                className="px-3 py-1 text-(--text-muted) hover:text-(--text-primary) text-xs font-medium rounded-lg transition-colors hover:bg-(--surface-elevated) font-inter"
+                className="px-3 py-1 text-(--text-muted) hover:text-(--text-primary) text-xs font-medium rounded-(--radius-control) transition-colors hover:bg-(--surface-elevated) font-inter"
               >
                 Maybe Later
               </button>

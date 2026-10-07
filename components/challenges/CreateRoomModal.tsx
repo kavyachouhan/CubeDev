@@ -1,40 +1,45 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import {
-  X,
-  Copy,
-  Check,
-  ChevronDown,
-  Clock12,
-  Clock5,
-} from "lucide-react";
+import { useState } from "react";
+import { Check, Clock12, Clock5 } from "lucide-react";
 import { scrambleGenerator } from "@/components/timer/ScrambleGenerator";
 import { useUser } from "@/components/UserProvider";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { CardIcon } from "@/components/ui/Card";
+import { EventIcon } from "@/components/ui/EventIcon";
+import { Field, Input, Textarea } from "@/components/ui/Field";
+import { SelectMenu } from "@/components/ui/Menu";
+import { Modal } from "@/components/ui/Modal";
+import { OptionTiles } from "@/components/ui/OptionTiles";
+import { SwitchRow } from "@/components/ui/Switch";
+import { getTimerEvent } from "@/lib/timer-events";
+import RoomShareMenu from "./RoomShareMenu";
 
 interface CreateRoomModalProps {
   onClose: () => void;
 }
 
 const EVENTS = [
-  { id: "333", name: "3x3", icon: "/cube-icons/333.svg" },
-  { id: "222", name: "2x2", icon: "/cube-icons/222.svg" },
-  { id: "444", name: "4x4", icon: "/cube-icons/444.svg" },
-  { id: "555", name: "5x5", icon: "/cube-icons/555.svg" },
-  { id: "666", name: "6x6", icon: "/cube-icons/666.svg" },
-  { id: "777", name: "7x7", icon: "/cube-icons/777.svg" },
-  { id: "333oh", name: "3x3 OH", icon: "/cube-icons/333oh.svg" },
-  { id: "333bf", name: "3x3 BLD", icon: "/cube-icons/333bf.svg" },
-  { id: "pyram", name: "Pyraminx", icon: "/cube-icons/pyram.svg" },
-  { id: "minx", name: "Megaminx", icon: "/cube-icons/minx.svg" },
-  { id: "skewb", name: "Skewb", icon: "/cube-icons/skewb.svg" },
-  { id: "sq1", name: "Square-1", icon: "/cube-icons/sq1.svg" },
-  { id: "clock", name: "Clock", icon: "/cube-icons/clock.svg" },
+  { id: "333", name: "3x3" },
+  { id: "222", name: "2x2" },
+  { id: "444", name: "4x4" },
+  { id: "555", name: "5x5" },
+  { id: "666", name: "6x6" },
+  { id: "777", name: "7x7" },
+  { id: "333oh", name: "3x3 OH" },
+  { id: "333bf", name: "3x3 BLD" },
+  { id: "pyram", name: "Pyraminx" },
+  { id: "minx", name: "Megaminx" },
+  { id: "skewb", name: "Skewb" },
+  { id: "sq1", name: "Square-1" },
+  { id: "clock", name: "Clock" },
 ];
+
+const eventIcon = (id: string) => `/cube-icons/${id}.svg`;
 
 export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
   const [formData, setFormData] = useState({
@@ -44,57 +49,34 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
     description: "",
     isPublic: true,
   });
-  const [isEventDropdownOpen, setIsEventDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [isGenerating, setIsGenerating] = useState(false);
-  const [roomCreated, setRoomCreated] = useState<{ roomId: string } | null>(
-    null
-  );
-  const [copied, setCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [roomCreated, setRoomCreated] = useState<{
+    roomId: string;
+    name: string;
+    event: string;
+    format: string;
+  } | null>(null);
 
   const { user } = useUser();
   const router = useRouter();
   const createRoom = useMutation(api.challengeRooms.createRoom);
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsEventDropdownOpen(false);
-      }
-    };
-
-    if (isEventDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [isEventDropdownOpen]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!user?.convexId) return;
 
     setIsGenerating(true);
+    setError(null);
 
     try {
-      // Generate scrambles based on format
       const scrambleCount = formData.format === "ao5" ? 5 : 12;
       const scrambles: string[] = [];
-
       for (let i = 0; i < scrambleCount; i++) {
-        const scramble = await scrambleGenerator.generateScramble(
-          formData.event
-        );
-        scrambles.push(scramble);
+        scrambles.push(await scrambleGenerator.generateScramble(formData.event));
       }
 
-      // Create the room
       const result = await createRoom({
         userId: user.convexId,
         name: formData.name,
@@ -105,21 +87,18 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
         isPublic: formData.isPublic,
       });
 
-      setRoomCreated({ roomId: result.roomId });
-    } catch (error) {
-      console.error("Failed to create room:", error);
+      setRoomCreated({
+        roomId: result.roomId,
+        name: formData.name,
+        event: formData.event,
+        format: formData.format,
+      });
+    } catch (caught) {
+      console.error("Failed to create room:", caught);
+      setError("Couldn't create the room. Please try again.");
     } finally {
       setIsGenerating(false);
     }
-  };
-
-  const copyRoomLink = async () => {
-    if (!roomCreated) return;
-
-    const link = `${window.location.origin}/cube-lab/challenges/room/${roomCreated.roomId}`;
-    await navigator.clipboard.writeText(link);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const goToRoom = () => {
@@ -130,314 +109,113 @@ export default function CreateRoomModal({ onClose }: CreateRoomModalProps) {
 
   if (roomCreated) {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div className="timer-card max-w-md w-full">
-          <div className="relative">
-            {/* Success Header */}
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-(--surface-elevated) rounded-full flex items-center justify-center mx-auto mb-4 border border-(--border)">
-                <Check className="w-8 h-8 text-(--primary)" />
-              </div>
-              <h2 className="text-xl font-bold text-(--text-primary) font-statement mb-2">
-                Room Created!
-              </h2>
-              <p className="text-(--text-secondary) font-inter">
-                Your challenge room is ready. Share the room code or link with
-                others.
-              </p>
-            </div>
-
-            {/* Room Details */}
-            <div className="space-y-4 mb-6">
-              <div className="bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
-                <div className="text-center">
-                  <p className="text-sm text-(--text-secondary) font-inter mb-1">
-                    Room Code
-                  </p>
-                  <p className="text-2xl font-bold text-(--primary) font-mono tracking-wider">
-                    {roomCreated.roomId}
-                  </p>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="space-y-3">
-                <button
-                  onClick={copyRoomLink}
-                  className="w-full btn-primary flex items-center justify-center gap-2 font-inter"
-                >
-                  {copied ? (
-                    <Check className="w-4 h-4" />
-                  ) : (
-                    <Copy className="w-4 h-4" />
-                  )}
-                  {copied ? "Copied!" : "Copy Room Link"}
-                </button>
-
-                <button onClick={goToRoom} className="w-full btn-secondary">
-                  Go to Room
-                </button>
-              </div>
-            </div>
-
-            <button
-              onClick={onClose}
-              className="absolute top-0 right-0 p-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+      <Modal open onClose={onClose} size="md" mobile="sheet">
+        <Modal.Header title="Room Created" />
+        <Modal.Body className="space-y-5 text-center">
+          <CardIcon tone="success" className="mx-auto w-14 h-14 [&_svg]:w-7 [&_svg]:h-7">
+            <Check />
+          </CardIcon>
+          <p className="type-body">
+            Your challenge room is ready. Share the room code or link with others.
+          </p>
+          <div className="rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) p-4">
+            <p className="type-overline mb-1">Room code</p>
+            <p className="type-time text-2xl font-bold text-(--primary) tracking-wider">
+              {roomCreated.roomId}
+            </p>
           </div>
-        </div>
-      </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <RoomShareMenu
+            roomId={roomCreated.roomId}
+            roomName={roomCreated.name}
+            eventName={getTimerEvent(roomCreated.event).name}
+            format={roomCreated.format}
+          />
+          <Button onClick={goToRoom} data-autofocus>
+            Go to room
+          </Button>
+        </Modal.Footer>
+      </Modal>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="timer-card w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="p-2">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div>
-                <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-                  Create Challenge Room
-                </h2>
-                <p className="text-sm text-(--text-secondary) font-inter">
-                  Set up a new challenge room to compete with others.
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              className="p-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+    <Modal open onClose={onClose} size="xl" mobile="sheet" closeOnBackdrop={false}>
+      <Modal.Header
+        title="Create Challenge Room"
+        description="Set up a new challenge room to compete with others."
+      />
+      <form onSubmit={handleSubmit} className="contents">
+        <Modal.Body className="space-y-5">
+          {error && <Alert tone="error">{error}</Alert>}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Room Name */}
-            <div>
-              <label className="block text-sm font-medium text-(--text-primary) font-inter mb-2">
-                Room Name
-              </label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                placeholder="Enter room name..."
-                className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) transition-colors font-inter"
-                required
-              />
-            </div>
+          <Field label="Room Name" required>
+            <Input
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Enter room name…"
+              maxLength={100}
+              required
+              data-autofocus
+            />
+          </Field>
 
-            {/* Event Selection */}
-            <div>
-              <label className="block text-sm font-medium text-(--text-primary) font-inter mb-3">
-                Event
-              </label>
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  type="button"
-                  onClick={() => setIsEventDropdownOpen(!isEventDropdownOpen)}
-                  className="w-full flex items-center justify-between p-3 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 rounded-lg border border-(--border) transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-(--primary) text-white rounded-lg flex items-center justify-center p-1">
-                      <Image
-                        src={
-                          EVENTS.find((e) => e.id === formData.event)?.icon ||
-                          "/cube-icons/333.svg"
-                        }
-                        alt={
-                          EVENTS.find((e) => e.id === formData.event)?.name ||
-                          "3x3"
-                        }
-                        width={24}
-                        height={24}
-                        className="w-full h-full object-contain brightness-0 invert"
-                      />
-                    </div>
-                    <div className="text-left">
-                      <div className="font-medium text-(--text-primary) font-statement">
-                        {EVENTS.find((e) => e.id === formData.event)?.name ||
-                          "3x3"}
-                      </div>
-                    </div>
-                  </div>
-                  <ChevronDown
-                    className={`w-4 h-4 text-(--text-secondary) transition-transform ${
-                      isEventDropdownOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
+          <Field label="Event">
+            <SelectMenu
+              label="Event"
+              searchable
+              value={formData.event}
+              onChange={(event) => setFormData({ ...formData, event })}
+              options={EVENTS.map((event) => ({
+                value: event.id,
+                label: event.name,
+                icon: <EventIcon eventId={event.id} size="sm" src={eventIcon(event.id)} alt={event.name} />,
+              }))}
+            />
+          </Field>
 
-                {isEventDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-(--surface) border border-(--border) rounded-lg shadow-xl z-[9999] max-h-64 overflow-y-auto">
-                    {EVENTS.map((event) => (
-                      <button
-                        key={event.id}
-                        type="button"
-                        onClick={() => {
-                          setFormData({ ...formData, event: event.id });
-                          setIsEventDropdownOpen(false);
-                        }}
-                        className={`w-full flex items-center gap-3 p-3 text-left hover:bg-(--surface-elevated) transition-colors ${
-                          event.id === formData.event
-                            ? "bg-(--primary)/20 border-(--primary)/30"
-                            : ""
-                        }`}
-                      >
-                        <div className="w-8 h-8 bg-(--primary) text-white rounded-lg flex items-center justify-center p-1">
-                          <Image
-                            src={event.icon}
-                            alt={event.name}
-                            width={24}
-                            height={24}
-                            className="w-full h-full object-contain brightness-0 invert"
-                          />
-                        </div>
-                        <div>
-                          <div className="font-medium text-(--text-primary) font-statement">
-                            {event.name}
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+          <OptionTiles
+            legend="Format"
+            value={formData.format}
+            onChange={(format) => setFormData({ ...formData, format })}
+            columns="grid-cols-1 sm:grid-cols-2"
+            options={[
+              { value: "ao5", label: "Average of 5", icon: <Clock5 />, description: "5 scrambles" },
+              { value: "ao12", label: "Average of 12", icon: <Clock12 />, description: "12 scrambles" },
+            ]}
+          />
 
-            {/* Format Selection */}
-            <div>
-              <label className="block text-sm font-medium text-(--text-primary) font-inter mb-3">
-                Format
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, format: "ao5" })}
-                  className={`p-4 border rounded-lg transition-all duration-200 hover:bg-(--surface-elevated) ${
-                    formData.format === "ao5"
-                      ? "border-(--primary) bg-(--primary)/10"
-                      : "border-(--border)"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-(--primary) rounded-lg flex items-center justify-center">
-                      <Clock5 className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <div className="font-semibold text-(--text-primary) font-statement">
-                        Average of 5
-                      </div>
-                    </div>
-                  </div>
-                </button>
+          <Field label="Description" hint="Optional">
+            <Textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Add a description for your room…"
+              maxLength={500}
+            />
+          </Field>
 
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, format: "ao12" })}
-                  className={`p-4 border rounded-lg transition-all duration-200 hover:bg-(--surface-elevated) ${
-                    formData.format === "ao12"
-                      ? "border-(--primary) bg-(--primary)/10"
-                      : "border-(--border)"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-(--primary) rounded-lg flex items-center justify-center">
-                      <Clock12 className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <div className="font-semibold text-(--text-primary) font-statement">
-                        Average of 12
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-medium text-(--text-primary) font-inter mb-2">
-                Description (Optional)
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                placeholder="Add a description for your room..."
-                rows={3}
-                className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:border-(--primary) transition-colors font-inter resize-none"
-              />
-            </div>
-
-            {/* Public/Private Toggle */}
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium text-(--text-primary) font-inter">
-                  Public Room
-                </div>
-                <div className="text-sm text-(--text-secondary) font-inter">
-                  Allow room to appear in public listings
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() =>
-                  setFormData({ ...formData, isPublic: !formData.isPublic })
-                }
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  formData.isPublic
-                    ? "bg-(--primary)"
-                    : "bg-(--border)"
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    formData.isPublic ? "translate-x-6" : "translate-x-1"
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Submit Button */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="order-2 sm:order-1 px-6 py-3 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) border border-(--border) rounded-lg font-semibold transition-colors font-inter"
-                disabled={isGenerating}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isGenerating || !formData.name}
-                className="order-1 sm:order-2 flex-1 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-colors font-inter flex items-center justify-center gap-2"
-              >
-                {isGenerating ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Generating Scrambles...
-                  </>
-                ) : (
-                  <>
-                    Create Room
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+          <SwitchRow
+            label="Public Room"
+            description="Allow room to appear in public listings"
+            checked={formData.isPublic}
+            onChange={(isPublic) => setFormData({ ...formData, isPublic })}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={onClose} disabled={isGenerating}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={!formData.name}
+            loading={isGenerating}
+            loadingText="Generating scrambles…"
+          >
+            Create Room
+          </Button>
+        </Modal.Footer>
+      </form>
+    </Modal>
   );
 }

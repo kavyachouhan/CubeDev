@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useId, useState, useEffect } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { X } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Checkbox, Input, Select, Textarea } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
 import { calculateMoveCount } from "../shared";
 
 interface AlgorithmFormData {
@@ -40,6 +43,7 @@ export function EditAlgorithmModal({
 
     isDefault: algorithm?.isDefault ?? false,
   });
+  const formId = useId();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [autoMoveCount, setAutoMoveCount] = useState(true);
 
@@ -94,32 +98,17 @@ export function EditAlgorithmModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="timer-card max-w-lg w-full my-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-            {isNew ? "New Algorithm" : "Edit Algorithm"}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-(--surface-elevated) rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5 text-(--text-muted)" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <Modal open onClose={onClose} size="lg" mobile="fullscreen">
+      <Modal.Header title={isNew ? "New Algorithm" : "Edit Algorithm"} />
+      <Modal.Body>
+        <form id={formId} onSubmit={handleSubmit} className="space-y-4">
           {/* Notation */}
           <div>
-            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-              Notation *
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-1.5">Notation *</label>
+            <Input
               value={formData.notation}
               onChange={(e) => handleNotationChange(e.target.value)}
               required
-              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-mono text-sm"
               placeholder="R U R' U R U2 R'"
             />
           </div>
@@ -127,88 +116,68 @@ export function EditAlgorithmModal({
           {/* Move Count with Auto-calculate toggle */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-sm font-medium text-(--text-secondary) font-inter">
-                Move Count
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={autoMoveCount}
-                  onChange={(e) => {
-                    setAutoMoveCount(e.target.checked);
-                    if (e.target.checked) {
-                      const count = calculateMoveCount(formData.notation);
-                      setFormData((prev) => ({ ...prev, moveCount: count }));
-                    }
-                  }}
-                  className="w-3.5 h-3.5 rounded border-(--border) bg-(--surface-elevated) text-(--primary) focus:ring-(--primary)"
-                />
-                <span className="text-xs text-(--text-muted) font-inter">
-                  Auto
-                </span>
-              </label>
+              <label className="type-label">Move Count</label>
+              <Checkbox
+                label="Auto"
+                checked={autoMoveCount}
+                onChange={(e) => {
+                  setAutoMoveCount(e.target.checked);
+                  if (e.target.checked) {
+                    const count = calculateMoveCount(formData.notation);
+                    setFormData((prev) => ({ ...prev, moveCount: count }));
+                  }
+                }}
+              />
             </div>
-            <input
+            <Input
               type="number"
               min={0}
               value={formData.moveCount}
               onChange={(e) => handleMoveCountChange(e.target.value)}
               disabled={autoMoveCount}
-              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm disabled:opacity-60"
             />
           </div>
 
           {/* Finger Tricks */}
           <div>
-            <label className="block text-sm font-medium text-(--text-secondary) font-inter mb-1.5">
-              Finger Tricks
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-1.5">Finger Tricks</label>
+            <Input
               value={formData.fingerTricks}
               onChange={(e) =>
                 setFormData({ ...formData, fingerTricks: e.target.value })
               }
-              className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
               placeholder="e.g., Push with right index, pull with left thumb"
             />
           </div>
 
           {/* Default Checkbox */}
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.isDefault}
-              onChange={(e) =>
-                setFormData({ ...formData, isDefault: e.target.checked })
-              }
-              className="w-4 h-4 rounded border-(--border) bg-(--surface-elevated) text-(--primary) focus:ring-(--primary)"
-            />
-            <span className="text-sm text-(--text-primary) font-inter">
-              Default algorithm for this case
-            </span>
-          </label>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2.5 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-lg transition-colors font-inter text-sm order-2 sm:order-1"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 px-4 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white font-medium rounded-lg transition-colors font-inter text-sm disabled:opacity-50 order-1 sm:order-2"
-            >
-              {isSubmitting ? "Saving..." : isNew ? "Add" : "Save Changes"}
-            </button>
-          </div>
+          <Checkbox
+            label="Default algorithm for this case"
+            checked={formData.isDefault}
+            onChange={(e) =>
+              setFormData({ ...formData, isDefault: e.target.checked })
+            }
+          />
         </form>
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={onClose}
+          disabled={isSubmitting}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          form={formId}
+          loading={isSubmitting}
+          loadingText="Saving…"
+        >
+          {isNew ? "Add" : "Save Changes"}
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }

@@ -1,10 +1,15 @@
 "use client";
 
-import { User, ExternalLink } from "lucide-react";
+import { ExternalLink, User } from "lucide-react";
 import { useUser } from "@/components/UserProvider";
 import { wcaSignInHref } from "@/lib/wca-config";
 import { isCubeDevIdentifier } from "@/lib/identifier-utils";
 import { getAvatarUrl } from "@/lib/avatar";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { buttonClasses } from "@/components/ui/button-styles";
+import { Card, CardHeader } from "@/components/ui/Card";
+import { Field, Input } from "@/components/ui/Field";
 
 export default function ProfileSection() {
   const { user } = useUser();
@@ -13,50 +18,44 @@ export default function ProfileSection() {
 
   const userIdentifier = user.wcaId || "Unknown";
   const isCdUser = isCubeDevIdentifier(user.wcaId);
+  const avatarUrl = getAvatarUrl(user.avatar);
 
   const handleReauth = () => {
     window.location.href = wcaSignInHref();
   };
 
   return (
-    <div className="timer-card">
-      <div className="flex items-center gap-3 mb-6">
-        <div>
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement">
-            Profile Information
-          </h3>
-          <p className="text-sm text-(--text-muted)">
-            {isCdUser
-              ? "Your CubeDev profile information"
-              : "Your WCA profile information"}
-          </p>
-        </div>
-      </div>
+    <Card variant="static">
+      <CardHeader
+        title="Profile Information"
+        description={
+          isCdUser ? "Your CubeDev profile information" : "Your WCA profile information"
+        }
+      />
 
-      <div className="space-y-4 md:space-y-6">
-        {/* Profile Card */}
-        <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-3 md:p-4">
-          <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-4">
-            {getAvatarUrl(user.avatar) ? (
+      <div className="space-y-5">
+        <div className="rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) p-3 md:p-4">
+          <div className="flex items-center gap-3 md:gap-4 mb-4">
+            {avatarUrl ? (
+              // WCA avatars come from arbitrary hosts, so next/image can't optimize them.
+              // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={getAvatarUrl(user.avatar)}
-                alt={user.name}
-                className="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-(--border)"
+                src={avatarUrl}
+                alt=""
+                className="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-(--border) object-cover"
               />
             ) : (
               <div className="w-12 h-12 md:w-16 md:h-16 bg-(--surface) rounded-full border-2 border-(--border) flex items-center justify-center">
-                <User className="w-6 h-6 md:w-8 md:h-8 text-(--text-muted)" />
+                <User className="w-6 h-6 md:w-8 md:h-8 text-(--text-muted)" aria-hidden />
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <h4 className="text-base md:text-lg font-semibold text-(--text-primary) truncate">
+              <p className="text-base md:text-lg font-semibold text-(--text-primary) truncate">
                 {user.name}
-              </h4>
-              <div className="flex items-center gap-2 text-xs md:text-sm text-(--text-muted)">
-                <span>{userIdentifier}</span>
-                <span>•</span>
-                <span>{user.countryIso2}</span>
-              </div>
+              </p>
+              <p className="type-caption">
+                {userIdentifier} · {user.countryIso2}
+              </p>
             </div>
           </div>
 
@@ -65,72 +64,45 @@ export default function ProfileSection() {
               href={`https://www.worldcubeassociation.org/persons/${user.wcaId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 px-3 py-2 bg-(--primary) text-white rounded-md hover:bg-(--primary-hover) transition-colors text-xs md:text-sm font-medium w-full"
+              className={buttonClasses({
+                variant: "secondary",
+                size: "sm",
+                className: "w-full sm:w-auto",
+              })}
             >
-              <ExternalLink className="w-3 h-3 md:w-4 md:h-4" />
+              <ExternalLink className="w-4 h-4" aria-hidden />
               View WCA Profile
             </a>
           ) : (
-            <button
-              type="button"
-              onClick={handleReauth}
-              className="flex items-center justify-center gap-2 px-3 py-2 bg-(--primary) text-white rounded-md hover:bg-(--primary-hover) transition-colors text-xs md:text-sm font-medium w-full"
-            >
+            <Button size="sm" className="w-full sm:w-auto" onClick={handleReauth}>
               Re-auth with WCA
-            </button>
+            </Button>
           )}
         </div>
 
-        {/* Profile Info Fields */}
-        <div className="space-y-3 md:space-y-4">
-          <div>
-            <label className="block text-xs md:text-sm font-medium text-(--text-secondary) mb-1">
-              Full Name
-            </label>
-            <div className="px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-md text-(--text-primary) text-sm md:text-base">
-              {user.name}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs md:text-sm font-medium text-(--text-secondary) mb-1">
-              {isCdUser ? "CubeDev ID" : "WCA ID"}
-            </label>
-            <div className="px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-md text-(--text-primary) text-sm md:text-base">
-              {userIdentifier}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs md:text-sm font-medium text-(--text-secondary) mb-1">
-              Country
-            </label>
-            <div className="px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-md text-(--text-primary) text-sm md:text-base">
-              {user.countryIso2}
-            </div>
-          </div>
-
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Full Name">
+            <Input readOnly value={user.name} />
+          </Field>
+          <Field label={isCdUser ? "CubeDev ID" : "WCA ID"}>
+            <Input readOnly value={userIdentifier} className="type-time" />
+          </Field>
+          <Field label="Country">
+            <Input readOnly value={user.countryIso2} />
+          </Field>
           {user.email && (
-            <div>
-              <label className="block text-xs md:text-sm font-medium text-(--text-secondary) mb-1">
-                Email
-              </label>
-              <div className="px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-md text-(--text-primary) text-sm md:text-base break-all">
-                {user.email}
-              </div>
-            </div>
+            <Field label="Email">
+              <Input readOnly value={user.email} />
+            </Field>
           )}
         </div>
-      </div>
 
-      <div className="mt-4 md:mt-6 p-3 bg-(--surface-elevated) rounded-lg border-l-4 border-l-(--primary)">
-        <p className="text-xs md:text-sm text-(--text-secondary)">
-          <span className="font-medium text-(--text-primary)">Note:</span>{" "}
+        <Alert tone="primary" size="sm">
           {isCdUser
             ? "You currently use a CubeDev ID because your WCA account does not have a WCA competition ID yet. Use Re-auth with WCA after your first official competition to upgrade to your WCA ID."
             : "Profile information is synchronized with your WCA account and cannot be edited here. To update your profile, make changes on the WCA website."}
-        </p>
+        </Alert>
       </div>
-    </div>
+    </Card>
   );
 }

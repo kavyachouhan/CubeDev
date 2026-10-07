@@ -102,7 +102,7 @@ export default function PhaseAverages({ solves }: PhaseAveragesProps) {
           count: times.length,
           best,
           worst,
-          color: methodPhase?.color || "text-gray-500",
+          color: methodPhase?.color || "var(--chart-6)",
           name: methodPhase?.name || phaseId,
           method: method.name,
         });
@@ -166,14 +166,13 @@ export default function PhaseAverages({ solves }: PhaseAveragesProps) {
               {stats.map((stat) => (
                 <div
                   key={stat.phase}
-                  className="p-3 bg-(--surface-elevated) border border-(--border) rounded-lg"
+                  className="p-3 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)"
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <div
-                      className={`w-3 h-3 rounded-full ${stat.color.replace(
-                        "text-",
-                        "bg-"
-                      )}`}
+                    <span
+                      aria-hidden
+                      className="w-3 h-3 rounded-full shrink-0"
+                      style={{ background: stat.color }}
                     />
                     <span className="text-sm font-medium text-(--text-primary)">
                       {stat.name}

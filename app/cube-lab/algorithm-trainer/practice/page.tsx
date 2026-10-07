@@ -14,6 +14,8 @@ import {
 } from "@/components/algorithm";
 import { AlgorithmPracticeSkeleton } from "@/components/SkeletonLoaders";
 import { ArrowLeft, Check, CheckCircle2, X, RotateCcw } from "lucide-react";
+import { ButtonLink } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
 import { isNotationCompatibleWithPlayer } from "@/lib/notation-utils";
@@ -245,9 +247,9 @@ function PracticePageContent() {
             <div className="timer-card max-w-md text-center">
               <div className="mb-4">
                 {mode === "srs" ? (
-                  <Check className="w-16 h-16 text-green-500 mx-auto" />
+                  <Check className="w-16 h-16 text-(--success) mx-auto" />
                 ) : (
-                  <X className="w-16 h-16 text-red-500 mx-auto" />
+                  <X className="w-16 h-16 text-(--error) mx-auto" />
                 )}
               </div>
               <h2 className="text-2xl font-bold text-(--text-primary) font-statement mb-4">
@@ -260,20 +262,21 @@ function PracticePageContent() {
               </p>
               <div className="flex flex-col gap-3">
                 {mode === "srs" && (
-                  <Link
+                  <ButtonLink
                     href="/cube-lab/algorithm-trainer/practice?mode=drill&type=rec"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors"
+                    size="lg"
                   >
                     Start Drill Practice
-                  </Link>
+                  </ButtonLink>
                 )}
-                <Link
+                <ButtonLink
                   href="/cube-lab/algorithm-trainer"
-                  className="inline-flex items-center gap-2 justify-center px-6 py-3 border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors"
+                  variant="secondary"
+                  size="lg"
+                  iconLeft={<ArrowLeft className="w-4 h-4" />}
                 >
-                  <ArrowLeft className="w-5 h-5" />
                   Back to Algorithm Trainer
-                </Link>
+                </ButtonLink>
               </div>
             </div>
           </div>
@@ -311,7 +314,7 @@ function PracticePageContent() {
         <CubeLabLayout activeSection="algorithm-trainer">
           <div className="h-full flex items-center justify-center p-4">
             <div className="timer-card max-w-2xl w-full text-center">
-              <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-6" />
+              <CheckCircle2 className="w-16 h-16 text-(--success) mx-auto mb-6" />
               <h2 className="text-2xl font-bold text-(--text-primary) font-statement mb-2">
                 {mode === "srs" ? "Review Complete" : "Session Complete"}
               </h2>
@@ -324,7 +327,7 @@ function PracticePageContent() {
               {/* Stats Grid - Different for each mode */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
                 {/* Cases Reviewed - Always show */}
-                <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                   <div className="text-2xl font-bold text-(--primary) font-statement">
                     {totalCases}
                   </div>
@@ -337,8 +340,8 @@ function PracticePageContent() {
                 {(drillType === "pattern" ||
                   drillType === "blind" ||
                   mode === "srs") && (
-                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
-                    <div className="text-2xl font-bold text-green-500 font-statement">
+                  <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
+                    <div className="text-2xl font-bold text-(--success) font-statement">
                       {accuracyRate.toFixed(0)}%
                     </div>
                     <div className="text-sm text-(--text-muted) mt-1">
@@ -350,8 +353,8 @@ function PracticePageContent() {
                 {/* Avg Time - Show for execution and recognition */}
                 {(drillType === "exec" || drillType === "rec") &&
                   sessionStats.times.length > 0 && (
-                    <div className="p-4 bg-(--surface-elevated) rounded-lg">
-                      <div className="text-2xl font-bold text-blue-500 font-statement">
+                    <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
+                      <div className="text-2xl font-bold text-(--primary) font-statement">
                         {avgTime}s
                       </div>
                       <div className="text-sm text-(--text-muted) mt-1">
@@ -361,8 +364,8 @@ function PracticePageContent() {
                   )}
 
                 {/* Session Duration - Always show */}
-                <div className="p-4 bg-(--surface-elevated) rounded-lg">
-                  <div className="text-2xl font-bold text-orange-500 font-statement">
+                <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
+                  <div className="text-2xl font-bold text-(--warning) font-statement">
                     {totalTimeStr}
                   </div>
                   <div className="text-sm text-(--text-muted) mt-1">
@@ -372,8 +375,8 @@ function PracticePageContent() {
 
                 {/* Correct Count - Show for SRS */}
                 {mode === "srs" && (
-                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
-                    <div className="text-2xl font-bold text-green-500 font-statement">
+                  <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
+                    <div className="text-2xl font-bold text-(--success) font-statement">
                       {sessionStats.correct}
                     </div>
                     <div className="text-sm text-(--text-muted) mt-1">
@@ -390,7 +393,7 @@ function PracticePageContent() {
                       ? `/cube-lab/algorithm-trainer/custom/${customSetId}`
                       : "/cube-lab/algorithm-trainer"
                   }
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-medium"
                 >
                   {mode === "custom" ? "Back to Custom Set" : "Back to Trainer"}
                 </Link>
@@ -408,7 +411,7 @@ function PracticePageContent() {
                       times: [],
                     });
                   }}
-                  className="flex-1 px-6 py-3 border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors font-medium"
+                  className="flex-1 px-6 py-3 border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-(--radius-control) transition-colors font-medium"
                 >
                   Practice Again
                 </button>
@@ -423,64 +426,54 @@ function PracticePageContent() {
   return (
     <ProtectedRoute>
       <CubeLabLayout activeSection="algorithm-trainer">
-        <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-4xl mx-auto space-y-6">
-            {/* Header */}
-            <div>
-              <Link
-                href={
+        <div className="container-responsive py-4 md:py-8">
+          <div className="space-y-4 md:space-y-6">
+            <PageHeader
+              back={{
+                href:
                   mode === "custom" && customSetId
                     ? `/cube-lab/algorithm-trainer/custom/${customSetId}`
-                    : "/cube-lab/algorithm-trainer"
-                }
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors w-fit mb-4"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                {mode === "custom"
-                  ? "Back to Custom Set"
-                  : "Back to Algorithm Trainer"}
-              </Link>
-
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-(--text-primary) font-statement mb-2">
-                    {mode === "srs"
-                      ? "SRS Review"
-                      : mode === "infinite"
-                        ? "Infinite Drill"
-                        : mode === "custom"
-                          ? "Custom Set Practice"
-                          : "Drill Practice"}
-                  </h1>
-                  <p className="text-(--text-muted)">
-                    {mode === "infinite"
-                      ? `Drilling: ${casesToReview[0]?.case?.caseName || "Loading..."}`
-                      : mode === "srs"
-                        ? "Review"
-                        : "Practice"}{" "}
-                    {mode !== "infinite" && (
-                      <>
-                        {casesToReview.length} case
-                        {casesToReview.length !== 1 ? "s" : ""}
-                      </>
-                    )}
-                  </p>
-                </div>
-
-                {/* Toggle Controls - shown for drill and custom modes */}
-                {(mode === "drill" || mode === "custom") && !hasStarted && (
+                    : "/cube-lab/algorithm-trainer",
+                label: mode === "custom" ? "Custom Set" : "Algorithm Trainer",
+              }}
+              title={
+                mode === "srs"
+                  ? "SRS Review"
+                  : mode === "infinite"
+                    ? "Infinite Drill"
+                    : mode === "custom"
+                      ? "Custom Set Practice"
+                      : "Drill Practice"
+              }
+              description={
+                <>
+                  {mode === "infinite"
+                    ? `Drilling: ${casesToReview[0]?.case?.caseName || "Loading…"}`
+                    : mode === "srs"
+                      ? "Review"
+                      : "Practice"}{" "}
+                  {mode !== "infinite" && (
+                    <>
+                      {casesToReview.length} case
+                      {casesToReview.length !== 1 ? "s" : ""}
+                    </>
+                  )}
+                </>
+              }
+              actions={
+                (mode === "drill" || mode === "custom") && !hasStarted ? (
                   <div className="flex flex-col gap-3 w-full sm:w-auto">
                     {/* Recognition/Execution/Blind Toggle */}
-                    <div className="inline-flex rounded-lg border border-(--border) bg-(--surface) p-1 w-full sm:w-auto flex-wrap">
+                    <div className="inline-flex rounded-(--radius-control) border border-(--border) bg-(--surface) p-1 w-full sm:w-auto flex-wrap">
                       <Link
                         href={
                           mode === "custom"
                             ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=rec`
                             : "/cube-lab/algorithm-trainer/practice?mode=drill&type=rec"
                         }
-                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
+                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-(--radius-badge) text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "rec"
-                            ? "bg-(--primary) text-white"
+                            ? "bg-(--primary) text-(--on-primary)"
                             : "text-(--text-muted) hover:text-(--text-primary)"
                         }`}
                       >
@@ -492,9 +485,9 @@ function PracticePageContent() {
                             ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=exec`
                             : "/cube-lab/algorithm-trainer/practice?mode=drill&type=exec"
                         }
-                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
+                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-(--radius-badge) text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "exec"
-                            ? "bg-(--primary) text-white"
+                            ? "bg-(--primary) text-(--on-primary)"
                             : "text-(--text-muted) hover:text-(--text-primary)"
                         }`}
                       >
@@ -506,9 +499,9 @@ function PracticePageContent() {
                             ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=blind`
                             : "/cube-lab/algorithm-trainer/practice?mode=drill&type=blind"
                         }
-                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center ${
+                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-(--radius-badge) text-xs sm:text-sm font-medium transition-colors text-center ${
                           drillType === "blind"
-                            ? "bg-(--primary) text-white"
+                            ? "bg-(--primary) text-(--on-primary)"
                             : "text-(--text-muted) hover:text-(--text-primary)"
                         }`}
                       >
@@ -524,7 +517,7 @@ function PracticePageContent() {
                             ? `/cube-lab/algorithm-trainer/practice?mode=custom&setId=${customSetId}&type=${drillType === "pattern" ? "rec" : "pattern"}`
                             : `/cube-lab/algorithm-trainer/practice?mode=drill&type=${drillType === "pattern" ? "rec" : "pattern"}`
                         }
-                        className={`inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors border w-full sm:w-auto ${
+                        className={`inline-flex items-center justify-center px-4 py-2 rounded-(--radius-control) text-xs sm:text-sm font-medium transition-colors border w-full sm:w-auto ${
                           drillType === "pattern"
                             ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
                             : "border-(--border) text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
@@ -537,9 +530,9 @@ function PracticePageContent() {
                       </Link>
                     )}
                   </div>
-                )}
-              </div>
-            </div>
+                ) : undefined
+              }
+            />
 
             {/* Progress Bar - different for infinite mode */}
             <div className="timer-card">
@@ -584,10 +577,10 @@ function PracticePageContent() {
                 <div
                   className={`grid gap-4 mt-4 ${drillType === "rec" && !isInfiniteMode ? "grid-cols-1" : "grid-cols-2"}`}
                 >
-                  <div className="text-center p-3 rounded-lg bg-(--surface-elevated)">
+                  <div className="text-center p-3 rounded-(--radius-control) bg-(--surface-elevated)">
                     <div className="flex items-center justify-center gap-1 mb-1">
-                      <CheckCircle2 className="w-4 h-4 text-green-500" />
-                      <span className="text-xl font-bold text-green-500 font-statement">
+                      <CheckCircle2 className="w-4 h-4 text-(--success)" />
+                      <span className="text-xl font-bold text-(--success) font-statement">
                         {sessionStats.correct}
                       </span>
                     </div>
@@ -601,10 +594,10 @@ function PracticePageContent() {
                   {(drillType === "pattern" ||
                     drillType === "blind" ||
                     isInfiniteMode) && (
-                    <div className="text-center p-3 rounded-lg bg-(--surface-elevated)">
+                    <div className="text-center p-3 rounded-(--radius-control) bg-(--surface-elevated)">
                       <div className="flex items-center justify-center gap-1 mb-1">
-                        <X className="w-4 h-4 text-red-500" />
-                        <span className="text-xl font-bold text-red-500 font-statement">
+                        <X className="w-4 h-4 text-(--error)" />
+                        <span className="text-xl font-bold text-(--error) font-statement">
                           {sessionStats.incorrect}
                         </span>
                       </div>
@@ -615,7 +608,7 @@ function PracticePageContent() {
                   )}
 
                   {drillType === "exec" && sessionStats.times.length > 0 && (
-                    <div className="text-center p-3 rounded-lg bg-(--surface-elevated)">
+                    <div className="text-center p-3 rounded-(--radius-control) bg-(--surface-elevated)">
                       <div className="text-xl font-bold text-(--primary) font-statement mb-1">
                         {(
                           sessionStats.times.reduce((a, b) => a + b, 0) /

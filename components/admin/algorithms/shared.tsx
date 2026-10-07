@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ReactNode } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { AdminStatCard } from "../AdminStatCard";
 
 // COLLAPSIBLE CARD
 interface CollapsibleCardProps {
@@ -72,30 +73,7 @@ interface StatCardProps {
   description?: string;
 }
 
-export function StatCard({ label, value, icon, description }: StatCardProps) {
-  return (
-    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
-      <div className="flex items-start justify-between">
-        <div className="min-w-0 flex-1">
-          <p className="text-xs sm:text-sm text-(--text-muted) font-inter truncate">
-            {label}
-          </p>
-          <p className="text-lg sm:text-2xl font-bold text-(--text-primary) font-statement mt-1 truncate">
-            {value}
-          </p>
-          {description && (
-            <p className="text-xs text-(--text-muted) font-inter mt-1 truncate">
-              {description}
-            </p>
-          )}
-        </div>
-        {icon && <div className="text-(--primary) shrink-0 ml-2">{icon}</div>}
-      </div>
-    </div>
-  );
-}
-
-// BAR CHART
+export // BAR CHART
 interface BarChartProps {
   data: { label: string; value: number; color?: string }[];
   maxValue?: number;

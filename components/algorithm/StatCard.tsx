@@ -32,15 +32,15 @@ export default function StatCard({
   return (
     <div className="timer-card">
       <div className="flex items-start justify-between mb-3">
-        <div className={`p-2 rounded-lg ${bgColor}`}>
+        <div className={`p-2 rounded-(--radius-control) ${bgColor}`}>
           <Icon className={`w-5 h-5 ${textColor}`} />
         </div>
         {trend && (
           <div
             className={`text-xs font-semibold flex items-center gap-1 ${
               trend.isPositive
-                ? "text-green-500 dark:text-green-400"
-                : "text-red-500 dark:text-red-400"
+                ? "text-(--success)"
+                : "text-(--error)"
             }`}
           >
             {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value).toFixed(1)}%

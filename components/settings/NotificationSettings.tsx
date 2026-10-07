@@ -4,17 +4,14 @@ import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@/components/UserProvider";
-import {
-  CheckCircle2,
-  AlertCircle,
-  Loader2,
-  GraduationCap,
-  Flame,
-  Target,
-  Compass,
-  BarChart3,
-  Clock,
-} from "lucide-react";
+import { Bell, Compass, GraduationCap } from "lucide-react";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader } from "@/components/ui/Card";
+import { Field } from "@/components/ui/Field";
+import { SettingRow } from "@/components/ui/SettingRow";
+import { SettingGroup } from "@/components/ui/SettingGroup";
+import { SwitchRow } from "@/components/ui/Switch";
 import {
   useNotificationPermission,
   isPushSupported,
@@ -24,6 +21,11 @@ import {
   getDeviceName,
   CoachingNotificationPreferences,
 } from "@/lib/notification-utils";
+import {
+  DateTimePicker,
+  fromTimeInputValue,
+  toTimeInputValue,
+} from "@/components/ui/DateTimePicker";
 
 export default function NotificationSettings() {
   const { user } = useUser();
@@ -215,251 +217,118 @@ export default function NotificationSettings() {
 
   const coachingPrefs = preferences.coaching || defaultCoachingPrefs;
 
-  // Toggle component for consistent styling
-  const Toggle = ({
-    enabled,
-    onToggle,
-  }: {
-    enabled: boolean;
-    onToggle: () => void;
-  }) => (
-    <button
-      type="button"
-      onClick={onToggle}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0 ${
-        enabled ? "bg-(--primary)" : "bg-(--border)"
-      }`}
-    >
-      <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-          enabled ? "translate-x-6" : "translate-x-1"
-        }`}
-      />
-    </button>
-  );
-
   return (
-    <div className="timer-card">
-      {/* Header */}
-      <div className="flex items-start gap-3 mb-6">
-        <div className="flex-1">
-          <h2 className="text-lg font-bold text-(--text-primary) mb-1 font-statement">
-            Notifications
-          </h2>
-          <p className="text-sm text-(--text-muted) font-inter">
-            Manage your notification preferences
-          </p>
-        </div>
-      </div>
+    <Card variant="static">
+      <CardHeader
+        as="h2"
+        title="Notifications"
+        description="Manage your notification preferences"
+      />
 
       <div className="space-y-4">
-        {/* Error Message */}
-        {error && (
-          <div className="p-3 bg-(--error)/10 border border-(--error)/20 rounded-lg flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-(--error) shrink-0" />
-            <span className="text-sm text-(--error)">{error}</span>
-          </div>
-        )}
+        {error && <Alert tone="error">{error}</Alert>}
 
-        {/* Enable Notifications Button */}
-        {!notificationsEnabled && (
-          <div className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg">
-            {isDenied ? (
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-(--warning)" />
-                <div>
-                  <p className="text-sm font-medium text-(--text-primary)">
-                    Notifications Blocked
-                  </p>
-                  <p className="text-xs text-(--text-muted)">
-                    Please enable notifications in your browser settings.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-(--text-primary)">
-                    Enable Notifications
-                  </p>
-                  <p className="text-xs text-(--text-muted)">
-                    Get reminders for practice, algorithms, and progress
-                  </p>
-                </div>
-                <button
+        {!notificationsEnabled &&
+          (isDenied ? (
+            <Alert tone="warning" title="Notifications blocked">
+              Please enable notifications in your browser settings.
+            </Alert>
+          ) : (
+            <SettingRow
+              variant="card"
+              icon={<Bell />}
+              label="Enable Notifications"
+              description="Get reminders for practice, algorithms, and progress"
+              control={
+                <Button
+                  size="sm"
                   onClick={handleEnableNotifications}
-                  disabled={isEnabling}
-                  className="px-4 py-2 bg-(--primary) text-white text-sm font-semibold rounded-lg hover:bg-(--primary-hover) transition-colors disabled:opacity-50 flex items-center gap-2"
+                  loading={isEnabling}
+                  loadingText="Enabling…"
                 >
-                  {isEnabling ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Enabling...
-                    </>
-                  ) : (
-                    "Enable"
-                  )}
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+                  Enable
+                </Button>
+              }
+            />
+          ))}
 
-        {/* Notification Status & Settings */}
         {notificationsEnabled && (
           <div className="space-y-4">
-            {/* Status Badge */}
-            <div className="flex items-center gap-2 p-3 bg-(--success)/10 border border-(--success)/20 rounded-lg">
-              <CheckCircle2 className="w-4 h-4 text-(--success)" />
-              <span className="text-sm font-medium text-(--text-primary)">
-                Notifications enabled
-              </span>
-            </div>
+            <Alert tone="success">Notifications enabled</Alert>
 
-            {/* Algorithm Trainer Section */}
-            <div className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="p-1.5 bg-(--primary)/10 rounded">
-                  <GraduationCap className="w-4 h-4 text-(--primary)" />
-                </div>
-                <span className="text-sm font-semibold text-(--text-primary)">
-                  Algorithm Trainer
-                </span>
-              </div>
+            <SettingGroup title="Algorithm Trainer" icon={<GraduationCap />}>
+              <SwitchRow
+                variant="plain"
+                label="Algorithm Reminders"
+                description="Get notified when algorithms are due for review"
+                checked={preferences.algorithmReminders}
+                onChange={() => handleToggleAlgorithmReminders()}
+              />
+            </SettingGroup>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0 pr-4">
-                    <div className="text-sm font-medium text-(--text-primary)">
-                      Algorithm Reminders
-                    </div>
-                    <div className="text-xs text-(--text-muted)">
-                      Get notified when algorithms are due for review
-                    </div>
-                  </div>
-                  <Toggle
-                    enabled={preferences.algorithmReminders}
-                    onToggle={handleToggleAlgorithmReminders}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Coaching Section */}
-            <div className="p-4 bg-(--surface-elevated) border border-(--border) rounded-lg">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="p-1.5 bg-(--accent)/10 rounded">
-                  <Compass className="w-4 h-4 text-(--accent)" />
-                </div>
-                <span className="text-sm font-semibold text-(--text-primary)">
-                  Coaching Reminders
-                </span>
-              </div>
-
-              <div className="space-y-4">
-                {/* Daily Practice Reminder */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0 pr-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-(--text-primary)">
-                          Daily Practice Reminder
-                        </span>
-                      </div>
-                      <div className="text-xs text-(--text-muted) mt-0.5">
-                        Remind me to practice at a specific time
-                      </div>
-                    </div>
-                    <Toggle
-                      enabled={coachingPrefs.dailyPracticeReminder}
-                      onToggle={() =>
-                        handleToggleCoachingPreference("dailyPracticeReminder")
-                      }
-                    />
-                  </div>
-
-                  {/* Time Picker */}
+            <SettingGroup
+              title="Coaching Reminders"
+              icon={<Compass />}
+              tone="accent"
+            >
+              <div className="divide-y divide-(--border)">
+                <SwitchRow
+                  variant="plain"
+                  className="py-3"
+                  label="Daily Practice Reminder"
+                  description="Remind me to practice at a specific time"
+                  checked={coachingPrefs.dailyPracticeReminder}
+                  onChange={() => handleToggleCoachingPreference("dailyPracticeReminder")}
+                >
                   {coachingPrefs.dailyPracticeReminder && (
-                    <div className="flex items-center gap-2 ml-5">
-                      <span className="text-xs text-(--text-muted)">
-                        Reminder time:
-                      </span>
-                      <input
-                        type="time"
-                        value={coachingPrefs.dailyPracticeTime || "19:00"}
-                        onChange={(e) =>
-                          handleUpdateReminderTime(e.target.value)
+                    <Field label="Reminder time">
+                      <DateTimePicker
+                        mode="time"
+                        size="sm"
+                        fullWidth={false}
+                        clearable={false}
+                        minuteStep={15}
+                        label="Reminder time"
+                        value={fromTimeInputValue(
+                          coachingPrefs.dailyPracticeTime || "19:00",
+                        )}
+                        onChange={(value) =>
+                          handleUpdateReminderTime(toTimeInputValue(value))
                         }
-                        className="px-2 py-1 text-sm bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-1 focus:ring-(--primary)"
+                        className="w-36"
                       />
-                    </div>
+                    </Field>
                   )}
-                </div>
-
-                {/* Streak Alerts */}
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0 pr-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-(--text-primary)">
-                        Streak Alerts
-                      </span>
-                    </div>
-                    <div className="text-xs text-(--text-muted) mt-0.5">
-                      Alert when your practice streak is at risk
-                    </div>
-                  </div>
-                  <Toggle
-                    enabled={coachingPrefs.streakAlerts}
-                    onToggle={() =>
-                      handleToggleCoachingPreference("streakAlerts")
-                    }
-                  />
-                </div>
-
-                {/* Weekly Summary */}
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0 pr-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-(--text-primary)">
-                        Weekly Summary
-                      </span>
-                    </div>
-                    <div className="text-xs text-(--text-muted) mt-0.5">
-                      Get a weekly recap of your practice stats
-                    </div>
-                  </div>
-                  <Toggle
-                    enabled={coachingPrefs.weeklySummary}
-                    onToggle={() =>
-                      handleToggleCoachingPreference("weeklySummary")
-                    }
-                  />
-                </div>
-
-                {/* Goal Progress Updates */}
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0 pr-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-(--text-primary)">
-                        Goal Progress Updates
-                      </span>
-                    </div>
-                    <div className="text-xs text-(--text-muted) mt-0.5">
-                      Get notified when you reach goal milestones
-                    </div>
-                  </div>
-                  <Toggle
-                    enabled={coachingPrefs.goalProgressUpdates}
-                    onToggle={() =>
-                      handleToggleCoachingPreference("goalProgressUpdates")
-                    }
-                  />
-                </div>
+                </SwitchRow>
+                <SwitchRow
+                  variant="plain"
+                  className="py-3"
+                  label="Streak Alerts"
+                  description="Alert when your practice streak is at risk"
+                  checked={coachingPrefs.streakAlerts}
+                  onChange={() => handleToggleCoachingPreference("streakAlerts")}
+                />
+                <SwitchRow
+                  variant="plain"
+                  className="py-3"
+                  label="Weekly Summary"
+                  description="Get a weekly recap of your practice stats"
+                  checked={coachingPrefs.weeklySummary}
+                  onChange={() => handleToggleCoachingPreference("weeklySummary")}
+                />
+                <SwitchRow
+                  variant="plain"
+                  className="py-3"
+                  label="Goal Progress Updates"
+                  description="Get notified when you reach goal milestones"
+                  checked={coachingPrefs.goalProgressUpdates}
+                  onChange={() => handleToggleCoachingPreference("goalProgressUpdates")}
+                />
               </div>
-            </div>
+            </SettingGroup>
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

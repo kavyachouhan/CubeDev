@@ -57,34 +57,34 @@ function getLevelStyles(level: string, isActive: boolean = false) {
     { text: string; bg: string; border: string; activeBg: string }
   > = {
     pro: {
-      text: "text-purple-500 dark:text-purple-400",
-      bg: "bg-purple-500/10",
-      border: "border-purple-500/30",
-      activeBg: "bg-purple-500",
+      text: "text-(--accent)",
+      bg: "bg-(--accent)/10",
+      border: "border-(--accent)/25",
+      activeBg: "bg-(--accent)",
     },
     advanced: {
-      text: "text-green-500 dark:text-green-400",
-      bg: "bg-green-500/10",
-      border: "border-green-500/30",
-      activeBg: "bg-green-500",
+      text: "text-(--success)",
+      bg: "bg-(--success)/10",
+      border: "border-(--success)/25",
+      activeBg: "bg-(--success)",
     },
     intermediate: {
-      text: "text-blue-500 dark:text-blue-400",
-      bg: "bg-blue-500/10",
-      border: "border-blue-500/30",
-      activeBg: "bg-blue-500",
+      text: "text-(--primary)",
+      bg: "bg-(--primary)/10",
+      border: "border-(--primary)/25",
+      activeBg: "bg-(--primary)",
     },
     beginner: {
-      text: "text-yellow-500 dark:text-yellow-400",
-      bg: "bg-yellow-500/10",
-      border: "border-yellow-500/30",
-      activeBg: "bg-yellow-500",
+      text: "text-(--warning)",
+      bg: "bg-(--warning)/10",
+      border: "border-(--warning)/25",
+      activeBg: "bg-(--warning)",
     },
     "needs-work": {
-      text: "text-red-500 dark:text-red-400",
-      bg: "bg-red-500/10",
-      border: "border-red-500/30",
-      activeBg: "bg-red-500",
+      text: "text-(--error)",
+      bg: "bg-(--error)/10",
+      border: "border-(--error)/25",
+      activeBg: "bg-(--error)",
     },
   };
   return styles[level] || styles["needs-work"];
@@ -189,7 +189,7 @@ export default function RecognitionBenchmarks({
       <div className="space-y-6">
         {/* Current Level Display */}
         <div
-          className={`p-4 rounded-lg border ${currentStyles.bg} ${currentStyles.border}`}
+          className={`p-4 rounded-(--radius-control) border ${currentStyles.bg} ${currentStyles.border}`}
         >
           <div className="flex items-center justify-center gap-2 mb-2">
             <Award className={`w-5 h-5 ${currentStyles.text}`} />
@@ -248,7 +248,7 @@ export default function RecognitionBenchmarks({
                 return (
                   <div
                     key={benchmark.level}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
+                    className={`flex items-center justify-between px-3 py-2.5 rounded-(--radius-control) transition-colors ${
                       isActive
                         ? `${styles.bg} ${styles.border} border`
                         : "bg-(--surface-elevated)"

@@ -32,9 +32,9 @@ export default function AlgorithmSetCard({
   const masteryProgress = (mastered / caseCount) * 100;
 
   const difficultyColors = {
-    beginner: "text-green-500",
-    intermediate: "text-yellow-500",
-    advanced: "text-red-500",
+    beginner: "text-(--success)",
+    intermediate: "text-(--warning)",
+    advanced: "text-(--error)",
   };
 
   const difficultyLabels = {
@@ -93,7 +93,7 @@ export default function AlgorithmSetCard({
           <div className="text-xs text-(--text-muted)">Learning</div>
         </div>
         <div className="text-center p-2 bg-(--surface-elevated) rounded">
-          <div className="text-lg font-bold text-green-500 font-statement">
+          <div className="text-lg font-bold text-(--success) font-statement">
             {mastered}
           </div>
           <div className="text-xs text-(--text-muted)">Mastered</div>
@@ -124,7 +124,7 @@ export default function AlgorithmSetCard({
           </div>
           <div className="h-2 bg-(--surface-elevated) rounded-full overflow-hidden">
             <div
-              className="h-full bg-green-500 transition-all duration-500"
+              className="h-full bg-(--success) transition-all duration-500"
               style={{ width: `${masteryProgress}%` }}
             />
           </div>
@@ -135,21 +135,21 @@ export default function AlgorithmSetCard({
       {!isLocked && (
         <div className="mt-4">
           {mastered === caseCount ? (
-            <div className="flex items-center justify-center gap-2 py-2 bg-green-500/10 border border-green-500/20 rounded-lg">
-              <CircleCheck className="w-4 h-4 text-green-500" />
-              <span className="text-sm font-medium text-green-500">
+            <div className="flex items-center justify-center gap-2 py-2 bg-(--success)/10 border border-(--success)/25 rounded-(--radius-control)">
+              <CircleCheck className="w-4 h-4 text-(--success)" />
+              <span className="text-sm font-medium text-(--success)">
                 Fully Mastered!
               </span>
             </div>
           ) : learned > 0 ? (
-            <div className="flex items-center justify-center gap-2 py-2 bg-(--primary)/10 border border-(--primary)/20 rounded-lg">
+            <div className="flex items-center justify-center gap-2 py-2 bg-(--primary)/10 border border-(--primary)/20 rounded-(--radius-control)">
               <Clock className="w-4 h-4 text-(--primary)" />
               <span className="text-sm font-medium text-(--primary)">
                 In Progress
               </span>
             </div>
           ) : (
-            <div className="flex items-center justify-center py-2 bg-(--surface-elevated) border border-(--border) rounded-lg">
+            <div className="flex items-center justify-center py-2 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)">
               <span className="text-sm font-medium text-(--text-muted)">
                 Not Started
               </span>

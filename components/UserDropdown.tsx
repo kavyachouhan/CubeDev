@@ -1,168 +1,83 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { User, Settings, Box, LogOut, ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Box, ChevronDown, LogOut, Settings, User } from "lucide-react";
+import { getAvatarUrl } from "@/lib/avatar";
+import type { AvatarValue } from "@/lib/avatar";
+import { Menu } from "@/components/ui/Menu";
+import type { MenuItem } from "@/components/ui/Menu";
 
 interface UserDropdownProps {
   user: {
     name: string;
     wcaId?: string;
-    avatar?: any;
+    avatar?: AvatarValue;
   };
   onSignOut: () => void;
 }
 
+/** Account menu in the marketing header. Opens on click, not hover. */
 export default function UserDropdown({ user, onSignOut }: UserDropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const router = useRouter();
+  const avatarUrl = getAvatarUrl(user.avatar);
 
-  // Handle mouse enter - show dropdown immediately
-  const handleMouseEnter = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    setIsOpen(true);
-  };
-
-  // Handle mouse leave - hide dropdown after a short delay
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setIsOpen(false);
-    }, 150); // 150ms delay
-  };
-
-  // Close dropdown if clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
+  const items: MenuItem[] = [
+    { type: "label", label: user.wcaId ? `${user.name} · ${user.wcaId}` : user.name },
+    { label: "Cube Lab", icon: <Box />, onSelect: () => router.push("/cube-lab/timer") },
+    ...(user.wcaId
+      ? [
+          {
+            label: "Public profile",
+            icon: <User />,
+            onSelect: () => router.push(`/cuber/${user.wcaId}`),
+          },
+        ]
+      : []),
+    { label: "Settings", icon: <Settings />, onSelect: () => router.push("/me") },
+    { type: "separator" },
+    { label: "Sign out", icon: <LogOut />, tone: "danger", onSelect: onSignOut },
+  ];
 
   return (
-    <div
-      className="relative"
-      ref={dropdownRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* User Info Trigger */}
-      <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-(--surface-elevated) transition-all duration-200 group">
-        {user.avatar && (
-          <Image
-            src={user.avatar.url || user.avatar}
-            alt={`${user.name}'s avatar`}
-            width={32}
-            height={32}
-            className="w-8 h-8 rounded-full object-cover"
-          />
-        )}
-        <div className="hidden lg:block text-left">
-          <div className="text-sm font-semibold text-(--text-primary) font-button">
-            {user.name}
-          </div>
-          {user.wcaId && (
-            <div className="text-xs text-(--text-secondary) font-inter">
-              {user.wcaId}
-            </div>
+    <Menu
+      title="Account"
+      items={items}
+      className="min-w-60"
+      trigger={(props) => (
+        <button
+          {...props}
+          type="button"
+          aria-label={`${user.name}: account menu`}
+          className="flex items-center gap-2 px-2 py-1.5 rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
+        >
+          {avatarUrl && (
+            <Image
+              src={avatarUrl}
+              alt=""
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-full object-cover"
+            />
           )}
-        </div>
-        <ChevronDown
-          className={`w-4 h-4 text-(--text-secondary) transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
-
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-56 bg-(--background) border border-(--border) rounded-lg shadow-lg z-50 py-2">
-          {/* User Info Header */}
-          <div className="px-4 py-3 border-b border-(--border)">
-            <div className="flex items-center gap-3">
-              {user.avatar && (
-                <Image
-                  src={user.avatar.url || user.avatar}
-                  alt={`${user.name}'s avatar`}
-                  width={40}
-                  height={40}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-              )}
-              <div>
-                <div className="font-semibold text-(--text-primary) font-button">
-                  {user.name}
-                </div>
-                {user.wcaId && (
-                  <div className="text-sm text-(--text-secondary) font-inter">
-                    {user.wcaId}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Menu Items */}
-          <div className="py-2">
-            <Link
-              href="/cube-lab/timer"
-              className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
-              onClick={() => setIsOpen(false)}
-            >
-              <Box className="w-4 h-4" />
-              Cube Lab
-            </Link>
-
+          <span className="hidden lg:block text-left">
+            <span className="block text-sm font-semibold text-(--text-primary)">
+              {user.name}
+            </span>
             {user.wcaId && (
-              <Link
-                href={`/cuber/${user.wcaId}`}
-                className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
-                onClick={() => setIsOpen(false)}
-              >
-                <User className="w-4 h-4" />
-                Public Profile
-              </Link>
+              <span className="block text-xs text-(--text-secondary) font-inter">
+                {user.wcaId}
+              </span>
             )}
-
-            <Link
-              href="/me"
-              className="flex items-center gap-3 px-4 py-2 text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated) transition-colors font-inter"
-              onClick={() => setIsOpen(false)}
-            >
-              <Settings className="w-4 h-4" />
-              Settings
-            </Link>
-          </div>
-
-          {/* Sign Out */}
-          <div className="border-t border-(--border) pt-2">
-            <button
-              onClick={() => {
-                onSignOut();
-                setIsOpen(false);
-              }}
-              className="flex items-center gap-3 px-4 py-2 w-full text-left text-(--text-secondary) hover:text-(--error) hover:bg-(--surface-elevated) transition-colors font-inter"
-            >
-              <LogOut className="w-4 h-4" />
-              Sign Out
-            </button>
-          </div>
-        </div>
+          </span>
+          <ChevronDown
+            aria-hidden
+            className={`w-4 h-4 text-(--text-secondary) transition-transform duration-(--duration-base) ${
+              props["aria-expanded"] ? "rotate-180" : ""
+            }`}
+          />
+        </button>
       )}
-    </div>
+    />
   );
 }

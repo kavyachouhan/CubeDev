@@ -1,6 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import type { SyntheticEvent } from "react";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import PenaltyButtons from "@/components/timer/PenaltyButtons";
+
+// The card arms the timer on pointer events, so controls inside it must not
+// let those bubble or tapping Save would start the next solve.
+const stopTimerEvent = (e: SyntheticEvent) => e.stopPropagation();
 
 interface RoomTimerProps {
   onSolveComplete: (time: number, penalty: "none" | "+2" | "DNF") => void;
@@ -285,23 +293,23 @@ export default function RoomTimer({
 
   // Get timer color based on state
   const getTimerColor = () => {
-    if (isDisabled) return "text-gray-400";
+    if (isDisabled) return "text-(--text-muted)";
 
     switch (state) {
       case "holding":
-        return "text-orange-400";
+        return "text-(--warning)";
       case "inspection":
-        if (inspectionTime <= 3) return "text-red-400";
-        if (inspectionTime <= 8) return "text-yellow-400";
-        return "text-green-400";
+        if (inspectionTime <= 3) return "text-(--error)";
+        if (inspectionTime <= 8) return "text-(--warning)";
+        return "text-(--success)";
       case "ready":
-        return "text-green-400";
+        return "text-(--success)";
       case "running":
-        return "text-red-400";
+        return "text-(--error)";
       case "stopped":
-        return "text-blue-400";
+        return "text-(--primary)";
       default:
-        return "text-gray-400";
+        return "text-(--text-muted)";
     }
   };
 
@@ -361,15 +369,13 @@ export default function RoomTimer({
 
         {/* Penalty Indicator */}
         {currentPenalty !== "none" && state === "stopped" && (
-          <div
-            className={`text-xs font-semibold px-2 py-1 rounded-full transition-all duration-300 ${
-              currentPenalty === "+2"
-                ? "bg-yellow-100 text-yellow-800 border border-yellow-300"
-                : "bg-red-100 text-red-800 border border-red-300"
-            }`}
+          <Badge
+            tone={currentPenalty === "+2" ? "warning" : "danger"}
+            shape="pill"
+            size="md"
           >
-            {currentPenalty === "+2" ? "+2 Penalty Applied" : "DNF Applied"}
-          </div>
+            {currentPenalty === "+2" ? "+2 penalty applied" : "DNF applied"}
+          </Badge>
         )}
 
         <div className="text-sm text-(--text-secondary) font-inter select-none">
@@ -381,53 +387,30 @@ export default function RoomTimer({
       {state === "stopped" && showPenaltySelection && (
         <div className="space-y-4 mt-6">
           <div className="text-center">
-            <p className="text-sm text-(--text-secondary) font-inter mb-3">
-              Select penalty for this solve:
-            </p>
+            <p className="type-caption mb-3">Select penalty for this solve:</p>
           </div>
-          <div className="flex justify-center gap-3">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                handlePenalty("+2");
-              }}
-              className={`px-6 py-2 text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105 ${
-                currentPenalty === "+2"
-                  ? "bg-(--warning) text-white ring-2 ring-yellow-300"
-                  : "bg-(--surface-elevated) text-(--text-primary) hover:bg-(--border)"
-              }`}
-            >
-              +2 {currentPenalty === "+2" ? "✓" : ""}
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                handlePenalty("DNF");
-              }}
-              className={`px-6 py-2 text-sm rounded-lg font-semibold font-statement transition-all hover:scale-105 ${
-                currentPenalty === "DNF"
-                  ? "bg-(--error) text-white ring-2 ring-red-300"
-                  : "bg-(--surface-elevated) text-(--text-primary) hover:bg-(--border)"
-              }`}
-            >
-              DNF {currentPenalty === "DNF" ? "✓" : ""}
-            </button>
-          </div>
+          <PenaltyButtons
+            showPenaltyButtons
+            currentPenalty={currentPenalty}
+            onPenaltyChange={handlePenalty}
+          />
 
-          {/* OK Button */}
+          {/* Save */}
           <div className="flex justify-center">
-            <button
+            <Button
+              className="w-full sm:w-auto"
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
                 handleConfirmSolve();
               }}
-              className="px-8 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white text-lg rounded-lg font-bold font-statement transition-all hover:scale-105 shadow-lg"
+              onTouchStart={stopTimerEvent}
+              onTouchEnd={stopTimerEvent}
+              onMouseDown={stopTimerEvent}
+              onMouseUp={stopTimerEvent}
             >
-              OK - Save Solve
-            </button>
+              Save solve
+            </Button>
           </div>
         </div>
       )}

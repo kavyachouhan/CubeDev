@@ -1,5 +1,8 @@
 "use client";
 
+import { Button } from "@/components/ui/Button";
+import { buttonClasses } from "@/components/ui/button-styles";
+
 export default function Error({
   error,
   reset,
@@ -20,19 +23,10 @@ export default function Error({
           <p className="text-xs text-(--text-muted) font-mono">{error.digest}</p>
         ) : null}
         <div className="flex items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={reset}
-            className="px-4 py-2 bg-(--primary) text-white rounded-lg font-button"
-          >
-            Try again
-          </button>
-          <a
-            href="/"
-            className="px-4 py-2 border border-(--border) rounded-lg text-(--text-primary) font-button"
-          >
+          <a href="/" className={buttonClasses({ variant: "secondary" })}>
             Home
           </a>
+          <Button onClick={reset}>Try again</Button>
         </div>
       </div>
     </div>

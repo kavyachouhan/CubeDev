@@ -8,8 +8,12 @@ import { api } from "@/convex/_generated/api";
 import CubeLabLayout from "@/components/CubeLabLayout";
 import { AlgorithmCaseCard } from "@/components/algorithm";
 import { AlgorithmSetDetailSkeleton } from "@/components/SkeletonLoaders";
-import { ArrowLeft, Filter, Search, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
+import { CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { SearchInput } from "@/components/ui/Field";
+import { SelectMenu } from "@/components/ui/Menu";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { StatTile } from "@/components/ui/StatTile";
 import { Id } from "@/convex/_generated/dataModel";
 
 export default function AlgorithmSetPage() {
@@ -90,49 +94,25 @@ export default function AlgorithmSetPage() {
 
   return (
     <CubeLabLayout activeSection="algorithm-trainer">
-      <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Header */}
-          <div>
-            <Link
-              href="/cube-lab/algorithm-trainer"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-(--border) hover:bg-(--surface-elevated) text-(--text-primary) rounded-lg transition-colors w-fit mb-4"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Algorithm Trainer
-            </Link>
-
-            <div className="flex items-start justify-between">
-              <div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-(--text-primary) font-statement">
-                  {set.name}
-                </h1>
-                <p className="text-(--text-muted) mt-2">
-                  {set.description}
-                </p>
-              </div>
-
-              {user && userProgress && (
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-(--primary) font-statement">
-                    {userProgress.learned}/{userProgress.total}
-                  </div>
-                  <div className="text-sm text-(--text-muted)">
-                    Learned
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+      <div className="container-responsive py-4 md:py-8">
+        <div className="space-y-4 md:space-y-6">
+          <PageHeader
+            breadcrumbs={[
+              { label: "Algorithm Trainer", href: "/cube-lab/algorithm-trainer" },
+              { label: set.name },
+            ]}
+            title={set.name}
+            description={set.description}
+          />
 
           {/* Progress Bar */}
           {user && userProgress && (
             <div className="timer-card">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-(--text-primary)">
-                  Overall Progress
+                <span className="type-label">
+                  {userProgress.learned}/{userProgress.total} learned
                 </span>
-                <span className="text-sm text-(--text-muted)">
+                <span className="type-caption">
                   {Math.round(
                     (userProgress.learned / userProgress.total) * 100
                   )}
@@ -148,79 +128,73 @@ export default function AlgorithmSetPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mt-4">
-                <div className="text-center">
-                  <div className="text-xl font-bold text-yellow-500 font-statement">
-                    {userProgress.learned - userProgress.mastered}
-                  </div>
-                  <div className="text-xs text-(--text-muted)">
-                    Learning
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl font-bold text-green-500 font-statement">
-                    {userProgress.mastered}
-                  </div>
-                  <div className="text-xs text-(--text-muted)">
-                    Mastered
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl font-bold text-(--text-muted) font-statement">
-                    {userProgress.total - userProgress.learned}
-                  </div>
-                  <div className="text-xs text-(--text-muted)">
-                    Not Started
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mt-4">
+                <StatTile
+                  size="sm"
+                  mono={false}
+                  mobileLayout="row"
+                  label="Learning"
+                  value={userProgress.learned - userProgress.mastered}
+                  tone="warning"
+                />
+                <StatTile
+                  size="sm"
+                  mono={false}
+                  mobileLayout="row"
+                  label="Mastered"
+                  value={userProgress.mastered}
+                  tone="success"
+                />
+                <StatTile
+                  size="sm"
+                  mono={false}
+                  mobileLayout="row"
+                  label="Not Started"
+                  value={userProgress.total - userProgress.learned}
+                />
               </div>
             </div>
           )}
 
           {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-(--text-muted)" />
-              <input
-                type="text"
-                placeholder="Search cases..."
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <SearchInput
+                placeholder="Search cases…"
+                aria-label="Search cases"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
+                onChange={setSearchQuery}
               />
             </div>
 
-            {/* Filter by Stage */}
             {user && (
-              <div className="flex items-center gap-2">
-                <Filter className="w-5 h-5 text-(--text-muted)" />
-                <select
-                  value={filterStage}
-                  onChange={(e) => setFilterStage(e.target.value)}
-                  className="px-4 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent"
-                >
-                  <option value="all">All Cases</option>
-                  <option value="new">Not Learned</option>
-                  <option value="learning">Learning</option>
-                  <option value="reviewing">Reviewing</option>
-                  <option value="mastered">Mastered</option>
-                </select>
-              </div>
+              <SelectMenu
+                label="Filter cases by stage"
+                value={filterStage}
+                onChange={setFilterStage}
+                fullWidth={false}
+                className="w-full sm:w-44"
+                options={[
+                  { value: "all", label: "All Cases" },
+                  { value: "new", label: "Not Learned" },
+                  { value: "learning", label: "Learning" },
+                  { value: "reviewing", label: "Reviewing" },
+                  { value: "mastered", label: "Mastered" },
+                ]}
+              />
             )}
 
-            {/* Bulk Mark as Known */}
             {user && unlearnedCaseIds.length > 0 && (
-              <button
+              <Button
+                variant="subtle"
                 onClick={handleBulkMarkAsLearned}
-                disabled={isBulkMarking}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-(--primary) bg-(--primary)/10 hover:bg-(--primary)/20 border border-(--primary)/20 rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
+                loading={isBulkMarking}
+                loadingText="Marking…"
+                iconLeft={<CheckCircle2 className="w-4 h-4" />}
+                className="shrink-0"
               >
-                <CheckCircle2 className="w-4 h-4" />
-                {isBulkMarking
-                  ? "Marking..."
-                  : `Mark All as Known (${unlearnedCaseIds.length})`}
-              </button>
+                Mark All as Known ({unlearnedCaseIds.length})
+              </Button>
             )}
           </div>
 

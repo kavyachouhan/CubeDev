@@ -3,18 +3,32 @@
 import { useState, useEffect, useMemo, memo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import Link from "next/link";
-import { Calendar, BookOpen, TrendingUp, Heart, X } from "lucide-react";
+import {
+  Calendar,
+  BookOpen,
+  TrendingUp,
+  Heart,
+  HeartHandshake,
+  X,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import CoachTrainingPlan from "./CoachTrainingPlan";
-import CoachJournalEntry from "./CoachJournalEntry";
 import CoachJournalCalendar from "./CoachJournalCalendar";
 import CoachProgress from "./CoachProgress";
 import CoachTour from "./CoachTour";
 import GoalSummaryCard from "./GoalSummaryCard";
+import {
+  Button,
+  ButtonLink,
+  CalloutCard,
+  Card,
+  EmptyState,
+  IconButton,
+  Tabs,
+} from "@/components/ui";
 
 // Dynamically import modals to reduce initial bundle size
 const DailyJournalModal = dynamic(() => import("./DailyJournalModal"), {
@@ -85,6 +99,13 @@ interface CoachDashboardProps {
 
 type TabId = "plan" | "journal" | "progress";
 
+/** The product tour anchors on each tab button; keep these in sync with CoachTour. */
+const TAB_TOUR_IDS: Record<TabId, string> = {
+  plan: "training-plan-tab",
+  journal: "journal-tab",
+  progress: "progress-tab",
+};
+
 const TABS: { id: TabId; label: string; icon: LucideIcon }[] = [
   { id: "plan", label: "Training Plan", icon: Calendar },
   { id: "journal", label: "Journal", icon: BookOpen },
@@ -103,7 +124,6 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
       : "plan";
 
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
-  const [showJournalEntry, setShowJournalEntry] = useState(false);
   const [showJournalModal, setShowJournalModal] = useState(false);
   const [showViewEntryModal, setShowViewEntryModal] = useState(false);
   const [selectedJournalEntry, setSelectedJournalEntry] =
@@ -132,6 +152,15 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
     },
   );
   const [showContributeBanner, setShowContributeBanner] = useState(false);
+
+  const dismissContributeBanner = () => {
+    try {
+      localStorage.setItem("coach-contribute-banner-dismissed", "true");
+    } catch {
+      // Remembering the dismissal is a convenience, not a requirement.
+    }
+    setContributeBannerDismissed(true);
+  };
 
   // Determine which tour steps to show based on user state
   const hasSubmittedVolunteer = useQuery(
@@ -431,90 +460,46 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
           {showContributeBanner &&
             !contributeBannerDismissed &&
             !hasSubmittedVolunteer && (
-              <div className="timer-card relative border-(--primary)/30">
-                <button
-                  onClick={() => {
-                    localStorage.setItem(
-                      "coach-contribute-banner-dismissed",
-                      "true",
-                    );
-                    setContributeBannerDismissed(true);
-                  }}
-                  className="hidden sm:flex absolute top-3 right-3 p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
-                  aria-label="Dismiss banner"
-                  title="Dismiss banner"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4 sm:pr-10">
-                  <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
-                    <div className="flex-1 min-w-0 text-center sm:text-left">
-                      <h3 className="text-sm font-semibold text-(--text-primary) mb-0.5 font-statement">
-                        Want to help improve the Coach?
-                      </h3>
-                      <p className="text-xs text-(--text-secondary)">
-                        Join our contributor program and help make training
-                        plans even better for the cubing community!
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:shrink-0">
-                    <Link
-                      href="/cube-lab/coach/contribute"
-                      className="block w-full sm:w-auto text-center px-4 py-2 text-sm font-medium bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
-                    >
-                      Learn More
-                    </Link>
-                    {/* Dismiss button shown on mobile only */}
-                    <button
-                      onClick={() => {
-                        localStorage.setItem(
-                          "coach-contribute-banner-dismissed",
-                          "true",
-                        );
-                        setContributeBannerDismissed(true);
-                      }}
-                      className="sm:hidden w-full px-4 py-2 text-sm font-medium text-(--text-secondary) bg-(--surface) border border-(--border) rounded-lg hover:bg-(--surface-elevated) transition-colors"
-                    >
-                      Dismiss
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <CalloutCard
+                icon={<HeartHandshake />}
+                title="Want to help improve the Coach?"
+                description="Join our contributor program and help make training plans even better for the cubing community!"
+                adornment={
+                  <IconButton
+                    size="sm"
+                    aria-label="Dismiss banner"
+                    icon={<X />}
+                    onClick={dismissContributeBanner}
+                  />
+                }
+                action={
+                  <ButtonLink
+                    href="/cube-lab/coach/contribute"
+                    className="w-full sm:w-auto"
+                  >
+                    Learn More
+                  </ButtonLink>
+                }
+              />
             )}
 
           {/* Tabs */}
-          <div
-            className="flex gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border)"
-            data-tour="coach-tabs"
-          >
-            {TABS.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              const tourId =
-                tab.id === "plan"
-                  ? "training-plan-tab"
-                  : tab.id === "journal"
-                    ? "journal-tab"
-                    : "progress-tab";
-
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => handleTabChange(tab.id)}
-                  data-tour={tourId}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium transition-all ${
-                    isActive
-                      ? "bg-(--primary) text-white shadow-sm"
-                      : "text-(--text-secondary) hover:bg-(--surface)"
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="hidden sm:inline">{tab.label}</span>
-                </button>
-              );
-            })}
+          <div data-tour="coach-tabs">
+            <Tabs
+              aria-label="Coach sections"
+              fullWidth
+              value={activeTab}
+              onChange={handleTabChange}
+              items={TABS.map((tab) => {
+                const Icon = tab.icon;
+                return {
+                  value: tab.id,
+                  icon: <Icon className="w-4 h-4" />,
+                  label: tab.label,
+                  rootProps: { "data-tour": TAB_TOUR_IDS[tab.id] },
+                };
+              })}
+            />
           </div>
 
           {/* Tab Content */}
@@ -535,22 +520,23 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
                 ) : (
                   /* Only show "Generate Plan" when query has completed AND returned no plan */
                   !isActivePlanLoading && (
-                    <div className="timer-card text-center py-12">
-                      <Calendar className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
-                      <h3 className="font-semibold text-(--text-primary) mb-2">
-                        No Active Training Plan
-                      </h3>
-                      <p className="text-sm text-(--text-muted) mb-4">
-                        Generate your first weekly training plan to get started.
-                      </p>
-                      <button
-                        onClick={handleGenerateNewWeek}
-                        disabled={isGeneratingPlan}
-                        className="px-6 py-2.5 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors disabled:opacity-50"
-                      >
-                        {isGeneratingPlan ? "Generating..." : "Generate Plan"}
-                      </button>
-                    </div>
+                    <Card variant="static">
+                      <EmptyState
+                        size="page"
+                        icon={<Calendar />}
+                        title="No Active Training Plan"
+                        description="Generate your first weekly training plan to get started."
+                        action={
+                          <Button
+                            loading={isGeneratingPlan}
+                            loadingText="Generating…"
+                            onClick={handleGenerateNewWeek}
+                          >
+                            Generate Plan
+                          </Button>
+                        }
+                      />
+                    </Card>
                   )
                 )}
               </div>
@@ -558,30 +544,18 @@ export default function CoachDashboard({ userId }: CoachDashboardProps) {
 
             {activeTab === "journal" && (
               <div>
-                {showJournalEntry ? (
-                  <div className="timer-card">
-                    <CoachJournalEntry
-                      userId={userId}
-                      profileId={profile._id}
-                      planId={activePlan?._id}
-                      onSave={() => setShowJournalEntry(false)}
-                      onClose={() => setShowJournalEntry(false)}
-                    />
-                  </div>
-                ) : (
-                  <MemoizedCoachJournalCalendar
-                    key={journalRefreshKey}
-                    userId={userId}
-                    onAddEntry={(date) => {
-                      setSelectedJournalDate(date.getTime());
-                      setShowJournalModal(true);
-                    }}
-                    onViewEntry={(entry) => {
-                      setSelectedJournalEntry(entry as JournalEntry);
-                      setShowViewEntryModal(true);
-                    }}
-                  />
-                )}
+                <MemoizedCoachJournalCalendar
+                  key={journalRefreshKey}
+                  userId={userId}
+                  onAddEntry={(date) => {
+                    setSelectedJournalDate(date.getTime());
+                    setShowJournalModal(true);
+                  }}
+                  onViewEntry={(entry) => {
+                    setSelectedJournalEntry(entry as JournalEntry);
+                    setShowViewEntryModal(true);
+                  }}
+                />
               </div>
             )}
 

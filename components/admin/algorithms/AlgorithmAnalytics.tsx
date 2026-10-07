@@ -28,6 +28,7 @@ import {
   Activity,
   LucideIcon,
 } from "lucide-react";
+import { useThemeColors } from "@/lib/hooks/useThemeColors";
 import { CollapsibleCard, exportToJSON, exportToCSV } from "./shared";
 
 // Register ChartJS components
@@ -65,35 +66,6 @@ function useEffectiveTheme() {
   return theme;
 }
 
-// Hook to get computed primary color for charts
-function usePrimaryColor() {
-  const [primaryColor, setPrimaryColor] = useState("rgba(168, 85, 247, 1)");
-
-  useEffect(() => {
-    const getColor = () => {
-      if (typeof window === "undefined") return;
-      const computed = getComputedStyle(document.documentElement)
-        .getPropertyValue("--primary")
-        .trim();
-      if (computed) {
-        setPrimaryColor(computed);
-      }
-    };
-
-    getColor();
-
-    const observer = new MutationObserver(getColor);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme", "data-color-scheme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return primaryColor;
-}
-
 // ANALYTICS STAT CARD (with icon)
 
 interface AnalyticsStatCardProps {
@@ -114,7 +86,7 @@ function AnalyticsStatCard({
   subValue,
 }: AnalyticsStatCardProps) {
   return (
-    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <p className="text-xs sm:text-sm text-(--text-muted) font-inter truncate">
@@ -129,7 +101,9 @@ function AnalyticsStatCard({
             </p>
           )}
         </div>
-        <div className={`p-2 ${iconBgColor} rounded-lg shrink-0`}>
+        <div
+          className={`p-2 ${iconBgColor} rounded-(--radius-control) shrink-0`}
+        >
           <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${iconColor}`} />
         </div>
       </div>
@@ -192,7 +166,7 @@ export function AlgorithmAnalytics() {
   );
 
   const effectiveTheme = useEffectiveTheme();
-  const primaryColor = usePrimaryColor();
+  const primaryColor = useThemeColors()["--primary"];
   const isLight = effectiveTheme === "light";
   const textColor = isLight
     ? "rgba(17, 24, 39, 0.8)"
@@ -379,7 +353,7 @@ export function AlgorithmAnalytics() {
           {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="h-20 bg-(--surface-elevated) rounded-xl animate-pulse border border-(--border)"
+              className="h-20 bg-(--surface-elevated) rounded-(--radius-card) animate-pulse border border-(--border)"
             />
           ))}
         </div>
@@ -394,7 +368,7 @@ export function AlgorithmAnalytics() {
         <button
           onClick={handleExportJSON}
           disabled={!exportData}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter disabled:opacity-50"
         >
           <Download className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Export All (JSON)</span>
@@ -403,7 +377,7 @@ export function AlgorithmAnalytics() {
         <button
           onClick={handleExportSetsCSV}
           disabled={!exportData}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter disabled:opacity-50"
         >
           <Download className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Sets CSV</span>
@@ -412,7 +386,7 @@ export function AlgorithmAnalytics() {
         <button
           onClick={handleExportCasesCSV}
           disabled={!exportData}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter disabled:opacity-50"
         >
           <Download className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Cases CSV</span>
@@ -421,7 +395,7 @@ export function AlgorithmAnalytics() {
         <button
           onClick={handleExportAlgorithmsCSV}
           disabled={!exportData}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter disabled:opacity-50"
         >
           <Download className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Algorithms CSV</span>
@@ -435,30 +409,30 @@ export function AlgorithmAnalytics() {
           title="Total Sets"
           value={analytics.totalSets}
           icon={BookOpen}
-          iconColor="text-blue-500"
-          iconBgColor="bg-blue-500/10"
+          iconColor="text-(--info)"
+          iconBgColor="bg-(--info)/10"
           subValue={`${analytics.publishedSets} published, ${analytics.draftSets} drafts`}
         />
         <AnalyticsStatCard
           title="Total Cases"
           value={analytics.totalCases}
           icon={Layers}
-          iconColor="text-purple-500"
-          iconBgColor="bg-purple-500/10"
+          iconColor="text-(--accent)"
+          iconBgColor="bg-(--accent)/10"
         />
         <AnalyticsStatCard
           title="Total Algorithms"
           value={analytics.totalAlgorithms}
           icon={FileText}
-          iconColor="text-green-500"
-          iconBgColor="bg-green-500/10"
+          iconColor="text-(--success)"
+          iconBgColor="bg-(--success)/10"
         />
         <AnalyticsStatCard
           title="Unique Learners"
           value={analytics.uniqueLearners}
           icon={Users}
-          iconColor="text-yellow-500"
-          iconBgColor="bg-yellow-500/10"
+          iconColor="text-(--warning)"
+          iconBgColor="bg-(--warning)/10"
         />
       </div>
 
@@ -468,15 +442,15 @@ export function AlgorithmAnalytics() {
           title="Total Progress"
           value={analytics.totalProgressRecords}
           icon={Target}
-          iconColor="text-cyan-500"
-          iconBgColor="bg-cyan-500/10"
+          iconColor="text-(--primary)"
+          iconBgColor="bg-(--primary)/10"
         />
         <AnalyticsStatCard
           title="Avg Accuracy"
           value={`${analytics.avgAccuracy.toFixed(1)}%`}
           icon={CheckCircle2}
-          iconColor="text-emerald-500"
-          iconBgColor="bg-emerald-500/10"
+          iconColor="text-(--success)"
+          iconBgColor="bg-(--success)/10"
         />
         <AnalyticsStatCard
           title="Avg Recognition"
@@ -486,15 +460,15 @@ export function AlgorithmAnalytics() {
               : "N/A"
           }
           icon={Clock}
-          iconColor="text-orange-500"
-          iconBgColor="bg-orange-500/10"
+          iconColor="text-(--warning)"
+          iconBgColor="bg-(--warning)/10"
         />
         <AnalyticsStatCard
           title="Practice Sessions"
           value={analytics.totalSessions}
           icon={Activity}
-          iconColor="text-pink-500"
-          iconBgColor="bg-pink-500/10"
+          iconColor="text-(--accent)"
+          iconBgColor="bg-(--accent)/10"
           subValue={`${analytics.sessionsThisWeek} this week`}
         />
       </div>
@@ -529,25 +503,25 @@ export function AlgorithmAnalytics() {
               label="New"
               value={analytics.stageDistribution.new}
               total={analytics.totalProgressRecords}
-              color="bg-gray-500"
+              color="bg-(--border)"
             />
             <AnalyticsProgressBar
               label="Learning"
               value={analytics.stageDistribution.learning}
               total={analytics.totalProgressRecords}
-              color="bg-yellow-500"
+              color="bg-(--warning)"
             />
             <AnalyticsProgressBar
               label="Reviewing"
               value={analytics.stageDistribution.reviewing}
               total={analytics.totalProgressRecords}
-              color="bg-blue-500"
+              color="bg-(--info)"
             />
             <AnalyticsProgressBar
               label="Mastered"
               value={analytics.stageDistribution.mastered}
               total={analytics.totalProgressRecords}
-              color="bg-green-500"
+              color="bg-(--success)"
             />
           </div>
         </CollapsibleCard>

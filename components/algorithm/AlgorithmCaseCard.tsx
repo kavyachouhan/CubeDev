@@ -47,25 +47,25 @@ export default function AlgorithmCaseCard({
 
   const stageColors = {
     new: "border-(--border)",
-    learning: "border-yellow-500/50",
-    reviewing: "border-blue-500/50",
-    mastered: "border-green-500/50",
+    learning: "border-(--warning)/50",
+    reviewing: "border-(--primary)/50",
+    mastered: "border-(--success)/50",
   };
 
   const stageBadges = {
     new: <span className="text-xs text-(--text-muted)">Not Learned</span>,
     learning: (
-      <span className="text-xs px-2 py-1 bg-yellow-500/10 text-yellow-500 rounded">
+      <span className="text-xs px-2 py-1 bg-(--warning)/10 text-(--warning) rounded">
         Learning
       </span>
     ),
     reviewing: (
-      <span className="text-xs px-2 py-1 bg-blue-500/10 text-blue-500 rounded">
+      <span className="text-xs px-2 py-1 bg-(--primary)/10 text-(--primary) rounded">
         Reviewing
       </span>
     ),
     mastered: (
-      <span className="text-xs px-2 py-1 bg-green-500/10 text-green-500 rounded flex items-center gap-1">
+      <span className="text-xs px-2 py-1 bg-(--success)/10 text-(--success) rounded flex items-center gap-1">
         <Star className="w-3 h-3" />
         Mastered
       </span>
@@ -93,7 +93,7 @@ export default function AlgorithmCaseCard({
   return (
     <Link href={`/cube-lab/algorithm-trainer/cases/${caseSlug}`}>
       <div
-        className={`p-4 bg-(--surface) border-2 ${stageColors[learningStage]} rounded-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer`}
+        className={`p-4 bg-(--surface) border-2 ${stageColors[learningStage]} rounded-(--radius-control) hover:scale-[1.02] transition-all duration-200 cursor-pointer`}
       >
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
@@ -106,7 +106,7 @@ export default function AlgorithmCaseCard({
 
           <div className="flex items-center gap-2">
             {isDue && (
-              <div className="px-2 py-1 bg-red-500/10 border border-red-500/20 rounded text-xs text-red-500 font-medium">
+              <div className="px-2 py-1 bg-(--error)/10 border border-(--error)/25 rounded text-xs text-(--error) font-medium">
                 Due
               </div>
             )}
@@ -124,7 +124,7 @@ export default function AlgorithmCaseCard({
                   key={i}
                   className={`w-3 h-3 ${
                     i < difficultyStars
-                      ? "fill-yellow-500 text-yellow-500"
+                      ? "fill-(--warning) text-(--warning)"
                       : "text-(--border)"
                   }`}
                 />
@@ -156,10 +156,10 @@ export default function AlgorithmCaseCard({
                   reviewCount === 0
                     ? "text-(--text-muted)"
                     : accuracyRate >= 90
-                      ? "text-green-500"
+                      ? "text-(--success)"
                       : accuracyRate >= 70
-                        ? "text-yellow-500"
-                        : "text-red-500"
+                        ? "text-(--warning)"
+                        : "text-(--error)"
                 }`}
               >
                 {reviewCount === 0 ? "N/A" : `${Math.round(accuracyRate)}%`}
@@ -174,7 +174,7 @@ export default function AlgorithmCaseCard({
             <button
               onClick={handleMarkAsLearned}
               disabled={isMarking}
-              className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium text-(--primary) bg-(--primary)/10 hover:bg-(--primary)/20 border border-(--primary)/20 rounded-lg transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium text-(--primary) bg-(--primary)/10 hover:bg-(--primary)/20 border border-(--primary)/20 rounded-(--radius-control) transition-colors disabled:opacity-50"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               {isMarking ? "Marking..." : "Already Know This"}
@@ -192,7 +192,7 @@ export default function AlgorithmCaseCard({
                 <span
                   className={
                     isDue
-                      ? "text-red-500 font-medium"
+                      ? "text-(--error) font-medium"
                       : "text-(--text-primary)"
                   }
                 >

@@ -228,17 +228,25 @@ export const getReminderRunMetricsLogs = query({
     type: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    let logs = await ctx.db
+    // Take only what the caller asked for. Collecting the whole table and
+    // slicing afterwards breaks past ~32k rows, which this table reaches
+    // because every cron run appends to it.
+    const limit = args.limit ?? 50;
+
+    if (args.type && args.type !== "all") {
+      const type = args.type;
+      return await ctx.db
+        .query("reminderRunMetrics")
+        .withIndex("by_type_run_at", (q) => q.eq("type", type))
+        .order("desc")
+        .take(limit);
+    }
+
+    return await ctx.db
       .query("reminderRunMetrics")
       .withIndex("by_run_at")
       .order("desc")
-      .collect();
-
-    if (args.type && args.type !== "all") {
-      logs = logs.filter((log) => log.type === args.type);
-    }
-
-    return logs.slice(0, args.limit ?? 50);
+      .take(limit);
   },
 });
 

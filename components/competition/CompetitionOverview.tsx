@@ -35,6 +35,9 @@ import { WCA_EVENTS, WCACompetition } from "./CompetitionBrowser";
 import InspectionViolationTrainer from "./InspectionViolationTrainer";
 import JudgeErrorSimulator from "./JudgeErrorSimulator";
 import MockSchedule from "./MockSchedule";
+import { Badge } from "@/components/ui/Badge";
+import { Button, ButtonLink } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   CompetitionOverviewSkeleton,
   CompetitionEventsTabSkeleton,
@@ -298,13 +301,12 @@ export default function CompetitionOverview() {
           <p className="text-(--text-muted) mb-4">
             {error || "The competition could not be loaded."}
           </p>
-          <Link
+          <ButtonLink
             href="/cube-lab/competitions"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg"
+            iconLeft={<ArrowLeft className="w-4 h-4" />}
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Competitions
-          </Link>
+            Back to competitions
+          </ButtonLink>
         </div>
       </div>
     );
@@ -381,7 +383,7 @@ export default function CompetitionOverview() {
                   href={competition.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-3 py-2 text-sm text-(--primary) border border-(--primary) rounded-lg hover:bg-(--primary)/10 transition-colors w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 px-3 py-2 text-sm text-(--primary) border border-(--primary) rounded-(--radius-control) hover:bg-(--primary)/10 transition-colors w-full sm:w-auto"
                 >
                   <ExternalLink className="w-4 h-4" />
                   <span>View on WCA</span>
@@ -461,7 +463,7 @@ export default function CompetitionOverview() {
                   Competition Details
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                       Date
                     </div>
@@ -477,7 +479,7 @@ export default function CompetitionOverview() {
                       )}
                     </div>
                   </div>
-                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                       Location
                     </div>
@@ -486,7 +488,7 @@ export default function CompetitionOverview() {
                     </div>
                   </div>
                   {competition.venue && (
-                    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg sm:col-span-2">
+                    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) sm:col-span-2">
                       <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                         Venue
                       </div>
@@ -496,7 +498,7 @@ export default function CompetitionOverview() {
                     </div>
                   )}
                   {competition.competitor_limit && (
-                    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg">
+                    <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                       <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                         Competitor Limit
                       </div>
@@ -505,7 +507,7 @@ export default function CompetitionOverview() {
                       </div>
                     </div>
                   )}
-                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <div className="text-xs sm:text-sm text-(--text-muted) mb-1">
                       Number of Events
                     </div>
@@ -542,9 +544,9 @@ export default function CompetitionOverview() {
                   return event ? (
                     <div
                       key={eventId}
-                      className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border border-(--border) bg-(--surface-elevated) hover:border-(--primary)/50 transition-colors"
+                      className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) hover:border-(--primary)/50 transition-colors"
                     >
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg bg-(--surface)">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-(--radius-control) bg-(--surface)">
                         <Image
                           src={event.icon}
                           alt={event.name}
@@ -561,7 +563,7 @@ export default function CompetitionOverview() {
                 })}
               </div>
 
-              <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                 <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
                   <Timer className="w-4 h-4 text-(--primary)" />
                   Event Format Information
@@ -583,7 +585,7 @@ export default function CompetitionOverview() {
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                   <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
                     <Clock className="w-4 h-4 text-(--warning)" />
                     Time Limits
@@ -595,7 +597,7 @@ export default function CompetitionOverview() {
                   </p>
                 </div>
 
-                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                   <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
                     <Target className="w-4 h-4 text-(--primary)" />
                     Cutoffs
@@ -607,7 +609,7 @@ export default function CompetitionOverview() {
                   </p>
                 </div>
 
-                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                   <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
                     <Zap className="w-4 h-4 text-(--success)" />
                     Inspection
@@ -619,7 +621,7 @@ export default function CompetitionOverview() {
                   </p>
                 </div>
 
-                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
                   <h4 className="text-sm sm:text-base font-medium text-(--text-primary) mb-2 flex items-center gap-2">
                     <Trophy className="w-4 h-4 text-(--warning)" />
                     Advancement
@@ -649,26 +651,25 @@ export default function CompetitionOverview() {
           {/* My Simulations Tab */}
           {activeTab === "history" && (
             <div className="space-y-4 sm:space-y-6">
-              <h3 className="text-base sm:text-lg font-bold text-(--text-primary)">
+              <h3 className="type-card-title wrap-break-word">
                 My Simulations for {competition.name}
               </h3>
 
               {!simulations || simulations.length === 0 ? (
-                <div className="timer-card text-center py-12">
-                  <History className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
-                  <h4 className="text-lg font-medium text-(--text-primary) mb-2">
-                    No Simulations Yet
-                  </h4>
-                  <p className="text-sm text-(--text-muted) mb-4">
-                    Start a simulation to practice for this competition.
-                  </p>
-                  <button
-                    onClick={handleSimulate}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
-                  >
-                    <Play className="w-4 h-4" />
-                    Start Simulation
-                  </button>
+                <div className="timer-card">
+                  <EmptyState
+                    icon={<History />}
+                    title="No Simulations Yet"
+                    description="Start a simulation to practice for this competition."
+                    action={
+                      <Button
+                        onClick={handleSimulate}
+                        iconLeft={<Play className="w-4 h-4" />}
+                      >
+                        Start simulation
+                      </Button>
+                    }
+                  />
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -689,25 +690,26 @@ export default function CompetitionOverview() {
                       <Link
                         key={sim._id}
                         href={`/cube-lab/competitions/${competitionId}/simulate/${sim._id}`}
-                        className="block p-4 rounded-lg border border-(--border) hover:border-(--primary)/50 bg-(--surface) hover:bg-(--surface-elevated) transition-all"
+                        className="block p-4 rounded-(--radius-control) border border-(--border) hover:border-(--primary)/50 bg-(--surface) hover:bg-(--surface-elevated) transition-all"
                       >
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                        <div className="flex flex-col gap-2 mb-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge
+                              shape="pill"
+                              tone={
                                 sim.status === "completed"
-                                  ? "bg-(--success)/10 text-(--success)"
+                                  ? "success"
                                   : sim.status === "in-progress"
-                                    ? "bg-(--warning)/10 text-(--warning)"
-                                    : "bg-(--text-muted)/10 text-(--text-muted)"
-                              }`}
+                                    ? "warning"
+                                    : "neutral"
+                              }
                             >
                               {sim.status === "completed"
                                 ? "Completed"
                                 : sim.status === "in-progress"
                                   ? "In Progress"
                                   : "Abandoned"}
-                            </span>
+                            </Badge>
                             <span className="text-xs text-(--text-muted)">
                               {new Date(sim.startedAt).toLocaleDateString(
                                 "en-US",
@@ -833,21 +835,21 @@ export default function CompetitionOverview() {
           <div className="timer-card border-(--primary)/20">
             <div className="flex flex-col gap-4">
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-(--text-primary)">
+                <h3 className="type-card-title">
                   Practice for this Competition
                 </h3>
-                <p className="text-xs sm:text-sm text-(--text-muted) mt-1">
+                <p className="type-caption mt-1">
                   Simulate the competition atmosphere with configurable
                   pressure, noise, and more.
                 </p>
               </div>
-              <button
+              <Button
                 onClick={handleSimulate}
-                className="flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto px-6 py-3 sm:py-4 bg-(--primary) text-white text-sm sm:text-lg font-bold rounded-lg sm:rounded-xl hover:bg-(--primary-hover) transition-colors"
+                className="w-full sm:w-auto"
+                iconLeft={<Play className="w-4 h-4" />}
               >
-                <Play className="w-5 h-5 sm:w-6 sm:h-6" />
-                Simulate Competition
-              </button>
+                Simulate competition
+              </Button>
             </div>
           </div>
         )}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Clock, Eye, Zap, TrendingUp, Award, Target } from "lucide-react";
+import { Award, Clock, Eye, Lightbulb, Target, TrendingUp, Zap } from "lucide-react";
 
 interface RecognitionMetrics {
   totalCases: number;
@@ -89,11 +89,11 @@ export default function RecognitionMetricsDashboard({
         {/* Average Recognition Time */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-blue-500/10 rounded-lg">
-              <Eye className="w-4 h-4 text-blue-500" />
+            <div className="p-2 bg-(--primary)/10 rounded-(--radius-control)">
+              <Eye className="w-4 h-4 text-(--primary)" />
             </div>
           </div>
-          <div className="text-xl font-bold text-blue-500 font-statement">
+          <div className="text-xl font-bold text-(--primary) font-statement">
             {formatTime(metrics.averageRecognitionTime)}
           </div>
           <div className="text-xs text-(--text-muted) mt-1">
@@ -102,7 +102,7 @@ export default function RecognitionMetricsDashboard({
           {trends.recognitionTrend !== 0 && (
             <div
               className={`text-xs mt-1 ${
-                trends.recognitionTrend > 0 ? "text-green-500" : "text-red-500"
+                trends.recognitionTrend > 0 ? "text-(--success)" : "text-(--error)"
               }`}
             >
               {trends.recognitionTrend > 0 ? "↓" : "↑"}{" "}
@@ -114,11 +114,11 @@ export default function RecognitionMetricsDashboard({
         {/* Fastest Recognition */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-green-500/10 rounded-lg">
-              <Zap className="w-4 h-4 text-green-500" />
+            <div className="p-2 bg-(--success)/10 rounded-(--radius-control)">
+              <Zap className="w-4 h-4 text-(--success)" />
             </div>
           </div>
-          <div className="text-xl font-bold text-green-500 font-statement">
+          <div className="text-xl font-bold text-(--success) font-statement">
             {formatTime(metrics.fastestRecognition)}
           </div>
           <div className="text-xs text-(--text-muted) mt-1">Fastest</div>
@@ -127,11 +127,11 @@ export default function RecognitionMetricsDashboard({
         {/* Slowest Recognition */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-orange-500/10 rounded-lg">
-              <Clock className="w-4 h-4 text-orange-500" />
+            <div className="p-2 bg-(--warning)/10 rounded-(--radius-control)">
+              <Clock className="w-4 h-4 text-(--warning)" />
             </div>
           </div>
-          <div className="text-xl font-bold text-orange-500 font-statement">
+          <div className="text-xl font-bold text-(--warning) font-statement">
             {formatTime(metrics.slowestRecognition)}
           </div>
           <div className="text-xs text-(--text-muted) mt-1">Slowest</div>
@@ -140,18 +140,18 @@ export default function RecognitionMetricsDashboard({
         {/* Accuracy Rate */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-purple-500/10 rounded-lg">
-              <Target className="w-4 h-4 text-purple-500" />
+            <div className="p-2 bg-(--accent)/10 rounded-(--radius-control)">
+              <Target className="w-4 h-4 text-(--accent)" />
             </div>
           </div>
-          <div className="text-xl font-bold text-purple-500 font-statement">
+          <div className="text-xl font-bold text-(--accent) font-statement">
             {metrics.accuracyRate.toFixed(0)}%
           </div>
           <div className="text-xs text-(--text-muted) mt-1">Accuracy</div>
           {trends.accuracyTrend !== 0 && (
             <div
               className={`text-xs mt-1 ${
-                trends.accuracyTrend > 0 ? "text-green-500" : "text-red-500"
+                trends.accuracyTrend > 0 ? "text-(--success)" : "text-(--error)"
               }`}
             >
               {trends.accuracyTrend > 0 ? "↑" : "↓"}{" "}
@@ -163,11 +163,11 @@ export default function RecognitionMetricsDashboard({
         {/* Execution Speed */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-cyan-500/10 rounded-lg">
-              <TrendingUp className="w-4 h-4 text-cyan-500" />
+            <div className="p-2 bg-(--accent)/10 rounded-(--radius-control)">
+              <TrendingUp className="w-4 h-4 text-(--accent)" />
             </div>
           </div>
-          <div className="text-xl font-bold text-cyan-500 font-statement">
+          <div className="text-xl font-bold text-(--accent) font-statement">
             {formatTime(metrics.averageExecutionTime)}
           </div>
           <div className="text-xs text-(--text-muted) mt-1">
@@ -178,11 +178,11 @@ export default function RecognitionMetricsDashboard({
         {/* Mastery Progress */}
         <div className="timer-card">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-yellow-500/10 rounded-lg">
-              <Award className="w-4 h-4 text-yellow-500" />
+            <div className="p-2 bg-(--warning)/10 rounded-(--radius-control)">
+              <Award className="w-4 h-4 text-(--warning)" />
             </div>
           </div>
-          <div className="text-xl font-bold text-yellow-500 font-statement">
+          <div className="text-xl font-bold text-(--warning) font-statement">
             {metrics.mastered}/{metrics.totalCases}
           </div>
           <div className="text-xs text-(--text-muted) mt-1">Mastered</div>
@@ -210,7 +210,7 @@ export default function RecognitionMetricsDashboard({
             </div>
             <div className="h-3 bg-(--surface-elevated) rounded-full overflow-hidden">
               <div
-                className="h-full bg-blue-500 transition-all duration-300"
+                className="h-full bg-(--primary) transition-all duration-300"
                 style={{
                   width: `${Math.min(
                     (metrics.averageRecognitionTime /
@@ -236,7 +236,7 @@ export default function RecognitionMetricsDashboard({
             </div>
             <div className="h-3 bg-(--surface-elevated) rounded-full overflow-hidden">
               <div
-                className="h-full bg-cyan-500 transition-all duration-300"
+                className="h-full bg-(--accent) transition-all duration-300"
                 style={{
                   width: `${Math.min(
                     (metrics.averageExecutionTime /
@@ -267,9 +267,10 @@ export default function RecognitionMetricsDashboard({
       </div>
 
       {/* Tips for Improvement */}
-      <div className="timer-card bg-(--primary)/5 border border-(--primary)/20">
-        <h3 className="text-lg font-bold text-(--text-primary) font-statement mb-3">
-          💡 Improvement Tips
+      <div className="timer-card card-static bg-(--primary)/5 border-(--primary)/20!">
+        <h3 className="type-card-title flex items-center gap-2 mb-3">
+          <Lightbulb className="w-5 h-5 text-(--primary)" aria-hidden />
+          Improvement Tips
         </h3>
         <ul className="space-y-2 text-sm text-(--text-secondary)">
           {metrics.averageRecognitionTime > 3000 && (

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useDatabaseSync } from "./useDatabaseSync";
 import { useLocalStorageManager } from "./useLocalStorageManager";
 
-interface Session {
+export interface Session {
   id: string;
   name: string;
   event: string;

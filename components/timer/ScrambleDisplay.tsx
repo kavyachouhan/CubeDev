@@ -1,14 +1,10 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import {
-  RotateCcw,
-  Eye,
-  EyeOff,
-  ChevronDown,
-  ChevronRight,
-  ChevronLeft,
-} from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { RotateCcw, ChevronRight, ChevronLeft } from "lucide-react";
+import { cx } from "@/lib/cx";
+import { CollapsibleCard, useCollapsed } from "@/components/ui/Card";
+import { IconButton } from "@/components/ui/IconButton";
 
 interface ScrambleDisplayProps {
   scramble: string;
@@ -17,37 +13,19 @@ interface ScrambleDisplayProps {
   onActiveScrambleChange?: (scramble: string) => void;
 }
 
-// Persistent boolean that reads/writes localStorage on first render
-function usePersistentBool(key: string, defaultValue: boolean) {
-  const [state, setState] = useState<boolean>(() => {
-    if (typeof window === "undefined") return defaultValue;
-    try {
-      const raw = localStorage.getItem(key);
-      return raw === null ? defaultValue : JSON.parse(raw);
-    } catch {
-      return defaultValue;
-    }
-  });
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(state));
-    } catch {}
-  }, [key, state]);
-  return [state, setState] as const;
-}
-
-export default function ScrambleDisplay({
+/**
+ * Scramble state: which scramble is shown, and which move is being previewed.
+ *
+ * Split out from the card so a layout can place the moves and the prev/next
+ * controls wherever it likes while sharing one source of truth.
+ */
+export function useScramble({
   scramble,
   onNewScramble,
   onPartialScrambleHover,
   onActiveScrambleChange,
 }: ScrambleDisplayProps) {
-  const [isExpanded, setIsExpanded] = usePersistentBool(
-    "cubelab-scramble-display-expanded",
-    true
-  );
-
-  // State to track hovered/tapped move for partial scramble preview
+  // Hovered/tapped move drives the partial scramble preview
   const [hoveredMoveIndex, setHoveredMoveIndex] = useState<number | null>(null);
   const [tappedMoveIndex, setTappedMoveIndex] = useState<number | null>(null);
 
@@ -61,31 +39,26 @@ export default function ScrambleDisplay({
     if (onActiveScrambleChange && scramble) {
       onActiveScrambleChange(scramble);
     }
-  }, []); 
+  }, []);
 
   // Handle scramble prop changes
   useEffect(() => {
     // If we're viewing previous scramble and a new scramble comes in,
-    // that means a solve just completed with the previous scramble
-    // The new scramble should replace the current scramble, and we should move to it
+    // that means a solve just completed with the previous scramble.
+    // The new scramble should replace the current scramble, and we move to it.
     if (!isAtCurrent && scramble !== currentScramble) {
-      // Update scrambles
       setCurrentScramble(scramble);
-      // Previous scramble stays the same
-      // Move to the current (new) scramble automatically
+      // Previous scramble stays the same; jump forward to the new one
       setIsAtCurrent(true);
-      // Notify parent of the new active scramble
       if (onActiveScrambleChange) {
         onActiveScrambleChange(scramble);
       }
       if (onPartialScrambleHover) {
         onPartialScrambleHover(scramble);
       }
-    }
-    else if (isAtCurrent && scramble !== currentScramble) {
+    } else if (isAtCurrent && scramble !== currentScramble) {
       setPreviousScramble(currentScramble);
       setCurrentScramble(scramble);
-      // Notify parent of the new active scramble
       if (onActiveScrambleChange) {
         onActiveScrambleChange(scramble);
       }
@@ -98,7 +71,6 @@ export default function ScrambleDisplay({
     onPartialScrambleHover,
   ]);
 
-  // Handle going to previous scramble
   const handlePrevious = () => {
     if (previousScramble) {
       setIsAtCurrent(false);
@@ -111,10 +83,9 @@ export default function ScrambleDisplay({
     }
   };
 
-  // Handle going to next scramble or generating new scramble
   const handleNext = () => {
     if (!isAtCurrent) {
-      // Go to current scramble
+      // Back to the current scramble
       setIsAtCurrent(true);
       if (onPartialScrambleHover) {
         onPartialScrambleHover(currentScramble);
@@ -123,121 +94,30 @@ export default function ScrambleDisplay({
         onActiveScrambleChange(currentScramble);
       }
     } else {
-      // Generate new scramble
       onNewScramble();
     }
   };
 
-  // Determine which scramble to display
   const displayScramble = isAtCurrent
     ? currentScramble
     : previousScramble || currentScramble;
 
-  // Parsed moves
   const moves = useMemo(
     () => displayScramble.trim().split(/\s+/).filter(Boolean),
-    [displayScramble]
+    [displayScramble],
   );
 
-  // State to track if body is visible (for accessibility and to avoid layout shift)
-  const [isBodyVisible, setIsBodyVisible] = useState<boolean>(isExpanded);
-
-  // Refs to measure heights
-  const cardRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const bodyRef = useRef<HTMLDivElement>(null);
-
-  // Max height for smooth transition
-  const [maxH, setMaxH] = useState<number>(0);
-
-  // Function to measure heights
-  const measureHeights = useMemo(
-    () => () => {
-      const card = cardRef.current;
-      const header = headerRef.current;
-      const body = bodyRef.current;
-      if (!card || !header || !body) return { collapsed: 0, expanded: 0 };
-
-      const styles = getComputedStyle(card);
-      const padY =
-        parseFloat(styles.paddingTop || "0") +
-        parseFloat(styles.paddingBottom || "0");
-      const headerH = header.offsetHeight;
-      const bodyH = body.scrollHeight; // use scrollHeight to get full height even if not visible
-
-      return {
-        collapsed: Math.ceil(headerH + padY),
-        expanded: Math.ceil(headerH + bodyH + padY),
-      };
-    },
-    []
-  );
-
-  // Initial layout
-  useLayoutEffect(() => {
-    const { collapsed, expanded } = measureHeights();
-    setMaxH(isExpanded ? expanded : collapsed);
-    setIsBodyVisible(isExpanded);
-  }, []);
-
-  // Adjust max height on expand/collapse or content change
-  useEffect(() => {
-    const apply = () => {
-      const { collapsed, expanded } = measureHeights();
-      setMaxH(isExpanded ? expanded : collapsed);
-    };
-    apply();
-
-    const ro = new ResizeObserver(apply);
-    if (cardRef.current) ro.observe(cardRef.current);
-    if (bodyRef.current) ro.observe(bodyRef.current);
-    if (headerRef.current) ro.observe(headerRef.current);
-    window.addEventListener("resize", apply);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", apply);
-    };
-  }, [isExpanded, scramble, measureHeights]);
-
-  // After expand transition ends, show body
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    const onEnd = (e: TransitionEvent) => {
-      if (e.propertyName !== "max-height") return;
-      if (isExpanded) setIsBodyVisible(true);
-    };
-    el.addEventListener("transitionend", onEnd);
-    return () => el.removeEventListener("transitionend", onEnd);
-  }, [isExpanded]);
-
-  // Toggle expand/collapse
-  const toggleExpanded = () => {
-    if (isExpanded) {
-      // collapsing: hide content first, then shrink
-      setIsBodyVisible(false);
-      setIsExpanded(false);
-    } else {
-      // expanding: grow first, then show content
-      setIsExpanded(true);
-    }
-  };
-
-  // Handlers for hovering/tapping moves
   const handleMoveHover = (index: number) => {
     // Don't override tap state with hover on mobile
     if (tappedMoveIndex !== null) return;
 
     setHoveredMoveIndex(index);
     if (onPartialScrambleHover) {
-      const partialScramble = moves.slice(0, index + 1).join(" ");
-      onPartialScrambleHover(partialScramble);
+      onPartialScrambleHover(moves.slice(0, index + 1).join(" "));
     }
   };
 
   const handleMoveLeave = () => {
-    // Don't override tap state with hover on mobile
     if (tappedMoveIndex !== null) return;
 
     setHoveredMoveIndex(null);
@@ -248,12 +128,11 @@ export default function ScrambleDisplay({
 
   const handleMoveTap = (
     index: number,
-    e: React.MouseEvent | React.TouchEvent
+    e: React.MouseEvent | React.TouchEvent,
   ) => {
-    // Prevent event from bubbling to timer
+    // Never let a move tap reach the timer
     e.stopPropagation();
 
-    // Toggle tap state
     if (tappedMoveIndex === index) {
       setTappedMoveIndex(null);
       setHoveredMoveIndex(null);
@@ -264,17 +143,15 @@ export default function ScrambleDisplay({
       setTappedMoveIndex(index);
       setHoveredMoveIndex(null);
       if (onPartialScrambleHover) {
-        const partialScramble = moves.slice(0, index + 1).join(" ");
-        onPartialScrambleHover(partialScramble);
+        onPartialScrambleHover(moves.slice(0, index + 1).join(" "));
       }
     }
   };
 
-  // Handlers for background interaction to reset tapped move
   const handleBackgroundInteraction = (
-    e: React.MouseEvent | React.TouchEvent
+    e: React.MouseEvent | React.TouchEvent,
   ) => {
-    // Prevent event from bubbling to timer
+    // Never let a background tap reach the timer
     if (e.target === e.currentTarget && tappedMoveIndex !== null) {
       e.stopPropagation();
       setTappedMoveIndex(null);
@@ -289,146 +166,145 @@ export default function ScrambleDisplay({
     setTappedMoveIndex(null);
     setHoveredMoveIndex(null);
   }, [displayScramble]);
+
+  return {
+    displayScramble,
+    moves,
+    hoveredMoveIndex,
+    tappedMoveIndex,
+    hasPrevious: Boolean(previousScramble),
+    isAtCurrent,
+    handlePrevious,
+    handleNext,
+    handleMoveHover,
+    handleMoveLeave,
+    handleMoveTap,
+    handleBackgroundInteraction,
+  };
+}
+
+export type ScrambleController = ReturnType<typeof useScramble>;
+
+/** The scramble moves, without any card chrome. */
+export function ScrambleBody({
+  controller,
+  className,
+  moveClassName,
+}: {
+  controller: ScrambleController;
+  /** Replaces the default panel surface. */
+  className?: string;
+  /** Replaces the default move sizing. */
+  moveClassName?: string;
+}) {
+  const {
+    displayScramble,
+    moves,
+    hoveredMoveIndex,
+    tappedMoveIndex,
+    handleMoveHover,
+    handleMoveLeave,
+    handleMoveTap,
+    handleBackgroundInteraction,
+  } = controller;
+
   return (
     <div
-      ref={cardRef}
-      className={[
-        "timer-card",
-        "transition-[max-height] duration-300 ease-in-out",
-      ].join(" ")}
-      style={{
-        maxHeight: maxH ? `${maxH}px` : undefined,
-        // Keep hidden during collapse AND during expand animation until reveal
-        overflow: isExpanded && isBodyVisible ? "visible" : "hidden",
-      }}
+      aria-label={`Scramble: ${displayScramble}`}
+      className={
+        className ??
+        "p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)"
+      }
+      onClick={handleBackgroundInteraction}
+      onTouchEnd={handleBackgroundInteraction}
     >
-      {/* Header */}
-      <div
-        ref={headerRef}
-        className={`flex items-center justify-between ${
-          isExpanded ? "mb-4" : "mb-0"
-        }`}
-      >
-        <button
-          onClick={toggleExpanded}
-          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-          title={isExpanded ? "Hide scramble" : "Show scramble"}
-        >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            Scramble
-          </h3>
-          {isExpanded ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          {/* Previous scramble button */}
-          <button
-            onClick={handlePrevious}
-            disabled={!previousScramble}
-            className={`p-1.5 rounded-md transition-colors ${
-              previousScramble
-                ? "text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated)"
-                : "text-(--text-muted) opacity-50 cursor-not-allowed"
-            }`}
-            title={
-              previousScramble
-                ? "Go to previous scramble"
-                : "No previous scramble"
-            }
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center items-center leading-relaxed">
+        {moves.map((move, index) => {
+          const isHovered = hoveredMoveIndex === index;
+          const isTapped = tappedMoveIndex === index;
+          const isActive = isHovered || isTapped;
+          const isBeforeActive =
+            hoveredMoveIndex !== null && index <= hoveredMoveIndex;
+          const isBeforeTapped =
+            tappedMoveIndex !== null && index <= tappedMoveIndex;
 
-          {/* Next/New scramble button */}
-          <button
-            onClick={handleNext}
-            className="p-1.5 text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={
-              isAtCurrent ? "Generate new scramble" : "Go to current scramble"
-            }
-          >
-            {isAtCurrent ? (
-              <RotateCcw className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-
-          {/* Expand/collapse button */}
-          <button
-            onClick={toggleExpanded}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={isExpanded ? "Hide scramble" : "Show scramble"}
-          >
-            {isExpanded ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Body */}
-      <div
-        ref={bodyRef}
-        className={
-          isBodyVisible
-            ? "pb-4"
-            : "invisible pointer-events-none select-none pb-4"
-        }
-        aria-hidden={!isBodyVisible}
-      >
-        <div
-          className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)"
-          onClick={handleBackgroundInteraction}
-          onTouchEnd={handleBackgroundInteraction}
-        >
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center items-center leading-relaxed">
-            {moves.map((move, index) => {
-              const isHovered = hoveredMoveIndex === index;
-              const isTapped = tappedMoveIndex === index;
-              const isActive = isHovered || isTapped;
-              const isBeforeActive =
-                hoveredMoveIndex !== null && index <= hoveredMoveIndex;
-              const isBeforeTapped =
-                tappedMoveIndex !== null && index <= tappedMoveIndex;
-
-              return (
-                <span
-                  key={index}
-                  className={`
-                    text-base sm:text-lg font-mono transition-all duration-200 cursor-pointer
-                    px-1.5 sm:px-2 py-0.5 sm:py-1 rounded select-none
-                    ${
-                      isActive
-                        ? "bg-(--primary) text-white scale-105 sm:scale-110 shadow-md"
-                        : isBeforeActive || isBeforeTapped
-                          ? "text-(--primary) bg-(--surface) font-semibold"
-                          : "text-(--text-primary) hover:text-(--primary) hover:bg-(--surface) active:scale-95"
-                    }
-                  `}
-                  onMouseEnter={() => handleMoveHover(index)}
-                  onMouseLeave={handleMoveLeave}
-                  onClick={(e) => {
-                    handleMoveTap(index, e);
-                  }}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    handleMoveTap(index, e);
-                  }}
-                  title="Hover or tap to preview scramble up to this move"
-                >
-                  {move}
-                </span>
-              );
-            })}
-          </div>
-        </div>
+          return (
+            <span
+              key={index}
+              className={cx(
+                "type-time transition-[color,background-color,transform] duration-(--duration-base) cursor-pointer",
+                "px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-(--radius-badge) select-none",
+                moveClassName ?? "text-base sm:text-lg",
+                isActive
+                  ? "bg-(--primary) text-(--on-primary) scale-105 sm:scale-110"
+                  : isBeforeActive || isBeforeTapped
+                    ? "text-(--primary) bg-(--surface) font-semibold"
+                    : "text-(--text-primary) hover:text-(--primary) hover:bg-(--surface) active:scale-95",
+              )}
+              onMouseEnter={() => handleMoveHover(index)}
+              onMouseLeave={handleMoveLeave}
+              onClick={(e) => {
+                handleMoveTap(index, e);
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                handleMoveTap(index, e);
+              }}
+              title="Hover or tap to preview scramble up to this move"
+            >
+              {move}
+            </span>
+          );
+        })}
       </div>
     </div>
+  );
+}
+
+/** Previous / new scramble buttons. */
+export function ScrambleNavActions({
+  controller,
+  size = "sm",
+}: {
+  controller: ScrambleController;
+  size?: "sm" | "md";
+}) {
+  const { hasPrevious, isAtCurrent, handlePrevious, handleNext } = controller;
+
+  return (
+    <>
+      <IconButton
+        size={size}
+        aria-label="Previous scramble"
+        icon={<ChevronLeft />}
+        onClick={handlePrevious}
+        disabled={!hasPrevious}
+      />
+      <IconButton
+        size={size}
+        aria-label={isAtCurrent ? "New scramble" : "Back to current scramble"}
+        icon={isAtCurrent ? <RotateCcw /> : <ChevronRight />}
+        onClick={handleNext}
+      />
+    </>
+  );
+}
+
+export default function ScrambleDisplay(props: ScrambleDisplayProps) {
+  const { open: isExpanded, onOpenChange: setIsExpanded } = useCollapsed(
+    "cubelab-scramble-display-expanded",
+    true,
+  );
+  const controller = useScramble(props);
+
+  return (
+    <CollapsibleCard
+      title="Scramble"
+      open={isExpanded}
+      onOpenChange={setIsExpanded}
+      actions={<ScrambleNavActions controller={controller} />}
+    >
+      <ScrambleBody controller={controller} />
+    </CollapsibleCard>
   );
 }

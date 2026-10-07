@@ -1,7 +1,8 @@
 "use client";
 
-import { ChevronRight, Search, Loader2 } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 import Link from "next/link";
+import { LoadingState } from "@/components/ui/Spinner";
 import { getIconComponent } from "./HelpCenter";
 
 interface SearchResult {
@@ -32,12 +33,7 @@ export default function FAQSearchResults({
 }: FAQSearchResultsProps) {
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 text-(--primary) animate-spin" />
-        <span className="ml-2 text-(--text-secondary) font-inter">
-          Searching...
-        </span>
-      </div>
+      <LoadingState label="Searching…" />
     );
   }
 
@@ -76,7 +72,7 @@ export default function FAQSearchResults({
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-start gap-3 min-w-0 flex-1">
-                  <div className="p-2 bg-(--primary)/10 rounded-lg shrink-0">
+                  <div className="p-2 bg-(--primary)/10 rounded-(--radius-control) shrink-0">
                     <IconComp className="w-4 h-4 text-(--primary)" />
                   </div>
                   <div className="min-w-0 flex-1">

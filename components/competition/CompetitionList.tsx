@@ -5,20 +5,28 @@ import {
   Trophy,
   MapPin,
   Filter,
-  Search,
   Play,
   ChevronDown,
   Users,
-  X,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
 import { WCA_EVENTS, WCACompetition } from "./CompetitionSimulator";
 import { WCA_CONFIG } from "@/lib/wca-config";
 import { getFromCache, saveToCache } from "@/lib/wca-cache";
 import { CompetitionCardsSkeleton } from "@/components/SkeletonLoaders";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
+import { Checkbox, Field, SearchInput } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { Pagination } from "@/components/ui/Pagination";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import RegionDropdown from "./RegionDropdown";
+import {
+  DateTimePicker,
+  fromDateInputValue,
+  toDateInputValue,
+} from "@/components/ui/DateTimePicker";
 
 interface CompetitionListProps {
   onStartSimulation: (competition: WCACompetition, eventId: string) => void;
@@ -327,7 +335,7 @@ export default function CompetitionList({
                     key={event.id}
                     onClick={() => toggleEvent(event.id)}
                     title={event.name}
-                    className={`p-2 rounded-lg border transition-colors ${
+                    className={`p-2 rounded-(--radius-control) border transition-colors ${
                       selectedEvents.includes(event.id)
                         ? "border-(--primary) bg-(--primary)/10"
                         : "border-(--border) hover:border-(--border-hover) bg-(--surface)"
@@ -353,30 +361,23 @@ export default function CompetitionList({
                 onRegionChange={setSelectedRegion}
                 label="Region"
               />
-              <div>
-                <label className="text-sm text-(--text-secondary) mb-2 block">
-                  Search
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Name or city..."
-                    className="w-full pl-10 pr-4 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                  />
-                </div>
-              </div>
+              <Field label="Search">
+                <SearchInput
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="Name or city…"
+                />
+              </Field>
             </div>
 
             {/* Time Filter */}
             <div>
-              <label className="text-sm text-(--text-secondary) mb-2 block">
-                When
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {(
+              <span className="type-label block mb-2">When</span>
+              <SegmentedControl<TimeFilter>
+                value={timeFilter}
+                onChange={setTimeFilter}
+                aria-label="Competition time range"
+                options={(
                   [
                     "present",
                     "recent",
@@ -384,60 +385,43 @@ export default function CompetitionList({
                     "upcoming",
                     "custom",
                   ] as TimeFilter[]
-                ).map((filter) => (
-                  <button
-                    key={filter}
-                    onClick={() => setTimeFilter(filter)}
-                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                      timeFilter === filter
-                        ? "bg-(--primary) text-white"
-                        : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary)"
-                    }`}
-                  >
-                    {filter.charAt(0).toUpperCase() + filter.slice(1)}
-                  </button>
-                ))}
-              </div>
+                ).map((filter) => ({
+                  value: filter,
+                  label: filter.charAt(0).toUpperCase() + filter.slice(1),
+                }))}
+              />
               {timeFilter === "custom" && (
                 <div className="flex flex-wrap gap-4 mt-3">
-                  <div>
-                    <label className="text-xs text-(--text-muted) block mb-1">
-                      Start Date
-                    </label>
-                    <input
-                      type="date"
-                      value={customStartDate}
-                      onChange={(e) => setCustomStartDate(e.target.value)}
-                      className="px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
+                  <Field label="Start date">
+                    <DateTimePicker
+                      mode="date"
+                      label="Start date"
+                      value={fromDateInputValue(customStartDate)}
+                      onChange={(value) =>
+                        setCustomStartDate(toDateInputValue(value))
+                      }
                     />
-                  </div>
-                  <div>
-                    <label className="text-xs text-(--text-muted) block mb-1">
-                      End Date
-                    </label>
-                    <input
-                      type="date"
-                      value={customEndDate}
-                      onChange={(e) => setCustomEndDate(e.target.value)}
-                      className="px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
+                  </Field>
+                  <Field label="End date">
+                    <DateTimePicker
+                      mode="date"
+                      label="End date"
+                      value={fromDateInputValue(customEndDate)}
+                      onChange={(value) =>
+                        setCustomEndDate(toDateInputValue(value))
+                      }
                     />
-                  </div>
+                  </Field>
                 </div>
               )}
             </div>
 
             {/* Show Cancelled */}
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showCancelled}
-                onChange={(e) => setShowCancelled(e.target.checked)}
-                className="w-4 h-4 rounded border-(--border) text-(--primary) focus:ring-(--primary)"
-              />
-              <span className="text-sm text-(--text-secondary)">
-                Show cancelled competitions
-              </span>
-            </label>
+            <Checkbox
+              checked={showCancelled}
+              onChange={(e) => setShowCancelled(e.target.checked)}
+              label="Show cancelled competitions"
+            />
           </div>
         )}
       </div>
@@ -459,22 +443,16 @@ export default function CompetitionList({
       {isLoading ? (
         <CompetitionCardsSkeleton count={5} />
       ) : error ? (
-        <div className="timer-card text-center py-8">
-          <p className="text-(--error)">{error}</p>
-          <button
-            onClick={fetchCompetitions}
-            className="mt-4 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
-          >
-            Retry
-          </button>
+        <div className="timer-card">
+          <ErrorState description={error} onRetry={fetchCompetitions} />
         </div>
       ) : paginatedCompetitions.length === 0 ? (
-        <div className="timer-card text-center py-8">
-          <Trophy className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
-          <p className="text-(--text-secondary)">No competitions found</p>
-          <p className="text-sm text-(--text-muted) mt-1">
-            Try adjusting your filters
-          </p>
+        <div className="timer-card">
+          <EmptyState
+            icon={<Trophy />}
+            title="No competitions found"
+            description="Try adjusting your filters."
+          />
         </div>
       ) : (
         <div className="space-y-3">
@@ -504,9 +482,9 @@ export default function CompetitionList({
                       {competition.name}
                     </h3>
                     {competition.cancelled_at && (
-                      <span className="shrink-0 px-2 py-0.5 text-xs bg-(--error)/10 text-(--error) rounded">
+                      <Badge tone="danger" className="shrink-0">
                         Cancelled
-                      </span>
+                      </Badge>
                     )}
                   </div>
                   <div className="flex items-center gap-4 mt-1 text-sm text-(--text-muted)">
@@ -524,7 +502,7 @@ export default function CompetitionList({
                 </div>
 
                 {/* Events */}
-                <div className="flex flex-wrap gap-1 sm:max-w-[200px]">
+                <div className="flex flex-wrap gap-1 sm:max-w-50">
                   {competition.event_ids.slice(0, 6).map((eventId) => {
                     const event = WCA_EVENTS.find((e) => e.id === eventId);
                     return event ? (
@@ -552,16 +530,16 @@ export default function CompetitionList({
 
                 {/* Action */}
                 <div className="shrink-0">
-                  <button
+                  <Button
+                    size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedCompetition(competition);
                     }}
-                    className="px-3 py-1.5 text-sm font-medium bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors flex items-center gap-1"
+                    iconLeft={<Play className="w-3 h-3" />}
                   >
-                    <Play className="w-3 h-3" />
                     Simulate
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -569,102 +547,52 @@ export default function CompetitionList({
         </div>
       )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <div className="flex items-center gap-1">
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              let pageNum: number;
-              if (totalPages <= 5) {
-                pageNum = i + 1;
-              } else if (currentPage <= 3) {
-                pageNum = i + 1;
-              } else if (currentPage >= totalPages - 2) {
-                pageNum = totalPages - 4 + i;
-              } else {
-                pageNum = currentPage - 2 + i;
-              }
-              return (
-                <button
-                  key={pageNum}
-                  onClick={() => setCurrentPage(pageNum)}
-                  className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
-                    currentPage === pageNum
-                      ? "bg-(--primary) text-white"
-                      : "text-(--text-secondary) hover:bg-(--surface-elevated)"
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              );
-            })}
-          </div>
-          <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-            className="p-2 rounded-lg border border-(--border) text-(--text-secondary) hover:bg-(--surface-elevated) disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+      <Pagination
+        page={currentPage}
+        totalPages={totalPages}
+        onChange={setCurrentPage}
+      />
 
       {/* Event Selection Modal */}
-      {selectedCompetition && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-(--surface) border border-(--border) rounded-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
-            <div className="sticky top-0 bg-(--surface) border-b border-(--border) p-4 flex items-center justify-between">
-              <h3 className="font-bold text-(--text-primary)">
-                Select Event to Simulate
-              </h3>
-              <button
-                onClick={() => setSelectedCompetition(null)}
-                className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-4">
-              <p className="text-sm text-(--text-muted) mb-4">
-                {selectedCompetition.name}
-              </p>
-              <div className="grid grid-cols-3 gap-3">
-                {selectedCompetition.event_ids.map((eventId) => {
-                  const event = WCA_EVENTS.find((e) => e.id === eventId);
-                  return event ? (
-                    <button
-                      key={eventId}
-                      onClick={() => {
-                        onStartSimulation(selectedCompetition, eventId);
-                        setSelectedCompetition(null);
-                      }}
-                      className="flex flex-col items-center gap-2 p-3 rounded-lg border border-(--border) hover:border-(--primary) hover:bg-(--primary)/5 transition-colors"
-                    >
-                      <Image
-                        src={event.icon}
-                        alt={event.name}
-                        width={28}
-                        height={28}
-                        className="opacity-80"
-                      />
-                      <span className="text-xs text-(--text-secondary)">
-                        {event.name}
-                      </span>
-                    </button>
-                  ) : null;
-                })}
-              </div>
-            </div>
+      <Modal
+        open={selectedCompetition !== null}
+        onClose={() => setSelectedCompetition(null)}
+        size="md"
+        mobile="sheet"
+      >
+        <Modal.Header
+          title="Select event to simulate"
+          description={selectedCompetition?.name}
+        />
+        <Modal.Body>
+          <div className="grid grid-cols-3 gap-3">
+            {selectedCompetition?.event_ids.map((eventId) => {
+              const event = WCA_EVENTS.find((e) => e.id === eventId);
+              return event ? (
+                <button
+                  key={eventId}
+                  onClick={() => {
+                    onStartSimulation(selectedCompetition, eventId);
+                    setSelectedCompetition(null);
+                  }}
+                  className="flex flex-col items-center gap-2 p-3 min-h-(--touch-min) rounded-(--radius-panel) border border-(--border) hover:border-(--primary) hover:bg-(--primary)/5 transition-colors"
+                >
+                  <Image
+                    src={event.icon}
+                    alt={event.name}
+                    width={28}
+                    height={28}
+                    className="opacity-80"
+                  />
+                  <span className="text-xs text-(--text-secondary)">
+                    {event.name}
+                  </span>
+                </button>
+              ) : null;
+            })}
           </div>
-        </div>
-      )}
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

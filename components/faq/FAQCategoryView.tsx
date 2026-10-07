@@ -103,7 +103,7 @@ export default function FAQCategoryView(props: FAQCategoryViewProps) {
       {/* Category Header */}
       {currentCategory ? (
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-(--primary)/10 rounded-xl">
+          <div className="p-3 bg-(--primary)/10 rounded-(--radius-card)">
             <IconComp className="w-6 h-6 text-(--primary)" />
           </div>
           <div>
@@ -117,7 +117,7 @@ export default function FAQCategoryView(props: FAQCategoryViewProps) {
         </div>
       ) : (
         <div className="animate-pulse flex items-center gap-4">
-          <div className="w-12 h-12 skeleton-box rounded-xl" />
+          <div className="w-12 h-12 skeleton-box rounded-(--radius-card)" />
           <div className="space-y-2">
             <div className="h-6 skeleton-box rounded w-48" />
             <div className="h-4 skeleton-box rounded w-72" />

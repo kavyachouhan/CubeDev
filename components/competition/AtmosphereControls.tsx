@@ -1,6 +1,8 @@
 "use client";
 
 import { Volume2, Brain, Zap, Timer, Users } from "lucide-react";
+import { Slider } from "@/components/ui/Field";
+import { SwitchRow } from "@/components/ui/Switch";
 import { AtmosphereSettings } from "./CompetitionDetail";
 
 interface AtmosphereControlsProps {
@@ -34,15 +36,13 @@ export default function AtmosphereControls({
             {atmosphere.crowdNoise}%
           </span>
         </div>
-        <input
-          type="range"
-          min="0"
-          max="100"
+        <Slider
+          min={0}
+          max={100}
+          showValue={false}
+          aria-label="Crowd noise"
           value={atmosphere.crowdNoise}
-          onChange={(e) =>
-            updateSetting("crowdNoise", parseInt(e.target.value))
-          }
-          className="w-full h-2 bg-(--surface-elevated) rounded-lg appearance-none cursor-pointer accent-(--primary)"
+          onChange={(value) => updateSetting("crowdNoise", value)}
         />
         <div className="flex justify-between text-xs text-(--text-muted)">
           <span>Silent</span>
@@ -64,13 +64,13 @@ export default function AtmosphereControls({
             {atmosphere.pressure}%
           </span>
         </div>
-        <input
-          type="range"
-          min="0"
-          max="100"
+        <Slider
+          min={0}
+          max={100}
+          showValue={false}
+          aria-label="Competition pressure"
           value={atmosphere.pressure}
-          onChange={(e) => updateSetting("pressure", parseInt(e.target.value))}
-          className="w-full h-2 bg-(--surface-elevated) rounded-lg appearance-none cursor-pointer accent-(--warning)"
+          onChange={(value) => updateSetting("pressure", value)}
         />
         <div className="flex justify-between text-xs text-(--text-muted)">
           <span>Relaxed</span>
@@ -85,81 +85,27 @@ export default function AtmosphereControls({
 
       {/* Toggle Options */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Distractions */}
-        <div
-          className={`p-4 rounded-lg border cursor-pointer transition-all ${
-            atmosphere.distractions
-              ? "border-(--primary) bg-(--primary)/10"
-              : "border-(--border) hover:border-(--primary)/50"
-          }`}
-          onClick={() =>
-            updateSetting("distractions", !atmosphere.distractions)
-          }
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <Zap
-              className={`w-4 h-4 ${atmosphere.distractions ? "text-(--primary)" : "text-(--text-muted)"}`}
-            />
-            <span
-              className={`text-sm font-medium ${atmosphere.distractions ? "text-(--primary)" : "text-(--text-primary)"}`}
-            >
-              Distractions
-            </span>
-          </div>
-          <p className="text-xs text-(--text-muted)">
-            Random visual/audio distractions like camera flashes
-          </p>
-        </div>
-
-        {/* Timer Delay */}
-        <div
-          className={`p-4 rounded-lg border cursor-pointer transition-all ${
-            atmosphere.timerDelay
-              ? "border-(--primary) bg-(--primary)/10"
-              : "border-(--border) hover:border-(--primary)/50"
-          }`}
-          onClick={() => updateSetting("timerDelay", !atmosphere.timerDelay)}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <Timer
-              className={`w-4 h-4 ${atmosphere.timerDelay ? "text-(--primary)" : "text-(--text-muted)"}`}
-            />
-            <span
-              className={`text-sm font-medium ${atmosphere.timerDelay ? "text-(--primary)" : "text-(--text-primary)"}`}
-            >
-              Timer Delay
-            </span>
-          </div>
-          <p className="text-xs text-(--text-muted)">
-            Slight random delays like real stackmat timers
-          </p>
-        </div>
-
-        {/* Judge Interactions */}
-        <div
-          className={`p-4 rounded-lg border cursor-pointer transition-all ${
-            atmosphere.judgeInteractions
-              ? "border-(--primary) bg-(--primary)/10"
-              : "border-(--border) hover:border-(--primary)/50"
-          }`}
-          onClick={() =>
-            updateSetting("judgeInteractions", !atmosphere.judgeInteractions)
-          }
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <Users
-              className={`w-4 h-4 ${atmosphere.judgeInteractions ? "text-(--primary)" : "text-(--text-muted)"}`}
-            />
-            <span
-              className={`text-sm font-medium ${atmosphere.judgeInteractions ? "text-(--primary)" : "text-(--text-primary)"}`}
-            >
-              Judge Sim
-            </span>
-          </div>
-          <p className="text-xs text-(--text-muted)">
-            Confirm results with judge prompts
-          </p>
-        </div>
+        <SwitchRow
+          icon={<Zap />}
+          label="Distractions"
+          description="Random visual/audio distractions like camera flashes"
+          checked={atmosphere.distractions}
+          onChange={(value) => updateSetting("distractions", value)}
+        />
+        <SwitchRow
+          icon={<Timer />}
+          label="Timer delay"
+          description="Slight random delays like real stackmat timers"
+          checked={atmosphere.timerDelay}
+          onChange={(value) => updateSetting("timerDelay", value)}
+        />
+        <SwitchRow
+          icon={<Users />}
+          label="Judge sim"
+          description="Confirm results with judge prompts"
+          checked={atmosphere.judgeInteractions}
+          onChange={(value) => updateSetting("judgeInteractions", value)}
+        />
       </div>
 
       {/* Preset Buttons */}
@@ -178,7 +124,7 @@ export default function AtmosphereControls({
                 judgeInteractions: false,
               })
             }
-            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
+            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             Practice Mode
           </button>
@@ -192,7 +138,7 @@ export default function AtmosphereControls({
                 judgeInteractions: true,
               })
             }
-            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
+            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             Local Comp
           </button>
@@ -206,7 +152,7 @@ export default function AtmosphereControls({
                 judgeInteractions: true,
               })
             }
-            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
+            className="px-3 py-1.5 text-sm border border-(--border) text-(--text-secondary) rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             Major Championship
           </button>
@@ -220,7 +166,7 @@ export default function AtmosphereControls({
                 judgeInteractions: true,
               })
             }
-            className="px-3 py-1.5 text-sm border border-(--warning) text-(--warning) rounded-lg hover:bg-(--warning)/10"
+            className="px-3 py-1.5 text-sm border border-(--warning) text-(--warning) rounded-(--radius-control) hover:bg-(--warning)/10"
           >
             World Finals
           </button>

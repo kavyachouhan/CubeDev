@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { medalRowStyle } from "@/components/ui/medal";
+import { RankBadge } from "@/components/ui/RankBadge";
 import UserSolvesModal from "./UserSolvesModal";
 
 function formatTime(ms: number): string {
@@ -70,7 +72,7 @@ export default function RoomLeaderboard({
         {completedParticipants.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-1 h-4 bg-green-500 rounded-full"></div>
+              <div className="w-1 h-4 bg-(--success) rounded-full"></div>
               <h4 className="text-sm font-semibold text-(--text-primary) font-inter">
                 Completed ({completedParticipants.length})
               </h4>
@@ -80,32 +82,13 @@ export default function RoomLeaderboard({
                 <button
                   key={participant._id}
                   onClick={() => setSelectedParticipant(participant)}
-                  className={`w-full flex items-center gap-3 p-4 rounded-xl border transition-all duration-200 hover:scale-[1.02] hover:shadow-md cursor-pointer ${
-                    participant.finalRank === 1
-                      ? "bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-700/50"
-                      : participant.finalRank === 2
-                        ? "bg-gray-50 border-gray-200 dark:bg-gray-900/20 dark:border-gray-700/50"
-                        : participant.finalRank === 3
-                          ? "bg-orange-50 border-orange-200 dark:bg-orange-900/20 dark:border-orange-700/50"
-                          : "bg-(--surface-elevated) border-(--border)"
-                  }`}
+                  className="w-full flex items-center gap-3 p-4 rounded-(--radius-panel) border transition-colors duration-200 cursor-pointer bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
+                  style={medalRowStyle(participant.finalRank)}
                 >
                   {/* Rank Badge */}
-                  <div
-                    className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold text-white shadow-lg ${
-                      participant.finalRank === 1
-                        ? "bg-yellow-500"
-                        : participant.finalRank === 2
-                          ? "bg-gray-500"
-                          : participant.finalRank === 3
-                            ? "bg-orange-500"
-                            : "bg-slate-500"
-                    }`}
-                  >
-                    {participant.finalRank}
-                  </div>
+                  <RankBadge rank={participant.finalRank} size="lg" />
                   {/* User Avatar */}
-                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-(--on-primary) font-bold text-sm">
                     {participant.user?.avatar &&
                     !participant.user?.isDeleted &&
                     !participant.wasDeletedWhenJoined ? (
@@ -176,7 +159,7 @@ export default function RoomLeaderboard({
         {inProgressParticipants.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-1 h-4 bg-blue-500 rounded-full"></div>
+              <div className="w-1 h-4 bg-(--primary) rounded-full"></div>
               <h4 className="text-sm font-semibold text-(--text-primary) font-inter">
                 In Progress ({inProgressParticipants.length})
               </h4>
@@ -186,10 +169,10 @@ export default function RoomLeaderboard({
                 <button
                   key={participant._id}
                   onClick={() => setSelectedParticipant(participant)}
-                  className="w-full flex items-center gap-3 p-4 rounded-xl border transition-all duration-200 cursor-pointer bg-(--surface-elevated) border-(--border)/50 hover:border-blue-500/30"
+                  className="w-full flex items-center gap-3 p-4 rounded-(--radius-panel) border transition-all duration-200 cursor-pointer bg-(--surface-elevated) border-(--border)/50 hover:border-(--primary)/30"
                 >
                   {/* User Avatar */}
-                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-(--primary) text-(--on-primary) font-bold text-sm">
                     {participant.user?.avatar &&
                     !participant.user?.isDeleted &&
                     !participant.wasDeletedWhenJoined ? (
@@ -236,7 +219,7 @@ export default function RoomLeaderboard({
                       )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="text-sm font-medium font-inter px-3 py-1 rounded-full text-(--text-primary) bg-blue-500/10">
+                    <div className="text-sm font-medium font-inter px-3 py-1 rounded-full text-(--text-primary) bg-(--primary)/15">
                       {participant.solvesCompleted} / {participant.totalSolves}
                     </div>
                   </div>

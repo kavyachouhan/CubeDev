@@ -137,8 +137,8 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
     if (Math.abs(trend) < 1) return "text-(--text-muted)";
     const isPositive = higherIsBetter ? trend > 0 : trend < 0;
     return isPositive
-      ? "text-green-500 dark:text-green-400"
-      : "text-red-500 dark:text-red-400";
+      ? "text-(--success)"
+      : "text-(--error)";
   };
 
   const statItems = [
@@ -151,22 +151,22 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
     },
     {
       icon: Eye,
-      iconBg: "bg-blue-500/10",
-      iconColor: "text-blue-500 dark:text-blue-400",
+      iconBg: "bg-(--primary)/10",
+      iconColor: "text-(--primary)",
       value: stats.totalCases,
       label: "Cases Reviewed",
     },
     {
       icon: Clock,
-      iconBg: "bg-purple-500/10",
-      iconColor: "text-purple-500 dark:text-purple-400",
+      iconBg: "bg-(--accent)/10",
+      iconColor: "text-(--accent)",
       value: formatDuration(stats.totalDuration),
       label: "Total Time",
     },
     {
       icon: CircleCheck,
-      iconBg: "bg-green-500/10",
-      iconColor: "text-green-500 dark:text-green-400",
+      iconBg: "bg-(--success)/10",
+      iconColor: "text-(--success)",
       value: `${stats.avgAccuracy.toFixed(0)}%`,
       label: "Avg Accuracy",
       trend: stats.accuracyTrend,
@@ -184,10 +184,10 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
         {statItems.map((item, index) => (
           <div
             key={index}
-            className="p-4 rounded-lg bg-(--surface-elevated)"
+            className="p-4 rounded-(--radius-control) bg-(--surface-elevated)"
           >
             <div className="flex items-center gap-3 mb-3">
-              <div className={`p-2 rounded-lg ${item.iconBg}`}>
+              <div className={`p-2 rounded-(--radius-control) ${item.iconBg}`}>
                 <item.icon className={`w-4 h-4 ${item.iconColor}`} />
               </div>
               {item.trend !== undefined && (
@@ -210,10 +210,10 @@ export default function SessionStats({ sessions }: SessionStatsProps) {
 
       {stats.avgRecognitionTime > 0 && (
         <div className="mt-6 pt-6 border-t border-(--border)">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-(--surface-elevated)">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-(--radius-control) bg-(--surface-elevated)">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-cyan-500/10">
-                <Eye className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
+              <div className="p-2 rounded-(--radius-control) bg-(--accent)/10">
+                <Eye className="w-4 h-4 text-(--accent)" />
               </div>
               <div>
                 <div className="text-sm text-(--text-muted)">

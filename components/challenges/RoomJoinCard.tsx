@@ -20,7 +20,7 @@ export default function RoomJoinCard({
       <button
         onClick={onJoin}
         disabled={isLoading}
-        className="px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) disabled:opacity-50 text-white rounded-lg font-semibold transition-colors font-inter"
+        className="px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) disabled:opacity-50 text-(--on-primary) rounded-(--radius-control) font-semibold transition-colors font-inter"
       >
         {isLoading ? "Joining..." : "Join Room"}
       </button>

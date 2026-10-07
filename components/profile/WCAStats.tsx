@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MapPin, Calendar, Loader2, ExternalLink } from "lucide-react";
+import { MapPin, Calendar, Loader2, ExternalLink, Medal } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
+import { CardIcon } from "@/components/ui/Card";
+import { EventIcon } from "@/components/ui/EventIcon";
 import VirtualCompetitionList from "../VirtualCompetitionList";
 import { CompetitionListSkeleton, HeatmapSkeleton } from "../SkeletonLoaders";
 
@@ -124,6 +127,54 @@ function formatMoves(moves: number): string {
   return moves.toString();
 }
 
+/** WCA ranks are 1-based; 0 or undefined means "no rank in this event". */
+function rankText(rank?: number): string {
+  return rank && rank > 0 ? String(rank) : "—";
+}
+
+/** One result line on the phone layout: time first, then its three ranks. */
+function RecordRow({
+  label,
+  value,
+  nr,
+  cr,
+  wr,
+}: {
+  label: string;
+  value: string | null;
+  nr?: number;
+  cr?: number;
+  wr?: number;
+}) {
+  // The time and the three ranks each get their own line: side by side, the
+  // rank badges squeezed the time until it overlapped them.
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="type-overline">{label}</span>
+        <span className="type-time font-bold text-base text-(--text-primary)">
+          {value ?? "—"}
+        </span>
+      </div>
+      {value && (nr || cr || wr) ? (
+        <div className="flex flex-wrap items-center justify-end gap-1">
+          {nr && nr > 0 ? (
+            <Badge title={`National rank ${nr}`}>NR {nr}</Badge>
+          ) : null}
+          {cr && cr > 0 ? (
+            <Badge title={`Continental rank ${cr}`}>CR {cr}</Badge>
+          ) : null}
+          {wr && wr > 0 ? (
+            <Badge tone="primary" title={`World rank ${wr}`}>
+              WR {wr}
+            </Badge>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function formatTimeOrMoves(eventId: string, centiseconds: number): string {
   if (eventId === "333fm" || eventId.includes("mbf")) {
     return formatMoves(centiseconds);
@@ -140,6 +191,22 @@ export default function WCAStats({
   const [selectedPeriod, setSelectedPeriod] = useState<"1y" | "3y" | "all">(
     "3y"
   );
+
+  // Best world rank first, matching how the WCA profile leads with strengths.
+  const sortedRecords = useMemo(() => {
+    if (!personalRecords) return [];
+    return [...personalRecords]
+      .filter(
+        (record) =>
+          record.world_ranking > 0 ||
+          (record.average_world_ranking ?? 0) > 0,
+      )
+      .sort(
+        (a, b) =>
+          Math.min(a.world_ranking || Infinity, a.average_world_ranking || Infinity) -
+          Math.min(b.world_ranking || Infinity, b.average_world_ranking || Infinity),
+      );
+  }, [personalRecords]);
 
   // Sort competitions by date (most recent first)
   const sortedCompetitions = useMemo(() => {
@@ -265,10 +332,10 @@ export default function WCAStats({
   const getIntensityColor = (level: number) => {
     const colors = {
       0: "bg-(--surface) border-(--border)",
-      1: "bg-blue-100 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800",
-      2: "bg-blue-300 dark:bg-blue-700/50 border-blue-400 dark:border-blue-600",
-      3: "bg-blue-500 dark:bg-blue-600/70 border-blue-600 dark:border-blue-500",
-      4: "bg-blue-700 dark:bg-blue-400 border-blue-800 dark:border-blue-300",
+      1: "bg-(--primary)/25 border-(--primary)/30",
+      2: "bg-(--primary)/50 border-(--primary)/55",
+      3: "bg-(--primary)/75 border-(--primary)/80",
+      4: "bg-(--primary) border-(--primary)",
     };
     return colors[level as keyof typeof colors] || colors[0];
   };
@@ -283,10 +350,10 @@ export default function WCAStats({
         </h3>
         {achievements ? (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
-                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -298,10 +365,10 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-green-500/10 rounded-lg">
-                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -313,10 +380,10 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-yellow-500/10 rounded-lg">
-                  <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -328,10 +395,10 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-purple-500/10 rounded-lg">
-                  <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -343,10 +410,10 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-red-500/10 rounded-lg">
-                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-red-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -358,10 +425,10 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-orange-500/10 rounded-lg">
-                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -373,10 +440,10 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-indigo-500/10 rounded-lg">
-                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -393,10 +460,10 @@ export default function WCAStats({
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
-                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <Target className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -408,10 +475,10 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-green-500/10 rounded-lg">
-                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -423,10 +490,10 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-yellow-500/10 rounded-lg">
-                  <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -438,10 +505,10 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-purple-500/10 rounded-lg">
-                  <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -453,10 +520,10 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-red-500/10 rounded-lg">
-                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-red-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -468,10 +535,10 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-orange-500/10 rounded-lg">
-                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -483,10 +550,10 @@ export default function WCAStats({
                 </div>
               </div>
             </div>
-            <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-indigo-500/10 rounded-lg">
-                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-500" />
+                <div className="p-1.5 sm:p-2 bg-(--primary)/10 rounded-(--radius-control)">
+                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-(--primary)" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate">
@@ -502,122 +569,142 @@ export default function WCAStats({
         )}
       </div> */}
 
-      {/* Personal Records */}
-      {/* <div className="timer-card">
-        <h3 className="text-lg font-semibold text-(--text-primary) font-statement mb-4 flex items-center gap-2">
-          <Medal className="w-5 h-5 text-(--primary)" />
-          Personal Records
-        </h3>
-        {personalRecords && personalRecords.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {personalRecords
-              .filter(
-                (record) =>
-                  record.world_ranking > 0 ||
-                  (record.average_world_ranking &&
-                    record.average_world_ranking > 0)
-              )
-              .sort((a, b) => {
-                const aRank = Math.min(
-                  a.world_ranking || Infinity,
-                  a.average_world_ranking || Infinity
-                );
-                const bRank = Math.min(
-                  b.world_ranking || Infinity,
-                  b.average_world_ranking || Infinity
-                );
-                return aRank - bRank;
-              })
-              .map((record) => (
-                <div
-                  key={record.event_id}
-                  className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium text-(--text-primary) font-inter">
-                      {EVENT_NAMES[
-                        record.event_id as keyof typeof EVENT_NAMES
-                      ] || record.event_id}
-                    </h4>
-                    <div className="flex gap-2">
-                      {record.world_ranking > 0 && (
-                        <span className="text-xs bg-(--primary)/10 text-(--primary) px-2 py-1 rounded">
-                          #{record.world_ranking} WR
-                        </span>
-                      )}
-                      {record.average_world_ranking &&
-                        record.average_world_ranking > 0 && (
-                          <span className="text-xs bg-green-500/10 text-green-600 px-2 py-1 rounded">
-                            #{record.average_world_ranking} WR Avg
-                          </span>
-                        )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    {record.best > 0 && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-(--text-muted)">
-                          Single:
-                        </span>
-                        <div className="text-right">
-                          <div className="text-sm font-bold text-(--text-primary) font-mono">
-                            {formatTimeOrMoves(record.event_id, record.best)}
-                          </div>
-                          <div className="text-xs text-(--text-muted)">
-                            {record.national_ranking > 0 &&
-                              `#${record.national_ranking} NR`}
-                            {record.continental_ranking > 0 &&
-                              record.national_ranking > 0 &&
-                              " • "}
-                            {record.continental_ranking > 0 &&
-                              `#${record.continental_ranking} CR`}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {record.average && record.average > 0 && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-(--text-muted)">
-                          Average:
-                        </span>
-                        <div className="text-right">
-                          <div className="text-sm font-bold text-(--text-primary) font-mono">
-                            {formatTimeOrMoves(record.event_id, record.average)}
-                          </div>
-                          <div className="text-xs text-(--text-muted)">
-                            {record.average_national_ranking &&
-                              record.average_national_ranking > 0 &&
-                              `#${record.average_national_ranking} NR`}
-                            {record.average_continental_ranking &&
-                              record.average_continental_ranking > 0 &&
-                              record.average_national_ranking &&
-                              record.average_national_ranking > 0 &&
-                              " • "}
-                            {record.average_continental_ranking &&
-                              record.average_continental_ranking > 0 &&
-                              `#${record.average_continental_ranking} CR`}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-          </div>
-        ) : (
-          <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="min-w-0 flex-1">
-                <div className="text-sm sm:text-lg font-bold text-(--text-primary)">
-                  0
-                </div>
-              </div>
+      {/* Current Personal Records */}
+      {personalRecords && personalRecords.length > 0 && (
+        <div className="timer-card">
+          <div className="flex items-center gap-3 mb-4">
+            <CardIcon>
+              <Medal />
+            </CardIcon>
+            <div className="min-w-0">
+              <h3 className="type-card-title">Current Personal Records</h3>
+              <p className="type-caption">
+                Official WCA results with national, continental and world rank
+              </p>
             </div>
           </div>
-        )}
-      </div> */}
+
+          {/*
+            Two presentations of one dataset. The table mirrors the WCA
+            profile and needs the width; below `lg` each event becomes a card
+            with its single and average stacked, because an eight-column table
+            cannot be read on a phone without horizontal scrolling.
+          */}
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full text-sm font-inter">
+              <thead>
+                <tr className="border-b border-(--border)">
+                  <th className="py-2 pr-3 text-left type-overline font-semibold">
+                    Event
+                  </th>
+                  <th className="py-2 px-2 text-right type-overline">NR</th>
+                  <th className="py-2 px-2 text-right type-overline">CR</th>
+                  <th className="py-2 px-2 text-right type-overline">WR</th>
+                  <th className="py-2 px-3 text-right type-overline font-semibold">
+                    Single
+                  </th>
+                  <th className="py-2 px-3 text-right type-overline font-semibold">
+                    Average
+                  </th>
+                  <th className="py-2 px-2 text-right type-overline">WR</th>
+                  <th className="py-2 px-2 text-right type-overline">CR</th>
+                  <th className="py-2 pl-2 text-right type-overline">NR</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedRecords.map((record) => (
+                  <tr
+                    key={record.event_id}
+                    className="border-b border-(--border) last:border-0"
+                  >
+                    <td className="py-2 pr-3">
+                      <span className="flex items-center gap-2 min-w-0">
+                        <EventIcon size="sm" eventId={record.event_id} />
+                        <span className="truncate text-(--text-primary)">
+                          {EVENT_NAMES[
+                            record.event_id as keyof typeof EVENT_NAMES
+                          ] || record.event_id}
+                        </span>
+                      </span>
+                    </td>
+                    <td className="py-2 px-2 text-right type-caption">
+                      {rankText(record.national_ranking)}
+                    </td>
+                    <td className="py-2 px-2 text-right type-caption">
+                      {rankText(record.continental_ranking)}
+                    </td>
+                    <td className="py-2 px-2 text-right type-caption">
+                      {rankText(record.world_ranking)}
+                    </td>
+                    <td className="py-2 px-3 text-right type-time font-bold text-(--text-primary)">
+                      {record.best > 0
+                        ? formatTimeOrMoves(record.event_id, record.best)
+                        : "—"}
+                    </td>
+                    <td className="py-2 px-3 text-right type-time font-bold text-(--text-primary)">
+                      {record.average && record.average > 0
+                        ? formatTimeOrMoves(record.event_id, record.average)
+                        : "—"}
+                    </td>
+                    <td className="py-2 px-2 text-right type-caption">
+                      {rankText(record.average_world_ranking)}
+                    </td>
+                    <td className="py-2 px-2 text-right type-caption">
+                      {rankText(record.average_continental_ranking)}
+                    </td>
+                    <td className="py-2 pl-2 text-right type-caption">
+                      {rankText(record.average_national_ranking)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <ul className="lg:hidden space-y-3">
+            {sortedRecords.map((record) => (
+              <li
+                key={record.event_id}
+                className="rounded-(--radius-panel) border border-(--border) bg-(--surface-elevated) p-3"
+              >
+                <div className="flex items-center gap-2 mb-3 min-w-0">
+                  <EventIcon size="sm" eventId={record.event_id} />
+                  <span className="type-label truncate">
+                    {EVENT_NAMES[
+                      record.event_id as keyof typeof EVENT_NAMES
+                    ] || record.event_id}
+                  </span>
+                </div>
+
+                <div className="divide-y divide-(--border) [&>*]:py-2 [&>*:first-child]:pt-0 [&>*:last-child]:pb-0">
+                  <RecordRow
+                    label="Single"
+                    value={
+                      record.best > 0
+                        ? formatTimeOrMoves(record.event_id, record.best)
+                        : null
+                    }
+                    nr={record.national_ranking}
+                    cr={record.continental_ranking}
+                    wr={record.world_ranking}
+                  />
+                  <RecordRow
+                    label="Average"
+                    value={
+                      record.average && record.average > 0
+                        ? formatTimeOrMoves(record.event_id, record.average)
+                        : null
+                    }
+                    nr={record.average_national_ranking}
+                    cr={record.average_continental_ranking}
+                    wr={record.average_world_ranking}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Competition Activity Heatmap */}
       {isLoadingCompetitions && competitionDetails.size === 0 ? (
@@ -628,7 +715,7 @@ export default function WCAStats({
             <h3 className="text-lg font-semibold text-(--text-primary) font-statement flex items-center gap-2">
               Competition Activity
             </h3>
-            <div className="flex items-center gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border) sm:overflow-x-auto">
+            <div className="flex items-center gap-1 p-1 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) sm:overflow-x-auto">
               {(
                 [
                   ["1y", "1 year"],
@@ -639,9 +726,9 @@ export default function WCAStats({
                 <button
                   key={period}
                   onClick={() => setSelectedPeriod(period)}
-                  className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap flex-1 sm:flex-none ${
+                  className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-(--radius-badge) transition-all whitespace-nowrap flex-1 sm:flex-none ${
                     selectedPeriod === period
-                      ? "bg-(--primary) text-white shadow-sm"
+                      ? "bg-(--primary) text-(--on-primary) shadow-sm"
                       : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface)"
                   }`}
                 >

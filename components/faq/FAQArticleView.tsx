@@ -8,13 +8,13 @@ import {
   ArrowLeft,
   ThumbsUp,
   ThumbsDown,
-  ChevronRight,
   BookOpen,
   Clock,
   Eye,
   CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
+import { Breadcrumbs } from "@/components/ui/PageHeader";
 import { getIconComponent } from "./HelpCenter";
 import { HelpArticleSkeleton } from "@/components/SkeletonLoaders";
 
@@ -123,47 +123,28 @@ export default function FAQArticleView(props: FAQArticleViewProps) {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm font-inter flex-wrap">
-        {isSlugMode ? (
-          <Link
-            href="/help"
-            className="text-(--text-secondary) hover:text-(--primary) transition-colors"
-          >
-            Help Center
-          </Link>
-        ) : (
-          <button
-            onClick={props.onBack}
-            className="text-(--text-secondary) hover:text-(--primary) transition-colors"
-          >
-            Help Center
-          </button>
-        )}
-        <ChevronRight className="w-3 h-3 text-(--text-muted)" />
-        {article.category && (
-          <>
-            {isSlugMode ? (
-              <Link
-                href={`/help/${article.category.slug}`}
-                className="text-(--text-secondary) hover:text-(--primary) transition-colors"
-              >
-                {article.category.name}
-              </Link>
-            ) : (
-              <button
-                onClick={() => props.onBackToCategory!(article.categoryId)}
-                className="text-(--text-secondary) hover:text-(--primary) transition-colors"
-              >
-                {article.category.name}
-              </button>
-            )}
-            <ChevronRight className="w-3 h-3 text-(--text-muted)" />
-          </>
-        )}
-        <span className="text-(--text-primary) font-medium truncate max-w-[200px] sm:max-w-none">
-          {article.title}
-        </span>
-      </div>
+      <Breadcrumbs
+        items={[
+          isSlugMode
+            ? { label: "Help Center", href: "/help" }
+            : { label: "Help Center", onClick: props.onBack },
+          ...(article.category
+            ? [
+                isSlugMode
+                  ? {
+                      label: article.category.name,
+                      href: `/help/${article.category.slug}`,
+                    }
+                  : {
+                      label: article.category.name,
+                      onClick: () =>
+                        props.onBackToCategory!(article.categoryId),
+                    },
+              ]
+            : []),
+          { label: article.title },
+        ]}
+      />
 
       {/* Article */}
       <article className="timer-card space-y-6">
@@ -171,7 +152,7 @@ export default function FAQArticleView(props: FAQArticleViewProps) {
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             {article.category && (
-              <div className="p-2 bg-(--primary)/10 rounded-lg">
+              <div className="p-2 bg-(--primary)/10 rounded-(--radius-control)">
                 <IconComp className="w-5 h-5 text-(--primary)" />
               </div>
             )}
@@ -234,7 +215,7 @@ export default function FAQArticleView(props: FAQArticleViewProps) {
                   <div key={index} className="relative pl-10 sm:pl-12">
                     {/* Step number circle */}
                     <div className="absolute left-0 top-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-(--primary) flex items-center justify-center">
-                      <span className="text-xs sm:text-sm font-bold text-white font-statement">
+                      <span className="text-xs sm:text-sm font-bold text-(--on-primary) font-statement">
                         {step.stepNumber}
                       </span>
                     </div>
@@ -254,7 +235,7 @@ export default function FAQArticleView(props: FAQArticleViewProps) {
 
                       {/* Step Screenshot */}
                       {step.imageUrl && (
-                        <div className="mt-3 rounded-lg overflow-hidden border border-(--border) w-fit max-w-full">
+                        <div className="mt-3 rounded-(--radius-control) overflow-hidden border border-(--border) w-fit max-w-full">
                           <img
                             src={step.imageUrl}
                             alt={step.imageAlt || `Step ${step.stepNumber}`}
@@ -275,7 +256,7 @@ export default function FAQArticleView(props: FAQArticleViewProps) {
               {/* Completion indicator */}
               <div className="pl-10 sm:pl-12 relative">
                 <div className="absolute left-0 top-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-(--success) flex items-center justify-center">
-                  <CheckCircle2 className="w-4 h-4 text-white" />
+                  <CheckCircle2 className="w-4 h-4 text-(--on-primary)" />
                 </div>
                 <p className="text-sm font-medium text-(--success) font-inter pt-1">
                   Done! You&apos;re all set.
@@ -301,14 +282,14 @@ export default function FAQArticleView(props: FAQArticleViewProps) {
             <div className="flex items-center justify-center gap-3">
               <button
                 onClick={() => handleFeedback(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--success)/10 border border-(--border) hover:border-(--success) rounded-lg text-sm text-(--text-secondary) hover:text-(--success) transition-all font-inter"
+                className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--success)/10 border border-(--border) hover:border-(--success) rounded-(--radius-control) text-sm text-(--text-secondary) hover:text-(--success) transition-all font-inter"
               >
                 <ThumbsUp className="w-4 h-4" />
                 Yes
               </button>
               <button
                 onClick={() => handleFeedback(false)}
-                className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--error)/10 border border-(--border) hover:border-(--error) rounded-lg text-sm text-(--text-secondary) hover:text-(--error) transition-all font-inter"
+                className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--error)/10 border border-(--border) hover:border-(--error) rounded-(--radius-control) text-sm text-(--text-secondary) hover:text-(--error) transition-all font-inter"
               >
                 <ThumbsDown className="w-4 h-4" />
                 No

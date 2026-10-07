@@ -30,6 +30,11 @@ import {
   Settings,
   Trash2,
 } from "lucide-react";
+import { Input, Textarea } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { AdminStatCard } from "./AdminStatCard";
+import { AdminCollapsibleCard } from "./AdminCollapsibleCard";
+import { useEffectiveTheme, useThemeColors } from "@/lib/hooks/useThemeColors";
 import type { LucideIcon } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -52,53 +57,6 @@ ChartJS.register(
   Tooltip,
   Legend,
 );
-
-// Theme detection hook
-function useEffectiveTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  useEffect(() => {
-    const updateTheme = () => {
-      const root = document.documentElement;
-      const dataTheme = root.getAttribute("data-theme");
-      setTheme(dataTheme === "light" ? "light" : "dark");
-    };
-
-    updateTheme();
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  return theme;
-}
-
-// Primary color hook
-function usePrimaryColor() {
-  const [primaryColor, setPrimaryColor] = useState("#FA6900");
-
-  useEffect(() => {
-    const updateColor = () => {
-      const color = getComputedStyle(document.documentElement)
-        .getPropertyValue("--primary")
-        .trim();
-      if (color) setPrimaryColor(color);
-    };
-
-    updateColor();
-    const observer = new MutationObserver(updateColor);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class", "style"],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  return primaryColor;
-}
 
 // Export helper function
 function exportToCSV(data: Record<string, unknown>[], filename: string) {
@@ -139,129 +97,6 @@ function exportToJSON(data: unknown, filename: string) {
   link.click();
 }
 
-// CollapsibleCard Component
-function CollapsibleCard({
-  title,
-  children,
-  defaultOpen = true,
-  storageKey,
-  headerExtra,
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  storageKey?: string;
-  headerExtra?: React.ReactNode;
-}) {
-  const [isOpen, setIsOpen] = useState(() => {
-    if (typeof window !== "undefined" && storageKey) {
-      const saved = localStorage.getItem(storageKey);
-      return saved !== null ? saved === "true" : defaultOpen;
-    }
-    return defaultOpen;
-  });
-
-  const toggleOpen = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    if (typeof window !== "undefined" && storageKey) {
-      localStorage.setItem(storageKey, String(newState));
-    }
-  };
-
-  return (
-    <div className="timer-card">
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={toggleOpen}
-          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
-        >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            {title}
-          </h3>
-          {isOpen ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          {headerExtra}
-          <button
-            onClick={toggleOpen}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-          >
-            {isOpen ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-      {isOpen && children}
-    </div>
-  );
-}
-
-// StatCard Component
-function StatCard({
-  title,
-  value,
-  icon: Icon,
-  iconColor = "text-(--primary)",
-  iconBgColor = "bg-(--primary)/10",
-  subValue,
-  trend,
-}: {
-  title: string;
-  value: string | number;
-  icon: LucideIcon;
-  iconColor?: string;
-  iconBgColor?: string;
-  subValue?: string;
-  trend?: { value: number; label: string };
-}) {
-  return (
-    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
-          <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate font-inter">
-            {title}
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
-              {typeof value === "number" ? value.toLocaleString() : value}
-            </div>
-            {trend && (
-              <div
-                className={`flex items-center gap-0.5 text-xs ${
-                  trend.value >= 0 ? "text-green-500" : "text-red-500"
-                }`}
-              >
-                {trend.value >= 0 ? (
-                  <TrendingUp className="w-3 h-3" />
-                ) : (
-                  <TrendingDown className="w-3 h-3" />
-                )}
-                <span>{Math.abs(trend.value)}%</span>
-              </div>
-            )}
-          </div>
-          {subValue && (
-            <div className="text-xs text-(--text-muted) font-inter">
-              {subValue}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // NPS Gauge Component
 function NPSGauge({ score }: { score: number }) {
   const getColor = () => {
@@ -277,7 +112,7 @@ function NPSGauge({ score }: { score: number }) {
   };
 
   return (
-    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+    <div className="bg-(--surface-elevated) rounded-(--radius-card) p-3 sm:p-4 border border-(--border)">
       <div className="text-xs text-(--text-muted) uppercase tracking-wide font-inter mb-2">
         Net Promoter Score
       </div>
@@ -381,7 +216,7 @@ function CustomResponseValue({
       <div className="flex items-center gap-2">
         <div
           className={`w-2.5 h-2.5 rounded-full ${
-            value ? "bg-green-500" : "bg-red-500"
+            value ? "bg-(--success)" : "bg-(--error)"
           }`}
         />
         <span className="text-sm text-(--text-primary) font-inter">
@@ -403,7 +238,7 @@ function CustomResponseValue({
                 key={star}
                 className={`w-3.5 h-3.5 ${
                   star <= value
-                    ? "text-amber-500 fill-amber-500"
+                    ? "text-(--warning) fill-(--warning)"
                     : "text-(--text-muted)"
                 }`}
               />
@@ -490,7 +325,7 @@ function CustomResponseValue({
         {entries.map(([key, val]) => (
           <div
             key={key}
-            className="bg-(--surface) rounded-lg p-2.5 border border-(--border)"
+            className="bg-(--surface) rounded-(--radius-control) p-2.5 border border-(--border)"
           >
             <p className="text-xs text-(--text-muted) font-inter mb-1 capitalize">
               {key
@@ -588,7 +423,7 @@ function FeedbackItem({
           {/* Ratings Row */}
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             {feedback.uiuxRating && (
-              <div className="bg-(--surface-elevated) rounded-lg p-3">
+              <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3">
                 <p className="text-xs text-(--text-muted) font-inter mb-1">
                   UI/UX Rating
                 </p>
@@ -601,7 +436,7 @@ function FeedbackItem({
               </div>
             )}
             {feedback.recommendScore && (
-              <div className="bg-(--surface-elevated) rounded-lg p-3">
+              <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3">
                 <p className="text-xs text-(--text-muted) font-inter mb-1">
                   Recommend Score
                 </p>
@@ -614,7 +449,7 @@ function FeedbackItem({
               </div>
             )}
             {feedback.userId && (
-              <div className="bg-(--surface-elevated) rounded-lg p-3">
+              <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3">
                 <p className="text-xs text-(--text-muted) font-inter mb-1">
                   Submitted by
                 </p>
@@ -640,7 +475,7 @@ function FeedbackItem({
                 <p className="text-xs sm:text-sm font-medium text-(--text-secondary) font-inter mb-2">
                   Feature Ratings
                 </p>
-                <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 space-y-2">
+                <div className="bg-(--surface-elevated) rounded-(--radius-control) p-2 sm:p-3 space-y-2">
                   {Object.entries(feedback.featureRatings).map(
                     ([feature, rating]) => (
                       <FeatureRatingBar
@@ -660,7 +495,7 @@ function FeedbackItem({
               <p className="text-xs sm:text-sm font-medium text-(--text-secondary) font-inter mb-1">
                 Most Useful Feature
               </p>
-              <p className="text-xs sm:text-sm text-(--text-primary) font-inter bg-(--surface-elevated) rounded-lg p-2.5 sm:p-3">
+              <p className="text-xs sm:text-sm text-(--text-primary) font-inter bg-(--surface-elevated) rounded-(--radius-control) p-2.5 sm:p-3">
                 {feedback.mostUsefulFeature}
               </p>
             </div>
@@ -672,7 +507,7 @@ function FeedbackItem({
               <p className="text-xs sm:text-sm font-medium text-(--text-secondary) font-inter mb-1">
                 Feature Requests
               </p>
-              <p className="text-xs sm:text-sm text-(--text-primary) font-inter bg-(--surface-elevated) rounded-lg p-2.5 sm:p-3 whitespace-pre-wrap wrap-break-word">
+              <p className="text-xs sm:text-sm text-(--text-primary) font-inter bg-(--surface-elevated) rounded-(--radius-control) p-2.5 sm:p-3 whitespace-pre-wrap wrap-break-word">
                 {feedback.featureRequests}
               </p>
             </div>
@@ -684,7 +519,7 @@ function FeedbackItem({
               <p className="text-xs sm:text-sm font-medium text-(--text-secondary) font-inter mb-1">
                 Additional Comments
               </p>
-              <p className="text-xs sm:text-sm text-(--text-primary) font-inter bg-(--surface-elevated) rounded-lg p-2.5 sm:p-3 whitespace-pre-wrap wrap-break-word">
+              <p className="text-xs sm:text-sm text-(--text-primary) font-inter bg-(--surface-elevated) rounded-(--radius-control) p-2.5 sm:p-3 whitespace-pre-wrap wrap-break-word">
                 {feedback.additionalComments}
               </p>
             </div>
@@ -703,7 +538,7 @@ function FeedbackItem({
                     ([key, value]) => (
                       <div
                         key={key}
-                        className="bg-(--surface-elevated) rounded-lg p-2.5 sm:p-3 border border-(--border)"
+                        className="bg-(--surface-elevated) rounded-(--radius-control) p-2.5 sm:p-3 border border-(--border)"
                       >
                         <p className="text-xs text-(--text-muted) font-inter mb-1.5 capitalize">
                           {key
@@ -742,7 +577,7 @@ function ResponseBarChart({
   data: Array<{ label: string; value: number; avgRating?: number }>;
 }) {
   const effectiveTheme = useEffectiveTheme();
-  const primaryColor = usePrimaryColor();
+  const primaryColor = useThemeColors()["--primary"];
   const isLight = effectiveTheme === "light";
   const textColor = isLight
     ? "rgba(17, 24, 39, 0.8)"
@@ -826,7 +661,7 @@ function RatingDistribution({
             <span className="text-xs text-(--text-muted) font-inter w-6 text-right">
               {rating}
             </span>
-            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+            <Star className="w-3.5 h-3.5 text-(--warning) fill-(--warning)" />
             <div className="flex-1 h-2 bg-(--surface) rounded-full overflow-hidden">
               <div
                 className="h-full bg-(--primary) rounded-full transition-all duration-500"
@@ -862,17 +697,17 @@ function NPSBreakdown({
     {
       label: "Promoters (9-10)",
       value: breakdown.promoters,
-      color: "bg-green-500",
+      color: "bg-(--success)",
     },
     {
       label: "Passives (7-8)",
       value: breakdown.passives,
-      color: "bg-amber-500",
+      color: "bg-(--warning)",
     },
     {
       label: "Detractors (1-6)",
       value: breakdown.detractors,
-      color: "bg-red-500",
+      color: "bg-(--error)",
     },
   ];
 
@@ -980,21 +815,25 @@ function FormSectionToggle({
     <button
       type="button"
       onClick={onToggle}
-      className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all text-sm font-inter ${
+      className={`flex items-center gap-2 px-3 py-2 rounded-(--radius-control) border transition-all text-sm font-inter ${
         enabled
           ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
           : "bg-(--surface-elevated) border-(--border) text-(--text-muted) hover:border-(--text-muted)"
       }`}
     >
       <div
-        className={`w-3 h-3 rounded-sm border transition-all ${
+        className={`w-3 h-3 rounded-(--radius-badge) border transition-all ${
           enabled
             ? "bg-(--primary) border-(--primary)"
             : "border-(--text-muted)"
         }`}
       >
         {enabled && (
-          <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+          <svg
+            className="w-3 h-3 text-(--on-primary)"
+            viewBox="0 0 12 12"
+            fill="none"
+          >
             <path
               d="M3 6L5 8L9 4"
               stroke="currentColor"
@@ -1266,8 +1105,8 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="timer-card max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+    <Modal open onClose={onClose} size="2xl" mobile="fullscreen">
+      <Modal.Body>
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div className="min-w-0 flex-1">
             <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
@@ -1279,7 +1118,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           </div>
           <button
             onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -1287,7 +1126,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Form Configuration */}
-          <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
+          <div className="bg-(--surface-elevated) rounded-(--radius-card) p-3 sm:p-4 border border-(--border)">
             <div className="flex items-center gap-2 mb-3">
               <Settings className="w-4 h-4 text-(--text-muted)" />
               <h3 className="text-sm font-medium text-(--text-primary) font-inter">
@@ -1331,9 +1170,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* Survey Type & Version */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-                Survey Type
-              </label>
+              <label className="type-label block mb-2">Survey Type</label>
               <AdminSelect
                 value={surveyType}
                 onChange={(val) => setSurveyType(val)}
@@ -1347,24 +1184,19 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                 fullWidth
               />
               {surveyType === "__custom" && (
-                <input
-                  type="text"
+                <Input
                   value={customSurveyType}
                   onChange={(e) => setCustomSurveyType(e.target.value)}
-                  className="w-full mt-2 px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
+                  className="w-full mt-2 px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
                   placeholder="Enter custom survey type..."
                 />
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-                Version
-              </label>
-              <input
-                type="text"
+              <label className="type-label block mb-2">Version</label>
+              <Input
                 value={surveyVersion}
                 onChange={(e) => setSurveyVersion(e.target.value)}
-                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
                 placeholder="2.0"
               />
             </div>
@@ -1373,7 +1205,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* UI/UX Rating */}
           {enabledSections.uiuxRating && (
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+              <label className="type-label block mb-2">
                 UI/UX Rating (1-5)
               </label>
               <div className="flex gap-2">
@@ -1384,12 +1216,12 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     onClick={() =>
                       setUiuxRating(uiuxRating === rating ? 0 : rating)
                     }
-                    className="p-2 rounded-lg transition-colors hover:bg-(--surface-elevated)"
+                    className="p-2 rounded-(--radius-control) transition-colors hover:bg-(--surface-elevated)"
                   >
                     <Star
                       className={`w-6 h-6 ${
                         rating <= uiuxRating
-                          ? "text-amber-500 fill-amber-500"
+                          ? "text-(--warning) fill-(--warning)"
                           : "text-(--text-muted)"
                       }`}
                     />
@@ -1418,7 +1250,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     key={feature.key}
                     type="button"
                     onClick={() => toggleFeature(feature.key)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-inter transition-colors ${
+                    className={`px-2.5 py-1 rounded-(--radius-badge) text-xs font-inter transition-colors ${
                       selectedFeatures.includes(feature.key)
                         ? "bg-(--primary)/10 text-(--primary) border border-(--primary)/30"
                         : "bg-(--surface-elevated) text-(--text-muted) border border-(--border)"
@@ -1433,19 +1265,18 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
               <div className="mb-3">
                 {extraFeatures.map((ef, index) => (
                   <div key={index} className="flex gap-2 mb-2">
-                    <input
-                      type="text"
+                    <Input
                       value={ef.label}
                       onChange={(e) =>
                         updateExtraFeature(index, "label", e.target.value)
                       }
-                      className="flex-1 px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
+                      className="flex-1 px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
                       placeholder="Feature name..."
                     />
                     <button
                       type="button"
                       onClick={() => removeExtraFeature(index)}
-                      className="p-2 text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 rounded-lg transition-colors"
+                      className="p-2 text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 rounded-(--radius-control) transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -1454,7 +1285,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                 <button
                   type="button"
                   onClick={addExtraFeature}
-                  className="flex items-center gap-1 px-2 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-secondary) transition-colors font-inter"
+                  className="flex items-center gap-1 px-2 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-badge) text-(--text-secondary) transition-colors font-inter"
                 >
                   <Plus className="w-3 h-3" />
                   Add Feature
@@ -1462,7 +1293,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
               </div>
 
               {/* Ratings */}
-              <div className="space-y-3 bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+              <div className="space-y-3 bg-(--surface-elevated) rounded-(--radius-control) p-2 sm:p-3 border border-(--border)">
                 {allFeatures
                   .filter((f) => selectedFeatures.includes(f.key))
                   .map((feature) => (
@@ -1492,7 +1323,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                             <Star
                               className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
                                 rating <= (featureRatings[feature.key] || 0)
-                                  ? "text-amber-500 fill-amber-500"
+                                  ? "text-(--warning) fill-(--warning)"
                                   : "text-(--text-muted)"
                               }`}
                             />
@@ -1513,7 +1344,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* Recommend Score (NPS) */}
           {enabledSections.recommendScore && (
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+              <label className="type-label block mb-2">
                 Would Recommend (1-10 NPS)
               </label>
               <div className="flex gap-1 flex-wrap">
@@ -1524,9 +1355,9 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     onClick={() =>
                       setRecommendScore(recommendScore === score ? 0 : score)
                     }
-                    className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                    className={`w-8 h-8 rounded-(--radius-control) text-sm font-medium transition-colors ${
                       score === recommendScore
-                        ? "bg-(--primary) text-white"
+                        ? "bg-(--primary) text-(--on-primary)"
                         : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border)"
                     }`}
                   >
@@ -1540,7 +1371,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* Most Useful Feature */}
           {enabledSections.mostUsefulFeature && (
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+              <label className="type-label block mb-2">
                 Most Useful Feature
               </label>
               <AdminSelect
@@ -1559,14 +1390,11 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* Feature Requests */}
           {enabledSections.featureRequests && (
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-                Feature Requests
-              </label>
-              <textarea
+              <label className="type-label block mb-2">Feature Requests</label>
+              <Textarea
                 value={featureRequests}
                 onChange={(e) => setFeatureRequests(e.target.value)}
                 rows={2}
-                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) resize-none font-inter"
                 placeholder="Enter feature requests..."
               />
             </div>
@@ -1575,14 +1403,13 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
           {/* Additional Comments */}
           {enabledSections.additionalComments && (
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+              <label className="type-label block mb-2">
                 Additional Comments
               </label>
-              <textarea
+              <Textarea
                 value={additionalComments}
                 onChange={(e) => setAdditionalComments(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) resize-none font-inter"
                 placeholder="Enter additional comments..."
               />
             </div>
@@ -1597,7 +1424,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
               <button
                 type="button"
                 onClick={addCustomQuestion}
-                className="flex items-center gap-1 px-2 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-secondary) transition-colors font-inter"
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-badge) text-(--text-secondary) transition-colors font-inter"
               >
                 <Plus className="w-3 h-3" />
                 Add Question
@@ -1608,7 +1435,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                 {customQuestions.map((question, idx) => (
                   <div
                     key={question.id}
-                    className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border) space-y-3"
+                    className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border) space-y-3"
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-(--text-muted) font-inter">
@@ -1624,15 +1451,14 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                     </div>
 
                     {/* Question Label */}
-                    <input
-                      type="text"
+                    <Input
                       value={question.label}
                       onChange={(e) =>
                         updateCustomQuestion(question.id, {
                           label: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
+                      className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-(--radius-control) text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
                       placeholder="Enter question..."
                     />
 
@@ -1659,7 +1485,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                             required: !question.required,
                           })
                         }
-                        className={`px-2.5 py-2 rounded-lg text-xs font-inter border transition-colors text-center ${
+                        className={`px-2.5 py-2 rounded-(--radius-control) text-xs font-inter border transition-colors text-center ${
                           question.required
                             ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
                             : "bg-(--surface) border-(--border) text-(--text-muted)"
@@ -1671,15 +1497,14 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
 
                     {/* Options for select type */}
                     {question.type === "select" && (
-                      <input
-                        type="text"
+                      <Input
                         value={question.options}
                         onChange={(e) =>
                           updateCustomQuestion(question.id, {
                             options: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
+                        className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-(--radius-control) text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
                         placeholder="Comma-separated options (e.g. Option A, Option B, Option C)"
                       />
                     )}
@@ -1691,24 +1516,23 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                           Answer:
                         </p>
                         {question.type === "text" && (
-                          <input
-                            type="text"
+                          <Input
                             value={(customAnswers[question.id] as string) || ""}
                             onChange={(e) =>
                               updateCustomAnswer(question.id, e.target.value)
                             }
-                            className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
+                            className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-(--radius-control) text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter"
                             placeholder="Enter answer..."
                           />
                         )}
                         {question.type === "textarea" && (
-                          <textarea
+                          <Textarea
                             value={(customAnswers[question.id] as string) || ""}
                             onChange={(e) =>
                               updateCustomAnswer(question.id, e.target.value)
                             }
                             rows={2}
-                            className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) resize-none font-inter"
+                            className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-(--radius-control) text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) resize-none font-inter"
                             placeholder="Enter answer..."
                           />
                         )}
@@ -1731,7 +1555,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                                     r <=
                                     ((customAnswers[question.id] as number) ||
                                       0)
-                                      ? "text-amber-500 fill-amber-500"
+                                      ? "text-(--warning) fill-(--warning)"
                                       : "text-(--text-muted)"
                                   }`}
                                 />
@@ -1751,9 +1575,9 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                                     customAnswers[question.id] === s ? 0 : s,
                                   )
                                 }
-                                className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                                className={`w-8 h-8 rounded-(--radius-control) text-sm font-medium transition-colors ${
                                   s === customAnswers[question.id]
-                                    ? "bg-(--primary) text-white"
+                                    ? "bg-(--primary) text-(--on-primary)"
                                     : "bg-(--surface) text-(--text-secondary) hover:bg-(--border)"
                                 }`}
                               >
@@ -1764,7 +1588,7 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
                         )}
                         {question.type === "select" && (
                           <AdminSelect
-                            value={((customAnswers[question.id] as string) || "")}
+                            value={(customAnswers[question.id] as string) || ""}
                             onChange={(val) =>
                               updateCustomAnswer(question.id, val)
                             }
@@ -1813,8 +1637,8 @@ function FeedbackFormModal({ isOpen, onClose }: FeedbackFormModalProps) {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 }
 
@@ -1913,7 +1737,7 @@ export default function AdminFeedback() {
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               onClick={() => setIsFeedbackModalOpen(true)}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--primary) hover:bg-(--primary-hover) rounded-lg text-white transition-colors font-inter"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--primary) hover:bg-(--primary-hover) rounded-(--radius-control) text-(--on-primary) transition-colors font-inter"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden xs:inline">Create Form</span>
@@ -1922,7 +1746,7 @@ export default function AdminFeedback() {
             <button
               onClick={handleExportStats}
               disabled={!detailedStats}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="w-4 h-4" />
               <span className="hidden sm:inline">Export Analytics</span>
@@ -1933,7 +1757,7 @@ export default function AdminFeedback() {
       </div>
 
       {/* Overview Stats Grid */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title="Overview Statistics"
         defaultOpen={true}
         storageKey="admin-feedback-stats-open"
@@ -1945,7 +1769,7 @@ export default function AdminFeedback() {
               [...Array(4)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border) animate-pulse"
+                  className="bg-(--surface-elevated) rounded-(--radius-card) p-3 sm:p-4 border border-(--border) animate-pulse"
                 >
                   <div className="h-4 w-24 bg-(--surface) rounded mb-2" />
                   <div className="h-8 w-16 bg-(--surface) rounded" />
@@ -1953,26 +1777,26 @@ export default function AdminFeedback() {
               ))
             ) : (
               <>
-                <StatCard
+                <AdminStatCard
                   title="Total Responses"
                   value={feedbackStats.totalResponses}
                   icon={MessageSquare}
-                  iconColor="text-blue-500"
-                  iconBgColor="bg-blue-500/10"
+                  iconColor="text-(--info)"
+                  iconBgColor="bg-(--info)/10"
                 />
-                <StatCard
+                <AdminStatCard
                   title="Avg UI/UX Rating"
                   value={`${feedbackStats.averageUiuxRating}/5`}
                   icon={Star}
-                  iconColor="text-amber-500"
-                  iconBgColor="bg-amber-500/10"
+                  iconColor="text-(--warning)"
+                  iconBgColor="bg-(--warning)/10"
                 />
-                <StatCard
+                <AdminStatCard
                   title="Avg Recommend Score"
                   value={`${feedbackStats.averageRecommendScore}/10`}
                   icon={ThumbsUp}
-                  iconColor="text-green-500"
-                  iconBgColor="bg-green-500/10"
+                  iconColor="text-(--success)"
+                  iconBgColor="bg-(--success)/10"
                 />
                 <NPSGauge score={feedbackStats.npsScore} />
               </>
@@ -1982,54 +1806,54 @@ export default function AdminFeedback() {
           {/* Secondary Stats Row */}
           {detailedStats && (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              <StatCard
+              <AdminStatCard
                 title="This Week"
                 value={detailedStats.responsesThisWeek}
                 icon={TrendingUp}
-                iconColor="text-green-500"
-                iconBgColor="bg-green-500/10"
+                iconColor="text-(--success)"
+                iconBgColor="bg-(--success)/10"
                 trend={{
                   value: detailedStats.responseRate.weekly,
                   label: "vs last week",
                 }}
               />
-              <StatCard
+              <AdminStatCard
                 title="This Month"
                 value={detailedStats.responsesThisMonth}
                 icon={TrendingUp}
-                iconColor="text-blue-500"
-                iconBgColor="bg-blue-500/10"
+                iconColor="text-(--info)"
+                iconBgColor="bg-(--info)/10"
                 trend={{
                   value: detailedStats.responseRate.monthly,
                   label: "vs last month",
                 }}
               />
-              <StatCard
+              <AdminStatCard
                 title="With Comments"
                 value={detailedStats.responsesWithComments}
                 icon={FileText}
-                iconColor="text-purple-500"
-                iconBgColor="bg-purple-500/10"
+                iconColor="text-(--accent)"
+                iconBgColor="bg-(--accent)/10"
                 subValue={`${detailedStats.totalResponses > 0 ? ((detailedStats.responsesWithComments / detailedStats.totalResponses) * 100).toFixed(0) : 0}% of total`}
               />
-              <StatCard
+              <AdminStatCard
                 title="Logged In Users"
                 value={detailedStats.loggedInResponses ?? 0}
                 icon={Users}
-                iconColor="text-cyan-500"
-                iconBgColor="bg-cyan-500/10"
+                iconColor="text-(--primary)"
+                iconBgColor="bg-(--primary)/10"
                 subValue={`${detailedStats.anonymousResponses ?? 0} anonymous`}
               />
             </div>
           )}
         </div>
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* Analytics Grid */}
       {detailedStats && (
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           {/* Response Trend */}
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Weekly Response Trend"
             defaultOpen={true}
             storageKey="admin-feedback-trend-open"
@@ -2041,16 +1865,16 @@ export default function AdminFeedback() {
                 avgRating: w.avgRating,
               }))}
             />
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
 
           {/* NPS Breakdown */}
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="NPS Breakdown"
             defaultOpen={true}
             storageKey="admin-feedback-nps-breakdown-open"
           >
             <NPSBreakdown breakdown={detailedStats.npsBreakdown} />
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
         </div>
       )}
 
@@ -2058,7 +1882,7 @@ export default function AdminFeedback() {
       {detailedStats && (
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           {/* UI/UX Rating Distribution */}
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="UI/UX Rating Distribution"
             defaultOpen={true}
             storageKey="admin-feedback-uiux-dist-open"
@@ -2067,10 +1891,10 @@ export default function AdminFeedback() {
               distribution={detailedStats.uiuxRatingDistribution}
               maxRating={5}
             />
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
 
           {/* Survey Types Breakdown */}
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Survey Type Breakdown"
             defaultOpen={true}
             storageKey="admin-feedback-survey-types-open"
@@ -2097,14 +1921,14 @@ export default function AdminFeedback() {
                 ),
               )}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
         </div>
       )}
 
       {/* Most Useful Features */}
       {detailedStats && detailedStats.mostUsefulFeatures.length > 0 && (
         <div className="mt-6">
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Most Mentioned Features"
             defaultOpen={true}
             storageKey="admin-feedback-useful-features-open"
@@ -2113,7 +1937,7 @@ export default function AdminFeedback() {
               {detailedStats.mostUsefulFeatures.slice(0, 9).map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between bg-(--surface-elevated) rounded-lg p-2.5 border border-(--border)"
+                  className="flex items-center justify-between bg-(--surface-elevated) rounded-(--radius-control) p-2.5 border border-(--border)"
                 >
                   <span className="text-sm text-(--text-secondary) font-inter truncate capitalize">
                     {item.feature}
@@ -2124,7 +1948,7 @@ export default function AdminFeedback() {
                 </div>
               ))}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
         </div>
       )}
 
@@ -2133,7 +1957,7 @@ export default function AdminFeedback() {
         feedbackStats.featureAverages &&
         Object.keys(feedbackStats.featureAverages).length > 0 && (
           <div className="mt-6">
-            <CollapsibleCard
+            <AdminCollapsibleCard
               title="Feature Ratings Overview"
               defaultOpen={true}
               storageKey="admin-feedback-feature-ratings-open"
@@ -2149,13 +1973,13 @@ export default function AdminFeedback() {
                   ),
                 )}
               </div>
-            </CollapsibleCard>
+            </AdminCollapsibleCard>
           </div>
         )}
 
       {/* Feedback List */}
       <div className="mt-6">
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title={`Recent Submissions (${feedbackList?.length || 0})`}
           defaultOpen={true}
           storageKey="admin-feedback-submissions-open"
@@ -2163,7 +1987,7 @@ export default function AdminFeedback() {
             <button
               onClick={handleExportFeedback}
               disabled={!feedbackList || feedbackList.length === 0}
-              className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-md text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-badge) text-(--text-secondary) transition-colors font-inter disabled:opacity-50 disabled:cursor-not-allowed"
               title="Export feedback as CSV"
             >
               <Download className="w-3.5 h-3.5" />
@@ -2205,7 +2029,7 @@ export default function AdminFeedback() {
               ))}
             </div>
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Feedback Form Modal */}

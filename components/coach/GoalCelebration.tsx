@@ -250,7 +250,7 @@ export default function GoalCelebration({
   };
 
   return (
-    <div className="fixed inset-0 overflow-hidden z-50">
+    <div className="fixed inset-0 overflow-hidden z-(--z-tour)">
       {/* Blur backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto" />
       {/* Confetti pieces */}
@@ -283,7 +283,7 @@ export default function GoalCelebration({
             "goal-celebration-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
         }}
       >
-        <div className="flex flex-col items-center gap-2 sm:gap-3 px-6 sm:px-8 py-5 sm:py-6 rounded-xl bg-(--surface) border-2 border-(--success) shadow-2xl max-w-[90vw] sm:max-w-md">
+        <div className="flex flex-col items-center gap-2 sm:gap-3 px-6 sm:px-8 py-5 sm:py-6 rounded-(--radius-panel) bg-(--surface) border-2 border-(--success) shadow-2xl max-w-[90vw] sm:max-w-md">
           <div className="flex items-center gap-2">
             <PartyPopper className="w-5 h-5 sm:w-6 sm:h-6 text-(--success)" />
             <Trophy className="w-7 h-7 sm:w-8 sm:h-8 text-(--success)" />

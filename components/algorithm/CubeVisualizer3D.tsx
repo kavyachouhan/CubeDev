@@ -8,6 +8,7 @@ import {
   FastForward,
   AlertTriangle,
 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 import { useTheme } from "@/lib/theme-context";
 import CubeViewSelector from "@/components/settings/CubeViewSelector";
 
@@ -211,14 +212,14 @@ export default function CubeVisualizer3D({
   return (
     <div className="w-full">
       {/* Cube Container */}
-      <div className="relative bg-(--surface-elevated) rounded-lg overflow-hidden border border-(--border)">
+      <div className="relative bg-(--surface-elevated) rounded-(--radius-control) overflow-hidden border border-(--border)">
         {isLoading && (
           <div
             className="absolute inset-0 flex items-center justify-center z-10"
             style={{ height }}
           >
             <div className="text-center">
-              <div className="animate-spin w-8 h-8 border-3 border-(--primary) border-t-transparent rounded-full mx-auto mb-2"></div>
+              <Spinner size="lg" className="text-(--primary) mx-auto mb-2" />
               <div className="text-sm text-(--text-muted)">
                 Loading cube...
               </div>
@@ -232,7 +233,7 @@ export default function CubeVisualizer3D({
             style={{ height }}
           >
             <div className="text-center">
-              <AlertTriangle className="w-6 h-6 text-yellow-500 mx-auto mb-2" />
+              <AlertTriangle className="w-6 h-6 text-(--warning) mx-auto mb-2" />
               <div className="text-sm text-(--text-secondary) mb-1">
                 Couldn&apos;t render this case
               </div>
@@ -268,7 +269,7 @@ export default function CubeVisualizer3D({
           <div className="flex items-center justify-center gap-2">
             <button
               onClick={handleReset}
-              className="p-2 bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-lg transition-colors"
+              className="p-2 bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-(--radius-control) transition-colors"
               title="Reset to start"
             >
               <RotateCcw className="w-5 h-5 text-(--text-secondary)" />
@@ -276,7 +277,7 @@ export default function CubeVisualizer3D({
 
             <button
               onClick={handlePlayPause}
-              className="px-4 sm:px-6 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors flex items-center gap-2"
+              className="px-4 sm:px-6 py-2 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors flex items-center gap-2"
             >
               {isPlaying ? (
                 <>
@@ -293,7 +294,7 @@ export default function CubeVisualizer3D({
 
             <button
               onClick={handleVerify}
-              className="p-2 bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-lg transition-colors"
+              className="p-2 bg-(--surface-elevated) hover:bg-(--surface) border border-(--border) rounded-(--radius-control) transition-colors"
               title="Verify (show solved state after algorithm)"
             >
               <FastForward className="w-5 h-5 text-(--text-secondary)" />
@@ -310,7 +311,7 @@ export default function CubeVisualizer3D({
                   onClick={() => handleSpeedChange(speed)}
                   className={`px-3 py-1 rounded text-sm transition-colors ${
                     playbackSpeed === speed
-                      ? "bg-(--primary) text-white"
+                      ? "bg-(--primary) text-(--on-primary)"
                       : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--surface) border border-(--border)"
                   }`}
                 >
@@ -321,7 +322,7 @@ export default function CubeVisualizer3D({
           </div>
 
           {/* Algorithm Display */}
-          <div className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border) overflow-x-auto">
+          <div className="p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) overflow-x-auto">
             <p className="text-center font-mono text-sm text-(--text-primary) whitespace-nowrap">
               {algorithm}
             </p>

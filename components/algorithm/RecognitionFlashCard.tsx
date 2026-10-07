@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Eye, Clock, AlertTriangle } from "lucide-react";
+import { AlertTriangle, Check, Clock, Eye, X } from "lucide-react";
 import CubeVisualizer3D from "./CubeVisualizer3D";
 
 interface RecognitionFlashCardProps {
@@ -136,7 +136,7 @@ export default function RecognitionFlashCard({
             </p>
             <button
               onClick={onStart}
-              className="px-8 py-4 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium text-lg"
+              className="px-8 py-4 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-medium text-lg"
             >
               {isInfiniteMode
                 ? "Start Drilling"
@@ -153,7 +153,7 @@ export default function RecognitionFlashCard({
             {/* Timer */}
             {!revealed && (
               <div className="flex justify-center mb-4">
-                <div className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) rounded-lg">
+                <div className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) rounded-(--radius-control)">
                   <Clock className="w-4 h-4 text-(--primary)" />
                   <span className="text-lg font-mono text-(--text-primary) font-statement">
                     {Math.floor((currentTime - startTime) / 100) / 10}s
@@ -165,12 +165,12 @@ export default function RecognitionFlashCard({
             {/* Flash Countdown for Pattern Memory */}
             {isFlashing && usePatternMemory && (
               <div className="flex justify-center mb-4">
-                <div className="flex items-center gap-2 px-6 py-3 bg-orange-500/20 border border-orange-500/40 rounded-lg">
-                  <Eye className="w-5 h-5 text-orange-500 animate-pulse" />
-                  <span className="text-xl font-bold font-mono text-orange-500">
+                <div className="flex items-center gap-2 px-6 py-3 bg-(--warning)/10 border border-(--warning)/40 rounded-(--radius-control)">
+                  <Eye className="w-5 h-5 text-(--warning) animate-pulse" />
+                  <span className="text-xl font-bold font-mono text-(--warning)">
                     {(flashTimeLeft / 1000).toFixed(1)}s
                   </span>
-                  <span className="text-sm text-orange-500/80">memorize!</span>
+                  <span className="text-sm text-(--warning)/80">memorize!</span>
                 </div>
               </div>
             )}
@@ -181,7 +181,7 @@ export default function RecognitionFlashCard({
                 // Flashing state
                 setupMoves && hasValidNotation ? (
                   <div className="w-full max-w-md relative">
-                    <div className="absolute inset-0 bg-linear-to-br from-orange-500/20 to-purple-500/20 rounded-lg animate-pulse z-10 pointer-events-none" />
+                    <div className="absolute inset-0 bg-(--warning)/15 rounded-(--radius-control) animate-pulse z-10 pointer-events-none" />
                     <CubeVisualizer3D
                       algorithm={setupMoves}
                       puzzle={puzzleType as any}
@@ -193,8 +193,8 @@ export default function RecognitionFlashCard({
                     />
                   </div>
                 ) : setupMoves && !hasValidNotation ? (
-                  <div className="w-full max-w-md h-75 bg-(--surface-elevated) rounded-lg flex items-center justify-center border border-(--border) relative">
-                    <div className="absolute inset-0 bg-orange-500/5 rounded-lg animate-pulse z-10 pointer-events-none" />
+                  <div className="w-full max-w-md h-75 bg-(--surface-elevated) rounded-(--radius-control) flex items-center justify-center border border-(--border) relative">
+                    <div className="absolute inset-0 bg-(--warning)/10 rounded-(--radius-control) animate-pulse z-10 pointer-events-none" />
                     <div className="text-center px-6 z-20">
                       <p className="font-mono text-lg text-(--text-primary) break-all leading-relaxed">
                         {setupMoves}
@@ -203,17 +203,17 @@ export default function RecognitionFlashCard({
                   </div>
                 ) : caseImage ? (
                   <div className="relative">
-                    <div className="absolute inset-0 bg-linear-to-br from-orange-500/20 to-purple-500/20 rounded-lg animate-pulse z-10 pointer-events-none" />
+                    <div className="absolute inset-0 bg-(--warning)/15 rounded-(--radius-control) animate-pulse z-10 pointer-events-none" />
                     <img
                       src={caseImage}
                       alt={`${caseName} case`}
-                      className="max-w-full h-auto rounded-lg"
+                      className="max-w-full h-auto rounded-(--radius-control)"
                     />
                   </div>
                 ) : null
               ) : !isFlashing && usePatternMemory && !revealed ? (
                 // Hidden state in pattern memory mode
-                <div className="w-full max-w-md h-75 bg-(--surface-elevated) rounded-lg flex items-center justify-center border-2 border-dashed border-(--border)">
+                <div className="w-full max-w-md h-75 bg-(--surface-elevated) rounded-(--radius-control) flex items-center justify-center border-2 border-dashed border-(--border)">
                   <div className="text-center text-(--text-muted)">
                     <Eye className="w-16 h-16 mx-auto mb-3 opacity-30" />
                     <p className="text-lg font-semibold mb-1">
@@ -236,10 +236,10 @@ export default function RecognitionFlashCard({
               ) : setupMoves && !hasValidNotation ? (
                 // If notation is not compatible with 3D player, show moves in text form with warning
                 <div className="w-full max-w-md">
-                  <div className="bg-(--surface-elevated) rounded-lg border border-(--border) p-6 min-h-62.5 flex flex-col items-center justify-center">
+                  <div className="bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) p-6 min-h-62.5 flex flex-col items-center justify-center">
                     <div className="flex items-center gap-2 mb-4">
-                      <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                      <span className="text-xs text-yellow-500/80">
+                      <AlertTriangle className="w-4 h-4 text-(--warning)" />
+                      <span className="text-xs text-(--warning)/80">
                         Non-standard notation
                       </span>
                     </div>
@@ -257,10 +257,10 @@ export default function RecognitionFlashCard({
                 <img
                   src={caseImage}
                   alt={`${caseName} case`}
-                  className="max-w-full h-auto rounded-lg"
+                  className="max-w-full h-auto rounded-(--radius-control)"
                 />
               ) : (
-                <div className="w-48 h-48 bg-(--surface-elevated) rounded-lg flex items-center justify-center border-2 border-dashed border-(--border)">
+                <div className="w-48 h-48 bg-(--surface-elevated) rounded-(--radius-control) flex items-center justify-center border-2 border-dashed border-(--border)">
                   <div className="text-center text-(--text-muted)">
                     <Eye className="w-12 h-12 mx-auto mb-2 opacity-50" />
                     <p className="text-sm">
@@ -277,7 +277,7 @@ export default function RecognitionFlashCard({
                 !isFlashing &&
                 setupMoves &&
                 !(isCustomAlgorithm && !hasValidNotation) && (
-                  <div className="mt-4 p-3 bg-(--surface-elevated) rounded-lg">
+                  <div className="mt-4 p-3 bg-(--surface-elevated) rounded-(--radius-control)">
                     <p className="text-xs text-(--text-muted) text-center mb-1">
                       Setup
                     </p>
@@ -308,7 +308,7 @@ export default function RecognitionFlashCard({
             {revealed && (
               <div className="space-y-4">
                 {/* Case Name */}
-                <div className="text-center p-4 bg-(--primary)/10 border border-(--primary)/20 rounded-lg">
+                <div className="text-center p-4 bg-(--primary)/10 border border-(--primary)/20 rounded-(--radius-control)">
                   <h3 className="text-3xl font-bold text-(--primary) font-statement">
                     {caseName}
                   </h3>
@@ -321,7 +321,7 @@ export default function RecognitionFlashCard({
 
                 {/* Algorithm */}
                 {algorithm && (
-                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <h4 className="text-sm font-semibold text-(--text-primary) mb-2">
                       Algorithm:
                     </h4>
@@ -333,7 +333,7 @@ export default function RecognitionFlashCard({
 
                 {/* Recognition Tips - show hints for predefined, show notation info for custom */}
                 {recognition && recognition.length > 0 ? (
-                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <h4 className="text-sm font-semibold text-(--text-primary) mb-2">
                       Recognition Tips:
                     </h4>
@@ -352,7 +352,7 @@ export default function RecognitionFlashCard({
                     </ul>
                   </div>
                 ) : isCustomAlgorithm ? (
-                  <div className="p-4 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
                     <h4 className="text-sm font-semibold text-(--text-primary) mb-2">
                       Custom Algorithm
                     </h4>
@@ -370,7 +370,7 @@ export default function RecognitionFlashCard({
               {!revealed ? (
                 <button
                   onClick={handleReveal}
-                  className="w-full py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium"
+                  className="w-full py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-medium"
                 >
                   Show Answer
                 </button>
@@ -385,16 +385,16 @@ export default function RecognitionFlashCard({
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       onClick={() => handleRating("again")}
-                      className="py-3 px-4 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                      className="py-3 px-4 bg-(--error)/10 hover:bg-(--error)/10 border border-(--error)/25 text-(--error) rounded-(--radius-control) transition-colors font-medium flex items-center justify-center gap-2"
                     >
-                      <span className="text-lg">✗</span>
+                      <X className="w-5 h-5" strokeWidth={2.5} aria-hidden />
                       <span>Incorrect</span>
                     </button>
                     <button
                       onClick={() => handleRating("good")}
-                      className="py-3 px-4 bg-green-500/10 hover:bg-green-500/20 border border-green-500/20 text-green-500 rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                      className="py-3 px-4 bg-(--success)/10 hover:bg-(--success)/10 border border-(--success)/25 text-(--success) rounded-(--radius-control) transition-colors font-medium flex items-center justify-center gap-2"
                     >
-                      <span className="text-lg">✓</span>
+                      <Check className="w-5 h-5" strokeWidth={2.5} aria-hidden />
                       <span>Correct</span>
                     </button>
                   </div>
@@ -413,7 +413,7 @@ export default function RecognitionFlashCard({
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     <button
                       onClick={() => handleRating("again")}
-                      className="py-3 px-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 rounded-lg transition-colors font-medium text-sm"
+                      className="py-3 px-2 bg-(--error)/10 hover:bg-(--error)/10 border border-(--error)/25 text-(--error) rounded-(--radius-control) transition-colors font-medium text-sm"
                     >
                       <div className="font-bold">Again</div>
                       <div className="text-xs opacity-75 mt-1">
@@ -422,7 +422,7 @@ export default function RecognitionFlashCard({
                     </button>
                     <button
                       onClick={() => handleRating("hard")}
-                      className="py-3 px-2 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 text-orange-500 rounded-lg transition-colors font-medium text-sm"
+                      className="py-3 px-2 bg-(--warning)/10 hover:bg-(--warning)/10 border border-(--warning)/25 text-(--warning) rounded-(--radius-control) transition-colors font-medium text-sm"
                     >
                       <div className="font-bold">Hard</div>
                       <div className="text-xs opacity-75 mt-1">
@@ -431,14 +431,14 @@ export default function RecognitionFlashCard({
                     </button>
                     <button
                       onClick={() => handleRating("good")}
-                      className="py-3 px-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-500 rounded-lg transition-colors font-medium text-sm"
+                      className="py-3 px-2 bg-(--primary)/10 hover:bg-(--primary)/10 border border-(--primary)/25 text-(--primary) rounded-(--radius-control) transition-colors font-medium text-sm"
                     >
                       <div className="font-bold">Good</div>
                       <div className="text-xs opacity-75 mt-1">Normal</div>
                     </button>
                     <button
                       onClick={() => handleRating("easy")}
-                      className="py-3 px-2 bg-green-500/10 hover:bg-green-500/20 border border-green-500/20 text-green-500 rounded-lg transition-colors font-medium text-sm"
+                      className="py-3 px-2 bg-(--success)/10 hover:bg-(--success)/10 border border-(--success)/25 text-(--success) rounded-(--radius-control) transition-colors font-medium text-sm"
                     >
                       <div className="font-bold">Easy</div>
                       <div className="text-xs opacity-75 mt-1">Instantly</div>
@@ -449,7 +449,7 @@ export default function RecognitionFlashCard({
                 // Standard Next Case button
                 <button
                   onClick={() => handleRating("good")}
-                  className="w-full py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-medium"
+                  className="w-full py-3 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-medium"
                 >
                   Next Case
                 </button>

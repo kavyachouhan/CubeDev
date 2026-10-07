@@ -11,6 +11,8 @@ import {
   Info,
   Target,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 interface JudgeError {
   id: string;
@@ -301,25 +303,25 @@ export default function JudgeErrorSimulator({
         <div className="mt-4 space-y-4">
           {/* Stats Overview */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div className="p-2 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-2 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-lg font-bold text-(--text-primary)">
                 {stats.totalAttempts}
               </div>
               <div className="text-xs text-(--text-muted)">Total</div>
             </div>
-            <div className="p-2 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-2 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-lg font-bold text-(--success)">
                 {stats.correctDecisions}
               </div>
               <div className="text-xs text-(--text-muted)">Correct</div>
             </div>
-            <div className="p-2 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-2 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-lg font-bold text-(--warning)">
                 {stats.falsePositives}
               </div>
               <div className="text-xs text-(--text-muted)">False +2</div>
             </div>
-            <div className="p-2 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-2 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-lg font-bold text-(--error)">
                 {stats.falseNegatives}
               </div>
@@ -329,25 +331,17 @@ export default function JudgeErrorSimulator({
 
           {/* Scenario Area */}
           {!currentScenario ? (
-            <div className="p-8 text-center border-2 border-dashed border-(--border) rounded-xl">
-              <AlertTriangle className="w-12 h-12 text-(--text-muted) mx-auto mb-4" />
-              <h4 className="text-lg font-medium text-(--text-primary) mb-2">
-                Judge Decision Practice
-              </h4>
-              <p className="text-sm text-(--text-muted) mb-4 max-w-md mx-auto">
-                Practice identifying whether situations require a +2 penalty
-                according to WCA regulations.
-              </p>
-              <button
-                onClick={startPractice}
-                className="px-6 py-3 bg-(--primary) text-white font-medium rounded-lg hover:bg-(--primary-hover) transition-colors"
-              >
-                Start Practice
-              </button>
+            <div className="border-2 border-dashed border-(--border) rounded-(--radius-panel)">
+              <EmptyState
+                icon={<AlertTriangle />}
+                title="Judge Decision Practice"
+                description="Practice identifying whether situations require a +2 penalty according to WCA regulations."
+                action={<Button onClick={startPractice}>Start practice</Button>}
+              />
             </div>
           ) : (
             <div
-              className={`p-6 rounded-xl border-2 transition-all ${
+              className={`p-6 rounded-(--radius-panel) border-2 transition-all ${
                 showResult
                   ? userAnswer === currentScenario.isPenalty
                     ? "border-(--success) bg-(--success)/5"
@@ -379,14 +373,14 @@ export default function JudgeErrorSimulator({
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <button
                     onClick={() => submitAnswer(false)}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 border-2 border-(--success) text-(--success) font-medium rounded-lg hover:bg-(--success)/10 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 border-2 border-(--success) text-(--success) font-medium rounded-(--radius-control) hover:bg-(--success)/10 transition-colors"
                   >
                     <Check className="w-5 h-5" />
                     No Penalty
                   </button>
                   <button
                     onClick={() => submitAnswer(true)}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 border-2 border-(--error) text-(--error) font-medium rounded-lg hover:bg-(--error)/10 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 border-2 border-(--error) text-(--error) font-medium rounded-(--radius-control) hover:bg-(--error)/10 transition-colors"
                   >
                     <X className="w-5 h-5" />
                     +2 Penalty
@@ -396,7 +390,7 @@ export default function JudgeErrorSimulator({
                 <div className="space-y-4">
                   {/* Result */}
                   <div
-                    className={`flex items-center gap-3 p-4 rounded-lg ${
+                    className={`flex items-center gap-3 p-4 rounded-(--radius-control) ${
                       userAnswer === currentScenario.isPenalty
                         ? "bg-(--success)/20"
                         : "bg-(--error)/20"
@@ -428,7 +422,7 @@ export default function JudgeErrorSimulator({
                   </div>
 
                   {/* Explanation */}
-                  <div className="p-3 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-3 bg-(--surface-elevated) rounded-(--radius-control)">
                     <div className="flex items-start gap-2">
                       <Info className="w-4 h-4 text-(--info) mt-0.5 shrink-0" />
                       <div className="text-sm text-(--text-secondary)">
@@ -445,12 +439,9 @@ export default function JudgeErrorSimulator({
                   </div>
 
                   {/* Next Button */}
-                  <button
-                    onClick={startPractice}
-                    className="w-full py-3 bg-(--primary) text-white font-medium rounded-lg hover:bg-(--primary-hover) transition-colors"
-                  >
-                    Next Scenario
-                  </button>
+                  <Button fullWidth onClick={startPractice}>
+                    Next scenario
+                  </Button>
                 </div>
               )}
             </div>

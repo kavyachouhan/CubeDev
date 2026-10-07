@@ -33,6 +33,11 @@ import {
   X,
   ExternalLink,
 } from "lucide-react";
+import { SearchInput } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { AdminStatCard } from "./AdminStatCard";
+import { AdminCollapsibleCard } from "./AdminCollapsibleCard";
+import { useEffectiveTheme, useThemeColors } from "@/lib/hooks/useThemeColors";
 import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import {
@@ -57,53 +62,6 @@ ChartJS.register(
   Legend,
 );
 
-// Theme detection hook
-function useEffectiveTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  useEffect(() => {
-    const updateTheme = () => {
-      const root = document.documentElement;
-      const dataTheme = root.getAttribute("data-theme");
-      setTheme(dataTheme === "light" ? "light" : "dark");
-    };
-
-    updateTheme();
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  return theme;
-}
-
-// Primary color hook
-function usePrimaryColor() {
-  const [primaryColor, setPrimaryColor] = useState("#FA6900");
-
-  useEffect(() => {
-    const updateColor = () => {
-      const color = getComputedStyle(document.documentElement)
-        .getPropertyValue("--primary")
-        .trim();
-      if (color) setPrimaryColor(color);
-    };
-
-    updateColor();
-    const observer = new MutationObserver(updateColor);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class", "style"],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  return primaryColor;
-}
-
 // Helper to export data
 function exportToJSON(data: unknown, filename: string) {
   const jsonContent = JSON.stringify(data, null, 2);
@@ -112,132 +70,6 @@ function exportToJSON(data: unknown, filename: string) {
   link.href = URL.createObjectURL(blob);
   link.download = `${filename}_${new Date().toISOString().split("T")[0]}.json`;
   link.click();
-}
-
-// CollapsibleCard Component
-function CollapsibleCard({
-  title,
-  children,
-  defaultOpen = true,
-  storageKey,
-  headerExtra,
-  className = "",
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  storageKey?: string;
-  headerExtra?: React.ReactNode;
-  className?: string;
-}) {
-  const [isOpen, setIsOpen] = useState(() => {
-    if (typeof window !== "undefined" && storageKey) {
-      const saved = localStorage.getItem(storageKey);
-      return saved !== null ? saved === "true" : defaultOpen;
-    }
-    return defaultOpen;
-  });
-
-  const toggleOpen = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    if (typeof window !== "undefined" && storageKey) {
-      localStorage.setItem(storageKey, String(newState));
-    }
-  };
-
-  return (
-    <div className={`timer-card ${className}`}>
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={toggleOpen}
-          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
-        >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            {title}
-          </h3>
-          {isOpen ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          {headerExtra}
-          <button
-            onClick={toggleOpen}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={isOpen ? "Hide" : "Show"}
-          >
-            {isOpen ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-      {isOpen && children}
-    </div>
-  );
-}
-
-// StatCard Component
-function StatCard({
-  title,
-  value,
-  icon: Icon,
-  iconColor = "text-(--primary)",
-  iconBgColor = "bg-(--primary)/10",
-  subValue,
-  trend,
-}: {
-  title: string;
-  value: string | number;
-  icon: LucideIcon;
-  iconColor?: string;
-  iconBgColor?: string;
-  subValue?: string;
-  trend?: { value: number; label: string };
-}) {
-  return (
-    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
-          <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-xs text-(--text-muted) uppercase tracking-wide truncate font-inter">
-            {title}
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm sm:text-lg font-bold text-(--text-primary) font-statement">
-              {typeof value === "number" ? value.toLocaleString() : value}
-            </div>
-            {trend && (
-              <div
-                className={`flex items-center gap-0.5 text-xs ${
-                  trend.value >= 0 ? "text-green-500" : "text-red-500"
-                }`}
-              >
-                {trend.value >= 0 ? (
-                  <TrendingUp className="w-3 h-3" />
-                ) : (
-                  <TrendingDown className="w-3 h-3" />
-                )}
-                <span>{Math.abs(trend.value)}%</span>
-              </div>
-            )}
-          </div>
-          {subValue && (
-            <div className="text-xs text-(--text-muted) font-inter">
-              {subValue}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
 }
 
 // Bar Chart Component using Chart.js with completed overlay support
@@ -250,7 +82,7 @@ function BarChart({
   showCompletedOverlay?: boolean;
 }) {
   const effectiveTheme = useEffectiveTheme();
-  const primaryColor = usePrimaryColor();
+  const primaryColor = useThemeColors()["--primary"];
   const isLight = effectiveTheme === "light";
   const textColor = isLight
     ? "rgba(17, 24, 39, 0.8)"
@@ -407,21 +239,21 @@ function StatusDistribution({
       key: "completed",
       value: byStatus.completed,
       color: "var(--success)",
-      bgClass: "bg-green-500",
+      bgClass: "bg-(--success)",
       label: "Completed",
     },
     {
       key: "inProgress",
       value: byStatus.inProgress,
       color: "var(--warning)",
-      bgClass: "bg-amber-500",
+      bgClass: "bg-(--warning)",
       label: "In Progress",
     },
     {
       key: "abandoned",
       value: byStatus.abandoned,
       color: "var(--error)",
-      bgClass: "bg-red-500",
+      bgClass: "bg-(--error)",
       label: "Abandoned",
     },
   ];
@@ -462,7 +294,7 @@ function StatusDistribution({
       {/* Rates */}
       <div className="flex items-center justify-center gap-6 pt-2 border-t border-(--border)">
         <div className="text-center">
-          <span className="text-lg font-bold text-green-500 font-statement">
+          <span className="text-lg font-bold text-(--success) font-statement">
             {completionRate}%
           </span>
           <p className="text-xs text-(--text-muted) font-inter">
@@ -470,7 +302,7 @@ function StatusDistribution({
           </p>
         </div>
         <div className="text-center">
-          <span className="text-lg font-bold text-red-500 font-statement">
+          <span className="text-lg font-bold text-(--error) font-statement">
             {abandonmentRate}%
           </span>
           <p className="text-xs text-(--text-muted) font-inter">
@@ -524,7 +356,7 @@ function AtmosphereStats({
       {items.map((item, idx) => (
         <div
           key={idx}
-          className="flex items-center gap-2 bg-(--surface-elevated) rounded-lg p-2.5 border border-(--border)"
+          className="flex items-center gap-2 bg-(--surface-elevated) rounded-(--radius-control) p-2.5 border border-(--border)"
         >
           <item.icon className="w-4 h-4 text-(--text-muted)" />
           <div className="min-w-0 flex-1">
@@ -563,7 +395,7 @@ function CompetitionItem({
   onViewDetails: () => void;
 }) {
   return (
-    <div className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border) hover:border-(--primary)/30 transition-colors">
+    <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border) hover:border-(--primary)/30 transition-colors">
       {/* Header with name and view button */}
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex-1 min-w-0">
@@ -597,7 +429,7 @@ function CompetitionItem({
         </div>
         <button
           onClick={onViewDetails}
-          className="p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--surface) rounded-lg transition-colors shrink-0"
+          className="p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--surface) rounded-(--radius-control) transition-colors shrink-0"
         >
           <Eye className="w-4 h-4" />
         </button>
@@ -605,7 +437,7 @@ function CompetitionItem({
 
       {/* Stats row - responsive grid */}
       <div className="grid grid-cols-3 gap-2 mt-3">
-        <div className="text-center bg-(--surface) rounded-lg py-2 px-1">
+        <div className="text-center bg-(--surface) rounded-(--radius-control) py-2 px-1">
           <div className="text-base sm:text-lg font-bold text-(--text-primary) font-statement">
             {competition.totalSimulations}
           </div>
@@ -613,7 +445,7 @@ function CompetitionItem({
             Simulations
           </div>
         </div>
-        <div className="text-center bg-(--surface) rounded-lg py-2 px-1">
+        <div className="text-center bg-(--surface) rounded-(--radius-control) py-2 px-1">
           <div className="text-base sm:text-lg font-bold text-(--primary) font-statement">
             {competition.uniqueUsers}
           </div>
@@ -621,14 +453,14 @@ function CompetitionItem({
             Users
           </div>
         </div>
-        <div className="text-center bg-(--surface) rounded-lg py-2 px-1">
+        <div className="text-center bg-(--surface) rounded-(--radius-control) py-2 px-1">
           <div
             className={`text-base sm:text-lg font-bold font-statement ${
               competition.completionRate >= 70
-                ? "text-green-500"
+                ? "text-(--success)"
                 : competition.completionRate >= 40
-                  ? "text-amber-500"
-                  : "text-red-500"
+                  ? "text-(--warning)"
+                  : "text-(--error)"
             }`}
           >
             {competition.completionRate}%
@@ -683,8 +515,8 @@ function CompetitionDetailsModal({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <Modal open onClose={onClose} size="md" mobile="fullscreen">
+      <Modal.Body>
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex-1 min-w-0 pr-4">
@@ -703,7 +535,7 @@ function CompetitionDetailsModal({
           </div>
           <button
             onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated) shrink-0"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated) shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -716,7 +548,7 @@ function CompetitionDetailsModal({
               Competition Details
             </h4>
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
                 <div className="flex items-center gap-2 text-(--text-muted) mb-1">
                   <MapPin className="w-3.5 h-3.5" />
                   <span className="text-xs font-inter uppercase">Location</span>
@@ -725,7 +557,7 @@ function CompetitionDetailsModal({
                   {competition.city || competition.country || "Unknown"}
                 </p>
               </div>
-              <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
                 <div className="flex items-center gap-2 text-(--text-muted) mb-1">
                   <Calendar className="w-3.5 h-3.5" />
                   <span className="text-xs font-inter uppercase">Date</span>
@@ -736,7 +568,7 @@ function CompetitionDetailsModal({
               </div>
             </div>
             {competition.venue && (
-              <div className="mt-2 bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+              <div className="mt-2 bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
                 <div className="flex items-center gap-2 text-(--text-muted) mb-1">
                   <MapPin className="w-3.5 h-3.5" />
                   <span className="text-xs font-inter uppercase">Venue</span>
@@ -754,10 +586,10 @@ function CompetitionDetailsModal({
               Simulation Statistics
             </h4>
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="p-1 bg-blue-500/10 rounded">
-                    <Medal className="w-3 h-3 text-blue-500" />
+                  <div className="p-1 bg-(--info)/10 rounded">
+                    <Medal className="w-3 h-3 text-(--info)" />
                   </div>
                   <span className="text-xs text-(--text-muted) font-inter uppercase">
                     Total
@@ -767,10 +599,10 @@ function CompetitionDetailsModal({
                   {competition.totalSimulations}
                 </p>
               </div>
-              <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="p-1 bg-green-500/10 rounded">
-                    <CheckCircle2 className="w-3 h-3 text-green-500" />
+                  <div className="p-1 bg-(--success)/10 rounded">
+                    <CheckCircle2 className="w-3 h-3 text-(--success)" />
                   </div>
                   <span className="text-xs text-(--text-muted) font-inter uppercase">
                     Completed
@@ -780,10 +612,10 @@ function CompetitionDetailsModal({
                   {competition.completedCount}
                 </p>
               </div>
-              <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="p-1 bg-amber-500/10 rounded">
-                    <Clock className="w-3 h-3 text-amber-500" />
+                  <div className="p-1 bg-(--warning)/10 rounded">
+                    <Clock className="w-3 h-3 text-(--warning)" />
                   </div>
                   <span className="text-xs text-(--text-muted) font-inter uppercase">
                     In Progress
@@ -793,10 +625,10 @@ function CompetitionDetailsModal({
                   {competition.inProgressCount}
                 </p>
               </div>
-              <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+              <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="p-1 bg-red-500/10 rounded">
-                    <XCircle className="w-3 h-3 text-red-500" />
+                  <div className="p-1 bg-(--error)/10 rounded">
+                    <XCircle className="w-3 h-3 text-(--error)" />
                   </div>
                   <span className="text-xs text-(--text-muted) font-inter uppercase">
                     Abandoned
@@ -811,10 +643,10 @@ function CompetitionDetailsModal({
 
           {/* User Engagement */}
           <div className="grid grid-cols-2 gap-2">
-            <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
               <div className="flex items-center gap-2 mb-1">
-                <div className="p-1 bg-purple-500/10 rounded">
-                  <Users className="w-3 h-3 text-purple-500" />
+                <div className="p-1 bg-(--accent)/10 rounded">
+                  <Users className="w-3 h-3 text-(--accent)" />
                 </div>
                 <span className="text-xs text-(--text-muted) font-inter uppercase">
                   Unique Users
@@ -824,13 +656,13 @@ function CompetitionDetailsModal({
                 {competition.uniqueUsers}
               </p>
             </div>
-            <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+            <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
               <div className="flex items-center gap-2 mb-1">
                 <div
-                  className={`p-1 rounded ${competition.completionRate >= 70 ? "bg-green-500/10" : competition.completionRate >= 40 ? "bg-amber-500/10" : "bg-red-500/10"}`}
+                  className={`p-1 rounded ${competition.completionRate >= 70 ? "bg-(--success)/10" : competition.completionRate >= 40 ? "bg-(--warning)/10" : "bg-(--error)/10"}`}
                 >
                   <Target
-                    className={`w-3 h-3 ${competition.completionRate >= 70 ? "text-green-500" : competition.completionRate >= 40 ? "text-amber-500" : "text-red-500"}`}
+                    className={`w-3 h-3 ${competition.completionRate >= 70 ? "text-(--success)" : competition.completionRate >= 40 ? "text-(--warning)" : "text-(--error)"}`}
                   />
                 </div>
                 <span className="text-xs text-(--text-muted) font-inter uppercase">
@@ -838,7 +670,7 @@ function CompetitionDetailsModal({
                 </span>
               </div>
               <p
-                className={`text-lg font-bold font-statement ${competition.completionRate >= 70 ? "text-green-500" : competition.completionRate >= 40 ? "text-amber-500" : "text-red-500"}`}
+                className={`text-lg font-bold font-statement ${competition.completionRate >= 70 ? "text-(--success)" : competition.completionRate >= 40 ? "text-(--warning)" : "text-(--error)"}`}
               >
                 {competition.completionRate}%
               </p>
@@ -854,7 +686,7 @@ function CompetitionDetailsModal({
               {competition.events.map((event) => (
                 <span
                   key={event.id}
-                  className="px-2.5 py-1 text-xs bg-(--surface-elevated) text-(--text-secondary) rounded-lg border border-(--border) font-inter"
+                  className="px-2.5 py-1 text-xs bg-(--surface-elevated) text-(--text-secondary) rounded-(--radius-control) border border-(--border) font-inter"
                 >
                   {event.name}
                 </span>
@@ -863,7 +695,7 @@ function CompetitionDetailsModal({
           </div>
 
           {/* Last Activity */}
-          <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+          <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
             <div className="flex items-center gap-2 text-(--text-muted) mb-1">
               <Activity className="w-3.5 h-3.5" />
               <span className="text-xs font-inter uppercase">
@@ -891,8 +723,8 @@ function CompetitionDetailsModal({
             <ExternalLink className="w-4 h-4" />
           </a>
         </div>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 }
 
@@ -920,18 +752,18 @@ function RecentSimulationItem({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
-        return "bg-green-500/10 text-green-500";
+        return "bg-(--success)/10 text-(--success)";
       case "in-progress":
-        return "bg-amber-500/10 text-amber-500";
+        return "bg-(--warning)/10 text-(--warning)";
       case "abandoned":
-        return "bg-red-500/10 text-red-500";
+        return "bg-(--error)/10 text-(--error)";
       default:
-        return "bg-gray-500/10 text-gray-500";
+        return "bg-(--border)/10 text-(--text-muted)";
     }
   };
 
   return (
-    <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+    <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
       <div className="flex items-start gap-3">
         {simulation.userAvatar ? (
           <Image
@@ -998,7 +830,7 @@ function UserActivityItem({
       : 0;
 
   return (
-    <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+    <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
       <div className="flex items-start gap-3">
         {user.userAvatar ? (
           <Image
@@ -1047,10 +879,10 @@ function UserActivityItem({
               <div
                 className={`text-sm font-bold font-statement ${
                   completionRate >= 70
-                    ? "text-green-500"
+                    ? "text-(--success)"
                     : completionRate >= 40
-                      ? "text-amber-500"
-                      : "text-red-500"
+                      ? "text-(--warning)"
+                      : "text-(--error)"
                 }`}
               >
                 {completionRate}%
@@ -1123,7 +955,7 @@ function StatsSkeleton() {
       {[...Array(8)].map((_, i) => (
         <div
           key={i}
-          className="h-20 bg-(--surface-elevated) rounded-xl animate-pulse border border-(--border)"
+          className="h-20 bg-(--surface-elevated) rounded-(--radius-card) animate-pulse border border-(--border)"
         />
       ))}
     </div>
@@ -1182,7 +1014,7 @@ export default function AdminCompetitions() {
   return (
     <div className="min-h-full p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Overview Statistics */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title="Overview Statistics"
         storageKey="admin-competitions-overview"
         defaultOpen={true}
@@ -1190,7 +1022,7 @@ export default function AdminCompetitions() {
           <button
             onClick={handleExportAnalytics}
             disabled={!analytics}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-lg text-(--text-secondary) transition-colors font-inter disabled:opacity-50"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-(--surface-elevated) hover:bg-(--border) border border-(--border) rounded-(--radius-control) text-(--text-secondary) transition-colors font-inter disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             <span className="hidden sm:inline">Export</span>
@@ -1203,117 +1035,117 @@ export default function AdminCompetitions() {
           <div className="space-y-4">
             {/* Primary Stats Row */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <StatCard
+              <AdminStatCard
                 title="Total Simulations"
                 value={analytics.totalSimulations}
                 icon={Medal}
-                iconColor="text-blue-500"
-                iconBgColor="bg-blue-500/10"
+                iconColor="text-(--info)"
+                iconBgColor="bg-(--info)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Total Results"
                 value={analytics.totalResults}
                 icon={BarChart3}
-                iconColor="text-green-500"
-                iconBgColor="bg-green-500/10"
+                iconColor="text-(--success)"
+                iconBgColor="bg-(--success)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Total Solves"
                 value={analytics.totalSolves}
                 icon={Timer}
-                iconColor="text-purple-500"
-                iconBgColor="bg-purple-500/10"
+                iconColor="text-(--accent)"
+                iconBgColor="bg-(--accent)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Unique Comps"
                 value={analytics.uniqueCompetitions}
                 icon={Trophy}
-                iconColor="text-amber-500"
-                iconBgColor="bg-amber-500/10"
+                iconColor="text-(--warning)"
+                iconBgColor="bg-(--warning)/10"
               />
             </div>
 
             {/* Secondary Stats Row */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <StatCard
+              <AdminStatCard
                 title="Unique Users"
                 value={analytics.uniqueUsers}
                 icon={Users}
-                iconColor="text-cyan-500"
-                iconBgColor="bg-cyan-500/10"
+                iconColor="text-(--primary)"
+                iconBgColor="bg-(--primary)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="This Week"
                 value={analytics.simulationsThisWeek}
                 icon={TrendingUp}
-                iconColor="text-green-500"
-                iconBgColor="bg-green-500/10"
+                iconColor="text-(--success)"
+                iconBgColor="bg-(--success)/10"
                 trend={{
                   value: analytics.weekOverWeekGrowth,
                   label: "vs last week",
                 }}
               />
-              <StatCard
+              <AdminStatCard
                 title="This Month"
                 value={analytics.simulationsThisMonth}
                 icon={TrendingUp}
-                iconColor="text-blue-500"
-                iconBgColor="bg-blue-500/10"
+                iconColor="text-(--info)"
+                iconBgColor="bg-(--info)/10"
                 trend={{
                   value: analytics.monthOverMonthGrowth,
                   label: "vs last month",
                 }}
               />
-              <StatCard
+              <AdminStatCard
                 title="Avg Events/Sim"
                 value={analytics.avgEventsPerSimulation}
                 icon={Activity}
-                iconColor="text-pink-500"
-                iconBgColor="bg-pink-500/10"
+                iconColor="text-(--accent)"
+                iconBgColor="bg-(--accent)/10"
               />
             </div>
 
             {/* User Engagement Row */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <StatCard
+              <AdminStatCard
                 title="Power Users"
                 value={analytics.powerUsers}
                 icon={Zap}
-                iconColor="text-amber-500"
-                iconBgColor="bg-amber-500/10"
+                iconColor="text-(--warning)"
+                iconBgColor="bg-(--warning)/10"
                 subValue="5+ simulations"
               />
-              <StatCard
+              <AdminStatCard
                 title="Casual Users"
                 value={analytics.casualUsers}
                 icon={Users}
-                iconColor="text-gray-500"
-                iconBgColor="bg-gray-500/10"
+                iconColor="text-(--text-muted)"
+                iconBgColor="bg-(--border)/10"
                 subValue="&lt;5 simulations"
               />
-              <StatCard
+              <AdminStatCard
                 title="Avg Sims/User"
                 value={analytics.avgSimulationsPerUser}
                 icon={Percent}
-                iconColor="text-purple-500"
-                iconBgColor="bg-purple-500/10"
+                iconColor="text-(--accent)"
+                iconBgColor="bg-(--accent)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Avg 3x3 Time"
                 value={analytics.avgThreeByThreeTime}
                 icon={Timer}
-                iconColor="text-orange-500"
-                iconBgColor="bg-orange-500/10"
+                iconColor="text-(--warning)"
+                iconBgColor="bg-(--warning)/10"
               />
             </div>
           </div>
         )}
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* Analytics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Status Distribution */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Simulation Status"
           storageKey="admin-competitions-status"
           defaultOpen={true}
@@ -1325,7 +1157,7 @@ export default function AdminCompetitions() {
                 {[...Array(3)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-16 bg-(--surface-elevated) rounded-lg"
+                    className="h-16 bg-(--surface-elevated) rounded-(--radius-control)"
                   />
                 ))}
               </div>
@@ -1337,16 +1169,16 @@ export default function AdminCompetitions() {
               abandonmentRate={analytics.abandonmentRate}
             />
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Weekly Trend */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Weekly Trend"
           storageKey="admin-competitions-trend"
           defaultOpen={true}
         >
           {isLoading ? (
-            <div className="h-32 bg-(--surface-elevated) rounded-lg animate-pulse" />
+            <div className="h-32 bg-(--surface-elevated) rounded-(--radius-control) animate-pulse" />
           ) : (
             <>
               <BarChart
@@ -1369,11 +1201,11 @@ export default function AdminCompetitions() {
               </div>
             </>
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Event Analytics */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title="Event Analytics"
         storageKey="admin-competitions-events"
         defaultOpen={true}
@@ -1383,7 +1215,7 @@ export default function AdminCompetitions() {
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="h-12 bg-(--surface-elevated) rounded-lg"
+                className="h-12 bg-(--surface-elevated) rounded-(--radius-control)"
               />
             ))}
           </div>
@@ -1431,12 +1263,12 @@ export default function AdminCompetitions() {
             </div>
           </div>
         )}
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* Atmosphere & Country Analytics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Atmosphere Settings */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Atmosphere Settings"
           storageKey="admin-competitions-atmosphere"
           defaultOpen={true}
@@ -1446,7 +1278,7 @@ export default function AdminCompetitions() {
               {[...Array(4)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-16 bg-(--surface-elevated) rounded-lg animate-pulse"
+                  className="h-16 bg-(--surface-elevated) rounded-(--radius-control) animate-pulse"
                 />
               ))}
             </div>
@@ -1456,10 +1288,10 @@ export default function AdminCompetitions() {
               totalSimulations={analytics.totalSimulations}
             />
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Country Distribution */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Competition Locations"
           storageKey="admin-competitions-countries"
           defaultOpen={true}
@@ -1477,25 +1309,22 @@ export default function AdminCompetitions() {
               No location data available
             </p>
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Competitions List */}
-      <CollapsibleCard
+      <AdminCollapsibleCard
         title="Competitions"
         storageKey="admin-competitions-list"
         defaultOpen={true}
         headerExtra={
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-1.5 text-sm bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) font-inter w-32 sm:w-48"
-            />
-          </div>
+          <SearchInput
+            size="sm"
+            placeholder="Search..."
+            aria-label="Search"
+            value={searchQuery}
+            onChange={setSearchQuery}
+          />
         }
       >
         {competitionsList === undefined ? (
@@ -1503,7 +1332,7 @@ export default function AdminCompetitions() {
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="h-24 bg-(--surface-elevated) rounded-lg"
+                className="h-24 bg-(--surface-elevated) rounded-(--radius-control)"
               />
             ))}
           </div>
@@ -1529,12 +1358,12 @@ export default function AdminCompetitions() {
               : "No competitions found"}
           </p>
         )}
-      </CollapsibleCard>
+      </AdminCollapsibleCard>
 
       {/* User Activity & Recent Simulations */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Top Users */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Top Users by Activity"
           storageKey="admin-competitions-users"
           defaultOpen={true}
@@ -1544,7 +1373,7 @@ export default function AdminCompetitions() {
               {[...Array(5)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-20 bg-(--surface-elevated) rounded-lg"
+                  className="h-20 bg-(--surface-elevated) rounded-(--radius-control)"
                 />
               ))}
             </div>
@@ -1559,10 +1388,10 @@ export default function AdminCompetitions() {
               No user activity data
             </p>
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Recent Simulations */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Recent Simulations"
           storageKey="admin-competitions-recent"
           defaultOpen={true}
@@ -1572,7 +1401,7 @@ export default function AdminCompetitions() {
               {[...Array(5)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-20 bg-(--surface-elevated) rounded-lg"
+                  className="h-20 bg-(--surface-elevated) rounded-(--radius-control)"
                 />
               ))}
             </div>
@@ -1587,7 +1416,7 @@ export default function AdminCompetitions() {
               No recent simulations
             </p>
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Competition Details Modal */}

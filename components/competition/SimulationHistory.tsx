@@ -13,6 +13,8 @@ import {
   AlertTriangle,
   History,
 } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
+import { ButtonLink } from "@/components/ui/Button";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@/components/UserProvider";
@@ -116,24 +118,21 @@ export default function SimulationHistory({
     switch (status) {
       case "in-progress":
         return (
-          <span className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-(--warning)/10 text-(--warning) border border-(--warning)/30">
-            <Pause className="w-3 h-3" />
-            In Progress
-          </span>
+          <Badge tone="warning" shape="pill" icon={<Pause />}>
+            In progress
+          </Badge>
         );
       case "completed":
         return (
-          <span className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-(--success)/10 text-(--success) border border-(--success)/30">
-            <Check className="w-3 h-3" />
+          <Badge tone="success" shape="pill" icon={<Check />}>
             Completed
-          </span>
+          </Badge>
         );
       case "abandoned":
         return (
-          <span className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-(--text-muted)/10 text-(--text-muted) border border-(--text-muted)/30">
-            <AlertTriangle className="w-3 h-3" />
+          <Badge shape="pill" icon={<AlertTriangle />}>
             Abandoned
-          </span>
+          </Badge>
         );
       default:
         return null;
@@ -162,12 +161,9 @@ export default function SimulationHistory({
           <p className="text-xs text-(--text-muted) mb-4">
             Sign in to unlock competition simulations.
           </p>
-          <Link
-            href="/me"
-            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
-          >
-            Open Settings
-          </Link>
+          <ButtonLink href="/me" size="sm">
+            Open settings
+          </ButtonLink>
         </div>
       </div>
     );
@@ -192,13 +188,13 @@ export default function SimulationHistory({
           <p className="text-xs text-(--text-muted) mb-4">
             Start practicing for an upcoming competition
           </p>
-          <Link
+          <ButtonLink
             href="/cube-lab/competitions"
-            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
+            size="sm"
+            iconLeft={<Play className="w-3 h-3" />}
           >
-            <Play className="w-3 h-3" />
-            Browse Competitions
-          </Link>
+            Browse competitions
+          </ButtonLink>
         </div>
       </div>
     );
@@ -250,13 +246,13 @@ export default function SimulationHistory({
                     </h4>
                     <div className="flex flex-wrap items-center gap-2">
                       {getStatusBadge(sim.status)}
-                      <span className="inline-flex items-center rounded-full border border-(--border) bg-(--surface-elevated) px-2 py-0.5 text-xs font-medium text-(--text-secondary)">
+                      <Badge shape="pill">
                         {completedRounds}/{totalRounds} rounds
-                      </span>
+                      </Badge>
                     </div>
                   </div>
 
-                  <span className="inline-flex min-h-9 min-w-10 items-center justify-center gap-1.5 rounded-lg bg-(--primary) px-3 py-2 text-xs font-semibold text-white transition-colors group-hover:bg-(--primary-hover) sm:min-w-28 sm:px-4 sm:text-sm">
+                  <span className="inline-flex min-h-9 min-w-10 items-center justify-center gap-1.5 rounded-(--radius-control) bg-(--primary) px-3 py-2 text-xs font-semibold text-(--on-primary) transition-colors group-hover:bg-(--primary-hover) sm:min-w-28 sm:px-4 sm:text-sm">
                     <Play className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
                     <span className="hidden sm:inline">
                       {isInProgress ? "Continue" : "Open"}
@@ -265,13 +261,13 @@ export default function SimulationHistory({
                 </div>
 
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
-                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
                     <Clock className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
                     <span className="truncate">
                       {formatDate(sim.startedAt)}
                     </span>
                   </span>
-                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
                     <Trophy className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
                     <span className="truncate">
                       {sim.status === "completed"
@@ -291,7 +287,7 @@ export default function SimulationHistory({
                       return event ? (
                         <div
                           key={eventId}
-                          className={`rounded-md border p-1.5 ${
+                          className={`rounded-(--radius-badge) border p-1.5 ${
                             isCompleted
                               ? "border-(--success)/40 bg-(--success)/10"
                               : "border-(--border) bg-(--surface-elevated)"
@@ -311,7 +307,7 @@ export default function SimulationHistory({
                       ) : null;
                     })}
                   {sim.selectedEvents.length > 6 && (
-                    <span className="inline-flex items-center rounded-md border border-(--border) bg-(--surface-elevated) px-2 py-1 text-xs font-medium text-(--text-muted)">
+                    <span className="inline-flex items-center rounded-(--radius-badge) border border-(--border) bg-(--surface-elevated) px-2 py-1 text-xs font-medium text-(--text-muted)">
                       +{sim.selectedEvents.length - 6}
                     </span>
                   )}
@@ -344,23 +340,6 @@ export default function SimulationHistory({
           );
         })}
       </div>
-
-      {/* Continue in-progress simulations */}
-      {inProgressSimulations && inProgressSimulations.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-(--border)">
-          <p className="text-xs text-(--text-muted) mb-2">
-            You have {inProgressSimulations.length} simulation
-            {inProgressSimulations.length > 1 ? "s" : ""} in progress
-          </p>
-          <Link
-            href={`/cube-lab/competitions/${inProgressSimulations[0].competitionId}/simulate/${inProgressSimulations[0]._id}`}
-            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-(--primary) border border-(--primary) rounded-lg hover:bg-(--primary)/10 transition-colors"
-          >
-            <Play className="w-3 h-3" />
-            Continue
-          </Link>
-        </div>
-      )}
     </div>
   );
 }

@@ -12,6 +12,9 @@ import {
   MapPin,
   Clock,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toast";
+import { Field, Input, Select } from "@/components/ui/Field";
 import Image from "next/image";
 import { WCA_EVENTS, WCACompetition } from "./CompetitionSimulator";
 import { formatTime } from "@/lib/stats-utils";
@@ -28,6 +31,7 @@ export default function ResultCardGenerator({
   results,
 }: ResultCardGeneratorProps) {
   const [copied, setCopied] = useState(false);
+  const toast = useToast();
   const [competitorName, setCompetitorName] = useState("");
   const [roundName, setRoundName] = useState("First Round");
   const cardRef = useRef<HTMLDivElement>(null);
@@ -57,7 +61,7 @@ export default function ResultCardGenerator({
   const stats = calculateStats();
 
   // Copy results to clipboard
-  const copyResults = () => {
+  const copyResults = async () => {
     if (!competition || !stats) return;
 
     const text = `
@@ -71,9 +75,15 @@ Best: ${formatTime(stats.best)}
 Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
     `.trim();
 
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Couldn't copy", {
+        description: "Your browser blocked clipboard access.",
+      });
+    }
   };
 
   // Download as image (simplified - would need html2canvas in production)
@@ -82,7 +92,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
 
     // In a real implementation, you'd use html2canvas
     // For now, we'll just copy the text
-    copyResults();
+    await copyResults();
   };
 
   if (!competition) {
@@ -121,33 +131,24 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
           Customize Your Card
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm text-(--text-secondary) block mb-2">
-              Competitor Name
-            </label>
-            <input
-              type="text"
+          <Field label="Competitor name">
+            <Input
               value={competitorName}
               onChange={(e) => setCompetitorName(e.target.value)}
               placeholder="Your name"
-              className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary)"
             />
-          </div>
-          <div>
-            <label className="text-sm text-(--text-secondary) block mb-2">
-              Round Name
-            </label>
-            <select
+          </Field>
+          <Field label="Round name">
+            <Select
               value={roundName}
               onChange={(e) => setRoundName(e.target.value)}
-              className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
             >
               <option value="First Round">First Round</option>
               <option value="Second Round">Second Round</option>
               <option value="Semi Final">Semi Final</option>
               <option value="Final">Final</option>
-            </select>
-          </div>
+            </Select>
+          </Field>
         </div>
       </div>
 
@@ -178,7 +179,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
             </div>
           </div>
           {event && (
-            <div className="flex items-center gap-2 px-3 py-2 bg-(--surface-elevated) rounded-lg">
+            <div className="flex items-center gap-2 px-3 py-2 bg-(--surface-elevated) rounded-(--radius-control)">
               <Image src={event.icon} alt={event.name} width={24} height={24} />
               <span className="font-medium text-(--text-primary)">
                 {event.name}
@@ -218,7 +219,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
               return (
                 <div
                   key={idx}
-                  className={`px-4 py-2 rounded-lg font-mono ${
+                  className={`px-4 py-2 rounded-(--radius-control) font-mono ${
                     isBest
                       ? "bg-(--success)/10 text-(--success) border border-(--success)/30"
                       : isWorst
@@ -239,7 +240,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
         {/* Statistics */}
         {stats && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-(--border)">
-            <div className="text-center p-3 bg-(--success)/5 rounded-lg">
+            <div className="text-center p-3 bg-(--success)/5 rounded-(--radius-control)">
               <div className="text-xs text-(--text-muted) mb-1">
                 Best Single
               </div>
@@ -247,7 +248,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
                 {formatTime(stats.best)}
               </div>
             </div>
-            <div className="text-center p-3 bg-(--primary)/5 rounded-lg">
+            <div className="text-center p-3 bg-(--primary)/5 rounded-(--radius-control)">
               <div className="text-xs text-(--text-muted) mb-1">
                 {results.length >= 5 ? "Average" : "Mean"}
               </div>
@@ -255,7 +256,7 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
                 {stats.average > 0 ? formatTime(stats.average) : "N/A"}
               </div>
             </div>
-            <div className="text-center p-3 bg-(--surface-elevated) rounded-lg sm:col-span-1 col-span-2">
+            <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control) sm:col-span-1 col-span-2">
               <div className="text-xs text-(--text-muted) mb-1">
                 Worst Single
               </div>
@@ -276,29 +277,25 @@ Average: ${stats.average > 0 ? formatTime(stats.average) : "N/A"}
 
       {/* Actions */}
       <div className="flex flex-wrap justify-center gap-4">
-        <button
+        <Button
+          variant="subtle"
           onClick={copyResults}
-          className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) text-(--text-primary) rounded-lg hover:bg-(--border) transition-colors"
-        >
-          {copied ? (
-            <>
+          iconLeft={
+            copied ? (
               <Check className="w-4 h-4 text-(--success)" />
-              Copied!
-            </>
-          ) : (
-            <>
+            ) : (
               <Copy className="w-4 h-4" />
-              Copy Results
-            </>
-          )}
-        </button>
-        <button
-          onClick={downloadCard}
-          className="flex items-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
+            )
+          }
         >
-          <Download className="w-4 h-4" />
-          Download Card
-        </button>
+          {copied ? "Copied" : "Copy results"}
+        </Button>
+        <Button
+          onClick={downloadCard}
+          iconLeft={<Download className="w-4 h-4" />}
+        >
+          Download card
+        </Button>
       </div>
     </div>
   );

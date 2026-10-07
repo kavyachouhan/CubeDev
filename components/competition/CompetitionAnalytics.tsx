@@ -11,7 +11,6 @@ import {
   Target,
   Award,
   Download,
-  Loader2,
   ExternalLink,
   Eye,
   X,
@@ -24,6 +23,11 @@ import {
   Clock,
 } from "lucide-react";
 import { WCA_CONFIG } from "@/lib/wca-config";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { buttonClasses } from "@/components/ui/button-styles";
+import { Input } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
 import WCAScorecard from "./WCAScorecard";
 import { WCA_EVENTS, WCACompetition } from "./CompetitionBrowser";
 import { RoundResult } from "./CompetitionDetail";
@@ -430,43 +434,32 @@ export default function CompetitionAnalytics({
                       competition results.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-                        <input
-                          type="text"
-                          value={selectedCompetitor}
-                          onChange={(e) =>
-                            setSelectedCompetitor(e.target.value.toUpperCase())
+                      <Input
+                        className="flex-1"
+                        value={selectedCompetitor}
+                        onChange={(e) =>
+                          setSelectedCompetitor(e.target.value.toUpperCase())
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && selectedCompetitor) {
+                            fetchActualResults(selectedCompetitor);
                           }
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" && selectedCompetitor) {
-                              fetchActualResults(selectedCompetitor);
-                            }
-                          }}
-                          placeholder="e.g. 2015XXXX01"
-                          className="w-full pl-10 pr-4 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder:text-(--text-muted) focus:border-(--primary) focus:ring-2 focus:ring-(--primary)/20 outline-none transition-all"
-                        />
-                      </div>
-                      <button
+                        }}
+                        placeholder="e.g. 2015XXXX01"
+                        aria-label="WCA ID to compare"
+                        leading={<Search />}
+                      />
+                      <Button
                         onClick={() => fetchActualResults(selectedCompetitor)}
-                        disabled={!selectedCompetitor || isLoading}
-                        className="flex items-center justify-center gap-2 px-5 py-2.5 bg-(--primary) text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-(--primary-hover) transition-colors"
+                        disabled={!selectedCompetitor}
+                        loading={isLoading}
+                        iconLeft={<Search className="w-4 h-4" />}
                       >
-                        {isLoading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Search className="w-4 h-4" />
-                        )}
-                        <span className="sm:inline">Compare</span>
-                      </button>
+                        Compare
+                      </Button>
                     </div>
 
-                    {error && (
-                      <div className="flex items-center gap-2 p-3 bg-(--error)/10 border border-(--error)/20 rounded-lg text-(--error) text-sm">
-                        <AlertCircle className="w-4 h-4 shrink-0" />
-                        <span>{error}</span>
-                      </div>
-                    )}
+                    {error && <Alert tone="error">{error}</Alert>}
                   </>
                 )}
 
@@ -474,7 +467,7 @@ export default function CompetitionAnalytics({
                 {compareMode && actualResults && (
                   <div className="space-y-4">
                     {/* Competitor Info Header */}
-                    <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                    <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-(--success)/10 rounded-full">
                           <Check className="w-4 h-4 text-(--success)" />
@@ -495,7 +488,7 @@ export default function CompetitionAnalytics({
                       </div>
                       <button
                         onClick={clearComparison}
-                        className="p-2 text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 rounded-lg transition-colors"
+                        className="p-2 text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 rounded-(--radius-panel) transition-colors"
                         title="Clear comparison"
                       >
                         <X className="w-4 h-4" />
@@ -516,7 +509,7 @@ export default function CompetitionAnalytics({
                             return (
                               <div
                                 key={comp.eventId}
-                                className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border)"
+                                className="p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)"
                               >
                                 {/* Event Header */}
                                 <div className="flex items-center gap-2 mb-3 pb-2 border-b border-(--border)/50">
@@ -738,7 +731,7 @@ export default function CompetitionAnalytics({
                     {/* Summary Stats */}
                     {comparisonResults.length > 0 && (
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-                        <div className="p-3 bg-(--surface-elevated) rounded-lg text-center">
+                        <div className="p-3 bg-(--surface-elevated) rounded-(--radius-panel) text-center">
                           <div className="text-lg font-bold text-(--text-primary)">
                             {comparisonResults.length}
                           </div>
@@ -746,7 +739,7 @@ export default function CompetitionAnalytics({
                             Events Compared
                           </div>
                         </div>
-                        <div className="p-3 bg-(--surface-elevated) rounded-lg text-center">
+                        <div className="p-3 bg-(--surface-elevated) rounded-(--radius-panel) text-center">
                           <div className="text-lg font-bold text-(--success)">
                             {
                               comparisonResults.filter((c) => c.bestDiff < 0)
@@ -757,7 +750,7 @@ export default function CompetitionAnalytics({
                             Faster Singles
                           </div>
                         </div>
-                        <div className="p-3 bg-(--surface-elevated) rounded-lg text-center col-span-2 sm:col-span-1">
+                        <div className="p-3 bg-(--surface-elevated) rounded-(--radius-panel) text-center col-span-2 sm:col-span-1">
                           <div className="text-lg font-bold text-(--success)">
                             {
                               comparisonResults.filter((c) => c.avgDiff < 0)
@@ -796,7 +789,7 @@ export default function CompetitionAnalytics({
               return (
                 <div
                   key={eventId}
-                  className="p-4 bg-(--surface-elevated) rounded-lg"
+                  className="p-4 bg-(--surface-elevated) rounded-(--radius-panel)"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -832,7 +825,7 @@ export default function CompetitionAnalytics({
                     {eventResults.map((result) => (
                       <div
                         key={`${eventId}-${result.roundNumber}`}
-                        className="p-3 bg-(--surface) rounded-lg border border-(--border)"
+                        className="p-3 bg-(--surface) rounded-(--radius-panel) border border-(--border)"
                       >
                         <div className="text-xs text-(--text-muted) mb-1">
                           Round {result.roundNumber}
@@ -909,7 +902,7 @@ export default function CompetitionAnalytics({
               Penalty Breakdown
             </h4>
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="p-3 bg-(--surface-elevated) rounded-lg">
+              <div className="p-3 bg-(--surface-elevated) rounded-(--radius-panel)">
                 <div className="text-xl font-bold text-(--success)">
                   {results.reduce(
                     (acc, r) =>
@@ -922,7 +915,7 @@ export default function CompetitionAnalytics({
                 </div>
                 <div className="text-xs text-(--text-muted)">Clean Solves</div>
               </div>
-              <div className="p-3 bg-(--surface-elevated) rounded-lg">
+              <div className="p-3 bg-(--surface-elevated) rounded-(--radius-panel)">
                 <div className="text-xl font-bold text-(--warning)">
                   {results.reduce(
                     (acc, r) =>
@@ -936,7 +929,7 @@ export default function CompetitionAnalytics({
                 </div>
                 <div className="text-xs text-(--text-muted)">+2 Penalties</div>
               </div>
-              <div className="p-3 bg-(--surface-elevated) rounded-lg">
+              <div className="p-3 bg-(--surface-elevated) rounded-(--radius-panel)">
                 <div className="text-xl font-bold text-(--error)">
                   {totalDNFs}
                 </div>
@@ -1056,10 +1049,10 @@ export default function CompetitionAnalytics({
               a.download = `${competition.id}-simulation-results.csv`;
               a.click();
             }}
-            className="flex items-center gap-2 px-4 py-2 border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
+            className={buttonClasses({ variant: "secondary" })}
           >
             <Download className="w-4 h-4" />
-            Export Results
+            Export results
           </button>
 
           {competition.url && (
@@ -1067,7 +1060,7 @@ export default function CompetitionAnalytics({
               href={competition.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 border border-(--border) text-(--text-secondary) rounded-lg hover:bg-(--surface-elevated)"
+              className={buttonClasses({ variant: "secondary" })}
             >
               <ExternalLink className="w-4 h-4" />
               View on WCA
@@ -1077,33 +1070,24 @@ export default function CompetitionAnalytics({
       </div>
 
       {/* Scorecard Modal */}
-      {scorecardModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm"
-          onClick={closeScorecardModal}
-        >
-          <div
-            className="relative w-full max-w-lg max-h-[95vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close Button */}
-            <button
-              onClick={closeScorecardModal}
-              className="absolute top-2 right-2 z-20 p-2 text-(--text-muted) hover:text-(--text-primary) bg-(--surface) hover:bg-(--surface-elevated) rounded-full transition-colors shadow-lg"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* WCA Scorecard */}
+      <Modal
+        open={scorecardModal !== null}
+        onClose={closeScorecardModal}
+        size="lg"
+        mobile="fullscreen"
+      >
+        <Modal.Header title="Scorecard" />
+        <Modal.Body>
+          {scorecardModal && (
             <WCAScorecard
               competition={competition}
               event={WCA_EVENTS.find((e) => e.id === scorecardModal.eventId)!}
               roundNumber={scorecardModal.roundNumber}
               result={scorecardModal.result}
             />
-          </div>
-        </div>
-      )}
+          )}
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

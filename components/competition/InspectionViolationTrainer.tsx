@@ -15,6 +15,7 @@ import {
   Volume2,
   Flame,
 } from "lucide-react";
+import { SwitchRow } from "@/components/ui/Switch";
 
 interface InspectionStats {
   totalAttempts: number;
@@ -30,28 +31,6 @@ interface InspectionViolationTrainerProps {
 }
 
 const STORAGE_KEY = "cubedev_inspection_stats";
-
-// Simple toggle switch component
-function Toggle({
-  enabled,
-  onChange,
-}: {
-  enabled: boolean;
-  onChange: (value: boolean) => void;
-}) {
-  return (
-    <button
-      onClick={() => onChange(!enabled)}
-      className={`w-11 h-6 rounded-full transition-colors flex items-center shrink-0 ${
-        enabled
-          ? "bg-(--primary) justify-end"
-          : "bg-(--border) justify-start"
-      }`}
-    >
-      <div className="w-4 h-4 bg-white rounded-full mx-1 transition-all" />
-    </button>
-  );
-}
 
 export default function InspectionViolationTrainer({
   onComplete,
@@ -316,7 +295,7 @@ export default function InspectionViolationTrainer({
         className="flex items-center justify-between w-full"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-(--warning)/20 text-(--warning) rounded-lg flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-(--warning)/20 text-(--warning) rounded-(--radius-control) flex items-center justify-center shrink-0">
             <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="text-left min-w-0">
@@ -341,7 +320,7 @@ export default function InspectionViolationTrainer({
         <div className="mt-4 space-y-4">
           {/* Stats Overview */}
           <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
-            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-base sm:text-xl font-bold text-(--success)">
                 {stats.perfectStops}
               </div>
@@ -349,7 +328,7 @@ export default function InspectionViolationTrainer({
                 Perfect
               </div>
             </div>
-            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-base sm:text-xl font-bold text-(--info)">
                 {stats.earlyStops}
               </div>
@@ -357,7 +336,7 @@ export default function InspectionViolationTrainer({
                 Early
               </div>
             </div>
-            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-base sm:text-xl font-bold text-(--warning)">
                 {stats.plus2s}
               </div>
@@ -365,7 +344,7 @@ export default function InspectionViolationTrainer({
                 +2
               </div>
             </div>
-            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-base sm:text-xl font-bold text-(--error)">
                 {stats.dnfs}
               </div>
@@ -377,7 +356,7 @@ export default function InspectionViolationTrainer({
 
           {/* Main Timer Area */}
           <div
-            className={`rounded-xl border-2 transition-all cursor-pointer select-none ${
+            className={`rounded-(--radius-panel) border-2 transition-all cursor-pointer select-none ${
               isRunning
                 ? "border-(--warning) bg-(--warning)/5"
                 : showResult
@@ -566,59 +545,27 @@ export default function InspectionViolationTrainer({
 
             {showSettings && (
               <div className="mt-4 space-y-3">
-                {/* Hide Timer Toggle */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center shrink-0">
-                      <Eye className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-sm font-medium text-(--text-primary)">
-                        Hide Timer
-                      </span>
-                      <p className="text-xs text-(--text-muted)">
-                        Hide time while running
-                      </p>
-                    </div>
-                  </div>
-                  <Toggle enabled={hideTimer} onChange={setHideTimer} />
-                </div>
-
-                {/* Random Start Toggle */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center shrink-0">
-                      <Timer className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-sm font-medium text-(--text-primary)">
-                        Random Delay
-                      </span>
-                      <p className="text-xs text-(--text-muted)">
-                        0-2s delay before start
-                      </p>
-                    </div>
-                  </div>
-                  <Toggle enabled={randomStart} onChange={setRandomStart} />
-                </div>
-
-                {/* Show Warnings Toggle */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 bg-(--primary)/20 text-(--primary) rounded-lg flex items-center justify-center shrink-0">
-                      <Volume2 className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-sm font-medium text-(--text-primary)">
-                        Audio Warnings
-                      </span>
-                      <p className="text-xs text-(--text-muted)">
-                        Play 8s and 12s alerts
-                      </p>
-                    </div>
-                  </div>
-                  <Toggle enabled={showWarnings} onChange={setShowWarnings} />
-                </div>
+                <SwitchRow
+                  icon={<Eye />}
+                  label="Hide timer"
+                  description="Hide time while running"
+                  checked={hideTimer}
+                  onChange={setHideTimer}
+                />
+                <SwitchRow
+                  icon={<Timer />}
+                  label="Random delay"
+                  description="0–2s delay before start"
+                  checked={randomStart}
+                  onChange={setRandomStart}
+                />
+                <SwitchRow
+                  icon={<Volume2 />}
+                  label="Audio warnings"
+                  description="Play 8s and 12s alerts"
+                  checked={showWarnings}
+                  onChange={setShowWarnings}
+                />
               </div>
             )}
           </div>
@@ -640,7 +587,7 @@ export default function InspectionViolationTrainer({
             {stats.totalAttempts > 0 && (
               <button
                 onClick={resetStats}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-(--error) hover:bg-(--error)/10 rounded-lg transition-colors self-start sm:self-auto"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-(--error) hover:bg-(--error)/10 rounded-(--radius-control) transition-colors self-start sm:self-auto"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 Reset Stats

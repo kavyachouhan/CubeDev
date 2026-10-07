@@ -32,18 +32,18 @@ export default function TimeBreakdown({ metrics }: TimeBreakdownProps) {
   const breakdowns = [
     {
       icon: Eye,
-      bg: "bg-blue-500/10",
-      text: "text-blue-500 dark:text-blue-400",
-      barColor: "bg-blue-500",
+      bg: "bg-(--primary)/10",
+      text: "text-(--primary)",
+      barColor: "bg-(--primary)",
       label: "Recognition Time",
       value: metrics.averageRecognitionTime,
       percentage: recognitionPercentage,
     },
     {
       icon: Zap,
-      bg: "bg-cyan-500/10",
-      text: "text-cyan-500 dark:text-cyan-400",
-      barColor: "bg-cyan-500",
+      bg: "bg-(--accent)/10",
+      text: "text-(--accent)",
+      barColor: "bg-(--accent)",
       label: "Execution Time",
       value: metrics.averageExecutionTime,
       percentage: executionPercentage,
@@ -60,7 +60,7 @@ export default function TimeBreakdown({ metrics }: TimeBreakdownProps) {
           <div key={item.label}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <div className={`p-1.5 rounded-lg ${item.bg}`}>
+                <div className={`p-1.5 rounded-(--radius-control) ${item.bg}`}>
                   <item.icon className={`w-4 h-4 ${item.text}`} />
                 </div>
                 <span className="text-sm text-(--text-secondary)">
@@ -81,7 +81,7 @@ export default function TimeBreakdown({ metrics }: TimeBreakdownProps) {
         ))}
 
         <div className="pt-4 mt-4 border-t border-(--border)">
-          <div className="flex justify-between items-center p-3 rounded-lg bg-(--surface-elevated)">
+          <div className="flex justify-between items-center p-3 rounded-(--radius-control) bg-(--surface-elevated)">
             <span className="text-sm font-semibold text-(--text-primary)">
               Total Average
             </span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Sparkles, Zap, TrendingUp, MessageSquare, Brain } from "lucide-react";
+import { ButtonLink } from "@/components/ui/Button";
 import Link from "next/link";
 
 export default function CubieComingSoon() {
@@ -9,7 +10,7 @@ export default function CubieComingSoon() {
       <div className="container-responsive">
         <div className="max-w-5xl mx-auto">
           {/* Main Announcement Card */}
-          <div className="bg-(--surface-elevated) border border-(--border) rounded-2xl p-6 sm:p-8 md:p-12 shadow-xl">
+          <div className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-card) p-6 sm:p-8 md:p-12 shadow-xl">
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-(--primary)/10 border border-(--primary)/20 rounded-full mb-6">
                 <Sparkles className="w-4 h-4 text-(--primary)" />
@@ -29,8 +30,8 @@ export default function CubieComingSoon() {
 
             {/* Features Grid */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-(--background) border border-(--border) rounded-xl p-6">
-                <div className="w-12 h-12 bg-(--primary)/10 rounded-lg flex items-center justify-center mb-4">
+              <div className="bg-(--background) border border-(--border) rounded-(--radius-card) p-6">
+                <div className="w-12 h-12 bg-(--primary)/10 rounded-(--radius-control) flex items-center justify-center mb-4">
                   <TrendingUp className="w-6 h-6 text-(--primary)" />
                 </div>
                 <h3 className="text-xl font-semibold text-(--text-primary) mb-2 font-button">
@@ -42,8 +43,8 @@ export default function CubieComingSoon() {
                 </p>
               </div>
 
-              <div className="bg-(--background) border border-(--border) rounded-xl p-6">
-                <div className="w-12 h-12 bg-(--accent)/10 rounded-lg flex items-center justify-center mb-4">
+              <div className="bg-(--background) border border-(--border) rounded-(--radius-card) p-6">
+                <div className="w-12 h-12 bg-(--accent)/10 rounded-(--radius-control) flex items-center justify-center mb-4">
                   <MessageSquare className="w-6 h-6 text-(--accent)" />
                 </div>
                 <h3 className="text-xl font-semibold text-(--text-primary) mb-2 font-button">
@@ -56,8 +57,8 @@ export default function CubieComingSoon() {
                 </p>
               </div>
 
-              <div className="bg-(--background) border border-(--border) rounded-xl p-6">
-                <div className="w-12 h-12 bg-(--success)/10 rounded-lg flex items-center justify-center mb-4">
+              <div className="bg-(--background) border border-(--border) rounded-(--radius-card) p-6">
+                <div className="w-12 h-12 bg-(--success)/10 rounded-(--radius-control) flex items-center justify-center mb-4">
                   <Zap className="w-6 h-6 text-(--success)" />
                 </div>
                 <h3 className="text-xl font-semibold text-(--text-primary) mb-2 font-button">
@@ -69,8 +70,8 @@ export default function CubieComingSoon() {
                 </p>
               </div>
 
-              <div className="bg-(--background) border border-(--border) rounded-xl p-6">
-                <div className="w-12 h-12 bg-(--warning)/10 rounded-lg flex items-center justify-center mb-4">
+              <div className="bg-(--background) border border-(--border) rounded-(--radius-card) p-6">
+                <div className="w-12 h-12 bg-(--warning)/10 rounded-(--radius-control) flex items-center justify-center mb-4">
                   <Brain className="w-6 h-6 text-(--warning)" />
                 </div>
                 <h3 className="text-xl font-semibold text-(--text-primary) mb-2 font-button">
@@ -89,12 +90,9 @@ export default function CubieComingSoon() {
                 Be among the first to experience the future of speedcubing
                 training
               </p>
-              <Link
-                href="/cube-lab/cubie"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-button transition-all"
-              >
-                Learn More About Cubie
-              </Link>
+              <ButtonLink href="/cube-lab/cubie" size="lg">
+                Learn more about Cubie
+              </ButtonLink>
             </div>
           </div>
         </div>

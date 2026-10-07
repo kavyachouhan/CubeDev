@@ -1,10 +1,8 @@
 // Main components
 export { default as CompetitionBrowser } from "./CompetitionBrowser";
-export { default as CompetitionDetail } from "./CompetitionDetail";
 export { default as CompetitionOverview } from "./CompetitionOverview";
 export { default as SimulationConfig } from "./SimulationConfig";
 export { default as SimulationRunner } from "./SimulationRunner";
-export { default as RoundSimulator } from "./RoundSimulator";
 export { default as RoundSimulatorRedesigned } from "./RoundSimulatorRedesigned";
 export { default as WCAScorecard } from "./WCAScorecard";
 export { default as ShareMenu } from "./ShareMenu";

@@ -16,8 +16,14 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import Image from "next/image";
 import { WCA_EVENTS } from "./CompetitionBrowser";
+import {
+  DateTimePicker,
+  fromTimeInputValue,
+  toTimeInputValue,
+} from "@/components/ui/DateTimePicker";
 
 interface ScheduleBlock {
   id: string;
@@ -241,18 +247,25 @@ export default function MockSchedule({
       {isExpanded && (
         <div className="mt-4 space-y-4">
           {/* Settings Row */}
-          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 sm:gap-4 p-3 bg-(--surface-elevated) rounded-lg">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 sm:gap-4 p-3 bg-(--surface-elevated) rounded-(--radius-control)">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-(--text-muted)" />
               <label className="text-sm text-(--text-secondary)">
                 Start:
               </label>
-              <input
-                type="time"
-                value={competitionStartTime}
-                onChange={(e) => setCompetitionStartTime(e.target.value)}
-                className="px-2 py-1 bg-(--surface) border border-(--border) rounded text-sm text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
+              <DateTimePicker
+                mode="time"
+                size="sm"
+                fullWidth={false}
+                clearable={false}
+                minuteStep={5}
+                label="Competition start time"
+                value={fromTimeInputValue(competitionStartTime)}
+                onChange={(value) =>
+                  setCompetitionStartTime(toTimeInputValue(value))
+                }
                 disabled={isRunning}
+                className="w-32"
               />
             </div>
             <button
@@ -286,7 +299,7 @@ export default function MockSchedule({
               return (
                 <div key={block.id} className="relative">
                   <div
-                    className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border transition-all ${
+                    className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-(--radius-control) border transition-all ${
                       isActive
                         ? "border-(--primary) bg-(--primary)/10"
                         : isPast
@@ -417,7 +430,7 @@ export default function MockSchedule({
                 <>
                   <button
                     onClick={togglePause}
-                    className="flex items-center gap-2 px-3 py-1.5 border border-(--border) text-(--text-primary) rounded-lg hover:bg-(--surface-elevated) transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 border border-(--border) text-(--text-primary) rounded-(--radius-control) hover:bg-(--surface-elevated) transition-colors"
                   >
                     {isRunning ? (
                       <>
@@ -433,20 +446,20 @@ export default function MockSchedule({
                   </button>
                   <button
                     onClick={resetSchedule}
-                    className="flex items-center gap-2 px-3 py-1.5 text-(--error) border border-(--error)/50 rounded-lg hover:bg-(--error)/10 transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 text-(--error) border border-(--error)/50 rounded-(--radius-control) hover:bg-(--error)/10 transition-colors"
                   >
                     <RotateCcw className="w-4 h-4" />
                     Reset
                   </button>
                 </>
               ) : (
-                <button
+                <Button
+                  className="flex-1 sm:flex-none"
                   onClick={startSchedule}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary-hover) transition-colors"
+                  iconLeft={<Play className="w-4 h-4" />}
                 >
-                  <Play className="w-4 h-4" />
-                  Start Day
-                </button>
+                  Start day
+                </Button>
               )}
             </div>
           </div>

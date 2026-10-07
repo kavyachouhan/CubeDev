@@ -6,7 +6,10 @@ import { privateProfile, userAProfile } from "../fixtures/users";
 describe("upsertUser", () => {
   it("rejects unauthenticated upserts without a matching serverSecret", async () => {
     const t = makeConvex();
-    await expect(t.mutation(api.users.upsertUser, userAProfile)).rejects.toThrow();
+    // Deliberately missing `serverSecret`, to prove the call is rejected.
+    await expect(
+      t.mutation(api.users.upsertUser, userAProfile as never),
+    ).rejects.toThrow();
     await expect(
       t.mutation(api.users.upsertUser, {
         ...userAProfile,
@@ -26,7 +29,7 @@ describe("upsertUser", () => {
       wcaId: userAProfile.wcaId,
     });
     expect(user?.name).toBe(userAProfile.name);
-    expect(user?.email).toBeUndefined();
+    expect(user && "email" in user).toBe(false);
   });
 
   it("updates an existing profile by wcaUserId only with the server secret", async () => {
@@ -80,7 +83,7 @@ describe("profile privacy", () => {
     expect(byWca).toBeNull();
 
     const directory = await t.query(api.users.getAllUsers, { limit: 24 });
-    expect(directory.users.some((u) => u._id === userId)).toBe(false);
+    expect(directory.users.some((u) => u?._id === userId)).toBe(false);
 
     const eventStats = await t.query(api.users.getUserEventStats, { userId });
     expect(eventStats).toEqual([]);
@@ -232,7 +235,7 @@ describe("account deletion", () => {
     expect(result.details.deletedSolves).toBe(1);
     const user = await t.run(async (ctx) => ctx.db.get(userAId));
     expect(user?.isDeleted).toBe(true);
-    expect(user?.email).toBeUndefined();
+    expect(user && "email" in user).toBe(false);
     const identityUser = await asUser(t, userAId).query(
       api.users.getCurrentUser,
       {},

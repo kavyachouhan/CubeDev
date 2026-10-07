@@ -7,13 +7,10 @@ import {
   Calendar,
   MapPin,
   Filter,
-  Search,
   Play,
   ChevronDown,
   ChevronUp,
   Users,
-  ChevronLeft,
-  ChevronRight,
   History,
   Compass,
   RefreshCw,
@@ -34,6 +31,13 @@ import SimulationHistory from "./SimulationHistory";
 import UpcomingCompetitionsSuggestions from "./UpcomingCompetitionsSuggestions";
 import RegionDropdown from "./RegionDropdown";
 import { CompetitionCardsSkeleton } from "@/components/SkeletonLoaders";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
+import { Field, SearchInput } from "@/components/ui/Field";
+import { Pagination } from "@/components/ui/Pagination";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { Tabs } from "@/components/ui/Tabs";
 import CompetitionWalkthrough from "./CompetitionWalkthrough";
 import { useTheme } from "@/lib/theme-context";
 
@@ -368,46 +372,16 @@ export default function CompetitionBrowser() {
 
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Tab Navigation */}
-        <div className="border-b border-(--border)">
-          <nav className="flex space-x-4 sm:space-x-6 overflow-x-auto">
-            <button
-              onClick={() => handleTabChange("browse")}
-              className={`flex items-center gap-2 py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
-                activeTab === "browse"
-                  ? "border-(--primary) text-(--primary)"
-                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
-              }`}
-            >
-              <Compass className="w-4 h-4" />
-              <span className="hidden sm:inline">Browse</span>
-              <span className="sm:hidden">Browse</span>
-            </button>
-            <button
-              onClick={() => handleTabChange("registered")}
-              className={`flex items-center gap-2 py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
-                activeTab === "registered"
-                  ? "border-(--primary) text-(--primary)"
-                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
-              }`}
-            >
-              <CircleCheck className="w-4 h-4" />
-              <span className="hidden sm:inline">Registered</span>
-              <span className="sm:hidden">Registered</span>
-            </button>
-            <button
-              onClick={() => handleTabChange("history")}
-              className={`flex items-center gap-2 py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
-                activeTab === "history"
-                  ? "border-(--primary) text-(--primary)"
-                  : "border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border)"
-              }`}
-            >
-              <History className="w-4 h-4" />
-              <span className="hidden sm:inline">Simulations</span>
-              <span className="sm:hidden">Simulations</span>
-            </button>
-          </nav>
-        </div>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          aria-label="Competition views"
+          items={[
+            { value: "browse", label: "Browse", icon: <Compass /> },
+            { value: "registered", label: "Registered", icon: <CircleCheck /> },
+            { value: "history", label: "Simulations", icon: <History /> },
+          ]}
+        />
 
         {/* Registered Tab Content */}
         {activeTab === "registered" && (
@@ -466,7 +440,7 @@ export default function CompetitionBrowser() {
                           key={event.id}
                           onClick={() => toggleEvent(event.id)}
                           title={event.name}
-                          className={`p-1.5 sm:p-2 rounded-lg border transition-all ${
+                          className={`p-1.5 sm:p-2 rounded-(--radius-control) border transition-all ${
                             selectedEvents.includes(event.id)
                               ? "border-(--primary) bg-(--primary)/20"
                               : "border-(--border) hover:border-(--border-hover) bg-(--surface)"
@@ -492,60 +466,46 @@ export default function CompetitionBrowser() {
                       onRegionChange={setSelectedRegion}
                       label="Region"
                     />
-                    <div>
-                      <label className="text-sm text-(--text-secondary) mb-1.5 block">
-                        Search
-                      </label>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-                        <input
-                          type="text"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="Name or city..."
-                          className="w-full pl-9 pr-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) text-sm placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary)"
-                        />
-                      </div>
-                    </div>
+                    <Field label="Search">
+                      <SearchInput
+                        value={searchQuery}
+                        onChange={setSearchQuery}
+                        placeholder="Name or city…"
+                      />
+                    </Field>
                   </div>
 
                   {/* Time Filter */}
                   <div>
-                    <label className="text-sm text-(--text-secondary) mb-1.5 block">
-                      When
-                    </label>
-                    <div className="flex gap-2">
-                      {(["ongoing", "upcoming", "past"] as TimeFilter[]).map(
-                        (f) => (
-                          <button
-                            key={f}
-                            onClick={() => setTimeFilter(f)}
-                            className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                              timeFilter === f
-                                ? "bg-(--primary) text-white"
-                                : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated)/80"
-                            }`}
-                          >
-                            {f.charAt(0).toUpperCase() + f.slice(1)}
-                          </button>
-                        ),
-                      )}
-                    </div>
+                    <span className="type-label block mb-1.5">When</span>
+                    <SegmentedControl<TimeFilter>
+                      value={timeFilter}
+                      onChange={setTimeFilter}
+                      aria-label="Competition time range"
+                      fullWidth
+                      options={(
+                        ["ongoing", "upcoming", "past"] as TimeFilter[]
+                      ).map((f) => ({
+                        value: f,
+                        label: f.charAt(0).toUpperCase() + f.slice(1),
+                      }))}
+                    />
                   </div>
 
                   {(selectedEvents.length > 0 ||
                     searchQuery ||
                     selectedRegion !== "all") && (
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => {
                         setSelectedEvents([]);
                         setSearchQuery("");
                         setSelectedRegion("all");
                       }}
-                      className="text-sm text-(--primary) hover:underline"
                     >
-                      Reset All Filters
-                    </button>
+                      Reset all filters
+                    </Button>
                   )}
                 </div>
               )}
@@ -574,19 +534,20 @@ export default function CompetitionBrowser() {
             {isLoading ? (
               <CompetitionCardsSkeleton count={5} />
             ) : error ? (
-              <div className="timer-card text-center py-8">
-                <p className="text-(--error) mb-4">{error}</p>
-                <button
-                  onClick={() => fetchCompetitions()}
-                  className="px-4 py-2 bg-(--primary) text-white rounded-lg"
-                >
-                  Retry
-                </button>
+              <div className="timer-card">
+                <ErrorState
+                  description={error}
+                  onRetry={() => fetchCompetitions()}
+                />
               </div>
             ) : paginatedCompetitions.length === 0 ? (
-              <div className="timer-card text-center py-12">
-                <Trophy className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
-                <p className="text-(--text-secondary)">No competitions found</p>
+              <div className="timer-card">
+                <EmptyState
+                  size="page"
+                  icon={<Trophy />}
+                  title="No competitions found"
+                  description="Try a different region, event or date range."
+                />
               </div>
             ) : (
               <div className="grid gap-3">
@@ -605,34 +566,31 @@ export default function CompetitionBrowser() {
                               {comp.name}
                             </h3>
                             <div className="flex flex-wrap items-center gap-2">
-                              <span
-                                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap ${status.color}`}
-                              >
+                              <Badge tone={status.tone} shape="pill">
                                 {status.label}
-                              </span>
+                              </Badge>
                               {comp.competitor_limit && (
-                                <span className="inline-flex items-center gap-1 rounded-full border border-(--border) bg-(--surface-elevated) px-2 py-0.5 text-xs font-medium text-(--text-secondary)">
-                                  <Users className="h-3 w-3" />
+                                <Badge shape="pill" icon={<Users />}>
                                   {comp.competitor_limit} limit
-                                </span>
+                                </Badge>
                               )}
                             </div>
                           </div>
 
-                          <span className="inline-flex min-h-9 min-w-10 items-center justify-center gap-1.5 rounded-lg bg-(--primary) px-3 py-2 text-xs font-semibold text-white transition-colors group-hover:bg-(--primary-hover) sm:min-w-28 sm:px-4 sm:text-sm">
+                          <span className="inline-flex min-h-9 min-w-10 items-center justify-center gap-1.5 rounded-(--radius-control) bg-(--primary) px-3 py-2 text-xs font-semibold text-(--on-primary) transition-colors group-hover:bg-(--primary-hover) sm:min-w-28 sm:px-4 sm:text-sm">
                             <Play className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
                             <span className="hidden sm:inline">Simulate</span>
                           </span>
                         </div>
 
                         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
-                          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
                             <Calendar className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
                             <span className="truncate">
                               {formatDateRange(comp.start_date, comp.end_date)}
                             </span>
                           </span>
-                          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
+                          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated) px-2.5 py-2 text-xs text-(--text-secondary) sm:text-sm">
                             <MapPin className="h-3.5 w-3.5 shrink-0 text-(--text-muted)" />
                             <span className="truncate">
                               {comp.city}, {comp.country_iso2}
@@ -648,7 +606,7 @@ export default function CompetitionBrowser() {
                             return event ? (
                               <div
                                 key={eventId}
-                                className="rounded-md border border-(--border) bg-(--surface-elevated) p-1.5"
+                                className="rounded-(--radius-badge) border border-(--border) bg-(--surface-elevated) p-1.5"
                                 title={event.name}
                               >
                                 <Image
@@ -666,7 +624,7 @@ export default function CompetitionBrowser() {
                             ) : null;
                           })}
                           {comp.event_ids.length > 12 && (
-                            <span className="inline-flex items-center rounded-md border border-(--border) bg-(--surface-elevated) px-2 py-1 text-xs font-medium text-(--text-muted)">
+                            <span className="inline-flex items-center rounded-(--radius-badge) border border-(--border) bg-(--surface-elevated) px-2 py-1 text-xs font-medium text-(--text-muted)">
                               +{comp.event_ids.length - 12}
                             </span>
                           )}
@@ -679,76 +637,11 @@ export default function CompetitionBrowser() {
             )}
 
             {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="timer-card">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={currentPage === 1}
-                    className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span className="hidden sm:inline">Previous</span>
-                    <span className="sm:hidden">PREVIOUS</span>
-                  </button>
-
-                  <div className="flex items-center gap-2 flex-wrap justify-center">
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      let pageNumber;
-                      if (totalPages <= 5) {
-                        pageNumber = i + 1;
-                      } else if (currentPage <= 3) {
-                        pageNumber = i + 1;
-                      } else if (currentPage >= totalPages - 2) {
-                        pageNumber = totalPages - 4 + i;
-                      } else {
-                        pageNumber = currentPage - 2 + i;
-                      }
-
-                      return (
-                        <button
-                          key={pageNumber}
-                          onClick={() => setCurrentPage(pageNumber)}
-                          className={`w-10 h-10 rounded-lg font-medium transition-all duration-200 ${
-                            currentPage === pageNumber
-                              ? "bg-(--primary) text-white"
-                              : "bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary)"
-                          }`}
-                        >
-                          {pageNumber}
-                        </button>
-                      );
-                    })}
-
-                    {totalPages > 5 && currentPage < totalPages - 2 && (
-                      <>
-                        <span className="text-(--text-muted)">...</span>
-                        <button
-                          onClick={() => setCurrentPage(totalPages)}
-                          className="w-10 h-10 rounded-lg bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) font-medium transition-all duration-200"
-                        >
-                          {totalPages}
-                        </button>
-                      </>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                    className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
-                  >
-                    <span className="hidden sm:inline">Next</span>
-                    <span className="sm:hidden">NEXT</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
+            <Pagination
+              page={currentPage}
+              totalPages={totalPages}
+              onChange={setCurrentPage}
+            />
           </>
         )}
       </div>

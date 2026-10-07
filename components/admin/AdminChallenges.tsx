@@ -44,6 +44,12 @@ import {
   AlertCircle,
   Zap,
 } from "lucide-react";
+import { Input, Textarea } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { Spinner } from "@/components/ui/Spinner";
+import { AdminStatCard } from "./AdminStatCard";
+import { AdminCollapsibleCard } from "./AdminCollapsibleCard";
+import { useEffectiveTheme, useThemeColors } from "@/lib/hooks/useThemeColors";
 import type { LucideIcon } from "lucide-react";
 import { AdminSelect } from "./AdminDropdown";
 
@@ -57,59 +63,6 @@ ChartJS.register(
   Tooltip,
   Legend,
 );
-
-// Custom hook to track effective theme (light/dark) based on data-theme attribute
-function useEffectiveTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  useEffect(() => {
-    const checkTheme = () => {
-      const dataTheme = document.documentElement.getAttribute("data-theme");
-      setTheme((dataTheme as "light" | "dark") || "dark");
-    };
-
-    checkTheme();
-
-    const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return theme;
-}
-
-// Custom hook to get primary color from CSS variable
-function usePrimaryColor() {
-  const [primaryColor, setPrimaryColor] = useState("rgba(59, 130, 246, 1)");
-
-  useEffect(() => {
-    const getColor = () => {
-      if (typeof window === "undefined") return;
-      const computed = getComputedStyle(document.documentElement)
-        .getPropertyValue("--primary")
-        .trim();
-      if (computed) {
-        setPrimaryColor(computed);
-      }
-    };
-
-    getColor();
-
-    const observer = new MutationObserver(getColor);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme", "data-color-scheme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return primaryColor;
-}
 
 // Event names mapping
 const EVENT_NAMES: Record<string, string> = {
@@ -186,111 +139,6 @@ function exportToJSON(data: unknown, filename: string) {
   link.click();
 }
 
-// Collapsible Card Component
-function CollapsibleCard({
-  title,
-  children,
-  defaultOpen = true,
-  storageKey,
-  headerExtra,
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  storageKey?: string;
-  headerExtra?: React.ReactNode;
-}) {
-  const [isOpen, setIsOpen] = useState(() => {
-    if (typeof window !== "undefined" && storageKey) {
-      const saved = localStorage.getItem(storageKey);
-      return saved !== null ? saved === "true" : defaultOpen;
-    }
-    return defaultOpen;
-  });
-
-  const toggleOpen = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    if (typeof window !== "undefined" && storageKey) {
-      localStorage.setItem(storageKey, String(newState));
-    }
-  };
-
-  return (
-    <div className="timer-card">
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={toggleOpen}
-          className="flex items-center gap-1 text-(--text-muted) hover:text-(--primary) transition-colors"
-        >
-          <h3 className="text-base sm:text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            {title}
-          </h3>
-          {isOpen ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          {headerExtra}
-          <button
-            onClick={toggleOpen}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-          >
-            {isOpen ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
-      {isOpen && children}
-    </div>
-  );
-}
-
-// StatCard Component
-function StatCard({
-  title,
-  value,
-  icon: Icon,
-  iconColor = "text-(--primary)",
-  iconBgColor = "bg-(--primary)/10",
-  subValue,
-}: {
-  title: string;
-  value: string | number;
-  icon: LucideIcon;
-  iconColor?: string;
-  iconBgColor?: string;
-  subValue?: string;
-}) {
-  return (
-    <div className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border)">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] sm:text-xs text-(--text-muted) uppercase tracking-wide font-inter truncate">
-            {title}
-          </p>
-          <p className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement mt-0.5">
-            {typeof value === "number" ? value.toLocaleString() : value}
-          </p>
-          {subValue && (
-            <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter mt-0.5 truncate">
-              {subValue}
-            </p>
-          )}
-        </div>
-        <div className={`p-1.5 sm:p-2 ${iconBgColor} rounded-lg shrink-0`}>
-          <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${iconColor}`} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // Status Badge Component
 function StatusBadge({ status }: { status: string }) {
   const getStatusStyles = () => {
@@ -350,7 +198,7 @@ function ChallengeRoomCard({
 
   return (
     <div
-      className="bg-(--surface-elevated) border border-(--border) rounded-xl p-3 sm:p-4 hover:border-(--border-hover) transition-colors cursor-pointer"
+      className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-card) p-3 sm:p-4 hover:border-(--border-hover) transition-colors cursor-pointer"
       onClick={onClick}
     >
       <div className="flex items-start justify-between mb-2 sm:mb-3">
@@ -479,8 +327,8 @@ function RoomDetailModal({
   const isExpired = room.expiresAt < now || room.status === "expired";
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
-      <div className="timer-card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <Modal open onClose={onClose} size="2xl" mobile="fullscreen">
+      <Modal.Body>
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div className="flex items-center gap-2 sm:gap-3">
             <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
@@ -490,7 +338,7 @@ function RoomDetailModal({
           </div>
           <button
             onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -498,7 +346,7 @@ function RoomDetailModal({
 
         {/* Room Details */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-          <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+          <div className="bg-(--surface-elevated) rounded-(--radius-control) p-2 sm:p-3 border border-(--border)">
             <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
               Event
             </p>
@@ -506,7 +354,7 @@ function RoomDetailModal({
               {EVENT_NAMES[room.event] || room.event}
             </p>
           </div>
-          <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+          <div className="bg-(--surface-elevated) rounded-(--radius-control) p-2 sm:p-3 border border-(--border)">
             <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
               Format
             </p>
@@ -514,7 +362,7 @@ function RoomDetailModal({
               {room.format.toUpperCase()}
             </p>
           </div>
-          <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+          <div className="bg-(--surface-elevated) rounded-(--radius-control) p-2 sm:p-3 border border-(--border)">
             <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
               Room ID
             </p>
@@ -522,7 +370,7 @@ function RoomDetailModal({
               {room.roomId}
             </p>
           </div>
-          <div className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border)">
+          <div className="bg-(--surface-elevated) rounded-(--radius-control) p-2 sm:p-3 border border-(--border)">
             <p className="text-[10px] sm:text-xs text-(--text-muted) font-inter">
               Visibility
             </p>
@@ -541,7 +389,7 @@ function RoomDetailModal({
         </div>
 
         {room.description && (
-          <div className="mb-4 sm:mb-6 p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+          <div className="mb-4 sm:mb-6 p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
             <p className="text-xs sm:text-sm text-(--text-secondary) font-inter">
               {room.description}
             </p>
@@ -558,7 +406,7 @@ function RoomDetailModal({
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border) animate-pulse"
+                className="bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border) animate-pulse"
               >
                 <div className="h-4 w-32 bg-(--surface) rounded mb-2" />
                 <div className="h-3 w-24 bg-(--surface) rounded" />
@@ -566,7 +414,7 @@ function RoomDetailModal({
             ))}
           </div>
         ) : participants.length === 0 ? (
-          <div className="text-center py-6 sm:py-8 bg-(--surface-elevated) rounded-lg border border-(--border)">
+          <div className="text-center py-6 sm:py-8 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
             <Users className="w-8 h-8 sm:w-10 sm:h-10 text-(--text-muted) mx-auto mb-2" />
             <p className="text-(--text-muted) font-inter text-sm">
               No participants yet
@@ -577,20 +425,20 @@ function RoomDetailModal({
             {participants.map((participant: any, index: number) => (
               <div
                 key={participant._id}
-                className="bg-(--surface-elevated) rounded-lg p-2 sm:p-3 border border-(--border) hover:border-(--border-hover) transition-colors"
+                className="bg-(--surface-elevated) rounded-(--radius-control) p-2 sm:p-3 border border-(--border) hover:border-(--border-hover) transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 sm:gap-3">
                     {participant.finalRank && participant.finalRank <= 3 && (
                       <div className="shrink-0">
                         {participant.finalRank === 1 && (
-                          <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
+                          <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-(--warning)" />
                         )}
                         {participant.finalRank === 2 && (
-                          <Medal className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                          <Medal className="w-4 h-4 sm:w-5 sm:h-5 text-(--text-muted)" />
                         )}
                         {participant.finalRank === 3 && (
-                          <Medal className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
+                          <Medal className="w-4 h-4 sm:w-5 sm:h-5 text-(--warning)" />
                         )}
                       </div>
                     )}
@@ -640,8 +488,8 @@ function RoomDetailModal({
             Close
           </button>
         </div>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 }
 
@@ -760,15 +608,15 @@ function SendChallengeNotificationModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
-      <div className="timer-card max-w-lg w-full max-h-[90vh] overflow-y-auto">
+    <Modal open onClose={onClose} size="lg" mobile="fullscreen">
+      <Modal.Body>
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <h2 className="text-lg sm:text-xl font-bold text-(--text-primary) font-statement">
             Send Challenge Notification
           </h2>
           <button
             onClick={handleClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -777,15 +625,13 @@ function SendChallengeNotificationModal({
         <div className="space-y-4">
           {/* Notification Type Selection */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Send To
-            </label>
+            <label className="type-label block mb-2">Send To</label>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setNotificationType("single")}
-                className={`flex-1 min-w-[100px] px-3 py-2 rounded-lg font-inter text-sm transition-colors ${
+                className={`flex-1 min-w-[100px] px-3 py-2 rounded-(--radius-control) font-inter text-sm transition-colors ${
                   notificationType === "single"
-                    ? "bg-(--primary) text-white"
+                    ? "bg-(--primary) text-(--on-primary)"
                     : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary)"
                 }`}
               >
@@ -793,9 +639,9 @@ function SendChallengeNotificationModal({
               </button>
               <button
                 onClick={() => setNotificationType("challenge-users")}
-                className={`flex-1 min-w-[100px] px-3 py-2 rounded-lg font-inter text-sm transition-colors ${
+                className={`flex-1 min-w-[100px] px-3 py-2 rounded-(--radius-control) font-inter text-sm transition-colors ${
                   notificationType === "challenge-users"
-                    ? "bg-(--primary) text-white"
+                    ? "bg-(--primary) text-(--on-primary)"
                     : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary)"
                 }`}
               >
@@ -803,9 +649,9 @@ function SendChallengeNotificationModal({
               </button>
               <button
                 onClick={() => setNotificationType("broadcast")}
-                className={`flex-1 min-w-[100px] px-3 py-2 rounded-lg font-inter text-sm transition-colors ${
+                className={`flex-1 min-w-[100px] px-3 py-2 rounded-(--radius-control) font-inter text-sm transition-colors ${
                   notificationType === "broadcast"
-                    ? "bg-(--primary) text-white"
+                    ? "bg-(--primary) text-(--on-primary)"
                     : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary)"
                 }`}
               >
@@ -817,21 +663,18 @@ function SendChallengeNotificationModal({
           {/* User Selection (for single user) */}
           {notificationType === "single" && (
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-                Select User
-              </label>
+              <label className="type-label block mb-2">Select User</label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-                <input
-                  type="text"
+                <Input
                   value={userSearch}
                   onChange={(e) => setUserSearch(e.target.value)}
                   placeholder="Search challenge participants..."
-                  className="w-full pl-10 pr-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
+                  className="w-full pl-10 pr-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
                 />
               </div>
               {userSearch && (
-                <div className="mt-2 max-h-32 overflow-y-auto bg-(--surface-elevated) border border-(--border) rounded-lg">
+                <div className="mt-2 max-h-32 overflow-y-auto bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)">
                   {filteredUsers.slice(0, 10).map((user: any) => (
                     <button
                       key={user._id}
@@ -850,7 +693,7 @@ function SendChallengeNotificationModal({
                 </div>
               )}
               {selectedUserId && (
-                <div className="mt-2 flex items-center gap-2 p-2 bg-(--primary)/10 rounded-lg">
+                <div className="mt-2 flex items-center gap-2 p-2 bg-(--primary)/10 rounded-(--radius-control)">
                   <span className="text-sm text-(--text-primary) font-inter flex-1">
                     {users.find((u: any) => u._id === selectedUserId)?.name}
                   </span>
@@ -867,9 +710,7 @@ function SendChallengeNotificationModal({
 
           {/* Quick Presets */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Quick Templates
-            </label>
+            <label className="type-label block mb-2">Quick Templates</label>
             <div className="flex flex-wrap gap-2">
               {presets.map((preset) => (
                 <button
@@ -888,52 +729,41 @@ function SendChallengeNotificationModal({
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Title
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-2">Title</label>
+            <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Notification title..."
-              className="w-full px-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
               maxLength={100}
             />
           </div>
 
           {/* Body */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Message
-            </label>
-            <textarea
+            <label className="type-label block mb-2">Message</label>
+            <Textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
               placeholder="Notification message..."
               rows={3}
-              className="w-full px-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter text-sm"
               maxLength={300}
             />
           </div>
 
           {/* URL */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Link URL (optional)
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-2">Link URL (optional)</label>
+            <Input
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="/cube-lab/challenge"
-              className="w-full px-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
             />
           </div>
 
           {/* Result Message */}
           {result && (
             <div
-              className={`p-3 rounded-lg text-sm font-inter ${
+              className={`p-3 rounded-(--radius-control) text-sm font-inter ${
                 result.success
                   ? "bg-(--success)/10 text-(--success) border border-(--success)/20"
                   : "bg-(--error)/10 text-(--error) border border-(--error)/20"
@@ -964,7 +794,7 @@ function SendChallengeNotificationModal({
             >
               {isSending ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <Spinner size="sm" />
                   Sending...
                 </>
               ) : (
@@ -976,8 +806,8 @@ function SendChallengeNotificationModal({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 }
 
@@ -999,11 +829,11 @@ function LeaderboardItem({
 }) {
   const getRankIcon = () => {
     if (rank === 1)
-      return <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />;
+      return <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-(--warning)" />;
     if (rank === 2)
-      return <Medal className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />;
+      return <Medal className="w-4 h-4 sm:w-5 sm:h-5 text-(--text-muted)" />;
     if (rank === 3)
-      return <Medal className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />;
+      return <Medal className="w-4 h-4 sm:w-5 sm:h-5 text-(--warning)" />;
     return (
       <span className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-xs font-bold text-(--text-muted)">
         {rank}
@@ -1012,7 +842,7 @@ function LeaderboardItem({
   };
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-(--surface-elevated) rounded-lg border border-(--border) hover:border-(--border-hover) transition-colors">
+    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border) hover:border-(--border-hover) transition-colors">
       <div className="shrink-0">{getRankIcon()}</div>
       <div className="flex-1 min-w-0">
         <p className="font-medium text-(--text-primary) font-inter text-sm truncate">
@@ -1042,7 +872,7 @@ function LeaderboardItem({
 // Main Admin Challenges Component
 export default function AdminChallengesNew() {
   const theme = useEffectiveTheme();
-  const primaryColor = usePrimaryColor();
+  const primaryColor = useThemeColors()["--primary"];
 
   // State
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -1237,7 +1067,7 @@ export default function AdminChallengesNew() {
         </div>
 
         {/* Overview Statistics */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Overview Statistics"
           storageKey="admin-challenges-stats"
           defaultOpen={true}
@@ -1247,7 +1077,7 @@ export default function AdminChallengesNew() {
               {[...Array(10)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-(--surface-elevated) rounded-xl p-3 sm:p-4 border border-(--border) animate-pulse"
+                  className="bg-(--surface-elevated) rounded-(--radius-card) p-3 sm:p-4 border border-(--border) animate-pulse"
                 >
                   <div className="h-3 w-16 bg-(--surface) rounded mb-2" />
                   <div className="h-6 w-12 bg-(--surface) rounded" />
@@ -1256,92 +1086,92 @@ export default function AdminChallengesNew() {
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-              <StatCard
+              <AdminStatCard
                 title="Total Rooms"
                 value={analytics.totalRooms}
                 icon={Trophy}
-                iconColor="text-purple-500"
-                iconBgColor="bg-purple-500/10"
+                iconColor="text-(--accent)"
+                iconBgColor="bg-(--accent)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Active Rooms"
                 value={analytics.activeRooms}
                 icon={Clock}
-                iconColor="text-green-500"
-                iconBgColor="bg-green-500/10"
+                iconColor="text-(--success)"
+                iconBgColor="bg-(--success)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Expired Rooms"
                 value={analytics.expiredRooms}
                 icon={XCircle}
-                iconColor="text-orange-500"
-                iconBgColor="bg-orange-500/10"
+                iconColor="text-(--warning)"
+                iconBgColor="bg-(--warning)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Total Participants"
                 value={analytics.totalParticipants}
                 icon={Users}
-                iconColor="text-blue-500"
-                iconBgColor="bg-blue-500/10"
+                iconColor="text-(--info)"
+                iconBgColor="bg-(--info)/10"
                 subValue={`${analytics.uniqueParticipants} unique`}
               />
-              <StatCard
+              <AdminStatCard
                 title="Completion Rate"
                 value={`${analytics.completionRate}%`}
                 icon={Percent}
-                iconColor="text-emerald-500"
-                iconBgColor="bg-emerald-500/10"
+                iconColor="text-(--success)"
+                iconBgColor="bg-(--success)/10"
                 subValue={`${analytics.completedParticipants} completed`}
               />
-              <StatCard
+              <AdminStatCard
                 title="Total Solves"
                 value={analytics.totalSolves}
                 icon={Timer}
-                iconColor="text-cyan-500"
-                iconBgColor="bg-cyan-500/10"
+                iconColor="text-(--primary)"
+                iconBgColor="bg-(--primary)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Avg Solve Time"
                 value={formatTime(analytics.avgSolveTime)}
                 icon={Activity}
-                iconColor="text-pink-500"
-                iconBgColor="bg-pink-500/10"
+                iconColor="text-(--accent)"
+                iconBgColor="bg-(--accent)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Best Solve"
                 value={formatTime(analytics.bestSolveTime)}
                 icon={Zap}
-                iconColor="text-yellow-500"
-                iconBgColor="bg-yellow-500/10"
+                iconColor="text-(--warning)"
+                iconBgColor="bg-(--warning)/10"
               />
-              <StatCard
+              <AdminStatCard
                 title="Avg Per Room"
                 value={analytics.avgParticipants}
                 icon={Target}
-                iconColor="text-indigo-500"
-                iconBgColor="bg-indigo-500/10"
+                iconColor="text-(--accent)"
+                iconBgColor="bg-(--accent)/10"
                 subValue="participants"
               />
-              <StatCard
+              <AdminStatCard
                 title="Empty Rooms"
                 value={analytics.emptyRooms}
                 icon={AlertCircle}
-                iconColor="text-red-500"
-                iconBgColor="bg-red-500/10"
+                iconColor="text-(--error)"
+                iconBgColor="bg-(--error)/10"
               />
             </div>
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
 
         {/* Weekly Activity */}
         {analytics?.weeklyActivity && (
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Weekly Activity"
             storageKey="admin-challenges-weekly"
             defaultOpen={true}
           >
             <div className="grid grid-cols-1 xs:grid-cols-3 gap-2 sm:gap-4">
-              <StatCard
+              <AdminStatCard
                 title="Rooms Created"
                 value={analytics.weeklyActivity.rooms}
                 icon={Trophy}
@@ -1349,7 +1179,7 @@ export default function AdminChallengesNew() {
                 iconBgColor="bg-(--primary)/10"
                 subValue="Last 7 days"
               />
-              <StatCard
+              <AdminStatCard
                 title="Participants"
                 value={analytics.weeklyActivity.participants}
                 icon={Users}
@@ -1357,7 +1187,7 @@ export default function AdminChallengesNew() {
                 iconBgColor="bg-(--primary)/10"
                 subValue="Last 7 days"
               />
-              <StatCard
+              <AdminStatCard
                 title="Solves"
                 value={analytics.weeklyActivity.solves}
                 icon={Timer}
@@ -1366,13 +1196,13 @@ export default function AdminChallengesNew() {
                 subValue="Last 7 days"
               />
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
         )}
 
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-start">
           {/* Event Distribution */}
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Event Distribution"
             storageKey="admin-challenges-event-dist"
             defaultOpen={true}
@@ -1393,10 +1223,10 @@ export default function AdminChallengesNew() {
                 </div>
               )}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
 
           {/* Format Distribution */}
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Format Distribution"
             storageKey="admin-challenges-format-dist"
             defaultOpen={true}
@@ -1418,13 +1248,13 @@ export default function AdminChallengesNew() {
                 </div>
               )}
             </div>
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
         </div>
 
         {/* Leaderboards Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Top Creators */}
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Top Room Creators"
             storageKey="admin-challenges-top-creators"
             defaultOpen={true}
@@ -1434,7 +1264,7 @@ export default function AdminChallengesNew() {
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-16 bg-(--surface-elevated) rounded-lg animate-pulse"
+                    className="h-16 bg-(--surface-elevated) rounded-(--radius-control) animate-pulse"
                   />
                 ))}
               </div>
@@ -1456,10 +1286,10 @@ export default function AdminChallengesNew() {
                 ))}
               </div>
             )}
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
 
           {/* Top Participants */}
-          <CollapsibleCard
+          <AdminCollapsibleCard
             title="Most Active Participants"
             storageKey="admin-challenges-top-participants"
             defaultOpen={true}
@@ -1469,7 +1299,7 @@ export default function AdminChallengesNew() {
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-16 bg-(--surface-elevated) rounded-lg animate-pulse"
+                    className="h-16 bg-(--surface-elevated) rounded-(--radius-control) animate-pulse"
                   />
                 ))}
               </div>
@@ -1496,18 +1326,18 @@ export default function AdminChallengesNew() {
                 ))}
               </div>
             )}
-          </CollapsibleCard>
+          </AdminCollapsibleCard>
         </div>
 
         {/* Rooms List */}
-        <CollapsibleCard
+        <AdminCollapsibleCard
           title="Challenge Rooms"
           storageKey="admin-challenges-rooms"
           defaultOpen={true}
           headerExtra={
             <button
               onClick={handleExportRooms}
-              className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
+              className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-(--radius-badge) transition-colors"
               title="Export Rooms"
               disabled={!rooms}
             >
@@ -1520,12 +1350,11 @@ export default function AdminChallengesNew() {
             {/* Search */}
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-              <input
-                type="text"
+              <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search rooms..."
-                className="w-full pl-10 pr-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
+                className="w-full pl-10 pr-4 py-2 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
               />
             </div>
 
@@ -1563,7 +1392,7 @@ export default function AdminChallengesNew() {
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-(--surface-elevated) border border-(--border) rounded-xl p-4 animate-pulse"
+                  className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-card) p-4 animate-pulse"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <div className="h-5 w-16 bg-(--surface) rounded-full" />
@@ -1582,7 +1411,7 @@ export default function AdminChallengesNew() {
               ))}
             </div>
           ) : filteredRooms.length === 0 ? (
-            <div className="bg-(--surface-elevated) border border-(--border) rounded-xl p-8 text-center">
+            <div className="bg-(--surface-elevated) border border-(--border) rounded-(--radius-card) p-8 text-center">
               <Trophy className="w-12 h-12 text-(--text-muted) mx-auto mb-3" />
               <p className="text-(--text-muted) font-inter">
                 {searchQuery || statusFilter !== "all" || eventFilter !== "all"
@@ -1607,7 +1436,7 @@ export default function AdminChallengesNew() {
               </div>
             </>
           )}
-        </CollapsibleCard>
+        </AdminCollapsibleCard>
       </div>
 
       {/* Modals */}

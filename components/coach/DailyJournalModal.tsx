@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import { createPortal } from "react-dom";
 import {
   X,
   BookOpen,
@@ -21,14 +20,21 @@ import {
   Upload,
   AlertCircle,
   Film,
-  Loader2,
   Play,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { Button } from "@/components/ui/Button";
+import { Card, CardIcon } from "@/components/ui/Card";
+import { ProgressBar } from "@/components/ui/ProgressBar";
+import { StatTile } from "@/components/ui/StatTile";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
+import { Lightbox } from "@/components/ui/Lightbox";
+import { Input, Textarea } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
+import { Spinner } from "@/components/ui/Spinner";
 import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 import {
   uploadJournalMedia,
@@ -145,7 +151,7 @@ function MediaPreviewItem({
     <div className="relative group">
       {isVideo ? (
         <div
-          className="aspect-video bg-(--surface) rounded-lg flex items-center justify-center border border-(--border) relative overflow-hidden cursor-pointer"
+          className="aspect-video bg-(--surface) rounded-(--radius-panel) flex items-center justify-center border border-(--border) relative overflow-hidden cursor-pointer"
           onClick={onPreview}
         >
           {!videoError ? (
@@ -159,7 +165,7 @@ function MediaPreviewItem({
               />
               <div className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors">
                 <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <Play className="w-5 h-5 text-white ml-0.5" />
+                  <Play className="w-5 h-5 text-(--on-media) ml-0.5" />
                 </div>
               </div>
             </>
@@ -169,7 +175,7 @@ function MediaPreviewItem({
         </div>
       ) : imageError ? (
         <div
-          className="aspect-square bg-(--surface) rounded-lg flex items-center justify-center border border-(--border) cursor-pointer"
+          className="aspect-square bg-(--surface) rounded-(--radius-panel) flex items-center justify-center border border-(--border) cursor-pointer"
           onClick={onPreview}
         >
           <Image className="w-8 h-8 text-(--text-muted)" />
@@ -178,14 +184,14 @@ function MediaPreviewItem({
         <img
           src={url}
           alt="Media attachment"
-          className="w-full aspect-square object-cover rounded-lg border border-(--border) cursor-pointer"
+          className="w-full aspect-square object-cover rounded-(--radius-panel) border border-(--border) cursor-pointer"
           onClick={onPreview}
           onError={() => setImageError(true)}
         />
       )}
       <button
         onClick={onRemove}
-        className="absolute top-1 right-1 p-1.5 bg-(--error) text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-1 right-1 p-1.5 bg-(--error) text-(--on-media) rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
         aria-label="Remove media"
       >
         <Trash2 className="w-3 h-3" />
@@ -229,12 +235,12 @@ function UploadingMediaItem({
     <div className="relative group">
       {isVideo ? (
         videoError ? (
-          <div className="aspect-video bg-(--surface) rounded-lg flex items-center justify-center border border-(--border)">
+          <div className="aspect-video bg-(--surface) rounded-(--radius-panel) flex items-center justify-center border border-(--border)">
             <Film className="w-8 h-8 text-(--text-muted)" />
           </div>
         ) : (
           <div
-            className={`relative aspect-video rounded-lg overflow-hidden border border-(--border) ${media.progress === "completed" ? "cursor-pointer" : ""}`}
+            className={`relative aspect-video rounded-(--radius-panel) overflow-hidden border border-(--border) ${media.progress === "completed" ? "cursor-pointer" : ""}`}
             onClick={handleClick}
           >
             <video
@@ -248,7 +254,7 @@ function UploadingMediaItem({
             {media.progress === "completed" && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors">
                 <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <Play className="w-5 h-5 text-white ml-0.5" />
+                  <Play className="w-5 h-5 text-(--on-media) ml-0.5" />
                 </div>
               </div>
             )}
@@ -258,33 +264,35 @@ function UploadingMediaItem({
         <img
           src={media.previewUrl}
           alt="New media"
-          className={`w-full aspect-square object-cover rounded-lg border border-(--border) ${media.progress === "completed" ? "cursor-pointer" : ""}`}
+          className={`w-full aspect-square object-cover rounded-(--radius-panel) border border-(--border) ${media.progress === "completed" ? "cursor-pointer" : ""}`}
           onClick={handleClick}
         />
       )}
 
       {/* Upload progress overlay */}
       {media.progress === "uploading" && (
-        <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/50 rounded-(--radius-panel) flex items-center justify-center">
           <div className="flex flex-col items-center gap-2">
-            <Loader2 className="w-6 h-6 text-white animate-spin" />
-            <span className="text-xs text-white font-medium">Uploading...</span>
+            <Spinner size="lg" className="text-(--on-media)" />
+            <span className="text-xs text-(--on-media) font-medium">
+              Uploading…
+            </span>
           </div>
         </div>
       )}
 
       {/* Error overlay */}
       {media.progress === "error" && (
-        <div className="absolute inset-0 bg-(--error)/80 rounded-lg flex items-center justify-center">
+        <div className="absolute inset-0 bg-(--error)/80 rounded-(--radius-panel) flex items-center justify-center">
           <div className="flex flex-col items-center gap-2 p-2 text-center">
-            <AlertCircle className="w-5 h-5 text-white" />
-            <span className="text-xs text-white font-medium">Failed</span>
+            <AlertCircle className="w-5 h-5 text-(--on-media)" />
+            <span className="text-xs text-(--on-media) font-medium">Failed</span>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onRetry();
               }}
-              className="text-xs text-white underline hover:no-underline"
+              className="text-xs text-(--on-media) underline hover:no-underline"
             >
               Retry
             </button>
@@ -294,7 +302,7 @@ function UploadingMediaItem({
 
       {/* Completed badge */}
       {media.progress === "completed" && (
-        <div className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-(--success) text-white text-[10px] rounded flex items-center gap-1">
+        <div className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-(--success) text-(--on-media) text-[10px] rounded-(--radius-badge) flex items-center gap-1">
           <Check className="w-2.5 h-2.5" />
           <span>Uploaded</span>
         </div>
@@ -303,7 +311,7 @@ function UploadingMediaItem({
       {/* Remove button */}
       <button
         onClick={onRemove}
-        className="absolute top-1 right-1 p-1.5 bg-(--error) text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-1 right-1 p-1.5 bg-(--error) text-(--on-media) rounded-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
         aria-label="Remove media"
       >
         <Trash2 className="w-3 h-3" />
@@ -520,16 +528,6 @@ export default function DailyJournalModal({
       didSaveRef.current = false;
     }
   }, [isOpen]);
-
-  // Lock body scroll when lightbox is open
-  useEffect(() => {
-    if (previewMedia) {
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = "";
-      };
-    }
-  }, [previewMedia]);
 
   // Cleanup uploaded media on unmount if not saved
   useEffect(() => {
@@ -855,43 +853,18 @@ export default function DailyJournalModal({
       .filter((index) => index !== -1) || [];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
+    <Modal open onClose={onClose} size="lg" mobile="fullscreen">
+      <Modal.Header
+        title="Daily journal"
+        description={formatDate(stableDate)}
       />
-      {/* Modal */}
-      <div className="relative timer-card max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-(--primary)/10 flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-(--primary)" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-                Daily Journal
-              </h2>
-              <p className="text-sm text-(--text-muted)">
-                {formatDate(stableDate)}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
+      <Modal.Body>
         <div className="space-y-6">
           {/* Mood Selection */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-3 font-inter">
+            <span className="type-label block mb-3">
               How was your practice session?
-            </label>
+            </span>
             <div className="flex flex-wrap gap-2">
               {MOODS.map((m) => {
                 const Icon = m.icon;
@@ -900,7 +873,7 @@ export default function DailyJournalModal({
                   <button
                     key={m.id}
                     onClick={() => setMood(m.id)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors text-sm ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-(--radius-panel) border transition-colors text-sm ${
                       isSelected
                         ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
                         : "bg-(--surface-elevated) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
@@ -918,12 +891,12 @@ export default function DailyJournalModal({
 
           {/* Link Timer Session */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+            <span className="type-label block mb-2">
               Link a Timer Session (Optional)
-            </label>
+            </span>
 
             {selectedSessionId && sessionStats ? (
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <FolderOpen className="w-4 h-4 text-(--primary)" />
@@ -939,41 +912,41 @@ export default function DailyJournalModal({
                     Remove
                   </button>
                 </div>
-                <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="p-2 bg-(--surface) rounded-lg">
-                    <span className="text-xs text-(--text-muted) block">
-                      Solves
-                    </span>
-                    <span className="font-semibold text-(--text-primary) text-sm">
-                      {sessionStats.solveCount}
-                    </span>
-                  </div>
-                  <div className="p-2 bg-(--surface) rounded-lg">
-                    <span className="text-xs text-(--text-muted) block">
-                      Average
-                    </span>
-                    <span className="font-semibold text-(--text-primary) text-sm">
-                      {sessionStats.average
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+                  <StatTile
+                    size="sm"
+                    mobileLayout="row"
+                    mono={false}
+                    label="Solves"
+                    value={sessionStats.solveCount}
+                  />
+                  <StatTile
+                    size="sm"
+                    mobileLayout="row"
+                    label="Average"
+                    value={
+                      sessionStats.average
                         ? formatTime(sessionStats.average)
-                        : "-"}
-                    </span>
-                  </div>
-                  <div className="p-2 bg-(--surface) rounded-lg">
-                    <span className="text-xs text-(--text-muted) block">
-                      Best
-                    </span>
-                    <span className="font-semibold text-(--success) text-sm">
-                      {sessionStats.bestSingle
+                        : "—"
+                    }
+                  />
+                  <StatTile
+                    size="sm"
+                    mobileLayout="row"
+                    tone="success"
+                    label="Best"
+                    value={
+                      sessionStats.bestSingle
                         ? formatTime(sessionStats.bestSingle)
-                        : "-"}
-                    </span>
-                  </div>
+                        : "—"
+                    }
+                  />
                 </div>
               </div>
             ) : (
               <button
                 onClick={() => setShowSessionSelector(!showSessionSelector)}
-                className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-left hover:border-(--border-hover) transition-colors"
+                className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-(--radius-panel) text-left hover:border-(--border-hover) transition-colors"
               >
                 <span className="text-sm text-(--text-muted)">
                   Click to select a session from Timer...
@@ -984,7 +957,7 @@ export default function DailyJournalModal({
             {showSessionSelector &&
               !selectedSessionId &&
               filteredSessions.length > 0 && (
-                <div className="mt-2 max-h-40 overflow-y-auto space-y-1 p-2 bg-(--surface-elevated) border border-(--border) rounded-lg">
+                <div className="mt-2 max-h-40 overflow-y-auto space-y-1 p-2 bg-(--surface-elevated) border border-(--border) rounded-(--radius-panel)">
                   {filteredSessions.slice(0, 5).map((session) => (
                     <button
                       key={session._id}
@@ -992,12 +965,12 @@ export default function DailyJournalModal({
                         setSelectedSessionId(session._id);
                         setShowSessionSelector(false);
                       }}
-                      className="w-full flex items-center justify-between p-2 rounded hover:bg-(--surface) transition-colors"
+                      className="w-full flex items-center justify-between gap-2 p-2 rounded-(--radius-control) hover:bg-(--surface) transition-colors"
                     >
-                      <span className="text-sm font-medium text-(--text-primary)">
+                      <span className="type-label min-w-0 truncate">
                         {session.name}
                       </span>
-                      <span className="text-xs text-(--text-muted)">
+                      <span className="type-caption shrink-0">
                         {session.solveCount3x3} solves
                       </span>
                     </button>
@@ -1014,41 +987,32 @@ export default function DailyJournalModal({
 
           {/* Custom Average */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+            <span className="type-label block mb-2">
               Session Average
-            </label>
+            </span>
             <div className="flex flex-col sm:flex-row gap-3">
-              <button
+              <Button
+                variant={useSessionAverage ? "primary" : "secondary"}
+                className="flex-1"
                 onClick={() => {
                   setUseSessionAverage(true);
                   setCustomAverage("");
                 }}
-                className={`flex-1 px-4 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
-                  useSessionAverage
-                    ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
-                    : "bg-(--surface-elevated) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
-                }`}
               >
                 {sessionStats?.average
-                  ? `From Session: ${formatTime(sessionStats.average)}`
-                  : "From Session"}
-              </button>
-              <div className="flex-1 flex items-center gap-2">
-                <input
-                  type="text"
-                  value={customAverage}
-                  onChange={(e) => {
-                    setCustomAverage(e.target.value);
-                    setUseSessionAverage(false);
-                  }}
-                  placeholder="12.34 or 1:23.45"
-                  className={`w-full px-3 py-2.5 bg-(--surface-elevated) border rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm ${
-                    !useSessionAverage && customAverage
-                      ? "border-(--primary)"
-                      : "border-(--border)"
-                  }`}
-                />
-              </div>
+                  ? `From session: ${formatTime(sessionStats.average)}`
+                  : "From session"}
+              </Button>
+              <Input
+                className="flex-1"
+                value={customAverage}
+                onChange={(e) => {
+                  setCustomAverage(e.target.value);
+                  setUseSessionAverage(false);
+                }}
+                placeholder="12.34 or 1:23.45"
+                aria-label="Custom session average"
+              />
             </div>
             <p className="text-xs text-(--text-muted) mt-1.5">
               Use session average or enter a custom average (e.g., 12.34 or
@@ -1058,42 +1022,34 @@ export default function DailyJournalModal({
 
           {/* Custom Solve Count */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+            <span className="type-label block mb-2">
               Total Solves
-            </label>
+            </span>
             <div className="flex flex-col sm:flex-row gap-3">
-              <button
+              <Button
+                variant={useSessionSolveCount ? "primary" : "secondary"}
+                className="flex-1"
                 onClick={() => {
                   setUseSessionSolveCount(true);
                   setCustomSolveCount("");
                 }}
-                className={`flex-1 px-4 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
-                  useSessionSolveCount
-                    ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
-                    : "bg-(--surface-elevated) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
-                }`}
               >
                 {sessionStats?.solveCount
-                  ? `From Session: ${sessionStats.solveCount}`
-                  : "From Session"}
-              </button>
-              <div className="flex-1 flex items-center gap-2">
-                <input
-                  type="number"
-                  value={customSolveCount}
-                  onChange={(e) => {
-                    setCustomSolveCount(e.target.value);
-                    setUseSessionSolveCount(false);
-                  }}
-                  placeholder="Enter solves"
-                  min={0}
-                  className={`w-full px-3 py-2.5 bg-(--surface-elevated) border rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm ${
-                    !useSessionSolveCount && customSolveCount
-                      ? "border-(--primary)"
-                      : "border-(--border)"
-                  }`}
-                />
-              </div>
+                  ? `From session: ${sessionStats.solveCount}`
+                  : "From session"}
+              </Button>
+              <Input
+                className="flex-1"
+                type="number"
+                min={0}
+                value={customSolveCount}
+                onChange={(e) => {
+                  setCustomSolveCount(e.target.value);
+                  setUseSessionSolveCount(false);
+                }}
+                placeholder="Enter solves"
+                aria-label="Custom solve count"
+              />
             </div>
             <p className="text-xs text-(--text-muted) mt-1.5">
               Use session solve count or enter a custom number
@@ -1102,18 +1058,19 @@ export default function DailyJournalModal({
 
           {/* Practice Time */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+            <span className="type-label block mb-2">
               How long did you practice?
-            </label>
+            </span>
             <div className="flex items-center gap-2 sm:gap-3">
               <Clock className="w-5 h-5 text-(--text-muted) shrink-0" />
-              <input
+              <Input
+                className="w-20 sm:w-24"
                 type="number"
                 value={practiceMinutes}
                 onChange={(e) =>
                   setPracticeMinutes(parseInt(e.target.value) || 0)
                 }
-                className="w-20 sm:w-24 px-2 sm:px-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter text-sm"
+                aria-label="Practice minutes"
                 min={0}
                 max={480}
               />
@@ -1123,17 +1080,18 @@ export default function DailyJournalModal({
 
           {/* Focus Areas */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+            <span className="type-label block mb-2">
               What did you focus on?
-            </label>
+            </span>
             <div className="flex flex-wrap gap-2">
               {FOCUS_AREAS.map((area) => (
                 <button
                   key={area.id}
                   onClick={() => toggleFocusArea(area.id)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  aria-pressed={focusAreas.includes(area.id)}
+                  className={`px-3 py-1.5 min-h-9 rounded-full text-sm font-medium transition-colors ${
                     focusAreas.includes(area.id)
-                      ? "bg-(--primary) text-white"
+                      ? "bg-(--primary) text-(--on-primary)"
                       : "bg-(--surface-elevated) text-(--text-secondary) border border-(--border) hover:border-(--border-hover)"
                   }`}
                 >
@@ -1145,37 +1103,36 @@ export default function DailyJournalModal({
 
           {/* Tasks Section for the selected date */}
           {dateTasks && !dateTasks.plan.isRestDay && (
-            <div className="timer-card !p-0 overflow-hidden bg-(--surface-elevated) border border-(--border)">
+            <Card variant="nested" padding="none">
               <button
+                type="button"
+                aria-expanded={showTasks}
                 onClick={() => setShowTasks(!showTasks)}
-                className="w-full flex items-center justify-between p-4 text-left"
+                className="w-full flex items-center justify-between gap-3 p-4 text-left"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-(--primary)/10 flex items-center justify-center">
-                    <CheckCircle2 className="w-4 h-4 text-(--primary)" />
-                  </div>
-                  <div>
-                    <span className="font-medium text-(--text-primary) block text-sm">
-                      Training Tasks
-                    </span>
-                    <span className="text-xs text-(--text-muted)">
+                <div className="flex items-center gap-3 min-w-0">
+                  <CardIcon className="w-8 h-8 rounded-full [&_svg]:w-4 [&_svg]:h-4">
+                    <CheckCircle2 />
+                  </CardIcon>
+                  <div className="min-w-0">
+                    <span className="type-label block">Training Tasks</span>
+                    <span className="type-caption">
                       {completedActivitiesCount}/{totalActivities} completed
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-16 h-2 bg-(--surface) rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-(--primary) transition-all"
-                      style={{
-                        width: `${totalActivities > 0 ? (completedActivitiesCount / totalActivities) * 100 : 0}%`,
-                      }}
-                    />
-                  </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <ProgressBar
+                    size="sm"
+                    className="w-16"
+                    label="Training tasks completed"
+                    max={totalActivities}
+                    value={completedActivitiesCount}
+                  />
                   {showTasks ? (
-                    <ChevronUp className="w-4 h-4 text-(--text-muted)" />
+                    <ChevronUp aria-hidden className="w-4 h-4 text-(--text-muted)" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-(--text-muted)" />
+                    <ChevronDown aria-hidden className="w-4 h-4 text-(--text-muted)" />
                   )}
                 </div>
               </button>
@@ -1187,7 +1144,7 @@ export default function DailyJournalModal({
                     return (
                       <div
                         key={activityIndex}
-                        className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
+                        className={`flex items-start gap-3 p-3 rounded-(--radius-panel) transition-colors ${
                           isCompleted ? "bg-(--success)/10" : "bg-(--surface)"
                         }`}
                       >
@@ -1195,7 +1152,7 @@ export default function DailyJournalModal({
                           onClick={() => toggleTaskCompletion(activityIndex)}
                           className={`mt-0.5 shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                             isCompleted
-                              ? "bg-(--success) border-(--success) text-white"
+                              ? "bg-(--success) border-(--success) text-(--on-media)"
                               : "border-(--border) hover:border-(--primary)"
                           }`}
                         >
@@ -1227,12 +1184,12 @@ export default function DailyJournalModal({
                   })}
                 </div>
               )}
-            </div>
+            </Card>
           )}
 
           {/* Rest Day Notice */}
           {dateTasks?.plan.isRestDay && (
-            <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border) text-center">
+            <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border) text-center">
               <span className="text-sm text-(--text-muted)">
                 Today is a rest day. Take it easy!
               </span>
@@ -1241,51 +1198,48 @@ export default function DailyJournalModal({
 
           {/* What Went Well */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+            <span className="type-label block mb-2">
               What went well?
-            </label>
-            <textarea
+            </span>
+            <Textarea
               value={wentWell}
               onChange={(e) => setWentWell(e.target.value)}
               placeholder="e.g., Cross planning was much better today..."
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter text-sm"
               rows={2}
             />
           </div>
 
           {/* Challenges */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+            <span className="type-label block mb-2">
               What was challenging?
-            </label>
-            <textarea
+            </span>
+            <Textarea
               value={challenges}
               onChange={(e) => setChallenges(e.target.value)}
               placeholder="e.g., Struggled with F2L lookahead..."
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter text-sm"
               rows={2}
             />
           </div>
 
           {/* Additional Notes */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+            <span className="type-label block mb-2">
               Additional Notes
-            </label>
-            <textarea
+            </span>
+            <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any other thoughts or observations..."
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter text-sm"
               rows={2}
             />
           </div>
 
           {/* Media Upload Section */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+            <span className="type-label block mb-2">
               Attach Images or Videos (Optional)
-            </label>
+            </span>
 
             {/* File input */}
             <input
@@ -1300,7 +1254,7 @@ export default function DailyJournalModal({
             {/* Upload button */}
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-dashed border-(--border) rounded-lg text-left hover:border-(--primary) hover:bg-(--primary)/5 transition-colors flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 bg-(--surface-elevated) border border-dashed border-(--border) rounded-(--radius-panel) text-left hover:border-(--primary) hover:bg-(--primary)/5 transition-colors flex items-center justify-center gap-2"
             >
               <Upload className="w-4 h-4 text-(--text-muted)" />
               <span className="text-sm text-(--text-muted)">
@@ -1381,81 +1335,30 @@ export default function DailyJournalModal({
             </p>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t border-(--border)">
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-full sm:flex-1 px-4 py-3 bg-transparent border border-(--border) text-(--text-primary) font-semibold rounded-lg hover:border-(--primary) hover:bg-(--primary) hover:text-white transition-all order-2 sm:order-1"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={isSubmitting || isUploading || hasUploadErrors}
-              className="w-full sm:flex-1 px-4 py-3 bg-(--primary) text-white font-semibold rounded-lg hover:bg-(--primary-hover) transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Saving...</span>
-                </>
-              ) : isUploading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Uploading media...</span>
-                </>
-              ) : hasUploadErrors ? (
-                <>
-                  <AlertCircle className="w-4 h-4" />
-                  <span>Fix upload errors</span>
-                </>
-              ) : (
-                <>
-                  <Check className="w-4 h-4" />
-                  <span>Save Entry</span>
-                </>
-              )}
-            </button>
-          </div>
         </div>
-      </div>
-
-      {/* Media Preview Lightbox - Rendered via portal to ensure full-screen coverage */}
-      {previewMedia &&
-        typeof document !== "undefined" &&
-        createPortal(
-          <div
-            className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4"
-            style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
-            onClick={() => setPreviewMedia(null)}
-          >
-            <button
-              className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
-              onClick={() => setPreviewMedia(null)}
-            >
-              <X className="w-8 h-8" />
-            </button>
-            {previewMedia.isVideo ? (
-              <video
-                src={previewMedia.url}
-                controls
-                autoPlay
-                className="max-w-full max-h-[90vh] rounded-lg"
-                onClick={(e) => e.stopPropagation()}
-              />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+          Cancel
+        </Button>
+        <Button
+          onClick={handleSave}
+          loading={isSubmitting || isUploading}
+          loadingText={isSubmitting ? "Saving…" : "Uploading media…"}
+          disabled={hasUploadErrors}
+          iconLeft={
+            hasUploadErrors ? (
+              <AlertCircle className="w-4 h-4" />
             ) : (
-              <img
-                src={previewMedia.url}
-                alt="Full size preview"
-                className="max-w-full max-h-[90vh] object-contain rounded-lg"
-                onClick={(e) => e.stopPropagation()}
-              />
-            )}
-          </div>,
-          document.body,
-        )}
+              <Check className="w-4 h-4" />
+            )
+          }
+        >
+          {hasUploadErrors ? "Fix upload errors" : "Save entry"}
+        </Button>
+      </Modal.Footer>
+
+      <Lightbox media={previewMedia} onClose={() => setPreviewMedia(null)} />
 
       <ConfirmDeleteModal
         isOpen={existingMediaDelete.isOpen}
@@ -1467,6 +1370,6 @@ export default function DailyJournalModal({
         warning="The file will be deleted when you save this entry."
         confirmLabel="Remove Media"
       />
-    </div>
+    </Modal>
   );
 }

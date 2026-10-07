@@ -3,6 +3,9 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { MapPin, Calendar, ExternalLink } from "lucide-react";
 
+/** Vertical gap between rows (`space-y-3`), part of each row's pitch. */
+const GAP = 12;
+
 interface CompetitionInfo {
   id: string;
   name: string;
@@ -62,44 +65,42 @@ export default function VirtualCompetitionList({
             right: 0,
           }}
         >
+          {/*
+            Every row occupies exactly `itemHeight` (card + the gap below it),
+            because the virtualiser positions rows by index * itemHeight. The
+            name and city therefore clamp to one line instead of wrapping and
+            pushing the card past its slot.
+          */}
           <div className="space-y-3">
             {visibleCompetitions.map((competition) => (
-              <div
+              <a
                 key={competition.id}
-                className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)"
+                href={`https://www.worldcubeassociation.org/competitions/${competition.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ height: `${itemHeight - GAP}px` }}
+                className="flex items-center gap-3 px-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border) hover:border-(--primary)/40 transition-colors"
               >
-                <div className="flex items-start justify-between">
-                  <div className="min-w-0 flex-1">
-                    <h4 className="font-medium text-(--text-primary) font-inter mb-1">
-                      {competition.name}
-                    </h4>
-                    <div className="flex items-center gap-4 text-sm text-(--text-muted) mb-2">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        <span>
-                          {new Date(
-                            competition.start_date
-                          ).toLocaleDateString()}
-                        </span>
-                      </div>
-                      {competition.city && (
-                        <div className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          <span>{competition.city}</span>
-                        </div>
-                      )}
-                    </div>
+                <div className="min-w-0 flex-1">
+                  <p className="type-label truncate">{competition.name}</p>
+                  <div className="mt-1 flex items-center gap-3 min-w-0 type-caption">
+                    <span className="flex items-center gap-1 shrink-0">
+                      <Calendar className="w-3 h-3 shrink-0" aria-hidden />
+                      {new Date(competition.start_date).toLocaleDateString()}
+                    </span>
+                    {competition.city && (
+                      <span className="flex items-center gap-1 min-w-0">
+                        <MapPin className="w-3 h-3 shrink-0" aria-hidden />
+                        <span className="truncate">{competition.city}</span>
+                      </span>
+                    )}
                   </div>
-                  <a
-                    href={`https://www.worldcubeassociation.org/competitions/${competition.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ml-3 p-2 text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 rounded-lg transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
                 </div>
-              </div>
+                <ExternalLink
+                  aria-hidden
+                  className="w-4 h-4 shrink-0 text-(--text-muted)"
+                />
+              </a>
             ))}
           </div>
         </div>

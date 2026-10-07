@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -11,40 +11,17 @@ import JoinRoomModal from "@/components/challenges/JoinRoomModal";
 import PublicRoomsList from "@/components/challenges/PublicRoomsList";
 import RecentRoomsModal from "@/components/challenges/RecentRoomsModal";
 import ChallengeRoomWalkthrough from "@/components/challenges/ChallengeRoomWalkthrough";
-import {
-  Plus,
-  Users,
-  Trophy,
-  Calendar,
-  ChevronDown,
-  History,
-} from "lucide-react";
+import { Plus, Users, Trophy, Calendar, ChevronDown, History } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Menu } from "@/components/ui/Menu";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { StatTile } from "@/components/ui/StatTile";
 
 export default function ChallengesPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showRecentModal, setShowRecentModal] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowDropdown(false);
-      }
-    }
-
-    if (showDropdown) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }
-  }, [showDropdown]);
 
   const { user } = useUser();
   const challengeStats = useQuery(
@@ -55,122 +32,70 @@ export default function ChallengesPage() {
   return (
     <ProtectedRoute>
       <CubeLabLayout activeSection="challenges">
-        <div className="container-responsive py-4 md:py-8 space-y-6">
-          {/* Main Action Section */}
-          <div className="timer-card">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-6">
-              <h1 className="text-2xl sm:text-3xl font-bold text-(--text-primary) font-statement">
-                Challenge Rooms
-              </h1>
-
-              {/* Action Dropdown */}
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={() => setShowDropdown(!showDropdown)}
-                  className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 bg-(--primary) text-white rounded-lg hover:bg-(--primary)/90 transition-colors font-inter font-medium w-full sm:w-auto"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span className="sm:inline">Quick Action</span>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform ${showDropdown ? "rotate-180" : ""}`}
-                  />
-                </button>
-
-                {showDropdown && (
-                  <div className="absolute top-full left-0 sm:right-0 sm:left-auto mt-2 w-full sm:w-48 bg-(--surface-elevated) border border-(--border) rounded-lg shadow-lg py-2 z-10">
-                    <button
-                      onClick={() => {
-                        setShowCreateModal(true);
-                        setShowDropdown(false);
-                      }}
-                      className="w-full px-4 py-3 sm:py-2 text-left hover:bg-(--border) transition-colors flex items-center gap-3"
-                    >
-                      <Plus className="w-4 h-4 text-(--primary)" />
-                      <span className="font-inter text-(--text-primary)">
-                        Create Room
-                      </span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowJoinModal(true);
-                        setShowDropdown(false);
-                      }}
-                      className="w-full px-4 py-3 sm:py-2 text-left hover:bg-(--border) transition-colors flex items-center gap-3"
-                    >
-                      <Users className="w-4 h-4 text-(--primary)" />
-                      <span className="font-inter text-(--text-primary)">
-                        Join Room
-                      </span>
-                    </button>
-                    <div className="border-t border-(--border) my-2"></div>
-                    <button
-                      onClick={() => {
-                        setShowRecentModal(true);
-                        setShowDropdown(false);
-                      }}
-                      className="w-full px-4 py-3 sm:py-2 text-left hover:bg-(--border) transition-colors flex items-center gap-3"
-                    >
-                      <History className="w-4 h-4 text-(--primary)" />
-                      <span className="font-inter text-(--text-primary)">
-                        Recent Rooms
-                      </span>
-                    </button>
-                  </div>
+        <div className="container-responsive py-4 md:py-8 space-y-4 md:space-y-6">
+          <PageHeader
+            title="Challenge Rooms"
+            description="Compete on the same scrambles with other cubers."
+            hideTitleOnMobile
+            stretchActionsOnMobile
+            actions={
+              <Menu
+                title="Quick action"
+                items={[
+                  {
+                    label: "Create room",
+                    icon: <Plus />,
+                    onSelect: () => setShowCreateModal(true),
+                  },
+                  {
+                    label: "Join room",
+                    icon: <Users />,
+                    onSelect: () => setShowJoinModal(true),
+                  },
+                  { type: "separator" },
+                  {
+                    label: "Recent rooms",
+                    icon: <History />,
+                    onSelect: () => setShowRecentModal(true),
+                  },
+                ]}
+                trigger={(props) => (
+                  <Button
+                    {...props}
+                    iconLeft={<Plus className="w-4 h-4" />}
+                    iconRight={
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${
+                          props["aria-expanded"] ? "rotate-180" : ""
+                        }`}
+                      />
+                    }
+                  >
+                    Quick Action
+                  </Button>
                 )}
-              </div>
+              />
+            }
+          />
+
+          <Card variant="static">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+              {[
+                { label: "Rooms won", value: challengeStats?.roomsWon, icon: <Trophy /> },
+                { label: "Participated", value: challengeStats?.roomsParticipated, icon: <Users /> },
+                { label: "Rooms created", value: challengeStats?.roomsCreated, icon: <Calendar /> },
+              ].map((stat) => (
+                <StatTile
+                  key={stat.label}
+                  label={stat.label}
+                  icon={stat.icon}
+                  mono={false}
+                  size="lg"
+                  value={stat.value ?? "—"}
+                />
+              ))}
             </div>
-
-            {/* Challenge Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="p-4 sm:p-5 bg-(--surface-elevated) border border-(--border) rounded-lg hover:bg-(--surface-elevated)/80 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-(--primary) rounded-lg flex items-center justify-center">
-                    <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-(--text-muted) font-inter">
-                      Rooms Won
-                    </p>
-                    <p className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement">
-                      {challengeStats?.roomsWon ?? "-"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 sm:p-5 bg-(--surface-elevated) border border-(--border) rounded-lg hover:bg-(--surface-elevated)/80 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-(--primary) rounded-lg flex items-center justify-center">
-                    <Users className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-(--text-muted) font-inter">
-                      Participated
-                    </p>
-                    <p className="text-2xl font-bold text-(--text-primary) font-statement">
-                      {challengeStats?.roomsParticipated ?? "-"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 sm:p-5 bg-(--surface-elevated) border border-(--border) rounded-lg hover:bg-(--surface-elevated)/80 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-(--primary) rounded-lg flex items-center justify-center">
-                    <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-(--text-muted) font-inter">
-                      Rooms Created
-                    </p>
-                    <p className="text-xl sm:text-2xl font-bold text-(--text-primary) font-statement">
-                      {challengeStats?.roomsCreated ?? "-"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          </Card>
 
           {/* Public Rooms List */}
           <PublicRoomsList />

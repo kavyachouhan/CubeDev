@@ -96,7 +96,7 @@ export default function WhyCubeDev() {
             return (
               <div
                 key={index}
-                className={`group p-8 bg-(--background) border border-(--border) rounded-xl hover:border-(--primary) transition-all duration-500 hover:shadow-lg hover:shadow-(--primary)/10 transform ${
+                className={`group p-8 bg-(--background) border border-(--border) rounded-(--radius-card) hover:border-(--primary) transition-all duration-500 hover:shadow-lg hover:shadow-(--primary)/10 transform ${
                   isVisible
                     ? "translate-y-0 opacity-100"
                     : "translate-y-8 opacity-0"
@@ -107,7 +107,7 @@ export default function WhyCubeDev() {
               >
                 <div className="flex items-start space-x-4">
                   <div className="shrink-0">
-                    <div className="w-12 h-12 bg-(--primary)/10 rounded-lg flex items-center justify-center group-hover:bg-(--primary)/20 transition-colors duration-300">
+                    <div className="w-12 h-12 bg-(--primary)/10 rounded-(--radius-control) flex items-center justify-center group-hover:bg-(--primary)/20 transition-colors duration-300">
                       <Icon className="w-6 h-6 text-(--primary)" />
                     </div>
                   </div>

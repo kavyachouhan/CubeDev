@@ -87,21 +87,17 @@ export default function NotificationBell({
 
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`relative p-2 text-(--text-secondary) hover:text-(--primary) hover:bg-(--surface-elevated) rounded-lg transition-colors ${
-        collapsed ? "w-full flex justify-center" : ""
-      }`}
+      className={`icon-btn w-9 h-9 ${collapsed ? "mx-auto" : ""}`}
       title={`${notificationCount} notification${notificationCount !== 1 ? "s" : ""}`}
-      aria-label={`Notifications: ${notificationCount} notification${notificationCount !== 1 ? "s" : ""}`}
+      aria-label={`Notifications: ${notificationCount} unread`}
     >
-      <Bell className="w-5 h-5" />
+      <Bell className="w-5 h-5" aria-hidden />
       {hasNotifications && (
         <span
-          className={`absolute flex items-center justify-center bg-(--error) text-white text-[10px] font-bold rounded-full font-inter ${
-            collapsed
-              ? "top-0.5 right-0.5 min-w-[16px] h-[16px] px-1"
-              : "top-0.5 right-0.5 min-w-[18px] h-[18px] px-1"
-          }`}
+          aria-hidden
+          className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-4.5 h-4.5 px-1 bg-(--error) text-(--on-primary) text-[0.625rem] font-bold rounded-full font-inter ring-2 ring-(--surface)"
         >
           {notificationCount > 99 ? "99+" : notificationCount}
         </span>

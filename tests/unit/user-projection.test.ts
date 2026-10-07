@@ -32,6 +32,30 @@ describe("user projections", () => {
     expect(owner?.email).toBe("alice@example.com");
   });
 
+  // The owner DTO is hand-copied field by field, so a preference can be added to
+  // the schema and the type and still never reach the client. Assert the values
+  // actually come through.
+  it("passes every appearance preference through to the owner DTO", () => {
+    const preferences = {
+      themeMode: "light",
+      colorScheme: "purple",
+      timerFontSize: "xl",
+      timerFontFamily: "sans",
+      timerUpdateMode: "seconds",
+      cubeViewMode: "2d",
+      timerLayout: "cards",
+      reduceMotion: true,
+      disableGlow: true,
+      highContrast: true,
+    } as const;
+
+    const owner = toOwnerUser(fakeUser(preferences));
+
+    for (const [key, value] of Object.entries(preferences)) {
+      expect(owner?.[key as keyof typeof owner]).toBe(value);
+    }
+  });
+
   it("returns null for missing users", () => {
     expect(toPublicUser(null)).toBeNull();
     expect(toOwnerUser(undefined)).toBeNull();

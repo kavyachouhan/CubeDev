@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Mic, MicOff, Check, AlertCircle, RotateCcw } from "lucide-react";
 import { useStackmatAudio } from "../timer/hooks/useStackmatAudio";
+import { Button } from "@/components/ui/Button";
 
 interface CompetitionStackmatTimerProps {
   onSolveComplete: (
@@ -297,7 +298,7 @@ export default function CompetitionStackmatTimer({
         <div className="flex items-center gap-3">
           <button
             onClick={handleMicToggle}
-            className={`p-3 rounded-lg transition-colors ${
+            className={`p-3 rounded-(--radius-control) transition-colors ${
               isListening
                 ? isConnected
                   ? "bg-(--success)/10 text-(--success) border border-(--success)/30"
@@ -360,7 +361,7 @@ export default function CompetitionStackmatTimer({
           <div className="mt-4">
             <button
               onClick={handleStopInspection}
-              className="px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) rounded-lg font-medium transition-colors border border-(--border)"
+              className="px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) rounded-(--radius-control) font-medium transition-colors border border-(--border)"
             >
               Cancel Inspection
             </button>
@@ -395,25 +396,25 @@ export default function CompetitionStackmatTimer({
                 Confirm your solve result
               </p>
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
-                <button
+                <Button
+                  variant="success"
                   onClick={() => handlePenaltySelect("none")}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-(--success) text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
+                  iconLeft={<Check className="w-4 h-4" />}
                 >
-                  <Check className="w-4 h-4" />
                   OK
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="warning"
                   onClick={() => handlePenaltySelect("+2")}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-(--warning) text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
                 >
                   +2
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="danger"
                   onClick={() => handlePenaltySelect("DNF")}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-(--error) text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
                 >
                   DNF
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -423,7 +424,7 @@ export default function CompetitionStackmatTimer({
             <div className="mt-6">
               <button
                 onClick={handleStartInspection}
-                className="px-6 py-3 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-lg transition-colors border border-(--border)"
+                className="px-6 py-3 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) font-medium rounded-(--radius-control) transition-colors border border-(--border)"
               >
                 Start Inspection
               </button>
@@ -457,7 +458,7 @@ export default function CompetitionStackmatTimer({
               setInspectionTime(15);
               setInspectionPenalty(null);
             }}
-            className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-secondary) rounded-lg font-medium transition-colors border border-(--border)"
+            className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-(--surface-elevated) hover:bg-(--border) text-(--text-secondary) rounded-(--radius-control) font-medium transition-colors border border-(--border)"
           >
             <RotateCcw className="w-4 h-4" />
             Reset Display
@@ -467,7 +468,7 @@ export default function CompetitionStackmatTimer({
 
       {/* Error message */}
       {error && (
-        <div className="mt-4 p-3 bg-(--error)/10 border border-(--error)/30 rounded-lg">
+        <div className="mt-4 p-3 bg-(--error)/10 border border-(--error)/30 rounded-(--radius-control)">
           <div className="flex items-center gap-2 text-sm text-(--error)">
             <AlertCircle className="w-4 h-4" />
             <span>{error}</span>

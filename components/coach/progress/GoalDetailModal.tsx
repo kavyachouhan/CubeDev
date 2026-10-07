@@ -1,8 +1,6 @@
 ﻿"use client";
 
-import { useState, useEffect } from "react";
 import {
-  X,
   Target,
   CheckCircle2,
   XCircle,
@@ -15,6 +13,9 @@ import {
   Flag,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Modal } from "@/components/ui/Modal";
 
 const EVENT_NAMES: Record<string, string> = {
   "222": "2x2",
@@ -129,24 +130,10 @@ export default function GoalDetailModal({
   onClose,
   goal,
 }: GoalDetailModalProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
-  if (!mounted || !isOpen) return null;
+  // Scroll locking and mount gating belong to Modal, which ref-counts them.
+  // Doing it here as well locked the page open: this effect ran before Modal
+  // mounted, so Modal saved "hidden" as the value to restore on close.
+  if (!isOpen) return null;
 
   const targetTime = goal.customGoalTime || GOAL_TIMES[goal.goalType] || 20000;
   const endPoint = goal.endDate || Date.now();
@@ -166,30 +153,15 @@ export default function GoalDetailModal({
   const eventName = EVENT_NAMES[goal.primaryEvent] || goal.primaryEvent;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-md w-full max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="min-w-0">
-            <h2 className="text-xl font-bold text-(--text-primary) font-statement truncate">
-              {getGoalDisplay(goal.goalType, goal.customGoalTime)}
-            </h2>
-            <p className="text-sm text-(--text-muted) mt-0.5 font-inter">
-              {eventName}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto space-y-6 min-h-0">
+    <Modal open={isOpen} onClose={onClose} size="md" mobile="sheet">
+      <Modal.Header
+        title={getGoalDisplay(goal.goalType, goal.customGoalTime)}
+        description={eventName}
+      />
+      <Modal.Body>
+        <div className="space-y-6">
           {/* Status */}
-          <div className="timer-card bg-(--surface-elevated) p-4 border border-(--border)">
+          <Card variant="nested">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 min-w-0">
                 <StatusIcon className={`w-5 h-5 ${config.color} shrink-0`} />
@@ -205,10 +177,10 @@ export default function GoalDetailModal({
                 </span>
               )}
             </div>
-          </div>
+          </Card>
 
           {/* Progress */}
-          <div className="timer-card bg-(--surface-elevated) p-4 border border-(--border)">
+          <Card variant="nested">
             <h3 className="text-sm font-medium text-(--text-primary) mb-3 font-statement">
               Progress
             </h3>
@@ -234,11 +206,11 @@ export default function GoalDetailModal({
                 style={{ width: `${Math.min(100, goal.progressPercentage)}%` }}
               />
             </div>
-          </div>
+          </Card>
 
           {/* Performance */}
           {(startAvg || endAvg) && (
-            <div className="timer-card bg-(--surface-elevated) p-4 border border-(--border)">
+            <Card variant="nested">
               <h3 className="text-sm font-medium text-(--text-primary) mb-3 font-statement">
                 Performance
               </h3>
@@ -306,11 +278,11 @@ export default function GoalDetailModal({
                   />
                 )}
               </div>
-            </div>
+            </Card>
           )}
 
           {/* Timeline */}
-          <div className="timer-card bg-(--surface-elevated) p-4 border border-(--border)">
+          <Card variant="nested">
             <h3 className="text-sm font-medium text-(--text-primary) mb-3 font-statement">
               Timeline
             </h3>
@@ -364,17 +336,15 @@ export default function GoalDetailModal({
                 ? "This is your active goal."
                 : `Archived ${goal.endDate ? formatDate(goal.endDate) : ""}`}
             </p>
-          </div>
+          </Card>
         </div>
-
-        {/* Footer */}
-        <div className="flex gap-3 pt-6 mt-6 border-t border-(--border)">
-          <button onClick={onClose} className="flex-1 btn-secondary">
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }
 

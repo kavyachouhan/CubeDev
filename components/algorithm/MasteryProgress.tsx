@@ -20,22 +20,22 @@ export default function MasteryProgress({
   const stages = [
     {
       icon: Award,
-      bg: "bg-yellow-500/10",
-      text: "text-yellow-500 dark:text-yellow-400",
+      bg: "bg-(--warning)/10",
+      text: "text-(--warning)",
       value: mastered,
       label: "Mastered",
     },
     {
       icon: BookOpen,
-      bg: "bg-blue-500/10",
-      text: "text-blue-500 dark:text-blue-400",
+      bg: "bg-(--primary)/10",
+      text: "text-(--primary)",
       value: learning,
       label: "Learning",
     },
     {
       icon: RefreshCw,
-      bg: "bg-purple-500/10",
-      text: "text-purple-500 dark:text-purple-400",
+      bg: "bg-(--accent)/10",
+      text: "text-(--accent)",
       value: reviewing,
       label: "Reviewing",
     },
@@ -73,10 +73,10 @@ export default function MasteryProgress({
           {stages.map((stage) => (
             <div
               key={stage.label}
-              className="text-center p-3 rounded-lg bg-(--surface-elevated)"
+              className="text-center p-3 rounded-(--radius-control) bg-(--surface-elevated)"
             >
               <div
-                className={`p-2 ${stage.bg} rounded-lg inline-flex items-center justify-center mb-2`}
+                className={`p-2 ${stage.bg} rounded-(--radius-control) inline-flex items-center justify-center mb-2`}
               >
                 <stage.icon className={`w-4 h-4 ${stage.text}`} />
               </div>

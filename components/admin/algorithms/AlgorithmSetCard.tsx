@@ -101,25 +101,19 @@ export function AlgorithmSetCard({
           </p>
         </div>
         <div>
-          <p className="text-xs text-(--text-muted) font-inter">
-            Learning
-          </p>
+          <p className="text-xs text-(--text-muted) font-inter">Learning</p>
           <p className="font-bold text-(--text-primary) font-statement">
             {set.learningCount}
           </p>
         </div>
         <div>
-          <p className="text-xs text-(--text-muted) font-inter">
-            Mastered
-          </p>
+          <p className="text-xs text-(--text-muted) font-inter">Mastered</p>
           <p className="font-bold text-(--success) font-statement">
             {set.masteredCount}
           </p>
         </div>
         <div>
-          <p className="text-xs text-(--text-muted) font-inter">
-            Learners
-          </p>
+          <p className="text-xs text-(--text-muted) font-inter">Learners</p>
           <p className="font-bold text-(--text-primary) font-statement">
             {set.totalProgressCount}
           </p>
@@ -150,7 +144,7 @@ export function AlgorithmSetCard({
       <div className="flex items-center gap-2 pt-2 border-t border-(--border)">
         <button
           onClick={onViewCases}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm bg-(--primary)/10 hover:bg-(--primary)/20 text-(--primary) rounded-lg transition-colors font-inter"
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm bg-(--primary)/10 hover:bg-(--primary)/20 text-(--primary) rounded-(--radius-control) transition-colors font-inter"
         >
           <Eye className="w-4 h-4" />
           <span className="hidden xs:inline sm:hidden md:inline">
@@ -160,14 +154,14 @@ export function AlgorithmSetCard({
         </button>
         <button
           onClick={onEdit}
-          className="p-2 hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--primary) rounded-lg transition-colors"
+          className="p-2 hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--primary) rounded-(--radius-control) transition-colors"
           title="Edit set"
         >
           <Edit2 className="w-4 h-4" />
         </button>
         <button
           onClick={onDelete}
-          className="p-2 hover:bg-red-500/10 text-(--text-muted) hover:text-red-500 rounded-lg transition-colors"
+          className="p-2 hover:bg-(--error)/10 text-(--text-muted) hover:text-(--error) rounded-(--radius-control) transition-colors"
           title="Delete set"
         >
           <Trash2 className="w-4 h-4" />

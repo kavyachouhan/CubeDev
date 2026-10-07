@@ -13,6 +13,7 @@ import {
   Trash2,
   Layers,
 } from "lucide-react";
+import { SearchInput } from "@/components/ui/Field";
 import { EditCaseModal } from "./modals/EditCaseModal";
 import { AlgorithmsListView } from "./AlgorithmsListView";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
@@ -69,7 +70,7 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
       <div className="flex items-center gap-2 sm:gap-3 mb-4">
         <button
           onClick={onBack}
-          className="p-2 hover:bg-(--surface-elevated) rounded-lg transition-colors shrink-0"
+          className="p-2 hover:bg-(--surface-elevated) rounded-(--radius-control) transition-colors shrink-0"
         >
           <ChevronLeft className="w-5 h-5 text-(--text-muted)" />
         </button>
@@ -83,7 +84,7 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
         </div>
         <button
           onClick={() => setShowNewCaseModal(true)}
-          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-inter text-sm shrink-0"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-inter text-sm shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Add Case</span>
@@ -91,16 +92,14 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
       </div>
 
       {/* Search */}
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-        <input
-          type="text"
-          placeholder="Search cases..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent font-inter text-sm"
-        />
-      </div>
+      <SearchInput
+        size="sm"
+        placeholder="Search cases..."
+        aria-label="Search cases"
+        value={searchQuery}
+        onChange={setSearchQuery}
+        className="mb-4"
+      />
 
       {/* Cases List */}
       {cases === undefined ? (
@@ -147,14 +146,14 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
                         caseName: caseItem.caseName,
                       })
                     }
-                    className="p-2 hover:bg-(--primary)/10 text-(--text-muted) hover:text-(--primary) rounded-lg transition-colors"
+                    className="p-2 hover:bg-(--primary)/10 text-(--text-muted) hover:text-(--primary) rounded-(--radius-control) transition-colors"
                     title="View algorithms"
                   >
                     <Eye className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setEditingCase(caseItem._id)}
-                    className="p-2 hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--primary) rounded-lg transition-colors"
+                    className="p-2 hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--primary) rounded-(--radius-control) transition-colors"
                     title="Edit case"
                   >
                     <Edit2 className="w-4 h-4" />
@@ -166,7 +165,7 @@ export function CasesListView({ setId, setName, onBack }: CasesListViewProps) {
                         name: caseItem.caseName,
                       })
                     }
-                    className="p-2 hover:bg-red-500/10 text-(--text-muted) hover:text-red-500 rounded-lg transition-colors"
+                    className="p-2 hover:bg-(--error)/10 text-(--text-muted) hover:text-(--error) rounded-(--radius-control) transition-colors"
                     title="Delete case"
                   >
                     <Trash2 className="w-4 h-4" />

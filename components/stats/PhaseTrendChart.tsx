@@ -70,7 +70,7 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
             phase,
             name: methodPhase?.name || phase,
             duration,
-            color: methodPhase?.color || "text-gray-500",
+            color: methodPhase?.color || "var(--chart-6)",
           };
         }),
       });
@@ -122,7 +122,7 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
       {/* Mini chart area */}
       <div className="relative">
         {/* Chart container */}
-        <div className="h-48 bg-(--surface-elevated) border border-(--border) rounded-lg p-4">
+        <div className="h-48 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) p-4">
           <div className="relative h-full">
             {/* Y-axis labels */}
             <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-(--text-muted) pr-2">
@@ -179,13 +179,13 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
                     )
                     .join(" ");
 
-                  const color = phaseData[0]!.color.replace("text-", "");
+                  const color = phaseData[0]!.color;
 
                   return (
                     <g key={phaseId}>
                       <path
                         d={pathData}
-                        stroke={`var(--${color})`}
+                        stroke={color}
                         strokeWidth="0.5"
                         fill="none"
                         opacity="0.8"
@@ -196,7 +196,7 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
                           cx={point!.x}
                           cy={point!.y}
                           r="0.8"
-                          fill={`var(--${color})`}
+                          fill={color}
                           opacity="0.8"
                         />
                       ))}
@@ -226,11 +226,10 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
 
             return (
               <div key={phaseId} className="flex items-center gap-1">
-                <div
-                  className={`w-3 h-3 rounded-full ${samplePhase.color.replace(
-                    "text-",
-                    "bg-"
-                  )}`}
+                <span
+                  aria-hidden
+                  className="w-3 h-3 rounded-full"
+                  style={{ background: samplePhase.color }}
                 />
                 <span className="text-xs text-(--text-secondary)">
                   {samplePhase.name}
@@ -242,7 +241,7 @@ export default function PhaseTrend({ solves }: PhaseTrendProps) {
 
         {/* Recent improvement indicator */}
         {trendData.length >= 5 && (
-          <div className="mt-3 p-3 bg-(--surface-elevated) border border-(--border) rounded-lg">
+          <div className="mt-3 p-3 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control)">
             <div className="flex items-center gap-2 text-sm">
               <BarChart3 className="w-4 h-4 text-(--text-muted)" />
               <span className="text-(--text-secondary)">

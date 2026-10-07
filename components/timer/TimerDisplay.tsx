@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Settings, Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
+import { Settings } from "lucide-react";
+import { cx } from "@/lib/cx";
+import {
+  makeCardPanelShell,
+  type PanelShellComponent,
+} from "./TimerShell";
+import { IconButton } from "@/components/ui/IconButton";
+import { Spinner } from "@/components/ui/Spinner";
 import {
   getSplitMethod,
   ConsistencyCoachSettings,
@@ -43,6 +50,24 @@ function usePersistentBool(key: string, defaultValue: boolean) {
   return [state, setState] as const;
 }
 
+/**
+ * True when the event targets a text-entry control, so the global timer
+ * shortcuts must stay out of the way (e.g. the manual timer's time input,
+ * or a solve note being typed).
+ */
+function isTypingTarget(e: KeyboardEvent) {
+  const target = e.target;
+  if (!(target instanceof HTMLElement)) return false;
+  return (
+    target.isContentEditable ||
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT"
+  );
+}
+
+const TimerCardShell = makeCardPanelShell("Timer", "cubelab-timer-expanded");
+
 interface TimerDisplayProps {
   onSolveComplete: (
     time: number,
@@ -65,6 +90,16 @@ interface TimerDisplayProps {
   history?: import("@/lib/stats-utils").TimerRecord[];
   extendedStatsVisibility?: ExtendedStatsVisibility;
   onToggleExtendedStat?: (stat: keyof ExtendedStatsVisibility) => void;
+  /** Chrome the timer renders inside. Defaults to the collapsible card. */
+  shell?: PanelShellComponent;
+  /** Sizing for the timer readout; the compact layout fills its grid row. */
+  coreClassName?: string;
+  /** Hides the "hold to start" helper line. */
+  hideStatusText?: boolean;
+  /** Sizing for the wrapper around the active timer mode. */
+  contentClassName?: string;
+  /** Shrinks in-timer controls where vertical space is scarce. */
+  dense?: boolean;
 }
 
 type TimerState =
@@ -84,6 +119,11 @@ export default function TimerDisplay({
   history = [],
   extendedStatsVisibility,
   onToggleExtendedStat,
+  shell,
+  coreClassName,
+  hideStatusText,
+  contentClassName,
+  dense,
 }: TimerDisplayProps) {
   const [state, setState] = useState<TimerState>("idle");
   const [time, setTime] = useState(0);
@@ -94,10 +134,6 @@ export default function TimerDisplay({
   const [showSettings, setShowSettings] = useState(false);
   const [currentPenalty, setCurrentPenalty] = useState<"none" | "+2" | "DNF">(
     "none"
-  );
-  const [showTimer, setShowTimer] = usePersistentBool(
-    "cubelab-timer-expanded",
-    true
   );
   const [timerMode, setTimerMode] = useState<TimerMode>(() => {
     if (typeof window === "undefined") return "normal";
@@ -659,6 +695,7 @@ export default function TimerDisplay({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (showSettings) return;
+      if (isTypingTarget(e)) return;
 
       initializeAudioContext(); // Initialize audio context on first user interaction
 
@@ -769,6 +806,7 @@ export default function TimerDisplay({
 
     const handleKeyUp = (e: KeyboardEvent) => {
       if (showSettings) return;
+      if (isTypingTarget(e)) return;
 
       if (e.code === "Space") {
         e.preventDefault();
@@ -1019,62 +1057,36 @@ export default function TimerDisplay({
     [onSolveCompleteWithPenalty, onApplyPenalty, timerMode]
   );
 
-  return (
-    <div className="timer-card">
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={() => setShowTimer(!showTimer)}
-          className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-          title={showTimer ? "Hide timer" : "Show timer"}
-        >
-          <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-            Timer
-          </h3>
-          {showTimer ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="p-1.5 text-(--text-secondary) hover:text-(--primary) transition-colors"
-            title="Timer Settings"
-          >
-            <Settings className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setShowTimer(!showTimer)}
-            className="p-1.5 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-md transition-colors"
-            title={showTimer ? "Hide timer" : "Show timer"}
-          >
-            {showTimer ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
+  const Shell = shell ?? TimerCardShell;
 
-      <div
-        ref={timerContentRef}
-        className="overflow-hidden transition-all duration-300 ease-in-out"
-        style={{
-          height: showTimer ? "auto" : "0",
-          opacity: showTimer ? 1 : 0,
-        }}
-      >
+  return (
+    <Shell
+      actions={
+        <IconButton
+          size="sm"
+          aria-label="Timer settings"
+          icon={<Settings />}
+          onClick={() => setShowSettings(!showSettings)}
+        />
+      }
+    >
+      <div ref={timerContentRef} className={contentClassName}>
         {/* Render timer based on selected mode */}
         {timerMode === "normal" && (
           <>
-            <div className="relative">
+            <div
+              className={cx(
+                "relative",
+                contentClassName && "flex-1 min-h-0 flex flex-col",
+              )}
+            >
               <TimerCore
                 state={state}
                 time={time}
                 inspectionTime={inspectionTime}
                 currentPenalty={currentPenalty}
+                className={coreClassName}
+                hideStatusText={hideStatusText}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
                 onMouseDown={handleTouchStart}
@@ -1090,17 +1102,19 @@ export default function TimerDisplay({
 
                 {/* Saving Indicator */}
                 {state === "stopped" && isSavingSolve && (
-                  <div className="flex items-center justify-center gap-2 py-2">
-                    <div className="w-4 h-4 border-2 border-(--primary) border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-sm text-(--text-secondary) font-inter">
-                      Saving time...
-                    </span>
+                  <div
+                    role="status"
+                    className="flex items-center justify-center gap-2 py-2 text-(--text-secondary)"
+                  >
+                    <Spinner size="sm" className="text-(--primary)" />
+                    <span className="text-sm font-inter">Saving time…</span>
                   </div>
                 )}
 
                 {/* Penalty Buttons */}
                 {state === "stopped" && !isSavingSolve && (
                   <PenaltyButtons
+                    size={dense ? "sm" : "md"}
                     showPenaltyButtons={showPenaltyButtons}
                     currentPenalty={currentPenalty}
                     onPenaltyChange={handlePenalty}
@@ -1134,6 +1148,10 @@ export default function TimerDisplay({
 
         {timerMode === "manual" && (
           <ManualTimerCore
+            className={cx(
+              contentClassName &&
+                "flex-1 min-h-0 flex flex-col justify-center w-full max-w-lg mx-auto",
+            )}
             onSolveComplete={handleManualOrStackmatSolveComplete}
             inspectionEnabled={inspectionEnabled}
             playBeep={playBeep}
@@ -1147,6 +1165,11 @@ export default function TimerDisplay({
 
         {timerMode === "stackmat" && (
           <StackmatTimerCore
+            className={coreClassName}
+            rootClassName={cx(
+              contentClassName &&
+                "flex-1 min-h-0 flex flex-col justify-center w-full max-w-lg mx-auto",
+            )}
             onSolveComplete={handleManualOrStackmatSolveComplete}
             inspectionEnabled={inspectionEnabled}
             playBeep={playBeep}
@@ -1181,6 +1204,6 @@ export default function TimerDisplay({
         }
         onToggleExtendedStat={onToggleExtendedStat || (() => {})}
       />
-    </div>
+    </Shell>
   );
 }

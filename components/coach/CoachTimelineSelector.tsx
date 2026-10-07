@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Calendar, Clock, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Field } from "@/components/ui/Field";
+import { DateTimePicker } from "@/components/ui/DateTimePicker";
 import { OnboardingData } from "./CoachOnboarding";
 
 interface CoachTimelineSelectorProps {
@@ -129,10 +131,9 @@ export default function CoachTimelineSelector({
     }
   };
 
-  const handleCustomDateChange = (dateString: string) => {
-    const date = new Date(dateString);
-    if (!isNaN(date.getTime())) {
-      onUpdate({ targetDate: date.getTime() });
+  const handleCustomDateChange = (value: number | null) => {
+    if (value !== null) {
+      onUpdate({ targetDate: value });
     }
   };
 
@@ -166,7 +167,7 @@ export default function CoachTimelineSelector({
             <button
               key={option.id}
               onClick={() => handleOptionSelect(option.id, option.days)}
-              className={`w-full flex items-center justify-between p-4 rounded-lg border transition-all ${
+              className={`w-full flex items-center justify-between p-4 rounded-(--radius-control) border transition-all ${
                 selectedOption === option.id
                   ? "bg-(--primary)/10 border-(--primary)"
                   : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
@@ -176,7 +177,7 @@ export default function CoachTimelineSelector({
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center ${
                     selectedOption === option.id
-                      ? "bg-(--primary) text-white"
+                      ? "bg-(--primary) text-(--on-primary)"
                       : "bg-(--surface) text-(--text-muted)"
                   }`}
                 >
@@ -210,24 +211,16 @@ export default function CoachTimelineSelector({
       {/* Custom Date Picker */}
       {selectedOption === "custom" && (
         <div className="timer-card">
-          <label className="block text-sm font-medium text-(--text-secondary) mb-2">
-            Select Target Date
-          </label>
-          <input
-            type="date"
-            value={
-              data.targetDate
-                ? new Date(data.targetDate).toISOString().split("T")[0]
-                : ""
-            }
-            onChange={(e) => handleCustomDateChange(e.target.value)}
-            min={
-              new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-                .toISOString()
-                .split("T")[0]
-            }
-            className="w-full px-4 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:border-(--primary)"
-          />
+          <Field label="Select target date">
+            <DateTimePicker
+              mode="date"
+              label="Target date"
+              value={data.targetDate ?? null}
+              min={Date.now() + 7 * 24 * 60 * 60 * 1000}
+              clearable={false}
+              onChange={handleCustomDateChange}
+            />
+          </Field>
         </div>
       )}
 
@@ -237,7 +230,7 @@ export default function CoachTimelineSelector({
           Summary
         </h3>
         <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control)">
             <span className="text-xs text-(--text-muted) block mb-1">
               Target Date
             </span>
@@ -245,7 +238,7 @@ export default function CoachTimelineSelector({
               {formatDate(data.targetDate || Date.now())}
             </span>
           </div>
-          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control)">
             <span className="text-xs text-(--text-muted) block mb-1">
               Time Remaining
             </span>

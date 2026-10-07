@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTheme } from "@/lib/theme-context";
+import { Button } from "@/components/ui/Button";
 
 type TimerState =
   | "idle"
@@ -476,24 +477,24 @@ export default function CompetitionTimer({
             )}
           </div>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
+            <Button
+              variant="success"
               onClick={() => confirmSolve("none")}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-(--success) text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
             >
               OK
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="warning"
               onClick={() => confirmSolve("+2")}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-(--warning) text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
             >
               +2 Penalty
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="danger"
               onClick={() => confirmSolve("DNF")}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-(--error) text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
             >
               DNF
-            </button>
+            </Button>
           </div>
         </div>
       )}

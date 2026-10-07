@@ -9,11 +9,16 @@ import {
   XCircle,
   ArrowRightLeft,
   History,
-  Eye,
   Clock,
   TrendingDown,
 } from "lucide-react";
-import { CollapsibleSection, formatTime } from "./utils";
+import {
+  Badge,
+  CollapsibleCard,
+  SkeletonCard,
+  useCollapsed,
+} from "@/components/ui";
+import { formatTime } from "./utils";
 import { CoachProfile, GOAL_TIMES } from "./types";
 import GoalDetailModal from "./GoalDetailModal";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -181,7 +186,7 @@ function TimelineItem({
       <button
         type="button"
         onClick={onClick}
-        className="flex-1 min-w-0 bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border) text-left hover:border-(--primary)/40 hover:bg-(--surface-elevated)/80 transition-all cursor-pointer group"
+        className="flex-1 min-w-0 bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border) text-left hover:border-(--primary)/40 hover:bg-(--surface-elevated)/80 transition-all cursor-pointer group"
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-2">
           <div className="min-w-0">
@@ -218,20 +223,21 @@ function TimelineItem({
                 Current
               </span>
             ) : (
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${
+              <Badge
+                size="sm"
+                shape="pill"
+                className="shrink-0"
+                tone={
                   status === "achieved"
-                    ? "text-(--success) bg-(--success)/10 border border-(--success)/20"
+                    ? "success"
                     : status === "expired"
-                      ? "text-(--warning) bg-(--warning)/10 border border-(--warning)/20"
-                      : "text-(--text-muted) bg-(--surface) border border-(--border)"
-                }`}
+                      ? "warning"
+                      : "neutral"
+                }
               >
                 {label}
-              </span>
+              </Badge>
             )}
-            <Eye className="w-3.5 h-3.5 text-(--text-muted) opacity-0 group-hover:opacity-100 transition-opacity"
-            aria-label="View goal details" />
           </div>
         </div>
 
@@ -280,31 +286,14 @@ function TimelineItem({
 
 // Skeleton Loader
 function GoalTimelineSkeleton() {
-  return (
-    <div className="timer-card animate-pulse">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="h-5 w-32 bg-(--surface-elevated) rounded" />
-      </div>
-      <div className="relative">
-        <div className="absolute left-3 sm:left-4 top-0 bottom-0 w-0.5 bg-(--border)" />
-        {[1, 2].map((i) => (
-          <div key={i} className="relative flex gap-3 sm:gap-4 pb-4">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-(--surface-elevated)" />
-            <div className="flex-1 bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)">
-              <div className="h-4 w-24 bg-(--surface) rounded mb-2" />
-              <div className="h-3 w-48 bg-(--surface) rounded" />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  return <SkeletonCard lines={4} />;
 }
 
 export default function GoalTimelineCard({
   profile,
   currentAverage,
 }: GoalTimelineCardProps) {
+  const collapsed = useCollapsed("coach-progress-goal-timeline", true);
   const [selectedGoal, setSelectedGoal] = useState<{
     goalType: string;
     customGoalTime?: number;
@@ -358,10 +347,11 @@ export default function GoalTimelineCard({
 
   return (
     <>
-      <CollapsibleSection
+      <CollapsibleCard
         title="Goal Timeline"
-        storageKey="coach-progress-goal-timeline"
-        defaultExpanded={true}
+        variant="static"
+        open={collapsed.open}
+        onOpenChange={collapsed.onOpenChange}
       >
         <div className="relative">
           {/* Timeline line */}
@@ -414,17 +404,17 @@ export default function GoalTimelineCard({
 
           {/* Empty state for no history */}
           {!hasHistory && (
-            <div className="ml-10 sm:ml-12 mt-2 p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
-              <div className="flex items-center gap-2 text-(--text-muted)">
-                <History className="w-4 h-4" />
-                <span className="text-xs sm:text-sm">
+            <div className="ml-10 sm:ml-12 mt-2 p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
+              <div className="flex items-start gap-2 type-caption">
+                <History aria-hidden className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>
                   Your past goals will appear here as you complete them
                 </span>
               </div>
             </div>
           )}
         </div>
-      </CollapsibleSection>
+      </CollapsibleCard>
 
       {selectedGoal && (
         <GoalDetailModal

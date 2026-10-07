@@ -9,6 +9,7 @@ import {
   Target,
   FileText,
 } from "lucide-react";
+import { Tabs } from "@/components/ui/Tabs";
 import CompetitionList from "./CompetitionList";
 import SimulationMode from "./SimulationMode";
 import ResultCardGenerator from "./ResultCardGenerator";
@@ -116,29 +117,20 @@ export default function CompetitionSimulator() {
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex flex-wrap gap-2 border-b border-(--border) pb-2">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    activeTab === tab.id
-                      ? "bg-(--primary) text-white"
-                      : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="hidden sm:inline">{tab.name}</span>
-                </button>
-              );
-            })}
-          </div>
+          <Tabs
+            value={activeTab}
+            onChange={setActiveTab}
+            aria-label="Simulator sections"
+            items={tabs.map((tab) => ({
+              value: tab.id,
+              label: tab.name,
+              icon: <tab.icon />,
+            }))}
+          />
         </div>
 
         {/* Tab Content */}
-        <div className="min-h-[500px]">
+        <div className="min-h-125">
           {activeTab === "competitions" && (
             <CompetitionList onStartSimulation={handleStartSimulation} />
           )}

@@ -1,7 +1,7 @@
 # CubeDev — Design System
 
-> The visual language. Every rule here is enforceable and anchored to real code.
-> Last verified against commit `ed01603`.
+> The visual language, and the components that carry it. Every rule here is
+> enforced by [tests/unit/design-system.test.ts](../tests/unit/design-system.test.ts).
 
 Related: [PRD.md](./PRD.md) · [Architecture.md](./Architecture.md) · [Rules.md](./Rules.md)
 
@@ -11,15 +11,18 @@ Related: [PRD.md](./PRD.md) · [Architecture.md](./Architecture.md) · [Rules.md
 
 | Rule | Why |
 |---|---|
-| **Compose from existing components and classes.** Don't restyle from scratch | One system, not thirty variations. §4, §5 |
-| **No gradients.** No `bg-gradient-*`, no `linear-gradient()` | Surfaces are flat `--surface` / `--surface-elevated` |
-| **No emojis.** `lucide-react` icons only | §8. Existing emojis are legacy one-offs |
-| **Responsive by default.** Mobile-first, every breakpoint checked | §7 |
-| **Tokens only for color.** Never a raw hex, never a Tailwind palette color like `bg-blue-600` | §2 — a hardcoded color breaks four of the five schemes |
+| **Build from `components/ui`.** Import the primitive; don't restyle from scratch | One system, not thirty variations. §5 |
+| **Tokens only for color.** Never a raw hex, never a Tailwind palette color like `bg-blue-600` | §2 — a hardcoded color breaks four of the five schemes, both high-contrast modes and light mode |
+| **No gradients.** Surfaces are flat `--surface` / `--surface-elevated` | The identity is flat tinted panels, not glassmorphism |
+| **No emojis.** `lucide-react` icons only | §8 |
+| **Tokens for radius, spacing, z-index and motion too** | §4, §7, §9 |
+| **One overlay system.** `Modal`, `BottomSheet`, `Menu`, `Popover`, `Lightbox` | §6 — they share the focus trap, the scroll lock and Escape handling |
+| **Responsive by design, not by shrinking.** Sheets on mobile, dialogs on desktop | §7 |
+| **Works in light + dark × all 5 schemes, plus reduce-motion and high-contrast** | §1, §10 |
 | **The timer page is the reference layout** | §7 |
-| **`.timer-card` is the surface primitive** | §4 |
-| **`EditRoomModal` is the modal pattern** | §6 |
-| **Works in light + dark × all 5 color schemes** | §1, §10 |
+
+Run the gallery at **`/design-system`** (dev only) to see every primitive in
+every state, and to flip theme, scheme and the accessibility toggles.
 
 ---
 
@@ -37,17 +40,28 @@ Theme state lives in [lib/theme-context.tsx](../lib/theme-context.tsx) and is ex
 | `data-disable-glow` | `"true"` (absent when off) |
 | `data-high-contrast` | `"true"` (absent when off) |
 
-> **There is no `.dark` class.** Never write a `dark:` Tailwind variant — it will not work. Theme-conditional CSS is written as `[data-theme="dark"] .your-class { … }` in `globals.css`.
+> **There is no `.dark` class.** Never write a `dark:` Tailwind variant — it
+> silently does nothing. Theme-conditional CSS is written as
+> `[data-theme="dark"] .your-class { … }` in `globals.css`.
 
-The user's mode preference is `light` / `dark` / `auto`; `auto` resolves via `prefers-color-scheme` and subscribes to changes. `useTheme()` exposes `effectiveTheme` as the resolved `"light" | "dark"`.
+The user's mode preference is `light` / `dark` / `auto`; `auto` resolves via
+`prefers-color-scheme` and subscribes to changes. `useTheme()` exposes
+`effectiveTheme` as the resolved `"light" | "dark"`.
 
-**Persistence is dual:** `localStorage["cubedev-theme-preferences"]` and Convex (`api.users.updateThemeSettings`). The DB wins on load. A blocking inline script in [app/layout.tsx](../app/layout.tsx) applies the attributes before hydration to prevent a flash — if you add a new theme attribute, add it there too.
+**Persistence is dual:** `localStorage["cubedev-theme-preferences"]` and Convex
+(`api.users.updateThemeSettings`). The DB wins on load. A blocking inline script
+in [app/layout.tsx](../app/layout.tsx) applies **every** attribute above before
+hydration to prevent a flash — if you add a new theme attribute, add it there too.
 
-Settings UI lives in [components/settings/](../components/settings/): `ThemeModeSelector`, `ColorSchemeSelector`, `TimerCustomization`, `CubeViewSelector`, `AccessibilitySettings`.
+For canvas-based charts (chart.js, recharts) that cannot read CSS variables, use
+[`useThemeColors()`](../lib/hooks/useThemeColors.ts), which reads the resolved
+values and re-reads them when the theme or scheme changes. `useEffectiveTheme()`
+is there when you only need `"light" | "dark"`.
 
 ## 2. Color tokens
 
-Defined in [app/globals.css](../app/globals.css). Consume them with Tailwind v4 arbitrary-property syntax:
+Defined in [app/globals.css](../app/globals.css). Consume them with Tailwind v4
+arbitrary-property syntax:
 
 ```tsx
 className="bg-(--surface) text-(--text-primary) border border-(--border)"
@@ -64,12 +78,25 @@ className="bg-(--surface) text-(--text-primary) border border-(--border)"
 | `--surface-elevated` | Inputs, nested cards, raised surfaces |
 | `--border` | Default border |
 | `--border-hover` | Border on hover |
+| `--scrim` | Behind modals and sheets |
+| `--inverse-surface` / `--inverse-text` | Tooltips |
+| `--skeleton` | Loading placeholders |
 
 ### Brand
 
 `--primary`, `--primary-hover`, `--primary-light`, `--secondary`, `--accent`, `--accent-glow`.
 
 `--primary` is the only color that should express "this is interactive / active / selected".
+
+### Foreground on fills
+
+| Token | Use for |
+|---|---|
+| `--on-primary` | Text and icons on **any** saturated fill: `--primary`, `--success`, `--warning`, `--error` |
+| `--on-media` | Text and icons over a photo, a video or a dark scrim |
+
+Never `text-white`. Both tokens happen to be white today, but they say *why*,
+and only one of them will change if a scheme ever needs a dark foreground.
 
 ### Text
 
@@ -79,14 +106,21 @@ className="bg-(--surface) text-(--text-primary) border border-(--border)"
 
 `--success` · `--warning` · `--error` · `--info`
 
+Pick by meaning, not by hue: green is not "a nice color for a stat", it means
+*good*. A category that has no status meaning uses `--accent`.
+
 ### Domain
 
 Timer states: `--timer-inspection` · `--timer-ready` · `--timer-running` · `--timer-stopped`
 Penalties: `--penalty-plus2` / `-hover` / `-text` · `--penalty-dnf` / `-hover` / `-text`
+Medals: `--medal-gold` · `--medal-silver` · `--medal-bronze` (via [`medal.ts`](../components/ui/medal.ts))
+Charts: `--chart-1` … `--chart-6`, derived per scheme
 
 ### The five schemes
 
-Listed for reference only — **never hardcode these values.**
+Listed for reference only — **never hardcode these values.** The one legitimate
+exception is [lib/color-schemes.ts](../lib/color-schemes.ts), where the swatches
+preview schemes the user has not selected yet.
 
 | Scheme | `--primary` | `--primary-hover` | `--accent` |
 |---|---|---|---|
@@ -96,37 +130,44 @@ Listed for reference only — **never hardcode these values.**
 | orange | `#f97316` | `#ea580c` | `#fb923c` |
 | cyan | `#06b6d4` | `#0891b2` | `#06b6d4` |
 
-Each scheme also retints `--background` / `--background-subtle` / `--surface` / `--surface-elevated` per theme. In light mode all schemes use `#ffffff` surfaces and tint only the backgrounds.
+Each scheme also retints `--background` / `--background-subtle` / `--surface` /
+`--surface-elevated` per theme. In light mode all schemes use `#ffffff` surfaces
+and tint only the backgrounds.
 
-`[data-high-contrast="true"]` overrides `--border`, `--border-hover`, and `--text-muted`. Because it works through the same tokens, code that uses tokens gets high-contrast support for free — and code that hardcodes colors silently breaks it.
+`[data-high-contrast="true"]` overrides `--border`, `--border-hover` and
+`--text-muted`. Because it works through the same tokens, code that uses tokens
+gets high-contrast support for free — and code that hardcodes colors silently
+breaks it.
 
 ## 3. Typography
 
-Four utility classes, defined in `globals.css`:
+Four font utilities, defined in `globals.css`:
 
 | Class | Stack | Use for |
 |---|---|---|
-| `.font-statement` | Anton / Oswald, uppercase, `letter-spacing: .05em` | **All headings** (`h1`–`h3`), card titles, modal titles |
+| `.font-statement` | Anton / Oswald, uppercase, `letter-spacing: .05em` | **All headings**, card titles, modal titles |
 | `.font-inter` | Inter, system-ui | Body text, labels, values, help text |
 | `.font-mono` | JetBrains Mono, monospace | Solve times, scrambles, algorithms |
 | `.font-button` | Oswald 600 | Button labels where a heavier voice is wanted |
 
-Inter is already the `body` default, but the codebase states `.font-inter` explicitly on text elements. Match that.
+Prefer the **`type-*` utilities** over assembling size + weight + family by hand:
 
-### Scale in use
-
-| Style | Used for |
+| Utility | Use for |
 |---|---|
-| `text-2xl font-bold` | Page / section headings |
-| `text-xl font-bold` | Modal titles |
-| `text-lg font-semibold` \| `text-lg font-bold` | Card titles (`h3`) |
-| `text-sm font-medium` | Labels — the single most common text style in the app |
-| `text-xs font-medium` / `font-semibold` | Metadata, badges, helper text |
-| `text-3xl`+ | Landing/hero only |
+| `type-display` | Hero copy |
+| `type-page-title` | Page `h1` |
+| `type-section-title` | Section `h2` |
+| `type-card-title` | Card / modal `h3` |
+| `type-label` | Field labels — the most common text style in the app |
+| `type-body` | Body copy |
+| `type-caption` | Metadata, helper text |
+| `type-overline` | Small uppercase headers (stat tiles, table headers) |
+| `type-time` | Monospace, tabular numerals — times and scrambles |
 
 ### Timer numerals
 
-`.timer-text` is monospace with `line-height: 1` and scales on **both** `data-timer-size` and viewport:
+`.timer-text` is monospace with `line-height: 1` and scales on **both**
+`data-timer-size` and viewport:
 
 | `data-timer-size` | base | ≥640 | ≥768 | ≥1024 |
 |---|---|---|---|---|
@@ -135,252 +176,217 @@ Inter is already the `body` default, but the codebase states `.font-inter` expli
 | `lg` (default) | 6rem | 6.5rem | 7rem | 8rem |
 | `xl` | 8rem | 9rem | 10rem | 12rem |
 
-> Debt (see [Rules.md](./Rules.md) §16): Geist is loaded via `next/font` but no CSS consumes it, and JetBrains Mono is named in CSS but never actually loaded — `.font-mono` falls back to the system monospace. Don't add a fourth font; fixing the loading is the correct future change.
+> Debt (see [Rules.md](./Rules.md) §16): Geist is loaded via `next/font` but no
+> CSS consumes it, and JetBrains Mono is named in CSS but never actually loaded —
+> `.font-mono` falls back to the system monospace. Don't add a fourth font;
+> fixing the loading is the correct future change.
 
-## 4. The card
+## 4. Shape, elevation and layers
 
-`.timer-card` is **the** surface primitive for the entire app — it is used in over 150 files, well beyond the timer.
+Radius is a token, never a raw Tailwind utility. The ratio is the identity: a
+1rem card holding 0.5rem controls, like stickers on a cube face.
 
-```css
-.timer-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  padding: 1rem;              /* 1.5rem @640, 2rem @768 */
-  transition: all 0.3s ease;
-}
-.timer-card:hover { border-color: var(--primary); }
-```
+| Token | Value | Use for |
+|---|---|---|
+| `--radius-badge` | .375rem | Badges, small chips |
+| `--radius-control` | .5rem | Buttons, inputs, menu items |
+| `--radius-panel` | .75rem | Nested cards, menus, popovers, toasts |
+| `--radius-card` | 1rem | Cards, dialogs |
+| `--radius-sheet` | 1.25rem | Top corners of a mobile sheet |
 
-Shadows are theme-conditional and already handled — dark gets a deep shadow plus `backdrop-filter: blur(16px)`, light gets a subtle one. **Do not add your own `shadow-*` class to a card.**
+Use `rounded-full` for pills, avatars and the switch.
 
-### Canonical collapsible card header
+**Control sizes:** `--control-sm` 2rem · `--control-md` 2.5rem · `--control-lg` 3rem.
+`--touch-min` (2.75rem) is applied under `@media (pointer: coarse)` so touch
+targets grow without bloating the desktop layout.
 
-Repeated near-identically in `TimerDisplay.tsx`, `ScrambleDisplay.tsx`, `EventSelector.tsx`, `SessionManager.tsx`. Copy this shape:
+**Elevation:** `--shadow-card`, `--shadow-card-hover`, `--shadow-control`,
+`--shadow-popover`, `--shadow-overlay`, defined once per theme and all zeroed by
+`[data-disable-glow]`.
 
-```tsx
-<div className="timer-card">
-  <div className="flex items-center justify-between mb-4">
-    <button
-      onClick={() => setShowBody(!showBody)}
-      className="flex items-center gap-1 p-2 text-(--text-muted) hover:text-(--primary) rounded transition-colors"
-      title={showBody ? "Hide" : "Show"}
-    >
-      <h3 className="text-lg font-semibold text-(--text-primary) font-statement hover:text-(--primary) transition-colors">
-        Title
-      </h3>
-      {showBody ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-    </button>
-    <div className="flex items-center gap-2">
-      {/* action icons, w-4 h-4 */}
-    </div>
-  </div>
-  <div
-    className="overflow-hidden transition-all duration-300 ease-in-out"
-    style={{ height: showBody ? "auto" : "0", opacity: showBody ? 1 : 0 }}
-  >
-    {/* body */}
-  </div>
-</div>
-```
+**Layers** — nothing outside this table may set its own z-index above 20
+(`z-0`/`z-10`/`z-20` for stacking *within* a component is fine):
 
-### Nested card
+| Token | Value | For |
+|---|---|---|
+| `--z-sticky` | 30 | Sticky headers, floating buttons |
+| `--z-drawer` | 40 | Mobile navigation drawer |
+| `--z-dropdown` | 50 | Anchored menus and popovers |
+| `--z-overlay` | 100 | Scrims |
+| `--z-modal` | 110 | Dialogs and sheets |
+| `--z-nested` | 120 | A dialog opened from a dialog; the lightbox |
+| `--z-toast` | 130 | Toasts |
+| `--z-tour` | 140 | Product tours |
 
-A card inside a card uses the elevated surface and a flat `p-4`:
+## 5. The component library
 
-```tsx
-<div className="timer-card bg-(--surface-elevated) p-4 border border-(--border)">
-```
+Everything is exported from [`components/ui`](../components/ui/index.ts). Reach
+for these before writing markup; if something is missing, add it here rather
+than inline.
 
-### Skeletons
+### Actions
 
-Loading placeholders reuse the same shell: `<div className="timer-card animate-pulse">` with `.skeleton-box` children. See [components/timer/TimerSkeletons.tsx](../components/timer/TimerSkeletons.tsx). A skeleton must match the real layout so nothing jumps.
+| Component | Notes |
+|---|---|
+| `Button` | `primary \| secondary \| subtle \| ghost \| danger \| success \| warning`, `sm \| md \| lg`, `loading` + `loadingText`, `iconLeft/Right`, `fullWidth`. `success`/`warning` are only for actions that *are* the status (the OK / +2 / DNF row) |
+| `ButtonLink` | Same styling over a Next `Link` |
+| `buttonClasses()` | For the rare `<a>` that must stay an anchor |
+| `IconButton` | Requires `aria-label`; grows to a 44px hit area on coarse pointers |
 
-## 5. Buttons & inputs
+### Forms
 
-### Buttons
+`Field` (label, required marker, hint, error wired through `aria-describedby`
+and `aria-invalid`) wrapping `Input`, `Textarea`, `Select`, `SearchInput`,
+`Checkbox` or `Slider`. `Switch` / `SwitchRow` for on-off settings — never a
+`<div>` with a click handler. `SettingRow` and `OptionTiles` for settings
+screens.
 
-```tsx
-<button className="btn-primary">Save</button>
-<button className="btn-secondary">Cancel</button>
-```
+### Selection
 
-`.btn-primary` — `--primary` fill, white text, 600 weight, `0.75rem 1.5rem`, `rounded 0.5rem`, hover lifts `translateY(-1px)` to `--primary-hover`.
-`.btn-secondary` — transparent with a `--border` outline; hover fills with `--primary`.
+`SegmentedControl` (2–5 short options, arrow keys move and select) ·
+`Tabs` (underline, `role="tablist"`, scrolls rather than wraps on mobile) ·
+`SelectMenu` (rich single-select with optional search; becomes a sheet on
+mobile) · `Stepper` (wizard progress) · `Pagination`.
 
-Disabled state is always: `disabled:opacity-50 disabled:cursor-not-allowed`.
+### Surfaces
 
-### Inputs
+`Card` (`default` = `.timer-card` with the hover-to-primary border, plus
+`nested`, `static`, `interactive`, `selected`), `CardHeader`, `CardIcon`,
+`CollapsibleCard` (+ `useCollapsed` to remember the state per viewer),
+`StatTile`, `Badge`, `TimeValue`, `Table`.
 
-There is no `Input` component and no `.input` class yet — this exact class string is the convention (from `EditRoomModal`):
+`CalloutCard` — a standing prompt about the viewer ("You have 3 reviews due"),
+outlined in its tone with a heavier rule down the left edge. `action` takes the
+next step and drops below the text on a phone; `adornment` takes a small
+control (refresh, dismiss) that stays on the title row at every width. For
+transient feedback use `Alert` instead.
 
-```tsx
-<label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-  Room Title
-</label>
-<input
-  className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
-  required
-  maxLength={100}
-/>
-```
+`SettingGroup` — a labelled panel of related rows inside a settings `Card`, so
+every settings card has the same two levels: card title, then groups.
 
-Textareas add `resize-none` and `rows={n}`. If you are writing the third instance of this in a new feature, extract a component instead.
+`StatTile` takes `mobileLayout="row"`, which puts the label and value on one
+line below `sm`. Use it whenever three or more tiles would share a phone row:
+`type-overline` is uppercase and tracked, and wraps badly under ~110px.
 
-## 6. Modals
+### States
 
-[components/challenges/EditRoomModal.tsx](../components/challenges/EditRoomModal.tsx) is the canonical structure: overlay → `.timer-card` container → header (title + close) → body → footer button row. It returns `null` when closed.
+`Spinner` / `LoadingState` · `Skeleton` and friends · `EmptyState` ·
+`ErrorState` · `Alert` (persistent, tied to a region) · `useToast()` (transient;
+also the replacement for `alert()`) · `Tooltip` (hover **and** focus, never the
+only carrier of information).
 
-```tsx
-if (!isOpen) return null;
+### Navigation
 
-return (
-  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-(--text-primary) font-statement">
-          Edit Challenge Room
-        </h2>
-        <button
-          onClick={onClose}
-          className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
-        >
-          <X className="w-5 h-5" />
-        </button>
-      </div>
+`PageHeader` (statement title, description, `back`, `breadcrumbs`, `actions`) ·
+`Breadcrumbs` (a real `<nav aria-label="Breadcrumb">`, collapsing to one back
+link below `sm`) · `BackLink`. Layout chrome comes from
+[`AppShell`](../components/layout/AppShell.tsx), shared by CubeLab and admin.
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* fields — §5 */}
-        <div className="flex gap-3 pt-4">
-          <button type="button" onClick={onClose} className="flex-1 btn-secondary" disabled={isSubmitting}>
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? "Saving..." : "Save Changes"}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-);
-```
+## 6. Overlays
 
-**Widths:** `max-w-md` (default, simple forms) · `max-w-lg` · `max-w-2xl` (dense content). Always with `w-full max-h-[90vh] overflow-y-auto`.
-
-**Props shape:** `{ isOpen: boolean; onClose: () => void; … }`, with an `isSubmitting` guard on the submit handler.
-
-### Required additions for every new modal
-
-`EditRoomModal` shows the layout, not the accessibility. New modals must **also** include what [components/timer/TimerGettingStartedModal.tsx](../components/timer/TimerGettingStartedModal.tsx) does:
+One system, in [`overlay.ts`](../components/ui/overlay.ts): a portal, a
+**ref-counted** body scroll lock (so nested overlays don't unlock early), a focus
+trap with focus restore, and Escape that closes only the top-most layer.
 
 ```tsx
-useEffect(() => {
-  if (!isOpen) return;
-  const handleEscape = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-  document.addEventListener("keydown", handleEscape);
-  document.body.style.overflow = "hidden";
-  return () => {
-    document.removeEventListener("keydown", handleEscape);
-    document.body.style.overflow = "";
-  };
-}, [isOpen, onClose]);
+<Modal open={open} onClose={close} size="md" mobile="sheet">
+  <Modal.Header title="Edit session" description="Rename or delete" />
+  <Modal.Body>…</Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={close}>Cancel</Button>
+    <Button onClick={save}>Save</Button>
+  </Modal.Footer>
+</Modal>
 ```
 
-Plus, on the markup:
+**Footer order is fixed:** children are `[secondary, primary]`. On desktop they
+sit right-aligned in that order; on mobile they stack full-width with the
+primary on top. `start` holds left-aligned extras (a step counter, a destructive
+"Delete").
 
-- `role="dialog"` and `aria-modal="true"` on the container
-- `aria-label` on the close button (e.g. `aria-label="Close edit room"`)
-- `animate-fade-in` on the container
-- A visible error state — `EditRoomModal` only `console.error`s its failure, which violates [Rules.md](./Rules.md) §9
+**Pick `mobile` by content**, not by habit:
 
-### Bottom sheets
+| `mobile` | For |
+|---|---|
+| `sheet` | Compact forms, settings, confirmations |
+| `fullscreen` | Dense content and wizards (session stats, imports, onboarding) |
+| `dialog` | Tours and anything that must stay small |
 
-For action menus on mobile, use [components/ui/ActionBottomSheet.tsx](../components/ui/ActionBottomSheet.tsx) rather than building another modal. It renders a sheet below `sm` and an anchored menu above it.
+Other overlays: `ConfirmDeleteModal` / `ConfirmDialog` (+ `useConfirmDelete`) ·
+`BottomSheet` · `Menu` (actions) · `Popover` (anchored non-menu content) ·
+`ShareMenu` (the single share UI; brand marks are the only allowlisted literal
+colors) · `Lightbox` (full-screen media).
+
+If a submit button sits in `Modal.Footer` while the form is in `Modal.Body`,
+give the form an `id` and point the button at it with `form={id}`.
 
 ## 7. Layout & spacing
 
-**The timer page is the reference layout.** From [components/CubeLabTimer.tsx](../components/CubeLabTimer.tsx):
+Mobile-first. The breakpoints in use are Tailwind's `sm` 640 · `md` 768 ·
+`lg` 1024 · `xl` 1280.
 
-```tsx
-<div className="container-responsive py-4 md:py-8">
-  <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 md:gap-6">
-    <div className="xl:col-span-2 space-y-4 md:space-y-6">
-      {/* primary column */}
-    </div>
-    <div className="xl:col-span-2 space-y-4 md:space-y-6 order-last xl:order-0">
-      {/* secondary column */}
-    </div>
-  </div>
-</div>
-```
-
-Note `order-last xl:order-0`: on mobile the secondary column drops below; on desktop it sits alongside. Do the same rather than hiding content on small screens.
-
-| Pattern | Use |
-|---|---|
-| `.container-responsive` | Page wrapper. Handles padding (1 → 1.5 → 2rem) and max-widths (640/768/1024/1280) |
-| `.stats-grid` | Metric card grids. Auto-fit 300px, then 2 col @768, 3 @1024, 4 @1536 |
-| `space-y-4 md:space-y-6` | Vertical rhythm between cards |
-| `gap-3` / `gap-4 md:gap-6` | Button rows / grid gaps |
-| `py-4 md:py-8` | Page vertical padding |
-
-**Radii:** `rounded-lg` is the default (buttons, inputs, small surfaces). `rounded-full` for pills, avatars, and badges. Cards get `1rem` from `.timer-card` — don't override it.
-
-**Focus mode** is a real primitive: panels that should recede during a solve get `blur-md opacity-50 pointer-events-none` with `transition-all duration-500 ease-in-out`.
+- Page padding: `p-4 sm:p-6 lg:p-8`. Card padding: `p-4` → `sm:p-6`.
+- Gaps: stay on 1, 2, 3, 4, 6, 8. Section rhythm is `space-y-4 sm:space-y-6`.
+- Dialog padding is `--dialog-pad`.
+- Touch targets are at least 44px on coarse pointers; the primitives handle this.
+- A table either scrolls sideways (`Table.Scroll`) or is replaced by stacked
+  cards below `md`. Never ship a squeezed table.
+- Anything that can hold a long name needs `min-w-0` and `truncate`.
 
 ## 8. Icons
 
-- **`lucide-react` only.** No other icon library, no inline SVG, no emoji.
-- Sizes: `w-5 h-5` for modal close and primary actions; `w-4 h-4` for inline card-header controls and list items.
-- Color via text tokens: `text-(--text-muted) hover:text-(--primary)`.
-- Icon-only buttons need an `aria-label`.
-
-> The ~11 emojis currently in the UI (`🧩`, `👋`, `💡`) and the `✓` / `✗` text glyphs in `PenaltyButtons`, `RoomTimer`, and `RecognitionFlashCard` are legacy one-offs listed as debt in [Rules.md](./Rules.md) §16. Use `Check` and `X` from lucide instead — they size and color consistently.
+`lucide-react` only, sized `w-3.5`/`w-4`/`w-5` to match adjacent text. Decorative
+icons get `aria-hidden`; an icon that *is* the label needs an `aria-label` on its
+control. `EventIcon` renders WCA event icons. Inline `<svg>` is allowed only for
+third-party brand marks, which lucide does not carry.
 
 ## 9. Motion
 
-| Utility | Effect |
-|---|---|
-| `.animate-fade-in` | 0.6s opacity + 20px rise. Modals, panels entering |
-| `.animate-slide-up` | 0.3s translateY. Bottom sheets |
-| `.animate-pulse-glow` | 2s glow pulse. Attention only, used sparingly |
-| `.animate-float` | 6s idle bob. Decorative/landing only |
-| `transition-colors` | Hover on text and icons |
-| `transition-all duration-300 ease-in-out` | Collapsible panels |
+| Token | Value | For |
+|---|---|---|
+| `--duration-fast` | 120ms | Hover, focus |
+| `--duration-base` | 200ms | Dialogs, menus, toggles |
+| `--duration-slow` | 300ms | Sheets, collapses |
 
-Accessibility is handled at the CSS level and must not be bypassed:
+Easing: `--ease-out`, `--ease-emphasized`. Keyframes: `dialog-in`, `sheet-in`,
+`menu-in`, `toast-in`, `scrim-in`.
 
-- `[data-reduce-motion="true"]` and `@media (prefers-reduced-motion: reduce)` both clamp all animations and transitions to `0.01ms`. Don't use inline `style` animations that escape this.
-- `[data-disable-glow="true"]` strips `box-shadow` from `.neon-glow`, `.animate-pulse-glow`, and `.timer-card:hover`. Any new glow effect must be reachable by that selector.
+Animate `transform` and `opacity`. `[data-reduce-motion="true"]` disables
+animation globally — check it rather than assuming the OS setting, because the
+in-app toggle is independent of it.
 
 ## 10. Verification checklist
 
-A UI change is not done until all of these pass:
+Before calling a UI change done:
 
-- [ ] **Light mode** × blue, purple, green, orange, cyan
-- [ ] **Dark mode** × blue, purple, green, orange, cyan
-- [ ] Mobile (375px), tablet (768px), desktop (1440px) — no horizontal scroll, nothing clipped, nothing hidden
-- [ ] `data-reduce-motion="true"` — nothing animates, nothing breaks
-- [ ] `data-high-contrast="true"` — borders and muted text remain legible
-- [ ] `data-disable-glow="true"` — no stray shadows
-- [ ] Keyboard-only: every control reachable, focus visible, Escape closes modals
-- [ ] Loading, error, and empty states all render correctly
-- [ ] No raw hex, no Tailwind palette color, no gradient, no emoji
+1. `npx tsc --noEmit`
+2. `npm run test` — includes the design-system guardrail
+3. `/design-system`: light **and** dark × all five schemes
+4. 375 / 768 / 1440 — no horizontal scroll, no squeezed table
+5. Keyboard only: Tab reaches everything, focus is visible, Escape closes the
+   top overlay, focus returns to the trigger
+6. `data-reduce-motion`, `data-high-contrast`, `data-disable-glow`
+7. The timer's spacebar must not fire while a dialog is open
 
-## 11. Known visual gaps
+## 11. Enforcement
 
-Existing violations. Recognize them as debt; don't copy them.
+[tests/unit/design-system.test.ts](../tests/unit/design-system.test.ts) scans
+`app/`, `components/` and `lib/` and fails on: palette colors, `dark:` variants,
+gradients, literal white/black text, hex in markup, ad-hoc `fixed inset-0`
+overlays, hand-rolled spinners and switches, `alert()`, unstyled form controls,
+z-index outside the layer tokens, and raw radius utilities.
 
-| Gap | Location |
-|---|---|
-| `.sidebar-nav-item.active` hardcodes a blue shadow — wrong in the other four schemes | `globals.css` |
-| `ShareBottomSheet` hardcodes Tailwind palette brand colors (`bg-blue-600`, `bg-green-500`) | [components/ui/ShareBottomSheet.tsx](../components/ui/ShareBottomSheet.tsx) — arguably justified for third-party brand marks |
-| `.prose-chat code/pre` use `rgba(var(--surface), 0.5)`, which is invalid — `--surface` is a hex string, so the background silently fails | `globals.css` |
-| `.font-inter` is defined twice | `globals.css` |
-| No token layer for radii, spacing, or shadows — all literal, and shadows are duplicated per `[data-theme]` on every class | `globals.css` |
-| Input styling is a ~10-class string copy-pasted across every form | See §5 |
-| Modal a11y is inconsistent — only ~4 of ~30 modals set `role="dialog"` or handle Escape | See §6 |
+Each rule carries the fix in its failure message. Exemptions live next to the
+rule **with a reason**, and a further test fails when an exemption is no longer
+needed — so the allow lists cannot quietly grow. If you are about to add one,
+the answer is almost always to use the primitive instead.
+
+## 12. Known gaps
+
+- **Cubie** (`components/cubie/`, `app/cube-lab/cubie/`) has not been migrated;
+  it is listed in the guardrail as not-yet-migrated rather than exempted rule by
+  rule. Migrating it is the next piece of this work.
+- Admin modal **headers** keep bespoke markup where they show avatars, rather
+  than `Modal.Header`.
+- `tests/setup/api.ts` and two Convex test fixtures have pre-existing type
+  errors that block `npm run build`; they are test-only and predate this work.

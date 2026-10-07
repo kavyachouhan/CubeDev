@@ -1,6 +1,8 @@
 import { ExternalLink, Github, Globe, Linkedin } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { ButtonLink } from "@/components/ui/Button";
+import { buttonClasses } from "@/components/ui/button-styles";
 
 export default function AboutPage() {
   return (
@@ -53,7 +55,7 @@ export default function AboutPage() {
                   href="https://github.com/kavyachouhan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-inter"
+                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-(--radius-control) transition-all duration-200 font-inter"
                 >
                   <Github className="w-5 h-5" />
                   GitHub
@@ -64,7 +66,7 @@ export default function AboutPage() {
                   href="https://kavyachouhan.xyz"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-inter"
+                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-(--radius-control) transition-all duration-200 font-inter"
                 >
                   <Globe className="w-5 h-5" />
                   Website
@@ -75,7 +77,7 @@ export default function AboutPage() {
                   href="https://linkedin.com/in/kavya-chouhan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-lg transition-all duration-200 font-inter"
+                  className="flex items-center gap-2 px-4 py-2 bg-(--surface-elevated) hover:bg-(--surface-elevated)/80 border border-(--border) hover:border-(--primary) text-(--text-primary) rounded-(--radius-control) transition-all duration-200 font-inter"
                 >
                   <Linkedin className="w-5 h-5" />
                   LinkedIn
@@ -86,9 +88,10 @@ export default function AboutPage() {
                   href="https://www.worldcubeassociation.org/persons/2022CHOU06"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-all duration-200 font-inter"
+                  className={buttonClasses({})}
                 >
-                  <img src="/wca_logo.png" alt="WCA" className="w-5 h-5" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/wca_logo.png" alt="" className="w-5 h-5" />
                   WCA Profile
                   <ExternalLink className="w-4 h-4 opacity-75" />
                 </a>
@@ -149,13 +152,13 @@ export default function AboutPage() {
             love to hear from you! The best way to reach me is through the
             contact form.
           </p>
-          <a
+          <ButtonLink
             href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-all duration-200 font-button"
+            size="lg"
+            iconRight={<ExternalLink className="w-4 h-4" />}
           >
-            Contact Me
-            <ExternalLink className="w-4 h-4" />
-          </a>
+            Contact me
+          </ButtonLink>
         </div>
       </div>
         <Footer />

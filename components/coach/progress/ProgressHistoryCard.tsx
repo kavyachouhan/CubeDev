@@ -15,8 +15,8 @@ import {
   ChartOptions,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { CollapsibleCard, useCollapsed } from "@/components/ui";
 import {
-  CollapsibleSection,
   formatTime,
   useEffectiveTheme,
   usePrimaryColor,
@@ -44,6 +44,7 @@ export default function ProgressHistoryCard({
   snapshots,
   targetTime,
 }: ProgressHistoryCardProps) {
+  const collapsed = useCollapsed("coach-progress-history", true);
   const effectiveTheme = useEffectiveTheme();
   const primaryColor = usePrimaryColor();
   const isLight = effectiveTheme === "light";
@@ -129,10 +130,11 @@ export default function ProgressHistoryCard({
   }
 
   return (
-    <CollapsibleSection
+    <CollapsibleCard
       title="Progress History"
-      storageKey="coach-progress-history"
-      defaultExpanded={true}
+      variant="static"
+      open={collapsed.open}
+      onOpenChange={collapsed.onOpenChange}
     >
       <div className="space-y-4">
         {/* Progress Chart */}
@@ -144,23 +146,23 @@ export default function ProgressHistoryCard({
 
         {/* Snapshot List */}
         <div className="space-y-2 mt-4">
-          <div className="text-sm font-medium text-(--text-primary) border-b border-(--border) pb-2">
+          <h4 className="type-label border-b border-(--border) pb-2">
             Weekly Snapshots
-          </div>
+          </h4>
           {snapshots.slice(0, 5).map((snapshot) => (
             <div
               key={snapshot._id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border) gap-2"
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border) gap-2"
             >
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-(--text-muted)">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="type-caption shrink-0">
                   Week {snapshot.weekNumber}
                 </span>
-                <span className="font-bold text-(--primary) font-mono">
+                <span className="type-time font-bold text-(--primary)">
                   {formatTime(snapshot.averageTime)}
                 </span>
               </div>
-              <div className="flex items-center gap-3 text-xs text-(--text-muted)">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 type-caption">
                 <span>{snapshot.totalSolves} solves</span>
                 <span>{snapshot.journalEntries} entries</span>
               </div>
@@ -168,6 +170,6 @@ export default function ProgressHistoryCard({
           ))}
         </div>
       </div>
-    </CollapsibleSection>
+    </CollapsibleCard>
   );
 }

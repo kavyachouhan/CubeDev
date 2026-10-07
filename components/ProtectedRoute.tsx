@@ -3,8 +3,9 @@
 import { useUser } from "@/components/UserProvider";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
 import { wcaSignInHref } from "@/lib/wca-config";
+import { Button } from "@/components/ui/Button";
+import { LoadingState } from "@/components/ui/Spinner";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -36,12 +37,7 @@ export default function ProtectedRoute({
     return (
       loadingComponent || (
         <div className="min-h-screen bg-(--background) flex items-center justify-center">
-          <div className="text-center space-y-4">
-            <Loader2 className="w-8 h-8 text-(--primary) animate-spin mx-auto" />
-            <p className="text-(--text-secondary) font-inter">
-              Verifying authentication...
-            </p>
-          </div>
+          <LoadingState label="Verifying authentication…" />
         </div>
       )
     );
@@ -51,7 +47,7 @@ export default function ProtectedRoute({
   if (!user) {
     return (
       <div className="min-h-screen bg-(--background) flex items-center justify-center p-4">
-        <div className="max-w-md w-full mx-auto text-center space-y-6 bg-(--surface) border border-(--border) rounded-xl p-8 shadow-xl">
+        <div className="max-w-md w-full mx-auto text-center space-y-6 bg-(--surface) border border-(--border) rounded-(--radius-card) p-8 shadow-xl">
           <div className="space-y-3">
             <h1 className="text-2xl md:text-3xl font-bold text-(--text-primary) font-statement">
               Authentication Required
@@ -63,19 +59,18 @@ export default function ProtectedRoute({
           </div>
 
           <div className="space-y-3">
-            <button
-              onClick={handleWCASignIn}
-              className="w-full px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-button transition-all"
-            >
+            <Button size="lg" fullWidth onClick={handleWCASignIn}>
               Sign in with WCA
-            </button>
+            </Button>
 
-            <button
+            <Button
+              size="lg"
+              fullWidth
+              variant="secondary"
               onClick={() => router.push("/")}
-              className="w-full px-6 py-3 border border-(--border) hover:border-(--primary) text-(--text-secondary) hover:text-(--primary) rounded-lg font-button transition-all"
             >
-              Go to Home Page
-            </button>
+              Go to home page
+            </Button>
           </div>
         </div>
       </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import { createPortal } from "react-dom";
 import {
   ChevronRight,
   ChevronLeft,
@@ -10,7 +9,6 @@ import {
   Calendar,
   Clock,
   CheckCircle2,
-  X,
   Trophy,
   Timer,
   Info,
@@ -21,6 +19,11 @@ import {
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { Button } from "@/components/ui/Button";
+import { DateTimePicker } from "@/components/ui/DateTimePicker";
+import { Modal } from "@/components/ui/Modal";
+import { Spinner } from "@/components/ui/Spinner";
+import { Stepper } from "@/components/ui/Stepper";
 import {
   invalidateCoachProfile,
   invalidateTrainingPlan,
@@ -227,7 +230,6 @@ export default function GoalSetupModal({
   currentAverage,
   mode,
 }: GoalSetupModalProps) {
-  const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -286,13 +288,9 @@ export default function GoalSetupModal({
   const updateGoal = useMutation(api.coach.updateGoal);
   const generatePlan = useMutation(api.coach.generateTrainingPlan);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
+  // Modal handles mounting and the scroll lock; this only resets the wizard.
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
       setCurrentStep(1);
       lastProcessedRef.current = null;
       setData({
@@ -313,12 +311,7 @@ export default function GoalSetupModal({
         ],
         skillLevel: (profile.skillLevel as SkillLevel) || "intermediate",
       });
-    } else {
-      document.body.style.overflow = "";
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
   }, [isOpen, profile, mode]);
 
   const recommendedGoals = useMemo(
@@ -418,101 +411,35 @@ export default function GoalSetupModal({
     }
   };
 
-  if (!mounted || !isOpen) return null;
+  if (!isOpen) return null;
 
   const currentGoalTime =
     profile.customGoalTime ||
     GOALS.find((g) => g.id === profile.goalType)?.time ||
     20000;
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
+  return (
+    <Modal open onClose={onClose} size="2xl" mobile="fullscreen">
+      <Modal.Header
+        title={mode === "new" ? "Set new goal" : "Edit goal"}
+        description={
+          mode === "new"
+            ? "Configure your next training goal"
+            : "Update your current training setup"
+        }
       />
-
-      <div className="relative w-full max-w-2xl timer-card border-(--border) animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="shrink-0 flex items-center justify-between pb-3 sm:pb-4 border-b border-(--border)">
-          <div>
-            <h2 className="text-lg sm:text-2xl font-bold text-(--text-primary) font-statement">
-              {mode === "new" ? "Set New Goal" : "Edit Goal"}
-            </h2>
-            <p className="text-sm text-(--text-muted) mt-0.5">
-              {mode === "new"
-                ? "Configure your next training goal"
-                : "Update your current training setup"}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated) rounded-lg transition-colors"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Step Indicators */}
-        <div className="shrink-0 py-4 border-b border-(--border)">
-          <div className="flex items-center justify-center">
-            {STEPS.map((step, index) => {
-              const Icon = step.icon;
-              const isActive = currentStep === step.id;
-              const isCompleted = currentStep > step.id;
-
-              return (
-                <div key={step.id} className="flex items-center">
-                  <div className="flex flex-col items-center">
-                    <button
-                      onClick={() => isCompleted && setCurrentStep(step.id)}
-                      disabled={!isCompleted}
-                      className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors shrink-0 ${
-                        isActive
-                          ? "bg-(--primary) text-white"
-                          : isCompleted
-                            ? "bg-(--success) text-white cursor-pointer"
-                            : "bg-(--surface-elevated) text-(--text-muted)"
-                      }`}
-                    >
-                      {isCompleted ? (
-                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                      ) : (
-                        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
-                      )}
-                    </button>
-                    <span
-                      className={`mt-1 text-[10px] sm:text-xs font-medium hidden sm:block ${
-                        isActive
-                          ? "text-(--primary)"
-                          : "text-(--text-muted)"
-                      }`}
-                    >
-                      {step.title}
-                    </span>
-                  </div>
-                  {index < STEPS.length - 1 && (
-                    <div
-                      className={`w-4 sm:w-12 lg:w-16 h-0.5 mx-0.5 sm:mx-2 rounded shrink-0 ${
-                        isCompleted
-                          ? "bg-(--success)"
-                          : "bg-(--border)"
-                      }`}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Step Content */}
-        <div className="flex-1 overflow-y-auto py-3 sm:py-4 min-h-0">
+      <div className="shrink-0 px-(--dialog-pad) py-4 border-b border-(--border)">
+        <Stepper
+          steps={STEPS.map((step) => ({
+            id: step.id,
+            title: step.title,
+            icon: <step.icon />,
+          }))}
+          current={currentStep}
+          onStepClick={setCurrentStep}
+        />
+      </div>
+      <Modal.Body>
           {/* Step 1: Current Level */}
           {currentStep === 1 && (
             <div className="space-y-4">
@@ -530,7 +457,7 @@ export default function GoalSetupModal({
               </div>
 
               {/* Session Selection */}
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-medium text-(--text-primary)">
                     Select a 3x3 Session
@@ -540,7 +467,7 @@ export default function GoalSetupModal({
                   </span>
                 </div>
 
-                <div className="flex items-start gap-2 p-2 bg-(--info)/10 border border-(--info)/20 rounded-lg mb-3">
+                <div className="flex items-start gap-2 p-2 bg-(--info)/10 border border-(--info)/20 rounded-(--radius-panel) mb-3">
                   <Info className="w-4 h-4 text-(--info) shrink-0 mt-0.5" />
                   <p className="text-xs text-(--text-secondary)">
                     For best accuracy, select a session with at least{" "}
@@ -553,10 +480,10 @@ export default function GoalSetupModal({
 
                 {!sessions ? (
                   <div className="flex items-center justify-center py-6">
-                    <div className="animate-spin w-5 h-5 border-2 border-(--primary) border-t-transparent rounded-full" />
+                    <Spinner className="text-(--primary)" />
                   </div>
                 ) : filteredSessions.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-6 bg-(--surface) rounded-lg border border-(--border)">
+                  <div className="flex flex-col items-center justify-center py-6 bg-(--surface) rounded-(--radius-panel) border border-(--border)">
                     <AlertCircle className="w-6 h-6 text-(--text-muted) mb-2" />
                     <p className="text-(--text-muted) text-xs text-center px-2">
                       No 3x3 sessions found. Select your skill level manually
@@ -578,7 +505,7 @@ export default function GoalSetupModal({
                               selectedSessionId: session._id,
                             });
                           }}
-                          className={`w-full flex items-center justify-between p-2.5 rounded-lg border transition-all text-left ${
+                          className={`w-full flex items-center justify-between p-2.5 rounded-(--radius-panel) border transition-all text-left ${
                             isSelected
                               ? "bg-(--primary)/10 border-(--primary)"
                               : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
@@ -622,7 +549,7 @@ export default function GoalSetupModal({
 
               {/* Session Stats */}
               {data.selectedSessionId && selectedSessionStats && (
-                <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                   <div className="flex items-center gap-2 mb-3">
                     <BarChart3 className="w-4 h-4 text-(--primary)" />
                     <h4 className="text-sm font-medium text-(--text-primary)">
@@ -630,7 +557,7 @@ export default function GoalSetupModal({
                     </h4>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="text-center p-2 bg-(--surface) rounded-lg">
+                    <div className="text-center p-2 bg-(--surface) rounded-(--radius-panel)">
                       <span className="text-[10px] text-(--text-muted) block">
                         Solves
                       </span>
@@ -638,7 +565,7 @@ export default function GoalSetupModal({
                         {selectedSessionStats.solveCount}
                       </span>
                     </div>
-                    <div className="text-center p-2 bg-(--surface) rounded-lg">
+                    <div className="text-center p-2 bg-(--surface) rounded-(--radius-panel)">
                       <span className="text-[10px] text-(--text-muted) block">
                         Average
                       </span>
@@ -646,7 +573,7 @@ export default function GoalSetupModal({
                         {formatTime(selectedSessionStats.average)}
                       </span>
                     </div>
-                    <div className="text-center p-2 bg-(--surface) rounded-lg">
+                    <div className="text-center p-2 bg-(--surface) rounded-(--radius-panel)">
                       <span className="text-[10px] text-(--text-muted) block">
                         Best
                       </span>
@@ -659,7 +586,7 @@ export default function GoalSetupModal({
               )}
 
               {/* Skill Level Selection */}
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   {data.selectedSessionId
                     ? "Detected Skill Level"
@@ -670,7 +597,7 @@ export default function GoalSetupModal({
                     <button
                       key={level.id}
                       onClick={() => updateData({ skillLevel: level.id })}
-                      className={`p-3 rounded-lg border text-left transition-all ${
+                      className={`p-3 rounded-(--radius-panel) border text-left transition-all ${
                         data.skillLevel === level.id
                           ? "bg-(--primary)/10 border-(--primary)"
                           : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
@@ -711,7 +638,7 @@ export default function GoalSetupModal({
 
               {/* Current info banner */}
               {currentAverage && (
-                <div className="flex items-center justify-center gap-3 p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="flex items-center justify-center gap-3 p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                   <Timer className="w-4 h-4 text-(--primary)" />
                   <span className="text-sm text-(--text-secondary)">
                     Current average:
@@ -723,7 +650,7 @@ export default function GoalSetupModal({
               )}
 
               {mode === "edit" && (
-                <div className="flex items-start gap-2 p-2.5 bg-(--info)/10 border border-(--info)/20 rounded-lg">
+                <div className="flex items-start gap-2 p-2.5 bg-(--info)/10 border border-(--info)/20 rounded-(--radius-panel)">
                   <Info className="w-4 h-4 text-(--info) shrink-0 mt-0.5" />
                   <p className="text-xs text-(--text-secondary)">
                     Current goal:{" "}
@@ -740,7 +667,7 @@ export default function GoalSetupModal({
               )}
 
               {/* Recommended Goals */}
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <div className="flex items-center gap-2 mb-3">
                   <Trophy className="w-4 h-4 text-(--primary)" />
                   <h4 className="text-sm font-medium text-(--text-primary)">
@@ -758,7 +685,7 @@ export default function GoalSetupModal({
                             customGoalTime: goal.time,
                           })
                         }
-                        className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
+                        className={`w-full flex items-center justify-between p-3 rounded-(--radius-panel) border transition-all ${
                           data.goalType === goal.id
                             ? "bg-(--primary)/10 border-(--primary)"
                             : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
@@ -805,7 +732,7 @@ export default function GoalSetupModal({
               {/* Other Goals */}
               {GOALS.filter((g) => !recommendedGoals.includes(g.id)).length >
                 0 && (
-                <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+                <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                   <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                     Other goals
                   </h4>
@@ -820,7 +747,7 @@ export default function GoalSetupModal({
                               customGoalTime: goal.time,
                             })
                           }
-                          className={`p-2 rounded-lg border text-center transition-all ${
+                          className={`p-2 rounded-(--radius-panel) border text-center transition-all ${
                             data.goalType === goal.id
                               ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
                               : "bg-(--surface) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
@@ -853,7 +780,7 @@ export default function GoalSetupModal({
                 </p>
               </div>
 
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Target Date
                 </h4>
@@ -874,7 +801,7 @@ export default function GoalSetupModal({
                       <button
                         key={option.days}
                         onClick={() => updateData({ targetDate: targetTime })}
-                        className={`p-3 rounded-lg border text-center transition-all ${
+                        className={`p-3 rounded-(--radius-panel) border text-center transition-all ${
                           isSelected
                             ? "bg-(--primary)/10 border-(--primary)"
                             : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
@@ -895,29 +822,24 @@ export default function GoalSetupModal({
                 </div>
               </div>
 
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Or pick a specific date
                 </h4>
-                <input
-                  type="date"
-                  value={
-                    data.targetDate
-                      ? new Date(data.targetDate).toISOString().split("T")[0]
-                      : ""
+                <DateTimePicker
+                  mode="date"
+                  label="Target date"
+                  value={data.targetDate ?? null}
+                  min={Date.now()}
+                  clearable={false}
+                  onChange={(value) =>
+                    updateData({ targetDate: value ?? undefined })
                   }
-                  min={new Date().toISOString().split("T")[0]}
-                  onChange={(e) =>
-                    updateData({
-                      targetDate: new Date(e.target.value).getTime(),
-                    })
-                  }
-                  className="w-full px-4 py-2.5 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all"
                 />
               </div>
 
               {data.targetDate && (
-                <div className="p-3 bg-(--info)/10 border border-(--info)/20 rounded-lg text-center">
+                <div className="p-3 bg-(--info)/10 border border-(--info)/20 rounded-(--radius-panel) text-center">
                   <span className="text-sm text-(--text-secondary)">
                     Target:{" "}
                     <span className="font-medium text-(--info)">
@@ -946,7 +868,7 @@ export default function GoalSetupModal({
                 </p>
               </div>
 
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Daily Practice Time
                 </h4>
@@ -957,7 +879,7 @@ export default function GoalSetupModal({
                       onClick={() =>
                         updateData({ dailyPracticeMinutes: time.value })
                       }
-                      className={`p-2.5 rounded-lg border text-center transition-all ${
+                      className={`p-2.5 rounded-(--radius-panel) border text-center transition-all ${
                         data.dailyPracticeMinutes === time.value
                           ? "bg-(--primary)/10 border-(--primary)"
                           : "bg-(--surface) border-(--border) hover:border-(--border-hover)"
@@ -977,7 +899,7 @@ export default function GoalSetupModal({
                 </div>
               </div>
 
-              <div className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+              <div className="p-4 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
                 <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                   Practice Days
                 </h4>
@@ -993,7 +915,7 @@ export default function GoalSetupModal({
                             : [...data.practiceSchedule, day];
                           updateData({ practiceSchedule: newSchedule });
                         }}
-                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
+                        className={`px-3 py-2 rounded-(--radius-panel) border text-sm font-medium transition-all ${
                           isSelected
                             ? "bg-(--primary)/10 border-(--primary) text-(--primary)"
                             : "bg-(--surface) border-(--border) text-(--text-secondary) hover:border-(--border-hover)"
@@ -1009,7 +931,7 @@ export default function GoalSetupModal({
                 </p>
               </div>
 
-              <div className="p-3 bg-(--info)/10 border border-(--info)/20 rounded-lg text-center">
+              <div className="p-3 bg-(--info)/10 border border-(--info)/20 rounded-(--radius-panel) text-center">
                 <span className="text-sm text-(--text-secondary)">
                   Total weekly practice:{" "}
                   <span className="font-medium text-(--info)">
@@ -1109,7 +1031,7 @@ export default function GoalSetupModal({
                 />
 
                 {/* Weekly Total */}
-                <div className="flex items-center justify-between p-3 bg-(--primary)/10 rounded-lg border border-(--primary)">
+                <div className="flex items-center justify-between p-3 bg-(--primary)/10 rounded-(--radius-panel) border border-(--primary)">
                   <span className="text-sm text-(--text-muted)">
                     Weekly Total
                   </span>
@@ -1125,7 +1047,7 @@ export default function GoalSetupModal({
               </div>
 
               {mode === "new" && (
-                <div className="flex items-start gap-2 p-2.5 bg-(--warning)/10 border border-(--warning)/20 rounded-lg">
+                <div className="flex items-start gap-2 p-2.5 bg-(--warning)/10 border border-(--warning)/20 rounded-(--radius-panel)">
                   <Info className="w-4 h-4 text-(--warning) shrink-0 mt-0.5" />
                   <p className="text-xs text-(--text-secondary)">
                     Your current goal progress will be archived in your goal
@@ -1138,7 +1060,7 @@ export default function GoalSetupModal({
               )}
 
               {!hasChanges && (
-                <div className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border) text-center">
+                <div className="p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border) text-center">
                   <p className="text-sm text-(--text-muted)">
                     No changes detected. Update at least one setting to save.
                   </p>
@@ -1146,60 +1068,45 @@ export default function GoalSetupModal({
               )}
             </div>
           )}
-        </div>
-
-        {/* Footer */}
-        <div className="shrink-0 pt-3 sm:pt-4 border-t border-(--border)">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-(--text-muted)">
-              Step {currentStep} of {STEPS.length}
-            </span>
-            <div className="flex items-center gap-2">
-              {currentStep > 1 && (
-                <button
-                  onClick={handleBack}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium border border-(--border) rounded-lg hover:bg-(--surface-elevated) hover:border-(--border-hover) text-(--text-primary) transition-colors"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  <span className="hidden sm:inline">Back</span>
-                </button>
-              )}
-              {currentStep < STEPS.length ? (
-                <button
-                  onClick={handleNext}
-                  disabled={!canProceed()}
-                  className="flex items-center gap-1 px-4 py-1.5 text-sm font-medium bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span>Continue</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              ) : (
-                <button
-                  onClick={handleSubmit}
-                  disabled={isSubmitting || (mode === "edit" && !hasChanges)}
-                  className="flex items-center gap-1 px-4 py-1.5 text-sm font-medium bg-(--success) hover:opacity-90 text-white rounded-lg transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>
-                        {mode === "new" ? "Start New Goal" : "Save Changes"}
-                      </span>
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>,
-    document.body,
+      </Modal.Body>
+      <Modal.Footer
+        start={
+          <span className="type-caption hidden sm:inline">
+            Step {currentStep} of {STEPS.length}
+          </span>
+        }
+      >
+        {currentStep > 1 && (
+          <Button
+            variant="secondary"
+            onClick={handleBack}
+            iconLeft={<ChevronLeft className="w-4 h-4" />}
+          >
+            Back
+          </Button>
+        )}
+        {currentStep < STEPS.length ? (
+          <Button
+            onClick={handleNext}
+            disabled={!canProceed()}
+            iconRight={<ChevronRight className="w-4 h-4" />}
+          >
+            Continue
+          </Button>
+        ) : (
+          <Button
+            variant="success"
+            onClick={handleSubmit}
+            loading={isSubmitting}
+            loadingText="Saving…"
+            disabled={mode === "edit" && !hasChanges}
+            iconLeft={<CheckCircle2 className="w-4 h-4" />}
+          >
+            {mode === "new" ? "Start new goal" : "Save changes"}
+          </Button>
+        )}
+      </Modal.Footer>
+    </Modal>
   );
 }
 
@@ -1219,7 +1126,7 @@ function ReviewRow({
 }) {
   return (
     <div
-      className={`flex items-center justify-between p-3 rounded-lg border ${
+      className={`flex items-center justify-between p-3 rounded-(--radius-panel) border ${
         highlight && changed
           ? "bg-(--primary)/5 border-(--primary)/30"
           : "bg-(--surface-elevated) border-(--border)"

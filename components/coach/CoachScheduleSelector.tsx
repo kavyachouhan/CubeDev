@@ -78,7 +78,7 @@ export default function CoachScheduleSelector({
             <button
               key={option.id}
               onClick={() => onUpdate({ dailyPracticeMinutes: option.id })}
-              className={`p-3 rounded-lg border text-center transition-all ${
+              className={`p-3 rounded-(--radius-control) border text-center transition-all ${
                 data.dailyPracticeMinutes === option.id
                   ? "bg-(--primary)/10 border-(--primary)"
                   : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
@@ -112,7 +112,7 @@ export default function CoachScheduleSelector({
                 onClick={() => applyPreset(preset.days)}
                 className={`px-3 py-1.5 rounded-full text-sm transition-all ${
                   isActive
-                    ? "bg-(--primary) text-white"
+                    ? "bg-(--primary) text-(--on-primary)"
                     : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--surface)"
                 }`}
               >
@@ -130,7 +130,7 @@ export default function CoachScheduleSelector({
               <button
                 key={day.id}
                 onClick={() => toggleDay(day.id)}
-                className={`p-3 rounded-lg border text-center transition-all ${
+                className={`p-3 rounded-(--radius-control) border text-center transition-all ${
                   isSelected
                     ? "bg-(--primary)/10 border-(--primary)"
                     : "bg-(--surface-elevated) border-(--border) hover:border-(--border-hover)"
@@ -155,19 +155,19 @@ export default function CoachScheduleSelector({
         </div>
         
         <div className="grid grid-cols-3 gap-4 mb-4">
-          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control)">
             <span className="text-xs text-(--text-muted) block mb-1">Practice Days</span>
             <span className="text-xl font-bold text-(--text-primary)">
               {schedule.length}
             </span>
           </div>
-          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control)">
             <span className="text-xs text-(--text-muted) block mb-1">Daily Time</span>
             <span className="text-xl font-bold text-(--text-primary)">
               {data.dailyPracticeMinutes}m
             </span>
           </div>
-          <div className="text-center p-3 bg-(--surface-elevated) rounded-lg">
+          <div className="text-center p-3 bg-(--surface-elevated) rounded-(--radius-control)">
             <span className="text-xs text-(--text-muted) block mb-1">Weekly Total</span>
             <span className="text-xl font-bold text-(--primary)">
               {totalWeeklyHours.toFixed(1)}h
@@ -186,7 +186,7 @@ export default function CoachScheduleSelector({
                   key={day.id}
                   className={`flex-1 h-8 rounded flex items-center justify-center text-xs font-medium ${
                     isSelected
-                      ? "bg-(--primary) text-white"
+                      ? "bg-(--primary) text-(--on-primary)"
                       : "bg-(--surface) text-(--text-muted)"
                   }`}
                 >
@@ -200,13 +200,13 @@ export default function CoachScheduleSelector({
 
       {/* Validation Message */}
       {schedule.length === 0 && (
-        <div className="p-3 bg-(--warning)/10 border border-(--warning)/30 rounded-lg text-sm text-(--warning)">
+        <div className="p-3 bg-(--warning)/10 border border-(--warning)/30 rounded-(--radius-control) text-sm text-(--warning)">
           Please select at least one practice day to continue.
         </div>
       )}
 
       {schedule.length > 0 && schedule.length < 3 && (
-        <div className="p-3 bg-(--info)/10 border border-(--info)/30 rounded-lg text-sm text-(--info)">
+        <div className="p-3 bg-(--info)/10 border border-(--info)/30 rounded-(--radius-control) text-sm text-(--info)">
           Practicing more days per week will help you reach your goal faster. Consider adding more practice days if possible.
         </div>
       )}

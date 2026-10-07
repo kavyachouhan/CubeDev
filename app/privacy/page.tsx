@@ -18,7 +18,7 @@ export default function PrivacyPage() {
                 </p>
               </div>
 
-              <div className="prose prose-neutral dark:prose-invert max-w-none space-y-6">
+              <div className="prose-chat max-w-none space-y-6">
                 <section>
                   <h2 className="text-xl font-semibold text-primary mb-3">
                     Information We Collect

@@ -11,6 +11,12 @@ import {
 } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import {
+  Button,
+  CalloutCard,
+  ProgressBar,
+  ProgressLabel,
+} from "@/components/ui";
 import { CoachProfile, GOAL_TIMES } from "./types";
 import { formatTime, getDaysRemaining } from "./utils";
 import GoalCelebration from "../GoalCelebration";
@@ -123,54 +129,50 @@ export default function GoalCompletionCard({
           customGoalTime={profile.customGoalTime}
           onComplete={() => setShowCelebration(false)}
         />
-        <div className="timer-card border-(--success)">
-          {/* Mobile: stacked layout, Desktop: side by side */}
-          <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row gap-4">
-            <div className="w-14 h-14 sm:w-12 sm:h-12 rounded-full bg-(--success)/10 flex items-center justify-center shrink-0">
-              <Trophy className="w-7 h-7 sm:w-6 sm:h-6 text-(--success)" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-(--text-primary) mb-1">
-                Goal Achieved!
-              </h3>
-              <p className="text-sm text-(--text-muted) mb-3">
-                Congratulations! You&apos;ve reached your{" "}
-                {profile.goalType.replace("-", " ").toUpperCase()} goal with an
-                average of {formatTime(currentAverage)}.
-              </p>
-              <div className="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-(--text-muted)">
+        <CalloutCard
+          tone="primary"
+          icon={<Trophy />}
+          title="Goal Achieved!"
+          description={
+            <>
+              Congratulations! You&apos;ve reached your{" "}
+              {profile.goalType.replace("-", " ").toUpperCase()} goal with an
+              average of {formatTime(currentAverage)}.
+              <span className="flex flex-wrap gap-x-3 gap-y-1 mt-2">
                 <span className="flex items-center gap-1">
-                  <Target className="w-3.5 h-3.5" />
+                  <Target aria-hidden className="w-3.5 h-3.5" />
                   Target: {formatTime(targetTime)}
                 </span>
-                <span className="flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-(--success)" />
+                <span className="flex items-center gap-1 text-(--success)">
+                  <CheckCircle2 aria-hidden className="w-3.5 h-3.5" />
                   Current: {formatTime(currentAverage)}
                 </span>
-              </div>
-            </div>
-          </div>
-
-          {!showGoalSetup && (
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => setShowGoalSetup(true)}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors"
-              >
-                <Target className="w-4 h-4" />
-                Set New Goal
-              </button>
-              {onDismiss && (
-                <button
-                  onClick={onDismiss}
-                  className="px-4 py-2.5 text-(--text-secondary) hover:text-(--text-primary) transition-colors"
+              </span>
+            </>
+          }
+          action={
+            showGoalSetup ? undefined : (
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button
+                  className="w-full sm:w-auto"
+                  iconLeft={<Target className="w-4 h-4" />}
+                  onClick={() => setShowGoalSetup(true)}
                 >
-                  Dismiss
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+                  Set New Goal
+                </Button>
+                {onDismiss && (
+                  <Button
+                    variant="ghost"
+                    className="w-full sm:w-auto"
+                    onClick={onDismiss}
+                  >
+                    Dismiss
+                  </Button>
+                )}
+              </div>
+            )
+          }
+        />
 
         <GoalSetupModal
           isOpen={showGoalSetup}
@@ -189,93 +191,87 @@ export default function GoalCompletionCard({
   // Expired status
   return (
     <>
-      <div className="timer-card border-(--warning)">
-        <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row gap-4">
-          <div className="w-14 h-14 sm:w-12 sm:h-12 rounded-full bg-(--warning)/10 flex items-center justify-center shrink-0">
-            <AlertTriangle className="w-7 h-7 sm:w-6 sm:h-6 text-(--warning)" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-(--text-primary) mb-1 font-statement">
-              Target Date Passed
-            </h3>
-            <p className="text-sm text-(--text-muted) mb-3">
-              Your deadline for{" "}
-              {profile.goalType.replace("-", " ").toUpperCase()} has passed.
-              Don&apos;t worry, progress takes time! You can extend your
-              deadline or set a new goal.
-            </p>
-            <div className="flex flex-wrap justify-center sm:justify-start gap-3 text-xs text-(--text-muted)">
+      <CalloutCard
+        tone="warning"
+        icon={<AlertTriangle />}
+        title="Target Date Passed"
+        description={
+          <>
+            Your deadline for{" "}
+            {profile.goalType.replace("-", " ").toUpperCase()} has passed.
+            Don&apos;t worry, progress takes time! You can extend your deadline
+            or set a new goal.
+            <span className="flex flex-wrap gap-x-3 gap-y-1 mt-2">
               <span className="flex items-center gap-1">
-                <Target className="w-3.5 h-3.5" />
+                <Target aria-hidden className="w-3.5 h-3.5" />
                 Target: {formatTime(targetTime)}
               </span>
               <span className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" />
+                <Clock aria-hidden className="w-3.5 h-3.5" />
                 Current: {formatTime(currentAverage)}
               </span>
               <span className="flex items-center gap-1 text-(--warning)">
-                <Calendar className="w-3.5 h-3.5" />
+                <Calendar aria-hidden className="w-3.5 h-3.5" />
                 {Math.abs(daysRemaining)} days overdue
               </span>
-            </div>
+            </span>
+          </>
+        }
+      >
 
-            {currentAverage > targetTime && (
-              <div className="mt-3 p-2 bg-(--surface-elevated) rounded-lg">
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="text-(--text-muted)">
-                    Gap to target:
-                  </span>
-                  <span className="font-medium text-(--warning)">
-                    {formatTime(currentAverage - targetTime)} to go
-                  </span>
-                </div>
-                <div className="h-1.5 bg-(--surface) rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-(--primary) transition-all duration-500"
-                    style={{
-                      width: `${Math.min(100, (targetTime / currentAverage) * 100)}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            )}
+        {currentAverage > targetTime && (
+          <div className="mt-4 p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
+            <ProgressLabel
+              value={
+                <span className="text-(--warning)">
+                  {formatTime(currentAverage - targetTime)} to go
+                </span>
+              }
+            >
+              Gap to target
+            </ProgressLabel>
+            <ProgressBar
+              size="sm"
+              label="Gap to target"
+              value={Math.min(100, (targetTime / currentAverage) * 100)}
+            />
           </div>
-        </div>
+        )}
 
-        <div className="mt-6 space-y-4">
+        <div className="mt-4 space-y-4">
           <div>
-            <p className="text-xs text-(--text-muted) mb-2">
-              Extend deadline:
-            </p>
+            <p className="type-caption mb-2">Extend deadline:</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {[14, 30, 60, 90].map((days) => (
-                <button
+                <Button
                   key={days}
-                  onClick={() => handleExtendDeadline(days)}
+                  size="sm"
+                  variant="secondary"
+                  fullWidth
                   disabled={isSubmitting}
-                  className="px-3 sm:px-4 py-2 border border-(--border) rounded-lg text-sm font-medium text-(--text-secondary) hover:border-(--primary) hover:text-(--primary) transition-colors disabled:opacity-50"
+                  onClick={() => handleExtendDeadline(days)}
                 >
                   +{days} days
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-(--border)" />
-            <span className="text-xs text-(--text-muted)">or</span>
+            <span className="type-caption">or</span>
             <div className="flex-1 h-px bg-(--border)" />
           </div>
 
-          <button
+          <Button
+            fullWidth
+            iconLeft={<Target className="w-4 h-4" />}
             onClick={() => setShowGoalSetup(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors"
           >
-            <Target className="w-4 h-4" />
             Set a Different Goal
-          </button>
+          </Button>
         </div>
-      </div>
+      </CalloutCard>
 
       <GoalSetupModal
         isOpen={showGoalSetup}

@@ -19,6 +19,9 @@ import {
   Loader2,
   ThumbsUp,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Checkbox, Input, Select, Textarea } from "@/components/ui/Field";
+import { Modal } from "@/components/ui/Modal";
 import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal";
 import { useConfirmDelete } from "@/components/ui/useConfirmDelete";
 
@@ -198,12 +201,12 @@ export default function AdminFAQ() {
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
           {!selectedCategoryId && (
-            <div className="flex items-center bg-(--surface-elevated) border border-(--border) rounded-lg overflow-hidden">
+            <div className="flex items-center bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) overflow-hidden">
               <button
                 onClick={() => setView("categories")}
                 className={`px-3 py-1.5 text-xs font-inter transition-colors ${
                   view === "categories"
-                    ? "bg-(--primary) text-white"
+                    ? "bg-(--primary) text-(--on-primary)"
                     : "text-(--text-secondary) hover:text-(--text-primary)"
                 }`}
               >
@@ -213,7 +216,7 @@ export default function AdminFAQ() {
                 onClick={() => setView("articles")}
                 className={`px-3 py-1.5 text-xs font-inter transition-colors ${
                   view === "articles"
-                    ? "bg-(--primary) text-white"
+                    ? "bg-(--primary) text-(--on-primary)"
                     : "text-(--text-secondary) hover:text-(--text-primary)"
                 }`}
               >
@@ -231,7 +234,7 @@ export default function AdminFAQ() {
                 setShowCategoryModal(true);
               }
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg text-xs font-inter transition-colors whitespace-nowrap ml-auto sm:ml-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) text-xs font-inter transition-colors whitespace-nowrap ml-auto sm:ml-0"
           >
             <Plus className="w-3.5 h-3.5" />
             {selectedCategoryId || view === "articles"
@@ -244,12 +247,11 @@ export default function AdminFAQ() {
       {/* Search */}
       <div className="relative w-full sm:max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-(--text-muted)" />
-        <input
-          type="text"
+        <Input
           placeholder={`Search ${selectedCategoryId || view === "articles" ? "articles" : "categories"}...`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-9 pr-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--primary) transition-colors font-inter"
+          className="w-full pl-9 pr-3 py-2 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--primary) transition-colors font-inter"
         />
       </div>
 
@@ -261,7 +263,7 @@ export default function AdminFAQ() {
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="timer-card animate-pulse">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 skeleton-box rounded-lg" />
+                    <div className="w-10 h-10 skeleton-box rounded-(--radius-control)" />
                     <div className="flex-1 space-y-2">
                       <div className="h-4 skeleton-box rounded w-1/3" />
                       <div className="h-3 skeleton-box rounded w-2/3" />
@@ -291,7 +293,7 @@ export default function AdminFAQ() {
                     }}
                     className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left group"
                   >
-                    <div className="p-2 sm:p-2.5 bg-(--primary)/10 rounded-lg shrink-0">
+                    <div className="p-2 sm:p-2.5 bg-(--primary)/10 rounded-(--radius-control) shrink-0">
                       <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-(--primary)" />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -334,7 +336,7 @@ export default function AdminFAQ() {
                             category.isPublished,
                           )
                         }
-                        className="p-1.5 rounded-lg text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 transition-colors"
+                        className="p-1.5 rounded-(--radius-control) text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 transition-colors"
                         title={category.isPublished ? "Unpublish" : "Publish"}
                       >
                         {category.isPublished ? (
@@ -348,7 +350,7 @@ export default function AdminFAQ() {
                           setEditingCategory(category._id);
                           setShowCategoryModal(true);
                         }}
-                        className="p-1.5 rounded-lg text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 transition-colors"
+                        className="p-1.5 rounded-(--radius-control) text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 transition-colors"
                         title="Edit"
                       >
                         <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -361,7 +363,7 @@ export default function AdminFAQ() {
                             name: category.name,
                           })
                         }
-                        className="p-1.5 rounded-lg text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 transition-colors"
+                        className="p-1.5 rounded-(--radius-control) text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 transition-colors"
                         title="Delete"
                       >
                         <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -461,7 +463,7 @@ export default function AdminFAQ() {
                           <span
                             className={
                               helpfulPct !== null && helpfulPct >= 70
-                                ? "text-green-500"
+                                ? "text-(--success)"
                                 : helpfulPct !== null && helpfulPct < 40
                                   ? "text-(--error)"
                                   : ""
@@ -490,7 +492,7 @@ export default function AdminFAQ() {
                             !!article.isFeatured,
                           )
                         }
-                        className={`p-1.5 rounded-lg transition-colors ${
+                        className={`p-1.5 rounded-(--radius-control) transition-colors ${
                           article.isFeatured
                             ? "text-(--primary) bg-(--primary)/10"
                             : "text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10"
@@ -503,7 +505,7 @@ export default function AdminFAQ() {
                         onClick={() =>
                           toggleArticlePublish(article._id, article.isPublished)
                         }
-                        className="p-1.5 rounded-lg text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 transition-colors"
+                        className="p-1.5 rounded-(--radius-control) text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 transition-colors"
                         title={article.isPublished ? "Unpublish" : "Publish"}
                       >
                         {article.isPublished ? (
@@ -517,7 +519,7 @@ export default function AdminFAQ() {
                           setEditingArticle(article._id);
                           setShowArticleModal(true);
                         }}
-                        className="p-1.5 rounded-lg text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 transition-colors"
+                        className="p-1.5 rounded-(--radius-control) text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10 transition-colors"
                         title="Edit"
                       >
                         <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -530,7 +532,7 @@ export default function AdminFAQ() {
                             name: article.title,
                           })
                         }
-                        className="p-1.5 rounded-lg text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 transition-colors"
+                        className="p-1.5 rounded-(--radius-control) text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 transition-colors"
                         title="Delete"
                       >
                         <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -656,15 +658,15 @@ function CategoryModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <Modal open onClose={onClose} size="md" mobile="fullscreen">
+      <Modal.Body>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-(--text-primary) font-statement">
             {categoryId ? "Edit Category" : "New Category"}
           </h2>
           <button
             onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
@@ -673,14 +675,10 @@ function CategoryModal({
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Name
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-2">Name</label>
+            <Input
               value={formData.name}
               onChange={(e) => handleNameChange(e.target.value)}
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
               placeholder="e.g., Getting Started"
               required
             />
@@ -688,16 +686,12 @@ function CategoryModal({
 
           {/* Slug */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Slug
-            </label>
-            <input
-              type="text"
+            <label className="type-label block mb-2">Slug</label>
+            <Input
               value={formData.slug}
               onChange={(e) =>
                 setFormData({ ...formData, slug: e.target.value })
               }
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
               placeholder="getting-started"
               required
             />
@@ -705,15 +699,12 @@ function CategoryModal({
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Description
-            </label>
-            <textarea
+            <label className="type-label block mb-2">Description</label>
+            <Textarea
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
               rows={3}
               placeholder="Brief description of this category"
               required
@@ -722,22 +713,19 @@ function CategoryModal({
 
           {/* Icon */}
           <div>
-            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-              Icon
-            </label>
-            <select
+            <label className="type-label block mb-2">Icon</label>
+            <Select
               value={formData.icon}
               onChange={(e) =>
                 setFormData({ ...formData, icon: e.target.value })
               }
-              className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
             >
               {ICON_OPTIONS.map((icon) => (
                 <option key={icon} value={icon}>
                   {icon}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
 
           {/* Order & Published */}
@@ -747,10 +735,8 @@ function CategoryModal({
             </h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-                  Order
-                </label>
-                <input
+                <label className="type-label block mb-2">Order</label>
+                <Input
                   type="number"
                   value={formData.order}
                   onChange={(e) =>
@@ -759,47 +745,34 @@ function CategoryModal({
                       order: parseInt(e.target.value) || 0,
                     })
                   }
-                  className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
+                  className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-(--radius-control) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
                   min={0}
                 />
               </div>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.isPublished}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      isPublished: e.target.checked,
-                    })
-                  }
-                  className="w-4 h-4 rounded border-(--border) accent-(--primary)"
-                />
-                <span className="text-sm text-(--text-primary) font-inter">
-                  Published
-                </span>
-              </label>
+              <Checkbox
+                label="Published"
+                checked={formData.isPublished}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    isPublished: e.target.checked,
+                  })
+                }
+              />
             </div>
           </div>
 
           {/* Submit */}
           <div className="flex flex-col sm:flex-row-reverse gap-3 pt-4">
-            <button
+            <Button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full sm:w-auto sm:flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              fullWidth
+              className="sm:w-auto sm:flex-1"
+              loading={isSubmitting}
+              loadingText="Saving…"
             >
-              {isSubmitting ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
-                </span>
-              ) : categoryId ? (
-                "Save Changes"
-              ) : (
-                "Create Category"
-              )}
-            </button>
+              {categoryId ? "Save Changes" : "Create Category"}
+            </Button>
             <button
               type="button"
               onClick={onClose}
@@ -810,8 +783,8 @@ function CategoryModal({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 }
 
@@ -953,29 +926,29 @@ function ArticleModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="timer-card max-w-2xl w-full max-h-[90vh] flex flex-col">
+    <Modal open onClose={onClose} size="2xl" mobile="fullscreen">
+      <Modal.Body>
         <div className="flex items-center justify-between mb-6 shrink-0">
           <h2 className="text-xl font-bold text-(--text-primary) font-statement">
             {articleId ? "Edit Article" : "New Article"}
           </h2>
           <button
             onClick={onClose}
-            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-lg hover:bg-(--surface-elevated)"
+            className="text-(--text-muted) hover:text-(--text-primary) transition-colors p-1 rounded-(--radius-control) hover:bg-(--surface-elevated)"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 mb-6 shrink-0 bg-(--surface-elevated) p-1 rounded-lg border border-(--border)">
+        <div className="flex items-center gap-1 mb-6 shrink-0 bg-(--surface-elevated) p-1 rounded-(--radius-control) border border-(--border)">
           {(["content", "steps", "settings"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 px-3 py-2 text-sm font-inter rounded-md transition-colors capitalize ${
+              className={`flex-1 px-3 py-2 text-sm font-inter rounded-(--radius-badge) transition-colors capitalize ${
                 activeTab === tab
-                  ? "bg-(--primary) text-white"
+                  ? "bg-(--primary) text-(--on-primary)"
                   : "text-(--text-secondary) hover:text-(--text-primary)"
               }`}
             >
@@ -995,9 +968,7 @@ function ArticleModal({
                 <p className="text-lg font-bold text-(--text-primary) font-inter">
                   {existing.viewCount || 0}
                 </p>
-                <p className="text-xs text-(--text-muted) font-inter">
-                  Views
-                </p>
+                <p className="text-xs text-(--text-muted) font-inter">Views</p>
               </div>
               <div className="text-center">
                 <p className="text-lg font-bold text-(--text-primary) font-inter">
@@ -1018,7 +989,7 @@ function ArticleModal({
                           existing.helpfulYes || 0,
                           existing.helpfulNo || 0,
                         )! >= 70
-                        ? "text-green-500"
+                        ? "text-(--success)"
                         : getHelpfulPercentage(
                               existing.helpfulYes || 0,
                               existing.helpfulNo || 0,
@@ -1050,13 +1021,10 @@ function ArticleModal({
               <>
                 {/* Category */}
                 <div>
-                  <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-                    Category
-                  </label>
-                  <select
+                  <label className="type-label block mb-2">Category</label>
+                  <Select
                     value={categoryId as string}
                     onChange={(e) => setCategoryId(e.target.value as any)}
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
                     required
                   >
                     <option value="">Select category</option>
@@ -1065,19 +1033,17 @@ function ArticleModal({
                         {c.name}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
 
                 {/* Title */}
                 <div>
-                  <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+                  <label className="type-label block mb-2">
                     Title / Question
                   </label>
-                  <input
-                    type="text"
+                  <Input
                     value={formData.title}
                     onChange={(e) => handleTitleChange(e.target.value)}
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
                     placeholder="e.g., How do I start the timer?"
                     required
                   />
@@ -1085,16 +1051,12 @@ function ArticleModal({
 
                 {/* Slug */}
                 <div>
-                  <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-                    Slug
-                  </label>
-                  <input
-                    type="text"
+                  <label className="type-label block mb-2">Slug</label>
+                  <Input
                     value={formData.slug}
                     onChange={(e) =>
                       setFormData({ ...formData, slug: e.target.value })
                     }
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
                     placeholder="how-to-start-timer"
                     required
                   />
@@ -1102,15 +1064,14 @@ function ArticleModal({
 
                 {/* Summary */}
                 <div>
-                  <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+                  <label className="type-label block mb-2">
                     Summary (short answer / preview)
                   </label>
-                  <textarea
+                  <Textarea
                     value={formData.summary}
                     onChange={(e) =>
                       setFormData({ ...formData, summary: e.target.value })
                     }
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
                     rows={2}
                     placeholder="Brief answer shown in search results"
                     required
@@ -1119,15 +1080,12 @@ function ArticleModal({
 
                 {/* Content */}
                 <div>
-                  <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
-                    Full Content
-                  </label>
-                  <textarea
+                  <label className="type-label block mb-2">Full Content</label>
+                  <Textarea
                     value={formData.content}
                     onChange={(e) =>
                       setFormData({ ...formData, content: e.target.value })
                     }
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-y min-h-30 transition-all font-inter"
                     rows={6}
                     placeholder="Detailed article content..."
                     required
@@ -1146,7 +1104,7 @@ function ArticleModal({
                   <button
                     type="button"
                     onClick={addStep}
-                    className="flex items-center gap-1.5 px-4 py-2 text-sm bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg transition-colors font-inter whitespace-nowrap"
+                    className="flex items-center gap-1.5 px-4 py-2 text-sm bg-(--primary) hover:bg-(--primary-hover) text-(--on-primary) rounded-(--radius-control) transition-colors font-inter whitespace-nowrap"
                   >
                     <Plus className="w-4 h-4" />
                     Add Step
@@ -1154,7 +1112,7 @@ function ArticleModal({
                 </div>
 
                 {formData.steps.length === 0 ? (
-                  <div className="text-center py-12 border border-dashed border-(--border) rounded-lg">
+                  <div className="text-center py-12 border border-dashed border-(--border) rounded-(--radius-control)">
                     <p className="text-sm text-(--text-muted) font-inter">
                       No steps yet. Click &quot;Add Step&quot; to create a
                       step-by-step guide.
@@ -1174,7 +1132,7 @@ function ArticleModal({
                           <button
                             type="button"
                             onClick={() => removeStep(index)}
-                            className="p-1.5 text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 rounded-lg transition-colors"
+                            className="p-1.5 text-(--text-muted) hover:text-(--error) hover:bg-(--error)/10 rounded-(--radius-control) transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -1182,30 +1140,29 @@ function ArticleModal({
 
                         <div className="space-y-4">
                           <div>
-                            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+                            <label className="type-label block mb-2">
                               Title
                             </label>
-                            <input
-                              type="text"
+                            <Input
                               value={step.title}
                               onChange={(e) =>
                                 updateStep(index, "title", e.target.value)
                               }
-                              className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
+                              className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
                               placeholder="Step title"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+                            <label className="type-label block mb-2">
                               Description
                             </label>
-                            <textarea
+                            <Textarea
                               value={step.description}
                               onChange={(e) =>
                                 updateStep(index, "description", e.target.value)
                               }
-                              className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
+                              className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-(--radius-control) text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent resize-none transition-all font-inter"
                               rows={2}
                               placeholder="Step description"
                             />
@@ -1216,13 +1173,12 @@ function ArticleModal({
                               <label className="block text-xs font-medium text-(--text-primary) mb-1.5 font-inter">
                                 Image URL (optional)
                               </label>
-                              <input
-                                type="text"
+                              <Input
                                 value={step.imageUrl || ""}
                                 onChange={(e) =>
                                   updateStep(index, "imageUrl", e.target.value)
                                 }
-                                className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
+                                className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-(--radius-control) text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
                                 placeholder="https://..."
                               />
                             </div>
@@ -1230,13 +1186,12 @@ function ArticleModal({
                               <label className="block text-xs font-medium text-(--text-primary) mb-1.5 font-inter">
                                 Alt text (optional)
                               </label>
-                              <input
-                                type="text"
+                              <Input
                                 value={step.imageAlt || ""}
                                 onChange={(e) =>
                                   updateStep(index, "imageAlt", e.target.value)
                                 }
-                                className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
+                                className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-(--radius-control) text-sm text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
                                 placeholder="Describe the image"
                               />
                             </div>
@@ -1254,16 +1209,14 @@ function ArticleModal({
               <div className="space-y-6">
                 {/* Search Tags */}
                 <div>
-                  <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+                  <label className="type-label block mb-2">
                     Search Tags (comma-separated)
                   </label>
-                  <input
-                    type="text"
+                  <Input
                     value={formData.searchTags}
                     onChange={(e) =>
                       setFormData({ ...formData, searchTags: e.target.value })
                     }
-                    className="w-full px-4 py-3 bg-(--surface-elevated) border border-(--border) rounded-lg text-(--text-primary) placeholder-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
                     placeholder="timer, solve, start, space bar"
                   />
                 </div>
@@ -1275,10 +1228,10 @@ function ArticleModal({
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-(--text-primary) mb-2 font-inter">
+                      <label className="type-label block mb-2">
                         Display Order
                       </label>
-                      <input
+                      <Input
                         type="number"
                         value={formData.order}
                         onChange={(e) =>
@@ -1287,54 +1240,34 @@ function ArticleModal({
                             order: parseInt(e.target.value) || 0,
                           })
                         }
-                        className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
+                        className="w-full px-4 py-3 bg-(--surface) border border-(--border) rounded-(--radius-control) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all font-inter"
                         min={0}
                       />
                     </div>
 
                     <div className="space-y-3 pt-1">
-                      <label className="flex items-center gap-3 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={formData.isPublished}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              isPublished: e.target.checked,
-                            })
-                          }
-                          className="w-4 h-4 rounded border-(--border) accent-(--primary)"
-                        />
-                        <div>
-                          <span className="text-sm text-(--text-primary) font-inter">
-                            Published
-                          </span>
-                          <p className="text-xs text-(--text-muted) font-inter">
-                            Visible to users on the help center
-                          </p>
-                        </div>
-                      </label>
-                      <label className="flex items-center gap-3 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={formData.isFeatured}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              isFeatured: e.target.checked,
-                            })
-                          }
-                          className="w-4 h-4 rounded border-(--border) accent-(--primary)"
-                        />
-                        <div>
-                          <span className="text-sm text-(--text-primary) font-inter">
-                            Featured
-                          </span>
-                          <p className="text-xs text-(--text-muted) font-inter">
-                            Show in Popular Articles section on help center
-                          </p>
-                        </div>
-                      </label>
+                      <Checkbox
+                        label="Published"
+                        description="Visible to users on the help center"
+                        checked={formData.isPublished}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            isPublished: e.target.checked,
+                          })
+                        }
+                      />
+                      <Checkbox
+                        label="Featured"
+                        description="Show in Popular Articles section on help center"
+                        checked={formData.isFeatured}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            isFeatured: e.target.checked,
+                          })
+                        }
+                      />
                     </div>
                   </div>
                 </div>
@@ -1344,22 +1277,15 @@ function ArticleModal({
 
           {/* Submit */}
           <div className="flex flex-col sm:flex-row-reverse gap-3 pt-6 mt-4 border-t border-(--border) shrink-0">
-            <button
+            <Button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full sm:w-auto sm:flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              fullWidth
+              className="sm:w-auto sm:flex-1"
+              loading={isSubmitting}
+              loadingText="Saving…"
             >
-              {isSubmitting ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
-                </span>
-              ) : articleId ? (
-                "Save Changes"
-              ) : (
-                "Create Article"
-              )}
-            </button>
+              {articleId ? "Save Changes" : "Create Article"}
+            </Button>
             <button
               type="button"
               onClick={onClose}
@@ -1370,7 +1296,7 @@ function ArticleModal({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 }

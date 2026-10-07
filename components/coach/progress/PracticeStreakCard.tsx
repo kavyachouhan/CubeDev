@@ -1,7 +1,7 @@
 "use client";
 
 import { Flame, Award, Calendar, CheckCircle2 } from "lucide-react";
-import { CollapsibleSection, StatCard } from "./utils";
+import { CollapsibleCard, StatTile, useCollapsed } from "@/components/ui";
 import { ProgressStats } from "./types";
 
 interface PracticeStreakCardProps {
@@ -11,49 +11,60 @@ interface PracticeStreakCardProps {
 export default function PracticeStreakCard({
   progressStats,
 }: PracticeStreakCardProps) {
+  const collapsed = useCollapsed("coach-progress-streak", true);
+
   return (
-    <CollapsibleSection
+    <CollapsibleCard
       title="Practice Streak"
-      storageKey="coach-progress-streak"
-      defaultExpanded={true}
-      dataTour="practice-streak"
+      variant="static"
+      open={collapsed.open}
+      onOpenChange={collapsed.onOpenChange}
+      rootProps={{ "data-tour": "practice-streak" }}
     >
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-        <StatCard
-          icon={Flame}
-          iconColor="bg-(--warning)/10 text-(--warning)"
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+        <StatTile
+          size="sm"
+          mobileLayout="row"
+          mono={false}
+          icon={<Flame />}
+          tone="warning"
           label="Current"
           value={`${progressStats.currentStreak} days`}
-          valueColor="text-(--warning)"
-          subtitle={
+          hint={
             progressStats.currentStreak > 0 ? "Keep it going!" : "Start today"
           }
         />
-        <StatCard
-          icon={Award}
-          iconColor="bg-(--success)/10 text-(--success)"
+        <StatTile
+          size="sm"
+          mobileLayout="row"
+          mono={false}
+          icon={<Award />}
+          tone="success"
           label="Longest"
           value={`${progressStats.longestStreak} days`}
-          valueColor="text-(--success)"
-          subtitle="Personal best"
+          hint="Personal best"
         />
-        <StatCard
-          icon={Calendar}
-          iconColor="bg-(--primary)/10 text-(--primary)"
+        <StatTile
+          size="sm"
+          mobileLayout="row"
+          mono={false}
+          icon={<Calendar />}
+          tone="primary"
           label="This Week"
           value={`${progressStats.weekly.activeDays}/7`}
-          valueColor="text-(--primary)"
-          subtitle={`${progressStats.weekly.entries} entries`}
+          hint={`${progressStats.weekly.entries} entries`}
         />
-        <StatCard
-          icon={CheckCircle2}
-          iconColor="bg-(--accent)/10 text-(--accent)"
+        <StatTile
+          size="sm"
+          mobileLayout="row"
+          mono={false}
+          icon={<CheckCircle2 />}
+          tone="accent"
           label="Completion"
           value={`${progressStats.completionRate.toFixed(0)}%`}
-          valueColor="text-(--accent)"
-          subtitle={`${progressStats.completedPlans} plans done`}
+          hint={`${progressStats.completedPlans} plans done`}
         />
       </div>
-    </CollapsibleSection>
+    </CollapsibleCard>
   );
 }

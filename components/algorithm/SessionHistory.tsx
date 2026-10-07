@@ -1,16 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import {
-  History,
-  Clock,
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  Zap,
-  Target,
-  Shuffle,
-} from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { History, Clock, Eye, Zap, Target, Shuffle } from "lucide-react";
+import { Pagination } from "@/components/ui/Pagination";
 import SessionTypeFilter from "./SessionTypeFilter";
 
 interface PracticeSession {
@@ -35,23 +27,23 @@ function getSessionTypeConfig(type: string) {
     {
       recognition: {
         icon: Eye,
-        bg: "bg-purple-500/10",
-        text: "text-purple-500 dark:text-purple-400",
+        bg: "bg-(--accent)/10",
+        text: "text-(--accent)",
       },
       execution: {
         icon: Zap,
-        bg: "bg-green-500/10",
-        text: "text-green-500 dark:text-green-400",
+        bg: "bg-(--success)/10",
+        text: "text-(--success)",
       },
       drill: {
         icon: Target,
-        bg: "bg-orange-500/10",
-        text: "text-orange-500 dark:text-orange-400",
+        bg: "bg-(--warning)/10",
+        text: "text-(--warning)",
       },
       mixed: {
         icon: Shuffle,
-        bg: "bg-blue-500/10",
-        text: "text-blue-500 dark:text-blue-400",
+        bg: "bg-(--primary)/10",
+        text: "text-(--primary)",
       },
     };
   return config[type] || config.mixed;
@@ -81,7 +73,7 @@ export default function SessionHistory({
   const displaySessions = filteredSessions.slice(startIndex, endIndex);
 
   // Reset to first page when session type changes
-  useMemo(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [selectedType]);
 
@@ -135,12 +127,12 @@ export default function SessionHistory({
             return (
               <div
                 key={session._id}
-                className="p-4 rounded-lg bg-(--surface-elevated) hover:border-(--border-hover) border border-transparent transition-colors"
+                className="p-4 rounded-(--radius-control) bg-(--surface-elevated) hover:border-(--border-hover) border border-transparent transition-colors"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   {/* Session Info */}
                   <div className="flex items-center gap-3">
-                    <div className={`p-2.5 rounded-lg ${config.bg}`}>
+                    <div className={`p-2.5 rounded-(--radius-control) ${config.bg}`}>
                       <IconComponent className={`w-5 h-5 ${config.text}`} />
                     </div>
                     <div>
@@ -206,34 +198,16 @@ export default function SessionHistory({
       {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t border-(--border)">
-          <p className="text-sm text-(--text-muted)">
-            Showing {startIndex + 1}-
+          <p className="type-caption">
+            Showing {startIndex + 1}–
             {Math.min(endIndex, filteredSessions.length)} of{" "}
             {filteredSessions.length} sessions
           </p>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-              className="p-2 rounded-lg border border-(--border) hover:bg-(--surface-elevated) disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="w-4 h-4 text-(--text-primary)" />
-            </button>
-            <span className="text-sm text-(--text-primary) min-w-[80px] text-center font-medium">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-              }
-              disabled={currentPage === totalPages}
-              className="p-2 rounded-lg border border-(--border) hover:bg-(--surface-elevated) disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label="Next page"
-            >
-              <ChevronRight className="w-4 h-4 text-(--text-primary)" />
-            </button>
-          </div>
+          <Pagination
+            page={currentPage}
+            totalPages={totalPages}
+            onChange={setCurrentPage}
+          />
         </div>
       )}
     </div>

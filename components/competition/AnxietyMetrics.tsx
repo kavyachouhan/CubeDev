@@ -12,6 +12,8 @@ import {
   BarChart3,
   Info,
 } from "lucide-react";
+import { Field, Select } from "@/components/ui/Field";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { WCA_EVENTS } from "./CompetitionSimulator";
 import { formatTime } from "@/lib/stats-utils";
 
@@ -327,45 +329,31 @@ export default function AnxietyMetrics() {
       {/* Filters */}
       <div className="timer-card">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm text-(--text-secondary) block mb-2">
-              Event
-            </label>
-            <select
+          <Field label="Event">
+            <Select
               value={selectedEvent}
               onChange={(e) => setSelectedEvent(e.target.value)}
-              className="w-full px-3 py-2 bg-(--surface) border border-(--border) rounded-lg text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary)"
             >
               {WCA_EVENTS.map((event) => (
                 <option key={event.id} value={event.id}>
                   {event.name}
                 </option>
               ))}
-            </select>
-          </div>
+            </Select>
+          </Field>
           <div>
-            <label className="text-sm text-(--text-secondary) block mb-2">
-              Time Range
-            </label>
-            <div className="flex gap-2">
-              {(["week", "month", "all"] as const).map((range) => (
-                <button
-                  key={range}
-                  onClick={() => setTimeRange(range)}
-                  className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    timeRange === range
-                      ? "bg-(--primary) text-white"
-                      : "bg-(--surface-elevated) text-(--text-secondary) hover:text-(--text-primary)"
-                  }`}
-                >
-                  {range === "week"
-                    ? "Week"
-                    : range === "month"
-                      ? "Month"
-                      : "All Time"}
-                </button>
-              ))}
-            </div>
+            <span className="type-label block mb-2">Time range</span>
+            <SegmentedControl<"week" | "month" | "all">
+              value={timeRange}
+              onChange={setTimeRange}
+              aria-label="Time range"
+              fullWidth
+              options={[
+                { value: "week", label: "Week" },
+                { value: "month", label: "Month" },
+                { value: "all", label: "All time" },
+              ]}
+            />
           </div>
         </div>
       </div>
@@ -378,7 +366,7 @@ export default function AnxietyMetrics() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div
-                    className={`p-2 rounded-lg ${getStatusBg(metric.status)}`}
+                    className={`p-2 rounded-(--radius-control) ${getStatusBg(metric.status)}`}
                   >
                     {metric.status === "good" ? (
                       <Target
@@ -455,7 +443,7 @@ export default function AnxietyMetrics() {
             Session Comparison
           </h3>
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-xs text-(--text-muted) mb-1">
                 Practice Sessions
               </div>
@@ -472,7 +460,7 @@ export default function AnxietyMetrics() {
                 </div>
               )}
             </div>
-            <div className="p-4 bg-(--surface-elevated) rounded-lg text-center">
+            <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control) text-center">
               <div className="text-xs text-(--text-muted) mb-1">
                 Competition Simulations
               </div>

@@ -1,10 +1,16 @@
 "use client";
 
 import { useState, useEffect, useRef, ReactNode } from "react";
+import { cx } from "@/lib/cx";
 import { Mic, MicOff, AlertCircle, Info, Wifi } from "lucide-react";
 import { useStackmatAudio } from "./hooks/useStackmatAudio";
 import ConfettiCelebration from "./ConfettiCelebration";
 import { formatTime as formatMs } from "@/lib/stats-utils";
+import { Alert } from "@/components/ui/Alert";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { CardIcon } from "@/components/ui/Card";
+import { IconButton } from "@/components/ui/IconButton";
 
 interface StackmatTimerCoreProps {
   onSolveComplete: (time: number, penalty: "none" | "+2" | "DNF") => void;
@@ -16,6 +22,10 @@ interface StackmatTimerCoreProps {
   celebrationType?: "single" | "ao5" | "ao12" | "ao100";
   celebrationTime?: string;
   onCelebrationComplete?: () => void;
+  /** Replaces the default sizing; the compact layout fills its grid row. */
+  className?: string;
+  /** Sizing for the outer wrapper, including the connection banner. */
+  rootClassName?: string;
 }
 
 export default function StackmatTimerCore({
@@ -28,6 +38,8 @@ export default function StackmatTimerCore({
   celebrationType = "single",
   celebrationTime = "",
   onCelebrationComplete,
+  className,
+  rootClassName,
 }: StackmatTimerCoreProps) {
   const {
     isConnected,
@@ -331,7 +343,7 @@ export default function StackmatTimerCore({
   };
 
   return (
-    <div className="relative space-y-4">
+    <div className={cx("relative space-y-4", rootClassName)}>
       {/* Confetti Celebration */}
       <ConfettiCelebration
         show={showCelebration}
@@ -341,104 +353,77 @@ export default function StackmatTimerCore({
       />
 
       {/* Connection Status */}
-      <div className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
-        <div className="flex items-center gap-3">
-          <div
-            className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-              isConnected
-                ? "bg-(--success)/20 text-(--success)"
-                : "bg-(--text-muted)/20 text-(--text-muted)"
-            }`}
-          >
-            {isConnected ? (
-              <Wifi className="w-5 h-5" />
-            ) : (
-              <AlertCircle className="w-5 h-5" />
-            )}
-          </div>
-          <div>
-            <div className="text-sm font-medium text-(--text-primary)">
-              {isConnected ? "Stackmat Connected" : "Stackmat Disconnected"}
-            </div>
-            <div className="text-xs text-(--text-muted)">
+      <div className="flex items-center justify-between gap-3 p-3 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
+        <div className="flex items-center gap-3 min-w-0">
+          <CardIcon tone={isConnected ? "success" : "neutral"}>
+            {isConnected ? <Wifi /> : <AlertCircle />}
+          </CardIcon>
+          <div className="min-w-0" role="status">
+            <p className="type-label">
+              {isConnected ? "Stackmat connected" : "Stackmat disconnected"}
+            </p>
+            <p className="type-caption">
               {hasPermission
                 ? isConnected
                   ? "Receiving timer signals"
                   : "Waiting for timer signal"
                 : "Microphone permission required"}
-            </div>
+            </p>
           </div>
         </div>
-        <button
+        <IconButton
+          variant={isActive ? "primary" : "subtle"}
+          pressed={isActive}
+          aria-label={isActive ? "Stop listening to microphone" : "Listen to microphone"}
+          icon={isActive ? <MicOff /> : <Mic />}
           onClick={toggleMicrophone}
-          className={`p-2 rounded-lg font-medium transition-colors ${
-            isActive
-              ? "bg-(--primary) text-white hover:bg-(--primary-hover)"
-              : "bg-(--surface-elevated) text-(--text-secondary) hover:bg-(--border) border border-(--border)"
-          }`}
-        >
-          {isActive ? (
-            <MicOff className="w-5 h-5" />
-          ) : (
-            <Mic className="w-5 h-5" />
-          )}
-        </button>
+        />
       </div>
 
-      {/* Error Display */}
-      {error && (
-        <div className="p-3 bg-(--error)/10 border border-(--error)/30 rounded-lg flex items-start gap-2">
-          <AlertCircle className="w-5 h-5 text-(--error) shrink-0 mt-0.5" />
-          <div className="text-sm text-(--error)">{error}</div>
-        </div>
-      )}
+      {error && <Alert tone="error">{error}</Alert>}
 
-      {/* Inspection Button */}
       {inspectionEnabled &&
         !isInspecting &&
         isActive &&
         !showPenaltyButtons && (
           <div className="flex justify-center">
-            <button
-              onClick={handleStartInspection}
-              className="flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-(--surface-elevated) hover:bg-(--border) text-(--text-primary) rounded-lg font-medium transition-colors border border-(--border)"
-            >
-              <span className="text-sm sm:text-base">
-                Start Inspection (Space)
-              </span>
-            </button>
+            <Button variant="secondary" onClick={handleStartInspection}>
+              Start Inspection (Space)
+            </Button>
           </div>
         )}
 
-      {/* Inspection Display */}
       {isInspecting && (
-        <div className="text-center p-4 sm:p-6 bg-(--surface-elevated) rounded-lg border border-(--border)">
+        <div className="text-center p-4 sm:p-6 bg-(--surface-elevated) rounded-(--radius-panel) border border-(--border)">
           <div
-            className={`text-5xl sm:text-6xl font-bold font-mono mb-2 transition-colors ${
+            role="timer"
+            aria-live="off"
+            className={`text-5xl sm:text-6xl font-bold type-time mb-2 transition-colors ${
               inspectionTime <= 3
-                ? "text-red-400"
+                ? "text-(--error)"
                 : inspectionTime <= 8
-                  ? "text-yellow-400"
-                  : "text-green-400"
+                  ? "text-(--warning)"
+                  : "text-(--success)"
             }`}
           >
             {inspectionTime.toFixed(2)}
           </div>
-          <div className="text-sm text-(--text-muted) mb-4">
-            Place hands on timer when ready
-          </div>
-          <button
-            onClick={handleStopInspection}
-            className="px-4 py-2 bg-(--error) hover:bg-(--error)/80 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
-          >
+          <p className="type-caption mb-4">Place hands on timer when ready</p>
+          <Button variant="danger" onClick={handleStopInspection}>
             Stop Inspection
-          </button>
+          </Button>
         </div>
       )}
 
       {/* Timer Display */}
       {!isInspecting && (
-        <div className="text-center space-y-4 min-h-[280px] sm:min-h-[320px] md:min-h-[360px] flex flex-col justify-center">
+        <div
+          className={cx(
+            "text-center flex flex-col justify-center",
+            className ??
+              "space-y-4 min-h-[280px] sm:min-h-[320px] md:min-h-[360px]",
+          )}
+        >
           {/* Main Timer Display */}
           <div
             className={`font-bold timer-text ${getTimerColor()} transition-all duration-300 font-mono select-none py-4`}
@@ -450,26 +435,23 @@ export default function StackmatTimerCore({
 
           {/* Penalty Buttons */}
           {showPenaltyButtons && (
-            <div className="space-y-2">
-              <div className="text-sm text-(--text-muted) mb-2">
-                Apply penalty if needed
-              </div>
-              <div className="grid grid-cols-3 gap-2 max-w-md mx-auto">
-                <button
-                  onClick={() => handlePenalty("none")}
-                  className="px-4 sm:px-6 py-2 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
-                >
+            <div className="space-y-2 max-w-md mx-auto w-full">
+              <p className="type-caption">Apply penalty if needed</p>
+              <div className="grid grid-cols-3 gap-2">
+                <Button size="lg" onClick={() => handlePenalty("none")}>
                   OK
-                </button>
+                </Button>
                 <button
+                  type="button"
                   onClick={() => handlePenalty("+2")}
-                  className="px-4 sm:px-6 py-2 bg-(--warning) hover:bg-(--warning)/80 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
+                  className="btn btn-lg text-(--on-primary) bg-(--penalty-plus2) hover:bg-(--penalty-plus2-hover)"
                 >
                   +2
                 </button>
                 <button
+                  type="button"
                   onClick={() => handlePenalty("DNF")}
-                  className="px-4 sm:px-6 py-2 bg-(--error) hover:bg-(--error)/80 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
+                  className="btn btn-lg text-(--on-primary) bg-(--penalty-dnf) hover:bg-(--penalty-dnf-hover)"
                 >
                   DNF
                 </button>
@@ -477,55 +459,40 @@ export default function StackmatTimerCore({
             </div>
           )}
 
-          {/* Penalty Indicator */}
           {currentPenalty !== "none" && !showPenaltyButtons && (
-            <div
-              className={`text-xs font-semibold px-2 py-1 rounded-full transition-all duration-300 ${
-                currentPenalty === "+2"
-                  ? "bg-(--warning)/10 text-(--warning) border border-(--warning)/30"
-                  : "bg-(--error)/10 text-(--error) border border-(--error)/30"
-              }`}
+            <Badge
+              tone={currentPenalty === "+2" ? "warning" : "danger"}
+              shape="pill"
+              size="md"
+              className="self-center"
             >
-              {currentPenalty === "+2" ? "+2 Penalty Applied" : "DNF Applied"}
-            </div>
+              {currentPenalty === "+2" ? "+2 penalty applied" : "DNF applied"}
+            </Badge>
           )}
 
-          {/* Status Text */}
-          <div className="text-sm text-(--text-secondary) font-inter select-none">
+          <p role="status" className="text-sm text-(--text-secondary) font-inter select-none">
             {getStatusText()}
-          </div>
+          </p>
         </div>
       )}
 
-      {/* Instructions */}
       {isActive && !error && !isInspecting && (
-        <div className="p-3 bg-(--surface-elevated) rounded-lg border border-(--border)">
-          <div className="flex items-start gap-2">
-            <Info className="w-5 h-5 text-(--primary) shrink-0 mt-0.5" />
-            <div className="text-xs sm:text-sm text-(--text-muted) space-y-1">
-              <div className="font-medium text-(--text-primary)">
-                Stackmat Timer Instructions:
-              </div>
-              <div>
-                1. Connect your Stackmat timer to your computer's microphone
-                input
-              </div>
-              <div>
-                2.{" "}
-                {inspectionEnabled
-                  ? "Click 'Start Inspection' or press Space to begin inspection"
-                  : "Place hands on timer to prepare"}
-              </div>
-              <div>
-                3.{" "}
-                {inspectionEnabled
-                  ? "Place hands on timer after inspection starts"
-                  : "Release hands to start solving"}
-              </div>
-              <div>4. Stop timer with hands, then apply penalty if needed</div>
-            </div>
-          </div>
-        </div>
+        <Alert tone="info" title="Using a Stackmat timer" icon={<Info />}>
+          <ol className="list-decimal pl-4 space-y-0.5 text-xs sm:text-sm">
+            <li>Connect your Stackmat timer to your computer&apos;s microphone input</li>
+            <li>
+              {inspectionEnabled
+                ? "Click Start Inspection or press Space to begin inspection"
+                : "Place hands on timer to prepare"}
+            </li>
+            <li>
+              {inspectionEnabled
+                ? "Place hands on timer after inspection starts"
+                : "Release hands to start solving"}
+            </li>
+            <li>Stop timer with hands, then apply penalty if needed</li>
+          </ol>
+        </Alert>
       )}
     </div>
   );

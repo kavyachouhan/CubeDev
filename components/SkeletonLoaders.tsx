@@ -21,7 +21,7 @@ export function ProfileSidebarSkeleton() {
 
         {/* Button */}
         <div className="mt-6">
-          <div className="h-10 skeleton-box rounded-lg w-48 mx-auto" />
+          <div className="h-10 skeleton-box rounded-(--radius-control) w-48 mx-auto" />
         </div>
       </div>
 
@@ -32,7 +32,7 @@ export function ProfileSidebarSkeleton() {
           {[1, 2, 3, 4, 5].map((i) => (
             <div
               key={i}
-              className="flex items-center justify-between p-3 skeleton-box-subtle rounded-lg border border-(--border)"
+              className="flex items-center justify-between p-3 skeleton-box-subtle rounded-(--radius-control) border border-(--border)"
             >
               <div className="min-w-0 flex-1">
                 <div className="h-4 skeleton-box rounded w-24 mb-2" />
@@ -55,17 +55,17 @@ export function EventStatsSkeleton() {
     <div className="timer-card animate-pulse">
       <div className="flex items-center justify-between mb-4">
         <div className="h-6 skeleton-box rounded w-40" />
-        <div className="h-10 skeleton-box rounded-lg w-32" />
+        <div className="h-10 skeleton-box rounded-(--radius-control) w-32" />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="skeleton-box-subtle rounded-xl p-3 sm:p-4 border border-(--border)"
+            className="skeleton-box-subtle rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)"
           >
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-8 h-8 skeleton-box rounded-lg" />
+              <div className="w-8 h-8 skeleton-box rounded-(--radius-control)" />
               <div className="min-w-0 flex-1">
                 <div className="h-3 skeleton-box rounded w-16 mb-2" />
                 <div className="h-5 skeleton-box rounded w-20" />
@@ -86,10 +86,10 @@ export function PlatformStatsSkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="skeleton-box-subtle rounded-xl p-3 sm:p-4 border border-(--border)"
+            className="skeleton-box-subtle rounded-(--radius-panel) p-3 sm:p-4 border border-(--border)"
           >
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-8 h-8 skeleton-box rounded-lg" />
+              <div className="w-8 h-8 skeleton-box rounded-(--radius-control)" />
               <div className="min-w-0 flex-1">
                 <div className="h-3 skeleton-box rounded w-16 mb-2" />
                 <div className="h-5 skeleton-box rounded w-12" />
@@ -113,7 +113,7 @@ export function CompetitionListSkeleton() {
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="p-4 skeleton-box-subtle rounded-lg border border-(--border)"
+            className="p-4 skeleton-box-subtle rounded-(--radius-control) border border-(--border)"
           >
             <div className="flex items-start justify-between">
               <div className="min-w-0 flex-1">
@@ -123,7 +123,7 @@ export function CompetitionListSkeleton() {
                   <div className="h-4 skeleton-box rounded w-24" />
                 </div>
               </div>
-              <div className="w-8 h-8 skeleton-box rounded-lg ml-3" />
+              <div className="w-8 h-8 skeleton-box rounded-(--radius-control) ml-3" />
             </div>
           </div>
         ))}
@@ -137,7 +137,7 @@ export function HeatmapSkeleton() {
     <div className="timer-card animate-pulse">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="h-6 skeleton-box rounded w-48" />
-        <div className="h-10 skeleton-box rounded-lg w-64" />
+        <div className="h-10 skeleton-box rounded-(--radius-control) w-64" />
       </div>
 
       <div className="space-y-4">
@@ -180,10 +180,10 @@ export function CubieWelcomeSkeleton() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="p-4 bg-(--surface-elevated) border border-(--border) rounded-xl"
+              className="p-4 bg-(--surface-elevated) border border-(--border) rounded-(--radius-panel)"
             >
               <div className="flex items-start gap-3">
-                <div className="shrink-0 w-10 h-10 skeleton-box rounded-lg" />
+                <div className="shrink-0 w-10 h-10 skeleton-box rounded-(--radius-control)" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 skeleton-box rounded w-32" />
                   <div className="h-3 skeleton-box rounded w-full" />
@@ -204,7 +204,7 @@ export function CubieMessagesSkeleton() {
         {/* User message */}
         <div className="flex items-start gap-2 md:gap-3 justify-end">
           <div className="flex-1 max-w-[85%]">
-            <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-(--primary)/10 border border-(--primary)/20">
+            <div className="px-3 md:px-4 py-2 md:py-3 rounded-(--radius-panel) bg-(--primary)/10 border border-(--primary)/20">
               <div className="h-4 skeleton-box rounded w-3/4 mb-2" />
               <div className="h-4 skeleton-box rounded w-full" />
             </div>
@@ -216,7 +216,7 @@ export function CubieMessagesSkeleton() {
         <div className="flex items-start gap-2 md:gap-3">
           <div className="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full skeleton-box" />
           <div className="flex-1 max-w-[85%]">
-            <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-(--surface-elevated) border border-(--border)">
+            <div className="px-3 md:px-4 py-2 md:py-3 rounded-(--radius-panel) bg-(--surface-elevated) border border-(--border)">
               <div className="h-4 skeleton-box rounded w-full mb-2" />
               <div className="h-4 skeleton-box rounded w-full mb-2" />
               <div className="h-4 skeleton-box rounded w-3/4" />
@@ -227,7 +227,7 @@ export function CubieMessagesSkeleton() {
         {/* User message */}
         <div className="flex items-start gap-2 md:gap-3 justify-end">
           <div className="flex-1 max-w-[85%]">
-            <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-(--primary)/10 border border-(--primary)/20">
+            <div className="px-3 md:px-4 py-2 md:py-3 rounded-(--radius-panel) bg-(--primary)/10 border border-(--primary)/20">
               <div className="h-4 skeleton-box rounded w-2/3" />
             </div>
           </div>
@@ -238,7 +238,7 @@ export function CubieMessagesSkeleton() {
         <div className="flex items-start gap-2 md:gap-3">
           <div className="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full skeleton-box" />
           <div className="flex-1 max-w-[85%]">
-            <div className="px-3 md:px-4 py-2 md:py-3 rounded-xl bg-(--surface-elevated) border border-(--border)">
+            <div className="px-3 md:px-4 py-2 md:py-3 rounded-(--radius-panel) bg-(--surface-elevated) border border-(--border)">
               <div className="h-4 skeleton-box rounded w-full mb-2" />
               <div className="h-4 skeleton-box rounded w-5/6" />
             </div>
@@ -260,7 +260,7 @@ export function AlgorithmTrainerSkeleton() {
         <div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
             <div className="h-8 skeleton-box rounded w-40" />
-            <div className="h-10 skeleton-box rounded-lg w-48" />
+            <div className="h-10 skeleton-box rounded-(--radius-control) w-48" />
           </div>
 
           {/* Stats Dashboard */}
@@ -268,7 +268,7 @@ export function AlgorithmTrainerSkeleton() {
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="timer-card">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-2 bg-(--surface-elevated) rounded-(--radius-control)">
                     <div className="w-5 h-5 skeleton-box rounded" />
                   </div>
                 </div>
@@ -286,7 +286,7 @@ export function AlgorithmTrainerSkeleton() {
             {[1, 2, 3].map((i) => (
               <div key={i} className="timer-card">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-(--surface-elevated) rounded-lg">
+                  <div className="p-3 bg-(--surface-elevated) rounded-(--radius-control)">
                     <div className="w-8 h-8 skeleton-box rounded" />
                   </div>
                   <div className="flex-1">
@@ -303,7 +303,7 @@ export function AlgorithmTrainerSkeleton() {
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <div className="h-8 skeleton-box rounded w-40" />
-            <div className="h-10 skeleton-box rounded-lg w-32" />
+            <div className="h-10 skeleton-box rounded-(--radius-control) w-32" />
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
@@ -373,12 +373,12 @@ export function AlgorithmPracticeSkeleton() {
 
         {/* Flash Card */}
         <div className="timer-card">
-          <div className="aspect-square max-w-sm mx-auto skeleton-box rounded-lg mb-4" />
+          <div className="aspect-square max-w-sm mx-auto skeleton-box rounded-(--radius-control) mb-4" />
 
           {/* Action Buttons */}
           <div className="grid grid-cols-4 gap-2 mt-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-12 skeleton-box rounded-lg" />
+              <div key={i} className="h-12 skeleton-box rounded-(--radius-control)" />
             ))}
           </div>
         </div>
@@ -419,7 +419,7 @@ export function AlgorithmCaseDetailSkeleton() {
           {/* 3D Visualization */}
           <div className="timer-card">
             <div className="h-6 skeleton-box rounded w-40 mb-4" />
-            <div className="aspect-square skeleton-box rounded-lg" />
+            <div className="aspect-square skeleton-box rounded-(--radius-control)" />
           </div>
 
           {/* Case Info */}
@@ -452,7 +452,7 @@ export function AlgorithmCaseDetailSkeleton() {
         {/* Current Algorithm */}
         <div className="timer-card">
           <div className="h-6 skeleton-box rounded w-40 mb-4" />
-          <div className="p-4 bg-(--surface-elevated) rounded-lg mb-4">
+          <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control) mb-4">
             <div className="h-6 skeleton-box rounded w-3/4 mx-auto" />
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -469,7 +469,7 @@ export function AlgorithmCaseDetailSkeleton() {
         </div>
 
         {/* Action Button */}
-        <div className="h-12 skeleton-box rounded-lg" />
+        <div className="h-12 skeleton-box rounded-(--radius-control)" />
       </div>
     </div>
   );
@@ -513,8 +513,8 @@ export function AlgorithmSetDetailSkeleton() {
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 h-10 skeleton-box rounded-lg" />
-          <div className="h-10 skeleton-box rounded-lg w-40" />
+          <div className="flex-1 h-10 skeleton-box rounded-(--radius-control)" />
+          <div className="h-10 skeleton-box rounded-(--radius-control) w-40" />
         </div>
 
         {/* Cases Grid */}
@@ -545,15 +545,15 @@ export function CustomSetsSkeleton() {
       <div className="max-w-5xl mx-auto space-y-6 animate-pulse">
         {/* Header */}
         <div>
-          <div className="h-10 skeleton-box rounded-lg w-48 mb-4" />
+          <div className="h-10 skeleton-box rounded-(--radius-control) w-48 mb-4" />
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <div className="h-8 skeleton-box rounded w-64 mb-2" />
               <div className="h-5 skeleton-box rounded w-80" />
             </div>
             <div className="flex gap-2">
-              <div className="h-10 skeleton-box rounded-lg w-24" />
-              <div className="h-10 skeleton-box rounded-lg w-28" />
+              <div className="h-10 skeleton-box rounded-(--radius-control) w-24" />
+              <div className="h-10 skeleton-box rounded-(--radius-control) w-28" />
             </div>
           </div>
         </div>
@@ -575,10 +575,10 @@ export function CustomSetsSkeleton() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-10 skeleton-box rounded-lg w-24" />
-                  <div className="h-10 skeleton-box rounded-lg w-10" />
-                  <div className="h-10 skeleton-box rounded-lg w-10" />
-                  <div className="h-10 skeleton-box rounded-lg w-10" />
+                  <div className="h-10 skeleton-box rounded-(--radius-control) w-24" />
+                  <div className="h-10 skeleton-box rounded-(--radius-control) w-10" />
+                  <div className="h-10 skeleton-box rounded-(--radius-control) w-10" />
+                  <div className="h-10 skeleton-box rounded-(--radius-control) w-10" />
                 </div>
               </div>
             </div>
@@ -595,7 +595,7 @@ export function EditCustomSetSkeleton() {
       <div className="max-w-5xl mx-auto space-y-6 animate-pulse">
         {/* Header */}
         <div>
-          <div className="h-10 skeleton-box rounded-lg w-48 mb-4" />
+          <div className="h-10 skeleton-box rounded-(--radius-control) w-48 mb-4" />
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
@@ -605,8 +605,8 @@ export function EditCustomSetSkeleton() {
               <div className="h-4 skeleton-box rounded w-64" />
             </div>
             <div className="flex gap-2">
-              <div className="h-10 skeleton-box rounded-lg w-24" />
-              <div className="h-10 skeleton-box rounded-lg w-28" />
+              <div className="h-10 skeleton-box rounded-(--radius-control) w-24" />
+              <div className="h-10 skeleton-box rounded-(--radius-control) w-28" />
             </div>
           </div>
         </div>
@@ -615,20 +615,20 @@ export function EditCustomSetSkeleton() {
         <div className="timer-card">
           <div className="flex items-center justify-between mb-4">
             <div className="h-6 skeleton-box rounded w-32" />
-            <div className="h-10 skeleton-box rounded-lg w-32" />
+            <div className="h-10 skeleton-box rounded-(--radius-control) w-32" />
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="p-3 skeleton-box-subtle rounded-lg border border-(--border)"
+                className="p-3 skeleton-box-subtle rounded-(--radius-control) border border-(--border)"
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="h-5 skeleton-box rounded w-24 mb-1" />
                     <div className="h-3 skeleton-box rounded w-16" />
                   </div>
-                  <div className="w-8 h-8 skeleton-box rounded-lg" />
+                  <div className="w-8 h-8 skeleton-box rounded-(--radius-control)" />
                 </div>
               </div>
             ))}
@@ -645,7 +645,7 @@ export function AlgorithmStatsSkeleton() {
       <div className="max-w-7xl mx-auto space-y-6 animate-pulse">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="h-10 skeleton-box rounded-lg w-48" />
+          <div className="h-10 skeleton-box rounded-(--radius-control) w-48" />
           <div className="h-8 skeleton-box rounded w-64" />
         </div>
 
@@ -700,7 +700,7 @@ export function AlgorithmStatsSkeleton() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="text-center p-4 skeleton-box-subtle rounded-lg"
+                className="text-center p-4 skeleton-box-subtle rounded-(--radius-control)"
               >
                 <div className="h-8 skeleton-box rounded w-20 mx-auto mb-2" />
                 <div className="h-4 skeleton-box rounded w-24 mx-auto" />
@@ -716,10 +716,10 @@ export function AlgorithmStatsSkeleton() {
             {[1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className="flex items-center justify-between p-3 skeleton-box-subtle rounded-lg border border-(--border)"
+                className="flex items-center justify-between p-3 skeleton-box-subtle rounded-(--radius-control) border border-(--border)"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 skeleton-box rounded-lg" />
+                  <div className="w-10 h-10 skeleton-box rounded-(--radius-control)" />
                   <div>
                     <div className="h-4 skeleton-box rounded w-32 mb-1" />
                     <div className="h-3 skeleton-box rounded w-24" />
@@ -769,8 +769,8 @@ export function CompetitionBrowserSkeleton() {
           <div className="space-y-4">
             {/* Search and Region */}
             <div className="flex flex-col sm:flex-row gap-3">
-              <div className="flex-1 h-10 skeleton-box rounded-lg" />
-              <div className="w-full sm:w-48 h-10 skeleton-box rounded-lg" />
+              <div className="flex-1 h-10 skeleton-box rounded-(--radius-control)" />
+              <div className="w-full sm:w-48 h-10 skeleton-box rounded-(--radius-control)" />
             </div>
 
             {/* Time Filter Pills */}
@@ -785,7 +785,7 @@ export function CompetitionBrowserSkeleton() {
               <div className="h-4 skeleton-box rounded w-28 mb-3" />
               <div className="flex flex-wrap gap-2">
                 {Array.from({ length: 17 }).map((_, i) => (
-                  <div key={i} className="w-9 h-9 skeleton-box rounded-lg" />
+                  <div key={i} className="w-9 h-9 skeleton-box rounded-(--radius-control)" />
                 ))}
               </div>
             </div>
@@ -834,13 +834,13 @@ export function CompetitionBrowserSkeleton() {
         {/* Pagination */}
         <div className="timer-card">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="h-10 skeleton-box rounded-lg w-28" />
+            <div className="h-10 skeleton-box rounded-(--radius-control) w-28" />
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="w-10 h-10 skeleton-box rounded-lg" />
+                <div key={i} className="w-10 h-10 skeleton-box rounded-(--radius-control)" />
               ))}
             </div>
-            <div className="h-10 skeleton-box rounded-lg w-28" />
+            <div className="h-10 skeleton-box rounded-(--radius-control) w-28" />
           </div>
         </div>
       </div>
@@ -864,7 +864,7 @@ export function CompetitionCardsSkeleton({ count = 5 }: { count?: number }) {
                 </div>
                 <div className="h-5 skeleton-box rounded-full w-20" />
               </div>
-              <div className="h-9 skeleton-box rounded-lg w-24" />
+              <div className="h-9 skeleton-box rounded-(--radius-control) w-24" />
             </div>
 
             {/* Competition Info */}
@@ -905,8 +905,8 @@ export function RegisteredCompetitionsSkeleton() {
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            <div className="h-8 sm:h-9 skeleton-box rounded-lg w-24 sm:w-28" />
-            <div className="h-9 w-9 skeleton-box rounded-lg" />
+            <div className="h-8 sm:h-9 skeleton-box rounded-(--radius-control) w-24 sm:w-28" />
+            <div className="h-9 w-9 skeleton-box rounded-(--radius-control)" />
           </div>
         </div>
       </div>
@@ -925,18 +925,18 @@ export function RegisteredCompetitionsSkeleton() {
                   </div>
                 </div>
 
-                <div className="h-9 skeleton-box rounded-lg w-10 sm:w-28" />
+                <div className="h-9 skeleton-box rounded-(--radius-control) w-10 sm:w-28" />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                <div className="h-8 sm:h-9 skeleton-box rounded-lg" />
-                <div className="h-8 sm:h-9 skeleton-box rounded-lg" />
+                <div className="h-8 sm:h-9 skeleton-box rounded-(--radius-control)" />
+                <div className="h-8 sm:h-9 skeleton-box rounded-(--radius-control)" />
               </div>
 
               <div className="border-t border-(--border) pt-3 sm:pt-4">
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {Array.from({ length: 8 }).map((_, j) => (
-                    <div key={j} className="h-7 w-7 skeleton-box rounded-md" />
+                    <div key={j} className="h-7 w-7 skeleton-box rounded-(--radius-badge)" />
                   ))}
                 </div>
               </div>
@@ -964,7 +964,7 @@ export function SimulationHistorySkeleton() {
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="p-3 rounded-lg border border-(--border) bg-(--surface)"
+            className="p-3 rounded-(--radius-control) border border-(--border) bg-(--surface)"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
@@ -1023,7 +1023,7 @@ export function CompetitionOverviewSkeleton() {
                 <div className="h-4 skeleton-box rounded w-48 mt-2" />
               </div>
               {/* WCA Link Button */}
-              <div className="h-10 skeleton-box rounded-lg w-full sm:w-32" />
+              <div className="h-10 skeleton-box rounded-(--radius-control) w-full sm:w-32" />
             </div>
           </div>
         </div>
@@ -1047,7 +1047,7 @@ export function CompetitionOverviewSkeleton() {
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg"
+                  className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control)"
                 >
                   <div className="h-3 skeleton-box rounded w-16 mb-2" />
                   <div className="h-5 skeleton-box rounded w-32" />
@@ -1068,7 +1068,7 @@ export function CompetitionOverviewSkeleton() {
         </div>
 
         {/* Start Simulation Button */}
-        <div className="h-14 skeleton-box rounded-xl w-full" />
+        <div className="h-14 skeleton-box rounded-(--radius-panel) w-full" />
       </div>
     </div>
   );
@@ -1083,15 +1083,15 @@ export function CompetitionEventsTabSkeleton() {
         {Array.from({ length: 14 }).map((_, i) => (
           <div
             key={i}
-            className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border border-(--border) bg-(--surface-elevated)"
+            className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-(--radius-control) border border-(--border) bg-(--surface-elevated)"
           >
-            <div className="w-8 h-8 sm:w-10 sm:h-10 skeleton-box rounded-lg" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 skeleton-box rounded-(--radius-control)" />
             <div className="h-3 skeleton-box rounded w-12" />
           </div>
         ))}
       </div>
 
-      <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-lg border border-(--border)">
+      <div className="p-3 sm:p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-4 h-4 skeleton-box rounded" />
           <div className="h-5 skeleton-box rounded w-40" />
@@ -1135,9 +1135,9 @@ export function SimulationConfigSkeleton() {
             {Array.from({ length: 14 }).map((_, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border border-(--border) bg-(--surface)"
+                className="flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-(--radius-control) border border-(--border) bg-(--surface)"
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 skeleton-box rounded-lg" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 skeleton-box rounded-(--radius-control)" />
                 <div className="h-3 skeleton-box rounded w-10" />
               </div>
             ))}
@@ -1163,7 +1163,7 @@ export function SimulationConfigSkeleton() {
                 </div>
                 <div className="h-6 skeleton-box rounded w-12" />
               </div>
-              <div className="h-3 skeleton-box rounded-lg w-full" />
+              <div className="h-3 skeleton-box rounded-(--radius-control) w-full" />
               <div className="flex justify-between">
                 <div className="h-3 skeleton-box rounded w-12" />
                 <div className="h-3 skeleton-box rounded w-16" />
@@ -1180,7 +1180,7 @@ export function SimulationConfigSkeleton() {
                 </div>
                 <div className="h-6 skeleton-box rounded w-12" />
               </div>
-              <div className="h-3 skeleton-box rounded-lg w-full" />
+              <div className="h-3 skeleton-box rounded-(--radius-control) w-full" />
               <div className="flex justify-between">
                 <div className="h-3 skeleton-box rounded w-14" />
                 <div className="h-3 skeleton-box rounded w-14" />
@@ -1205,7 +1205,7 @@ export function SimulationConfigSkeleton() {
         </div>
 
         {/* Start Button */}
-        <div className="h-14 skeleton-box rounded-xl w-full" />
+        <div className="h-14 skeleton-box rounded-(--radius-panel) w-full" />
       </div>
     </div>
   );
@@ -1239,7 +1239,7 @@ export function SimulationEventSelectSkeleton() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="flex flex-col items-center gap-3 p-6 rounded-xl border border-(--border) bg-(--surface)"
+              className="flex flex-col items-center gap-3 p-6 rounded-(--radius-panel) border border-(--border) bg-(--surface)"
             >
               <div className="w-10 h-10 skeleton-box rounded" />
               <div className="h-5 skeleton-box rounded w-20" />
@@ -1250,7 +1250,7 @@ export function SimulationEventSelectSkeleton() {
 
         {/* View Results Button */}
         <div className="flex justify-center">
-          <div className="h-12 skeleton-box rounded-lg w-44" />
+          <div className="h-12 skeleton-box rounded-(--radius-control) w-44" />
         </div>
       </div>
     </div>
@@ -1271,7 +1271,7 @@ export function SimulationRoundSkeleton() {
         {/* Event Info Card */}
         <div className="timer-card">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 skeleton-box rounded-lg" />
+            <div className="w-12 h-12 skeleton-box rounded-(--radius-control)" />
             <div>
               <div className="h-7 skeleton-box rounded w-32 mb-1" />
               <div className="h-5 skeleton-box rounded w-24" />
@@ -1293,9 +1293,9 @@ export function SimulationRoundSkeleton() {
         <div className="timer-card">
           <div className="flex items-center justify-between mb-4">
             <div className="h-5 skeleton-box rounded w-20" />
-            <div className="h-8 skeleton-box rounded-lg w-24" />
+            <div className="h-8 skeleton-box rounded-(--radius-control) w-24" />
           </div>
-          <div className="p-4 bg-(--surface-elevated) rounded-lg">
+          <div className="p-4 bg-(--surface-elevated) rounded-(--radius-control)">
             <div className="h-5 skeleton-box rounded w-full mb-2" />
             <div className="h-5 skeleton-box rounded w-4/5" />
           </div>
@@ -1309,8 +1309,8 @@ export function SimulationRoundSkeleton() {
 
         {/* Action Buttons */}
         <div className="flex gap-3">
-          <div className="flex-1 h-12 skeleton-box rounded-lg" />
-          <div className="flex-1 h-12 skeleton-box rounded-lg" />
+          <div className="flex-1 h-12 skeleton-box rounded-(--radius-control)" />
+          <div className="flex-1 h-12 skeleton-box rounded-(--radius-control)" />
         </div>
       </div>
     </div>
@@ -1354,7 +1354,7 @@ export function CompetitionAnalyticsSkeleton() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="p-4 bg-(--surface-elevated) rounded-lg border border-(--border)"
+                className="p-4 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 skeleton-box rounded" />
@@ -1380,7 +1380,7 @@ export function CompetitionAnalyticsSkeleton() {
             {[1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-lg"
+                className="flex items-center justify-between p-3 bg-(--surface-elevated) rounded-(--radius-control)"
               >
                 <div className="flex items-center gap-3">
                   <div className="h-5 skeleton-box rounded w-16" />
@@ -1407,13 +1407,13 @@ export function CompetitionTrainingTabSkeleton() {
         {[1, 2].map((i) => (
           <div key={i} className="timer-card border border-(--border)">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 skeleton-box rounded-lg" />
+              <div className="w-10 h-10 skeleton-box rounded-(--radius-control)" />
               <div>
                 <div className="h-5 skeleton-box rounded w-40 mb-1" />
                 <div className="h-4 skeleton-box rounded w-56" />
               </div>
             </div>
-            <div className="h-10 skeleton-box rounded-lg w-full mt-4" />
+            <div className="h-10 skeleton-box rounded-(--radius-control) w-full mt-4" />
           </div>
         ))}
       </div>
@@ -1423,7 +1423,7 @@ export function CompetitionTrainingTabSkeleton() {
         <div key={i} className="timer-card">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 skeleton-box rounded-lg" />
+              <div className="w-8 h-8 skeleton-box rounded-(--radius-control)" />
               <div>
                 <div className="h-5 skeleton-box rounded w-44 mb-1" />
                 <div className="h-4 skeleton-box rounded w-64" />
@@ -1454,7 +1454,7 @@ export function MockScheduleSkeleton() {
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="flex items-center gap-3 p-3 bg-(--surface-elevated) rounded-lg border border-(--border)"
+            className="flex items-center gap-3 p-3 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)"
           >
             <div className="h-5 skeleton-box rounded w-12" />
             <div className="flex-1">
@@ -1470,7 +1470,7 @@ export function MockScheduleSkeleton() {
       </div>
 
       {/* Start Button */}
-      <div className="h-10 skeleton-box rounded-lg w-full mt-4" />
+      <div className="h-10 skeleton-box rounded-(--radius-control) w-full mt-4" />
     </div>
   );
 }
@@ -1488,7 +1488,7 @@ export function WCAScorecardSkeleton() {
             <div className="h-4 skeleton-box rounded w-20" />
           </div>
         </div>
-        <div className="h-8 skeleton-box rounded-lg w-20" />
+        <div className="h-8 skeleton-box rounded-(--radius-control) w-20" />
       </div>
 
       {/* Solve Grid */}
@@ -1538,11 +1538,11 @@ export function CoachDashboardSkeleton() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-(--surface-elevated) rounded-lg border border-(--border)">
+      <div className="flex gap-1 p-1 bg-(--surface-elevated) rounded-(--radius-control) border border-(--border)">
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md ${
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-(--radius-badge) ${
               i === 1 ? "bg-(--primary)/20" : ""
             }`}
           >
@@ -1609,13 +1609,13 @@ export function CoachJournalCalendarSkeleton() {
       <div className="timer-card">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 skeleton-box rounded-lg" />
+            <div className="w-8 h-8 skeleton-box rounded-(--radius-control)" />
             <div className="h-6 skeleton-box rounded w-32" />
-            <div className="w-8 h-8 skeleton-box rounded-lg" />
+            <div className="w-8 h-8 skeleton-box rounded-(--radius-control)" />
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 skeleton-box rounded-lg" />
-            <div className="w-8 h-8 skeleton-box rounded-lg" />
+            <div className="w-8 h-8 skeleton-box rounded-(--radius-control)" />
+            <div className="w-8 h-8 skeleton-box rounded-(--radius-control)" />
           </div>
         </div>
 
@@ -1631,7 +1631,7 @@ export function CoachJournalCalendarSkeleton() {
           {Array.from({ length: 35 }).map((_, i) => (
             <div
               key={i}
-              className="aspect-square p-1 skeleton-box-subtle rounded-lg border border-(--border)"
+              className="aspect-square p-1 skeleton-box-subtle rounded-(--radius-control) border border-(--border)"
             >
               <div className="h-4 skeleton-box rounded w-4" />
             </div>
@@ -1643,13 +1643,13 @@ export function CoachJournalCalendarSkeleton() {
       <div className="timer-card">
         <div className="flex items-center justify-between mb-4">
           <div className="h-5 skeleton-box rounded w-40" />
-          <div className="h-9 skeleton-box rounded-lg w-28" />
+          <div className="h-9 skeleton-box rounded-(--radius-control) w-28" />
         </div>
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-3 skeleton-box-subtle rounded-lg border border-(--border)"
+              className="p-3 skeleton-box-subtle rounded-(--radius-control) border border-(--border)"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 skeleton-box rounded-full" />
@@ -1719,7 +1719,7 @@ export function CoachGoalProgressSkeleton() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
+              className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)"
             >
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-5 h-5 skeleton-box rounded" />
@@ -1748,7 +1748,7 @@ export function CoachPracticeStreakSkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
+            className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)"
           >
             <div className="flex items-center gap-2 mb-1">
               <div className="w-5 h-5 skeleton-box rounded" />
@@ -1777,7 +1777,7 @@ export function CoachWeeklySummarySkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
+            className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)"
           >
             <div className="flex items-center gap-2 mb-1">
               <div className="w-5 h-5 skeleton-box rounded" />
@@ -1789,7 +1789,7 @@ export function CoachWeeklySummarySkeleton() {
       </div>
 
       {/* Chart Area */}
-      <div className="h-48 skeleton-box rounded-lg" />
+      <div className="h-48 skeleton-box rounded-(--radius-control)" />
     </div>
   );
 }
@@ -1805,9 +1805,9 @@ export function CoachLearningMetricsSkeleton() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Learning Velocity */}
-        <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
+        <div className="bg-(--surface-elevated) rounded-(--radius-control) p-4 border border-(--border)">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 skeleton-box rounded-lg" />
+            <div className="w-8 h-8 skeleton-box rounded-(--radius-control)" />
             <div className="h-4 skeleton-box rounded w-32" />
           </div>
           <div className="h-8 skeleton-box rounded w-20 mb-2" />
@@ -1815,9 +1815,9 @@ export function CoachLearningMetricsSkeleton() {
         </div>
 
         {/* Consistency */}
-        <div className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
+        <div className="bg-(--surface-elevated) rounded-(--radius-control) p-4 border border-(--border)">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 skeleton-box rounded-lg" />
+            <div className="w-8 h-8 skeleton-box rounded-(--radius-control)" />
             <div className="h-4 skeleton-box rounded w-28" />
           </div>
           <div className="h-8 skeleton-box rounded w-16 mb-2" />
@@ -1826,12 +1826,12 @@ export function CoachLearningMetricsSkeleton() {
       </div>
 
       {/* Mood Distribution */}
-      <div className="mt-4 bg-(--surface-elevated) rounded-lg p-4 border border-(--border)">
+      <div className="mt-4 bg-(--surface-elevated) rounded-(--radius-control) p-4 border border-(--border)">
         <div className="h-4 skeleton-box rounded w-36 mb-3" />
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="flex-1">
-              <div className="h-16 skeleton-box rounded-lg mb-2" />
+              <div className="h-16 skeleton-box rounded-(--radius-control) mb-2" />
               <div className="h-3 skeleton-box rounded w-full" />
             </div>
           ))}
@@ -1854,7 +1854,7 @@ export function CoachPerformanceIntelligenceSkeleton() {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="bg-(--surface-elevated) rounded-lg p-3 sm:p-4 border border-(--border)"
+            className="bg-(--surface-elevated) rounded-(--radius-control) p-3 sm:p-4 border border-(--border)"
           >
             <div className="flex items-center gap-2 mb-2">
               <div className="w-7 h-7 skeleton-box rounded" />
@@ -1884,7 +1884,7 @@ export function CoachMonthlyOverviewSkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)"
+            className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)"
           >
             <div className="flex items-center gap-2 mb-1">
               <div className="w-5 h-5 skeleton-box rounded" />
@@ -1898,11 +1898,11 @@ export function CoachMonthlyOverviewSkeleton() {
 
       {/* Comparison Stats */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+        <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
           <div className="h-3 skeleton-box rounded w-24 mb-2" />
           <div className="h-5 skeleton-box rounded w-20" />
         </div>
-        <div className="bg-(--surface-elevated) rounded-lg p-3 border border-(--border)">
+        <div className="bg-(--surface-elevated) rounded-(--radius-control) p-3 border border-(--border)">
           <div className="h-3 skeleton-box rounded w-24 mb-2" />
           <div className="h-5 skeleton-box rounded w-20" />
         </div>
@@ -1924,7 +1924,7 @@ export function CoachAllTimeStatsSkeleton() {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="bg-(--surface-elevated) rounded-lg p-4 border border-(--border) text-center"
+            className="bg-(--surface-elevated) rounded-(--radius-control) p-4 border border-(--border) text-center"
           >
             <div className="w-8 h-8 skeleton-box rounded-full mx-auto mb-2" />
             <div className="h-6 skeleton-box rounded w-16 mx-auto mb-2" />
@@ -1946,7 +1946,7 @@ export function CoachProgressHistorySkeleton() {
       </div>
 
       {/* Chart */}
-      <div className="h-64 skeleton-box rounded-lg" />
+      <div className="h-64 skeleton-box rounded-(--radius-control)" />
     </div>
   );
 }
@@ -1964,7 +1964,7 @@ export function HelpCenterSkeleton() {
 
       {/* Search */}
       <div className="max-w-2xl mx-auto">
-        <div className="h-12 skeleton-box rounded-xl" />
+        <div className="h-12 skeleton-box rounded-(--radius-panel)" />
       </div>
 
       {/* Featured Articles */}
@@ -1974,7 +1974,7 @@ export function HelpCenterSkeleton() {
           {[1, 2, 3].map((i) => (
             <div key={i} className="timer-card">
               <div className="flex items-start gap-3">
-                <div className="w-9 h-9 skeleton-box rounded-lg shrink-0" />
+                <div className="w-9 h-9 skeleton-box rounded-(--radius-control) shrink-0" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 skeleton-box rounded w-3/4" />
                   <div className="h-3 skeleton-box rounded w-full" />
@@ -1993,7 +1993,7 @@ export function HelpCenterSkeleton() {
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="timer-card">
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 skeleton-box rounded-lg shrink-0" />
+                <div className="w-10 h-10 skeleton-box rounded-(--radius-control) shrink-0" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 skeleton-box rounded w-2/3" />
                   <div className="h-3 skeleton-box rounded w-full" />
@@ -2016,7 +2016,7 @@ export function HelpCategorySkeleton() {
 
       {/* Category header */}
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 skeleton-box rounded-xl shrink-0" />
+        <div className="w-12 h-12 skeleton-box rounded-(--radius-panel) shrink-0" />
         <div className="space-y-2 flex-1">
           <div className="h-7 skeleton-box rounded w-48" />
           <div className="h-4 skeleton-box rounded w-72 max-w-full" />
@@ -2059,7 +2059,7 @@ export function HelpArticleSkeleton() {
         {/* Header */}
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 skeleton-box rounded-lg" />
+            <div className="w-9 h-9 skeleton-box rounded-(--radius-control)" />
             <div className="h-3 skeleton-box rounded w-20" />
           </div>
           <div className="h-8 skeleton-box rounded w-3/4" />
@@ -2103,8 +2103,8 @@ export function HelpArticleSkeleton() {
         <div className="text-center space-y-3">
           <div className="h-4 skeleton-box rounded w-40 mx-auto" />
           <div className="flex items-center justify-center gap-3">
-            <div className="h-10 skeleton-box rounded-lg w-20" />
-            <div className="h-10 skeleton-box rounded-lg w-20" />
+            <div className="h-10 skeleton-box rounded-(--radius-control) w-20" />
+            <div className="h-10 skeleton-box rounded-(--radius-control) w-20" />
           </div>
         </div>
       </div>

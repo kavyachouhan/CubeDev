@@ -19,6 +19,8 @@ export function jsonRequest(
   }
   return new NextRequest(url, {
     ...rest,
+    // RequestInit allows `signal: null`; NextRequest's init does not.
+    signal: rest.signal ?? undefined,
     headers: merged,
     body: json !== undefined ? JSON.stringify(json) : rest.body,
   });

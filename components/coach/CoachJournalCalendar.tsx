@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -13,11 +13,19 @@ import {
   Calendar as CalendarIcon,
   List,
   Grid3X3,
+  Hash,
   Smile,
   Meh,
   Frown,
   Battery,
 } from "lucide-react";
+import {
+  Button,
+  Card,
+  IconButton,
+  SegmentedControl,
+  StatTile,
+} from "@/components/ui";
 import type { LucideIcon } from "lucide-react";
 import {
   format,
@@ -199,38 +207,32 @@ export default function CoachJournalCalendar({
 
   const today = new Date();
 
-  // Auto-scroll to today's date in mobile month view
-  useEffect(() => {
-    if (
-      viewMode === "month" &&
-      mobileScrollRef.current &&
-      todayButtonRef.current
-    ) {
-      // Calculate scroll position to center today's date
-      const container = mobileScrollRef.current;
-      const todayButton = todayButtonRef.current;
-      const containerWidth = container.offsetWidth;
-      const buttonLeft = todayButton.offsetLeft;
-      const buttonWidth = todayButton.offsetWidth;
+  // Centre the day strip on the selected day as soon as its button mounts.
+  // A callback ref rather than an effect: the strip only exists once the
+  // entries query resolves, which is after every effect dependency has settled.
+  const centreDayInStrip = useCallback((button: HTMLButtonElement | null) => {
+    todayButtonRef.current = button;
+    const container = mobileScrollRef.current;
+    if (!button || !container) return;
+    container.scrollTo({
+      left: Math.max(
+        0,
+        button.offsetLeft - container.offsetWidth / 2 + button.offsetWidth / 2,
+      ),
+      behavior: "auto",
+    });
+  }, []);
 
-      // Scroll to center the today button
-      const scrollPosition = buttonLeft - containerWidth / 2 + buttonWidth / 2;
-      container.scrollTo({
-        left: Math.max(0, scrollPosition),
-        behavior: "auto",
-      });
-    }
-  }, [viewMode, currentDate, calendarDays]);
-
-  const handlePreviousMonth = () => {
-    setCurrentDate(subMonths(currentDate, 1));
-    setSelectedDate(null);
+  /** Land on today when the month contains it, otherwise on its first day. */
+  const goToMonth = (month: Date) => {
+    const now = new Date();
+    setCurrentDate(month);
+    setSelectedDate(isSameMonth(month, now) ? now : startOfMonth(month));
   };
 
-  const handleNextMonth = () => {
-    setCurrentDate(addMonths(currentDate, 1));
-    setSelectedDate(null);
-  };
+  const handlePreviousMonth = () => goToMonth(subMonths(currentDate, 1));
+
+  const handleNextMonth = () => goToMonth(addMonths(currentDate, 1));
 
   const handleToday = () => {
     setCurrentDate(new Date());
@@ -327,15 +329,15 @@ export default function CoachJournalCalendar({
   }
 
   return (
-    <div className="timer-card">
+    <Card>
       {/* Header */}
       <div className="flex flex-col gap-4 mb-6">
-        {/* Top Row */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 sm:gap-4">
+        {/* Title + navigation: one row from `sm` up, two on a phone */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3 min-w-0">
             {/* Date Icon */}
-            <div className="flex flex-col items-center overflow-hidden rounded-lg border border-(--border) w-12 sm:w-14 shrink-0">
-              <div className="flex h-5 sm:h-6 w-full items-center justify-center bg-(--primary) text-center text-xs font-semibold text-white uppercase">
+            <div className="flex flex-col items-center overflow-hidden rounded-(--radius-control) border border-(--border) w-12 sm:w-14 shrink-0">
+              <div className="flex h-5 sm:h-6 w-full items-center justify-center bg-(--primary) text-center text-xs font-semibold text-(--on-primary) uppercase">
                 {format(currentDate, "MMM")}
               </div>
               <div className="flex w-full items-center justify-center text-base sm:text-lg font-bold text-(--text-primary)">
@@ -344,174 +346,102 @@ export default function CoachJournalCalendar({
             </div>
 
             {/* Title */}
-            <div>
-              <h2 className="text-base sm:text-lg font-semibold text-(--text-primary) font-statement">
+            <div className="min-w-0">
+              <h2 className="type-section-title truncate">
                 {format(currentDate, "MMMM yyyy")}
               </h2>
-              <span className="text-xs text-(--text-muted)">
+              <span className="type-caption">
                 {monthEntryCount} {monthEntryCount === 1 ? "entry" : "entries"}
               </span>
             </div>
           </div>
 
-          {/* Desktop: Navigation + View Toggle */}
-          <div className="hidden sm:flex items-center gap-4">
-            {/* Navigation */}
-            <div className="flex items-center gap-2">
-              <button
+          {/* Navigation + view toggle: always one row, never wrapping */}
+          <div className="flex items-center justify-between gap-2 sm:justify-end sm:shrink-0">
+            <div className="flex items-center gap-1">
+              <Button
+                size="sm"
+                variant="secondary"
                 onClick={handleToday}
-                className="px-3 py-1.5 text-sm border border-(--border) rounded-lg text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
-                aria-label="Today"
                 title="Jump to Today"
               >
                 Today
-              </button>
-              <button
-                onClick={handlePreviousMonth}
-                className="p-1.5 rounded-lg hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--text-primary) transition-colors"
+              </Button>
+              <IconButton
+                size="sm"
                 aria-label="Previous month"
                 title="Previous month"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handleNextMonth}
-                className="p-1.5 rounded-lg hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--text-primary) transition-colors"
+                icon={<ChevronLeft />}
+                onClick={handlePreviousMonth}
+              />
+              <IconButton
+                size="sm"
                 aria-label="Next month"
                 title="Next month"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+                icon={<ChevronRight />}
+                onClick={handleNextMonth}
+              />
             </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center border border-(--border) rounded-lg overflow-hidden">
-              <button
-                onClick={() => setViewMode("month")}
-                className={`p-2 transition-colors ${
-                  viewMode === "month"
-                    ? "bg-(--primary) text-white"
-                    : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
-                }`}
-                aria-label="Month view"
-                title="Month view"
-              >
-                <Grid3X3 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-2 transition-colors ${
-                  viewMode === "list"
-                    ? "bg-(--primary) text-white"
-                    : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
-                }`}
-                aria-label="List view"
-                title="List view"
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Navigation Row */}
-        <div className="flex sm:hidden items-center justify-between">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleToday}
-              className="px-3 py-1.5 text-sm border border-(--border) rounded-lg text-(--text-secondary) hover:bg-(--surface-elevated) transition-colors"
-              aria-label="Today"
-              title="Jump to Today"
-            >
-              Today
-            </button>
-            <button
-              onClick={handlePreviousMonth}
-              className="p-1.5 rounded-lg hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--text-primary) transition-colors"
-              aria-label="Previous month"
-              title="Previous month"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={handleNextMonth}
-              className="p-1.5 rounded-lg hover:bg-(--surface-elevated) text-(--text-muted) hover:text-(--text-primary) transition-colors"
-              aria-label="Next month"
-              title="Next month"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Mobile View Toggle */}
-          <div className="flex items-center border border-(--border) rounded-lg overflow-hidden">
-            <button
-              onClick={() => setViewMode("month")}
-              className={`p-2 transition-colors ${
-                viewMode === "month"
-                  ? "bg-(--primary) text-white"
-                  : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
-              }`}
-              aria-label="Month view"
-              title="Month view"
-            >
-              <Grid3X3 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={`p-2 transition-colors ${
-                viewMode === "list"
-                  ? "bg-(--primary) text-white"
-                  : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--surface-elevated)"
-              }`}
-              aria-label="List view"
-              title="List view"
-            >
-              <List className="w-4 h-4" />
-            </button>
+            {/* Labels would push this onto a second row on a phone, so below
+                `sm` the icons carry the meaning on their own. */}
+            <SegmentedControl
+              size="sm"
+              aria-label="Calendar view"
+              value={viewMode}
+              onChange={setViewMode}
+              options={[
+                {
+                  value: "month",
+                  "aria-label": "Month view",
+                  icon: <Grid3X3 />,
+                  label: <span className="hidden sm:inline">Month</span>,
+                },
+                {
+                  value: "list",
+                  "aria-label": "List view",
+                  icon: <List />,
+                  label: <span className="hidden sm:inline">List</span>,
+                },
+              ]}
+            />
           </div>
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-          <div className="p-3 bg-(--surface-elevated) rounded-lg">
-            <div className="flex items-center gap-2 mb-1">
-              <CalendarIcon className="w-4 h-4 text-(--primary)" />
-              <span className="text-xs text-(--text-muted)">Active Days</span>
-            </div>
-            <p className="text-xl font-bold text-(--text-primary)">
-              {activeDaysCount}
-            </p>
-          </div>
-          <div className="p-3 bg-(--surface-elevated) rounded-lg">
-            <div className="flex items-center gap-2 mb-1">
-              <Target className="w-4 h-4 text-(--primary)" />
-              <span className="text-xs text-(--text-muted)">Entries</span>
-            </div>
-            <p className="text-xl font-bold text-(--text-primary)">
-              {monthEntryCount}
-            </p>
-          </div>
-          <div className="p-3 bg-(--surface-elevated) rounded-lg">
-            <div className="flex items-center gap-2 mb-1">
-              <Clock className="w-4 h-4 text-(--primary)" />
-              <span className="text-xs text-(--text-muted)">Total Time</span>
-            </div>
-            <p className="text-xl font-bold text-(--text-primary)">
-              {formatDuration(monthTotalTime)}
-            </p>
-          </div>
-          <div className="p-3 bg-(--surface-elevated) rounded-lg">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-4 h-4 text-(--primary) flex items-center justify-center font-bold text-sm">
-                #
-              </div>
-              <span className="text-xs text-(--text-muted)">Solves</span>
-            </div>
-            <p className="text-xl font-bold text-(--text-primary)">
-              {monthTotalSolves}
-            </p>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            mono={false}
+            icon={<CalendarIcon />}
+            label="Active Days"
+            value={activeDaysCount}
+          />
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            mono={false}
+            icon={<Target />}
+            label="Entries"
+            value={monthEntryCount}
+          />
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            mono={false}
+            icon={<Clock />}
+            label="Total Time"
+            value={formatDuration(monthTotalTime)}
+          />
+          <StatTile
+            size="sm"
+            mobileLayout="row"
+            mono={false}
+            icon={<Hash />}
+            label="Solves"
+            value={monthTotalSolves}
+          />
         </div>
       </div>
 
@@ -551,11 +481,15 @@ export default function CoachJournalCalendar({
                     const MoodIcon = entry ? moodIcons[entry.mood] : null;
 
                     return (
-                      <div
+                      <button
                         key={dayStr}
+                        type="button"
+                        aria-pressed={!!isSelected}
+                        aria-label={format(day, "EEEE, MMMM d")}
                         onClick={() => handleDateClick(day)}
                         className={`
-                          min-h-[100px] p-2 bg-(--surface) cursor-pointer transition-colors
+                          min-h-[100px] p-2 bg-(--surface) text-left transition-colors
+                          focus-visible:outline-2 focus-visible:outline-(--focus-ring) focus-visible:-outline-offset-2
                           ${!isCurrentMonth ? "bg-(--surface-elevated)/50" : ""}
                           ${isSelected ? "ring-2 ring-(--primary) ring-inset" : "hover:bg-(--surface-elevated)"}
                         `}
@@ -564,7 +498,7 @@ export default function CoachJournalCalendar({
                         <div
                           className={`
                             text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full mb-1
-                            ${isToday ? "bg-(--primary) text-white" : ""}
+                            ${isToday ? "bg-(--primary) text-(--on-primary)" : ""}
                             ${!isCurrentMonth ? "text-(--text-muted)" : "text-(--text-primary)"}
                           `}
                         >
@@ -575,16 +509,12 @@ export default function CoachJournalCalendar({
                         {entry && (
                           <div
                             className={`
-                              text-xs px-1.5 py-1 rounded cursor-pointer relative
+                              text-xs px-1.5 py-1 rounded-(--radius-badge) relative
                               border border-(--border) ${moodBgColors[entry.mood]}
                             `}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDateClick(day);
-                            }}
                           >
                             {entryCount > 1 && (
-                              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-(--primary) text-white text-[10px] flex items-center justify-center font-medium">
+                              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-(--primary) text-(--on-primary) text-[10px] flex items-center justify-center font-medium">
                                 {entryCount}
                               </span>
                             )}
@@ -605,7 +535,7 @@ export default function CoachJournalCalendar({
                             )}
                           </div>
                         )}
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
@@ -615,18 +545,17 @@ export default function CoachJournalCalendar({
               {selectedDate && (
                 <div className="lg:w-80 border-t lg:border-t-0 lg:border-l border-(--border) pt-4 lg:pt-0 lg:pl-4">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-medium text-(--text-primary)">
+                    <h3 className="type-card-title min-w-0 truncate">
                       {format(selectedDate, "EEEE, MMM d")}
                     </h3>
-                    <button
+                    <Button
+                      size="sm"
                       onClick={() => onAddEntry(selectedDate)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-(--primary) text-white rounded-lg"
                       aria-label="Add entry for this day"
-                      title="Add entry for this day"
+                      iconLeft={<Plus className="w-4 h-4" />}
                     >
-                      <Plus className="w-4 h-4" />
                       Add
-                    </button>
+                    </Button>
                   </div>
 
                   {selectedDateEntries.length === 0 ? (
@@ -647,7 +576,7 @@ export default function CoachJournalCalendar({
                       {selectedDateEntries.map((entry, index) => (
                         <div key={entry._id} className="relative">
                           {selectedDateEntries.length > 1 && (
-                            <span className="absolute -top-2 -left-3 w-5 h-5 rounded-full bg-(--primary) text-white text-xs flex items-center justify-center font-medium z-10">
+                            <span className="absolute -top-2 -left-3 w-5 h-5 rounded-full bg-(--primary) text-(--on-primary) text-xs flex items-center justify-center font-medium z-10">
                               {index + 1}
                             </span>
                           )}
@@ -686,11 +615,15 @@ export default function CoachJournalCalendar({
                   return (
                     <button
                       key={format(day, "yyyy-MM-dd")}
-                      ref={isToday ? todayButtonRef : undefined}
+                      ref={
+                        isSelected || (!selectedDate && isToday)
+                          ? centreDayInStrip
+                          : undefined
+                      }
                       onClick={() => handleDateClick(day)}
                       className={`
-                        flex flex-col items-center p-2 rounded-lg min-w-[44px] transition-colors
-                        ${isSelected ? "bg-(--primary) text-white" : ""}
+                        flex flex-col items-center p-2 rounded-(--radius-control) min-w-[44px] transition-colors
+                        ${isSelected ? "bg-(--primary) text-(--on-primary)" : ""}
                         ${!isSelected && isToday ? "bg-(--primary)/10 text-(--primary)" : ""}
                         ${!isSelected && !isToday ? "hover:bg-(--surface-elevated)" : ""}
                       `}
@@ -718,22 +651,21 @@ export default function CoachJournalCalendar({
             {selectedDate ? (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-medium text-(--text-primary)">
+                  <h3 className="type-card-title min-w-0 truncate">
                     {format(selectedDate, "EEEE, MMMM d")}
                   </h3>
-                  <button
-                    onClick={() => onAddEntry(selectedDate)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-(--primary) text-white rounded-lg"
+                  <IconButton
+                    size="sm"
+                    variant="primary"
+                    className="shrink-0"
                     aria-label="Add entry for this day"
-                    title="Add entry for this day"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add
-                  </button>
+                    icon={<Plus />}
+                    onClick={() => onAddEntry(selectedDate)}
+                  />
                 </div>
 
                 {selectedDateEntries.length === 0 ? (
-                  <div className="text-center py-12 bg-(--surface-elevated) rounded-lg">
+                  <div className="text-center py-12 bg-(--surface-elevated) rounded-(--radius-control)">
                     <CalendarIcon
                       className="w-12 h-12 text-(--text-muted) mx-auto mb-3"
                       aria-hidden="true"
@@ -750,7 +682,7 @@ export default function CoachJournalCalendar({
                     {selectedDateEntries.map((entry, index) => (
                       <div key={entry._id} className="relative">
                         {selectedDateEntries.length > 1 && (
-                          <span className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-(--primary) text-white text-xs flex items-center justify-center font-medium z-10">
+                          <span className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-(--primary) text-(--on-primary) text-xs flex items-center justify-center font-medium z-10">
                             {index + 1}
                           </span>
                         )}
@@ -793,7 +725,7 @@ export default function CoachJournalCalendar({
                     <div
                       className={`
                         text-sm font-medium px-2 py-0.5 rounded
-                        ${isToday ? "bg-(--primary) text-white" : "text-(--text-secondary)"}
+                        ${isToday ? "bg-(--primary) text-(--on-primary)" : "text-(--text-secondary)"}
                       `}
                     >
                       {format(day, "EEE, MMM d")}
@@ -808,7 +740,7 @@ export default function CoachJournalCalendar({
                     {entries.map((entry, index) => (
                       <div key={entry._id} className="relative">
                         {entries.length > 1 && (
-                          <span className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-(--primary) text-white text-[10px] flex items-center justify-center font-medium z-10">
+                          <span className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-(--primary) text-(--on-primary) text-[10px] flex items-center justify-center font-medium z-10">
                             {index + 1}
                           </span>
                         )}
@@ -837,18 +769,18 @@ export default function CoachJournalCalendar({
               <p className="text-sm text-(--text-muted) mt-1">
                 Start logging your practice sessions
               </p>
-              <button
+              <Button
+                className="mx-auto mt-4"
                 onClick={() => onAddEntry(today)}
-                className="flex items-center gap-2 mx-auto mt-4 px-4 py-2 bg-(--primary) text-white rounded-lg font-medium hover:bg-(--primary-hover) transition-colors"
+                iconLeft={<Plus className="w-4 h-4" />}
               >
-                <Plus className="w-4 h-4" />
-                Add Entry
-              </button>
+                Add entry
+              </Button>
             </div>
           )}
         </div>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -868,7 +800,7 @@ function EntryCard({ entry, onClick, expanded }: EntryCardProps) {
   return (
     <div
       onClick={onClick}
-      className="p-3 bg-(--surface-elevated) border border-(--border) rounded-lg hover:border-(--primary)/50 transition-colors cursor-pointer"
+      className="p-3 bg-(--surface-elevated) border border-(--border) rounded-(--radius-control) hover:border-(--primary)/50 transition-colors cursor-pointer"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">

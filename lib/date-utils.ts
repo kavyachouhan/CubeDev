@@ -241,36 +241,28 @@ export function formatCompetitionDateRange(
  * @param cancelled - Whether the competition was cancelled
  * @returns Object with label and color class
  */
+/**
+ * Label and Badge tone for a competition's status. The tone is a design-system
+ * token name, not a class, so the caller renders it with `<Badge tone=…>`.
+ */
 export function getCompetitionStatusDisplay(
   startDate: string,
   endDate: string,
   cancelled?: boolean
-): { label: string; color: string } {
+): { label: string; tone: "danger" | "success" | "info" | "neutral" } {
   if (cancelled) {
-    return {
-      label: "Cancelled",
-      color: "text-(--error) bg-(--error)/10",
-    };
+    return { label: "Cancelled", tone: "danger" };
   }
 
   const status = getCompetitionStatus(startDate, endDate);
 
   switch (status) {
     case "ongoing":
-      return {
-        label: "In Progress",
-        color: "text-(--success) bg-(--success)/10",
-      };
+      return { label: "In Progress", tone: "success" };
     case "upcoming":
-      return {
-        label: "Upcoming",
-        color: "text-(--info) bg-(--info)/10",
-      };
+      return { label: "Upcoming", tone: "info" };
     case "past":
-      return {
-        label: "Completed",
-        color: "text-(--text-muted) bg-(--surface-elevated)",
-      };
+      return { label: "Completed", tone: "neutral" };
   }
 }
 

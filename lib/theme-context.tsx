@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import type { OwnerUser } from "@/convex/userProjection";
 
 export type ThemeMode = "light" | "dark" | "auto";
 export type ColorScheme = "blue" | "purple" | "green" | "orange" | "cyan";
@@ -11,6 +12,8 @@ export type TimerFontSize = "sm" | "md" | "lg" | "xl";
 export type TimerFontFamily = "mono" | "sans" | "statement";
 export type TimerUpdateMode = "live" | "solving" | "seconds";
 export type CubeViewMode = "3d" | "2d";
+/** "compact" is the dense, no-scroll timer; "cards" is the original panel grid. */
+export type TimerLayout = "compact" | "cards";
 
 interface ThemePreferences {
   themeMode: ThemeMode;
@@ -19,6 +22,7 @@ interface ThemePreferences {
   timerFontFamily: TimerFontFamily;
   timerUpdateMode: TimerUpdateMode;
   cubeViewMode: CubeViewMode;
+  timerLayout: TimerLayout;
   reduceMotion: boolean;
   disableGlow: boolean;
   highContrast: boolean;
@@ -32,6 +36,7 @@ interface ThemeContextType extends ThemePreferences {
   setTimerFontFamily: (family: TimerFontFamily) => void;
   setTimerUpdateMode: (mode: TimerUpdateMode) => void;
   setCubeViewMode: (mode: CubeViewMode) => void;
+  setTimerLayout: (layout: TimerLayout) => void;
   setReduceMotion: (enabled: boolean) => void;
   setDisableGlow: (disabled: boolean) => void;
   setHighContrast: (enabled: boolean) => void;
@@ -47,6 +52,7 @@ const DEFAULT_PREFERENCES: ThemePreferences = {
   timerFontFamily: "mono",
   timerUpdateMode: "live",
   cubeViewMode: "3d",
+  timerLayout: "compact",
   reduceMotion: false,
   disableGlow: false,
   highContrast: false,
@@ -67,10 +73,11 @@ export function ThemeProvider({
   );
 
   // Fetch user theme preferences from database
+  // getUserById returns the owner projection for the signed-in user.
   const user = useQuery(
     api.users.getUserById,
     userId ? { id: userId } : "skip"
-  );
+  ) as Partial<OwnerUser> | null | undefined;
 
   const updateTheme = useMutation(api.users.updateThemeSettings);
 
@@ -146,6 +153,9 @@ export function ThemeProvider({
         cubeViewMode:
           (user.cubeViewMode as CubeViewMode) ||
           DEFAULT_PREFERENCES.cubeViewMode,
+        timerLayout:
+          (user.timerLayout as TimerLayout) ||
+          DEFAULT_PREFERENCES.timerLayout,
         reduceMotion: user.reduceMotion ?? DEFAULT_PREFERENCES.reduceMotion,
         disableGlow: user.disableGlow ?? DEFAULT_PREFERENCES.disableGlow,
         highContrast: user.highContrast ?? DEFAULT_PREFERENCES.highContrast,
@@ -172,6 +182,10 @@ export function ThemeProvider({
 
     // Apply timer font family
     root.setAttribute("data-timer-font", localPreferences.timerFontFamily);
+
+    // Apply timer layout (also set pre-hydration, so the numerals size correctly
+    // on the very first paint)
+    root.setAttribute("data-timer-layout", localPreferences.timerLayout);
 
     // Apply accessibility settings
     if (localPreferences.reduceMotion) {
@@ -238,6 +252,7 @@ export function ThemeProvider({
       updatePreference({ timerFontFamily: family }),
     setTimerUpdateMode: (mode) => updatePreference({ timerUpdateMode: mode }),
     setCubeViewMode: (mode) => updatePreference({ cubeViewMode: mode }),
+    setTimerLayout: (layout) => updatePreference({ timerLayout: layout }),
     setReduceMotion: (enabled) => updatePreference({ reduceMotion: enabled }),
     setDisableGlow: (disabled) => updatePreference({ disableGlow: disabled }),
     setHighContrast: (enabled) => updatePreference({ highContrast: enabled }),

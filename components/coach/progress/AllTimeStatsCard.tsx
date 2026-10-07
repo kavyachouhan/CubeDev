@@ -1,7 +1,8 @@
 "use client";
 
 import { Clock, BarChart3, Calendar } from "lucide-react";
-import { CollapsibleSection, StatCard, formatDuration } from "./utils";
+import { CollapsibleCard, StatTile, useCollapsed } from "@/components/ui";
+import { formatDuration } from "./utils";
 import { ProgressStats } from "./types";
 
 interface AllTimeStatsCardProps {
@@ -11,32 +12,44 @@ interface AllTimeStatsCardProps {
 export default function AllTimeStatsCard({
   progressStats,
 }: AllTimeStatsCardProps) {
+  const collapsed = useCollapsed("coach-progress-alltime", false);
+
   return (
-    <CollapsibleSection
+    <CollapsibleCard
       title="All-Time Stats"
-      storageKey="coach-progress-alltime"
-      defaultExpanded={false}
+      variant="static"
+      open={collapsed.open}
+      onOpenChange={collapsed.onOpenChange}
     >
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
-        <StatCard
-          icon={Clock}
-          iconColor="bg-(--primary)/10 text-(--primary)"
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+        <StatTile
+          size="sm"
+          mobileLayout="row"
+          mono={false}
+          icon={<Clock />}
+          tone="primary"
           label="Practice"
           value={formatDuration(progressStats.allTime.practiceMinutes)}
         />
-        <StatCard
-          icon={BarChart3}
-          iconColor="bg-(--accent)/10 text-(--accent)"
+        <StatTile
+          size="sm"
+          mobileLayout="row"
+          mono={false}
+          icon={<BarChart3 />}
+          tone="accent"
           label="Solves"
           value={progressStats.allTime.solves.toLocaleString()}
         />
-        <StatCard
-          icon={Calendar}
-          iconColor="bg-(--success)/10 text-(--success)"
+        <StatTile
+          size="sm"
+          mobileLayout="row"
+          mono={false}
+          icon={<Calendar />}
+          tone="success"
           label="Entries"
           value={progressStats.allTime.entries.toLocaleString()}
         />
       </div>
-    </CollapsibleSection>
+    </CollapsibleCard>
   );
 }

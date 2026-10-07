@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { useUser } from "@/components/UserProvider";
 import { wcaSignInHref } from "@/lib/wca-config";
 import { Loader2 } from "lucide-react";
+import { LoadingState } from "@/components/ui/Spinner";
 import Image from "next/image";
 import Head from "next/head";
 import ChallengeRoom from "@/components/challenges/ChallengeRoom";
@@ -31,12 +32,7 @@ export default function RoomPage({ params }: RoomPageProps) {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-(--background) flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader2 className="w-8 h-8 text-(--primary) animate-spin mx-auto" />
-          <p className="text-(--text-secondary) font-inter">
-            Loading challenge room...
-          </p>
-        </div>
+        <LoadingState label="Loading challenge room…" />
       </div>
     );
   }

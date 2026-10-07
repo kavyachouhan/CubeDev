@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { ArrowLeft } from "lucide-react";
+import { BackLink } from "@/components/ui/PageHeader";
 import { WCACompetition } from "./CompetitionBrowser";
 import {
   AtmosphereSettings,
@@ -161,27 +161,24 @@ export default function RoundSimulatorRedesigned({
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
       <div className="max-w-6xl mx-auto">
-        {/* Header Row */}
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-(--text-muted) hover:text-(--primary) transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Back</span>
-          </button>
+        <BackLink onClick={onBack} className="mb-3">
+          Back to events
+        </BackLink>
 
-          <div className="flex items-center gap-3">
-            <CompetitionTimerModeSelector
-              timerMode={timerMode}
-              onTimerModeChange={setTimerMode}
-              disabled={isTimerRunning}
-            />
+        <div className="flex items-center justify-between gap-2 mb-6">
+          <div className="min-w-0 flex-1">
             <SimulationAtmospherePanel
               atmosphere={atmosphere}
               soundEnabled={soundEnabled}
               onToggleSound={() => setSoundEnabled(!soundEnabled)}
               isCompact
+            />
+          </div>
+          <div className="shrink-0">
+            <CompetitionTimerModeSelector
+              timerMode={timerMode}
+              onTimerModeChange={setTimerMode}
+              disabled={isTimerRunning}
             />
           </div>
         </div>
@@ -197,11 +194,17 @@ export default function RoundSimulatorRedesigned({
               className="invert opacity-80"
             />
             <div className="flex-1 min-w-0">
-              <h2 className="font-bold text-(--text-primary) truncate">
-                {event.name}
-              </h2>
-              <p className="text-sm text-(--text-muted) truncate">
-                Round {roundNumber} of {maxRounds} • {competition.name}
+              <h2 className="type-card-title truncate">{event.name}</h2>
+              <p className="type-caption">
+                <span>
+                  Round {roundNumber} of {maxRounds}
+                </span>
+                <span aria-hidden className="hidden sm:inline">
+                  {" • "}
+                </span>
+                <span className="block sm:inline wrap-break-word">
+                  {competition.name}
+                </span>
               </p>
             </div>
           </div>
@@ -338,7 +341,7 @@ export default function RoundSimulatorRedesigned({
                     return (
                       <div
                         key={idx}
-                        className={`text-center p-2 sm:p-3 rounded-lg ${cardStyle}`}
+                        className={`text-center p-2 sm:p-3 rounded-(--radius-control) ${cardStyle}`}
                       >
                         <div className="text-xs text-(--text-muted) mb-0.5">
                           #{idx + 1}
