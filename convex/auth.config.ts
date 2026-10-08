@@ -7,7 +7,7 @@ export default {
       type: "customJwt",
       applicationID: convexConfig.jwtAudience,
       issuer: convexConfig.jwtIssuer,
-      jwks: "https://first-cuttlefish-485.convex.site/.well-known/jwks.json",
+      jwks: convexConfig.authJwksUrl,
       algorithm: "ES256",
     },
   ],

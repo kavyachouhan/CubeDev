@@ -30,6 +30,9 @@ export const convexConfig = {
   get authJwks() {
     return optional("CONVEX_AUTH_JWKS");
   },
+  get authJwksUrl() {
+    return required("CONVEX_AUTH_JWKS_URL");
+  },
   get adminEmails() {
     return required("ADMIN_EMAIL")
       .split(",")
